@@ -131,6 +131,13 @@ class DevisController extends Controller
         $order->formatted_facturation_address=$facturation_address==null?'--/--':$facturation_address->getformattedAddress();
         return response()->json($order);
     }
+
+    public function setOrderState(Request $request){
+        $order_state_id=$request->post('order_state_id');
+        $order_id=$request->post('order_id');
+        $order=Order::find($order_id);
+        $order->updateState($order_state_id);
+    }
     public function getOrderStates(Request $request){
         return response()->json(OrderState::all());
     }

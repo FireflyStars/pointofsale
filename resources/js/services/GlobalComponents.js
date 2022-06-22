@@ -11,6 +11,7 @@ import MultiSelect from "../components/miscellaneous/MultiSelect.vue"
 import TabPane from "../components/miscellaneous/TabPane.vue"
 import loader from '../components/miscellaneous/Loader'
 import DatePicker from '../components/miscellaneous/DatePicker.vue'
+import SimpleModalPopup from '../components/miscellaneous/simplemodal/SimpleModalPopup.vue';
 
 export default function globalComponents(app) {
     app.component('MultiSelect', MultiSelect)
@@ -26,4 +27,5 @@ export default function globalComponents(app) {
     app.component('Modal', Modal)
     app.component('loader', loader)
     app.component('DatePicker', DatePicker)
+    app.component('SimpleModalPopup',SimpleModalPopup)
 }

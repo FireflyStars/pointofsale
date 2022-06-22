@@ -9,6 +9,7 @@ use App\Models\Contact;
 use App\Traits\LcdtLog;
 use App\Models\Customer;
 use App\Models\Affiliate;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -62,9 +63,18 @@ class Order extends Model
     public function updateState($order_state_id, $user_id=null){
         if($user_id==null)
             $user_id=Auth::user()->id;
+        $user=User::find($user_id);
+        if($user->affiliate->id!=$this->affiliate_id)
+        throw new Exception('Order does not affiliated to user.');
+
+        $orderState=OrderState::find($order_state_id);
+        if($orderState==null)
+        throw new Exception('Invalid order state.');
+
         $previous_order_state_id=$this->order_state_id;
         if($this->order_state_id!=$order_state_id){
             $this->order_state_id=$order_state_id;
+            if($this->order_state_i)
             $orderHistory=new OrderHistory();
             $orderHistory->order_state_id=$order_state_id;
             $orderHistory->user_id=$user_id;

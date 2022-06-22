@@ -77,7 +77,7 @@
     src: local('Mulish Regular'), url('../fonts/Mulish-Regular.ttf') format('truetype');
   }
 
-  .nulish-regular{
+  .mulish-regular{
     font-family: 'Mulish Regular' !important; 
   }
   .mulish_400_normal{
@@ -85,6 +85,11 @@
       font-weight: 400!important;
       font-style: normal!important;
   }
+  .mulish_600_normal{
+    font-family: 'Mulish Regular'!important;
+    font-weight: 600!important;
+    font-style: normal!important;
+}
 
   .almarai_700_normal{
     font-family: 'Almarai Regular'!important;
