@@ -11,7 +11,12 @@ import {
     SAVE_REPORT_PAGES,
     RESET_PAGES,
     GENERATE_PDF,
-    SAVE_PAGE_ORDER
+    SAVE_PAGE_ORDER,
+    LOADER_MODULE,
+    DISPLAY_LOADER,
+    TOASTER_MODULE,
+    TOASTER_MESSAGE,
+    HIDE_LOADER,
 }
 from '../../store/types/types'
 
@@ -164,16 +169,27 @@ export default function useReports() {
     }
 
     const generatePagePdf = async (orderId = null) => {
+
         try {
+            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Generating PDF...'])
+
             const data = await store.dispatch(`${[BUILDER_MODULE]}/${[GENERATE_PDF]}`, { 
                 pages: pages.value,
                 orderId 
             })
+
             if(data) generatePDF(data)
+
         }
+
         catch(e) {
             throw e
         }
+
+        finally {
+            store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`)
+        }
+
     }
 
     const generatePDF = (data) => {

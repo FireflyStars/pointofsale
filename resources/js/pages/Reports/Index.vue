@@ -33,21 +33,14 @@
                             </template>
 
                             <template v-slot:id="{ row }">
-                                <router-link 
-                                    class="link"
-                                    :to="{ 
-                                        name: 'report-page',
-                                        params: {
-                                            id: row.id
-                                        } 
-                                    }"
-                                >
+
+                                <a href="#" class="link" @click.stop="navigatePage(row.id)">
                                     {{ row.pages != null && row.pages != '' ? 'Edit Report': 'Create Report' }}
-                                </router-link>
+                                </a>
+
                             </template> 
 
                         </item-list-table>
-        
 
                     </div>
 
@@ -62,6 +55,7 @@
 <script setup>
 
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import { onMounted, ref, nextTick, computed } from 'vue'
 
 import { 
@@ -71,10 +65,23 @@ import {
 import ItemListTable from '../../components/miscellaneous/ItemListTable/ItemListTable.vue'
 
 const store = useStore()
+const router = useRouter()
 
 const showcontainer = ref(false)
 
 const reports = computed(() => store.getters[`${REPORTS_BUILDER_MODULE}reportListDefinition`])
+
+const navigatePage = (id) => {
+    
+    document.getElementsByTagName( 'body' )[0].className=''
+
+    router.push({
+        name: 'report-page',
+        params: {
+            id
+        }
+    })
+}
 
 onMounted(() => {
     nextTick(() => {

@@ -40,7 +40,7 @@ const router = createRouter({
             path:'/devis/edit/:id',
             name:'EditDevis',
             component: () => import('../pages/devis/Edit'),
-            meta:{
+            meta: {
                 authenticated: true
             },
 
@@ -49,7 +49,7 @@ const router = createRouter({
             path:'/customer/create',
             name:'CreateCustomer',
             component: () => import('../pages/Customer/Create'),
-            meta:{
+            meta: {
                 authenticated: true
             },
 
@@ -58,7 +58,7 @@ const router = createRouter({
             path:'/ComponentsTest',
             name:'ComponentsTest',
             component:()=> import('../pages/ComponentsTest'),
-            meta:{
+            meta: {
                 authenticated:true
             },
 
@@ -68,7 +68,7 @@ const router = createRouter({
             name:'reports',
             component: () => import('../pages/Reports/Index'),
             props: true,
-            meta:{
+            meta: {
                 authenticated: true
             },
 
@@ -78,7 +78,7 @@ const router = createRouter({
             name:'report-page',
             component: () => import('../pages/Reports/Show'),
             props: true,
-            meta:{
+            meta: {
                 authenticated: true
             },
         },
@@ -94,7 +94,7 @@ const router = createRouter({
             path:'/templates/add',
             name:'templates-add',
             component: () => import('../pages/templates/add'),
-            meta:{
+            meta: {
                 authenticated: true
             },
         },
@@ -103,10 +103,20 @@ const router = createRouter({
             name:'templates-edit',
             component: () => import('../pages/templates/edit'),
             props: true,
-            meta:{
+            meta: {
                 authenticated: true
             },
         },
+
+        {
+            path: '/entite',
+            name: 'entite',
+            component: () => import('../pages/entite/index'),
+            meta: {
+                authenticated: true
+            }
+        },
+
         {
             path:'/auth/',
             name:'AuthPage',

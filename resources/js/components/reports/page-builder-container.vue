@@ -86,7 +86,7 @@
     </div>
 
     <Moveable
-        v-if="showcontainer && pages.length"
+        v-if="pages.length"
         className="moveable"
         v-bind:target="[activeItem]"
         v-bind:draggable="true"

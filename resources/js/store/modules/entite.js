@@ -1,8 +1,9 @@
 
 import {
-    CAMPAGNE_LIST_MODULE,
-    GET_CAMPAGNE_LIST,
-    GET_USER_CAMPAGNE_LIST
+    SAVE_ENTITE_LIST,
+    GET_ENTITE_LIST,
+    GET_ENTITE_LIST_MES,
+    ENTITE_LIST_MODULE
 }
 from '../types/types'
 
@@ -25,7 +26,7 @@ const table = {
             id: "id",
             display_name: "No",
             type: "number",
-            class: "justify-content-start",
+            class: "justify-content-center",
             header_class: "",
             sort: true,
             filter: true,
@@ -33,23 +34,22 @@ const table = {
             suffix: "",
         },     
         {
-            id: "name",
-            display_name: "NOM CAMPAGNE",
+            id: "raisonsociale",
+            display_name: "Raison Sociale",
             type: "string",
-            class: "justify-content-start",
+            class: "justify-content-center",
             header_class: "",
             sort: true,
             filter: true,   
             having: false,
             prefix: "",
             suffix: "",
-            table: "campagnes"
         },
         {
-            id: "username",
-            display_name: "CREATEUR",
-            type: "string",
-            class: "justify-content-start",
+            id: "contact",
+            display_name: "contact",
+            type: "html",
+            class: "justify-content-center",
             header_class: "",
             sort: true,
             filter: true,   
@@ -59,82 +59,115 @@ const table = {
             allow_groupby: true,
         },
         {
-            id: "datelancement",
-            display_name: "DATE LANCEMENT",
-            type:"date",
-            format:"DD/MM/YY",
-            class: "justify-content-start",
+            id: "address",
+            display_name: "Addresse",
+            type: "html",
+            class: "justify-content-center",
             header_class: "",
             sort: true,
+            filter: true,   
+            having: true,
+            prefix: "",
+            suffix: "",
+            allow_groupby: true,
+        },
+        {
+            id: "comment",
+            display_name: "Note",
+            type: "string",
+            class: "justify-content-center",
+            header_class: "",
+            sort: false,
             filter: true,   
             having: false,
             prefix: "",
             suffix: "",
-            allow_groupby: true,
         },
         {
             id: "created_at",
-            display_name: "DATE CREATION",
+            display_name: "DATE Creation",
             type:"date",
             format:"DD/MM/YY",
-            class: "justify-content-start",
+            class: "justify-content-center",
             header_class: "",
             sort: true,
+            filter: true,   
+            having: true,
+            prefix: "",
+            suffix: "",
+            allow_groupby: true,
+        },
+        {
+            id: "origine",
+            display_name: "Origine",
+            type: "string",
+            class: "justify-content-center",
+            header_class: "",
+            sort: false,
             filter: true,   
             having: false,
             prefix: "",
             suffix: "",
-            table: "campagnes",
-            allow_groupby: true,
         },
         {
-            id: "type",
-            display_name: "TYPE",
-            type: "string",
-            class: "justify-content-start",
+            id: "statut_name",
+            display_name: "Statut",
+            type: "component",
+            class: "justify-content-center",
             header_class: "",
             sort: true,
             filter: true,   
-            having: false,
+            having: true,
             prefix: "",
             suffix: "",
             allow_groupby: true,
             filter_options: [
-                { id: 'EMAIL', value: 'EMAIL' },
-                { id: 'SMS', value: 'SMS' },
-                { id: 'COURRIER', value: 'COURRIER' },
-                { id: 'COMMANDE PRODUIT', value: 'COMMANDE PRODUIT' },
+                { id: 'Cible', value: 'Cible' },
+                { id: 'Contact', value: 'Contact' },
+                { id: 'Suspect', value: 'Suspect' },
+                { id: 'Prospect', value: 'Prospect' },
+                { id: 'Client', value: 'Client' },
+                { id: 'Fiche obsolète', value: 'Fiche obsolète' },
+                { id: 'Fiche doublons', value: 'Fiche doublons' },
             ]
         },
         {
-            id: "status",
-            display_name: "STATUS",
-            type: "string",
+            id: "action_co",
+            display_name: "Action co",
+            type: "html",
             class: "justify-content-start",
             header_class: "",
-            sort: true,
+            sort: false,
             filter: true,   
-            having: false,
+            having: true,
             prefix: "",
             suffix: "",
-            allow_groupby: true,
-            filter_options: [{
-                id: 'NOUVEAU', value: 'NOUVEAU',
-            }, {
-                id: 'CAMPAGNE ENVOYEE', value: 'CAMPAGNE ENVOYEE'
-            }]
         },
         {
-            id: "nb",
-            display_name: "NOMBRE",
-            type: "number",
+            id: "litige",
+            display_name: "Litige",
+            type: "component",
             class: "justify-content-start",
             header_class: "",
-            sort: true,
+            sort: false,
             filter: false,   
             having: false,
             prefix: "",
             suffix: "",
+        },
+        {
+            id: "total_orders",
+            display_name: "NreCde",
+            type: "price",
+            class: "justify-content-start",
+            header_class: "",
+            sort: true,
+            filter: true,   
+            having: true,
+            prefix: "",
+            suffix: "",
+            group_total: true,
+            footer_total: true,
         },
         {
             id: "montant",
@@ -144,9 +177,11 @@ const table = {
             header_class: "",
             sort: true,
             filter: true,   
-            having: false,
+            having: true,
             prefix: "",
             suffix: "",
+            group_total: true,
+            footer_total: true,
         },
     
     ],
@@ -181,8 +216,7 @@ const table = {
 }
 
 
-
-export const campagneList = {
+export const entite = {
 
     namespaced: true,
 
@@ -192,34 +226,34 @@ export const campagneList = {
 
             column_filters: [],//required empty array
             store: {
-              MODULE: CAMPAGNE_LIST_MODULE,//required
-              INIT: GET_CAMPAGNE_LIST,//required
+              MODULE: ENTITE_LIST_MODULE,//required
+              INIT: GET_ENTITE_LIST,//required
             },
             batch_actions: table.batch_actions,
             translations: table.translations,
             highlight_row: table.highlight_row,
-            item_route_name: "marketing-campagne-details",// the route to trigger when a line is click 
+            item_route_name: "",// the route to trigger when a line is click 
             max_per_page: 15,//required          
-            identifier: "campagne_list_all",//required
+            identifier: "entite_list_all",//required
             filter: true,// required boolean
             rearrange_columns: true,// required boolean
             columns_def: table.columns_def,
 
         },
 
-        campagnes_user_table_def: {
+        entite_user_table_def: {
 
             column_filters: [],//required empty array
             store: {
-              MODULE: CAMPAGNE_LIST_MODULE,//required
-              INIT: GET_USER_CAMPAGNE_LIST,//required
+              MODULE: ENTITE_LIST_MODULE,//required
+              INIT: GET_ENTITE_LIST_MES,//required
             },
             batch_actions: table.batch_actions,
             translations: table.translations,
             highlight_row: table.highlight_row,
-            item_route_name: "marketing-campagne-details",// the route to trigger when a line is click 
+            item_route_name: "",// the route to trigger when a line is click 
             max_per_page: 15,//required          
-            identifier: "campagne_list_all_users",//required
+            identifier: "entite_list_all_mes",//required
             filter: true,// required boolean
             rearrange_columns: true,// required boolean
             columns_def: table.columns_def,
@@ -229,15 +263,15 @@ export const campagneList = {
     },
 
     getters: {
-        campagnesList: state => state.table_def,
-        campagnesUserList: state => state.campagnes_user_table_def,
+        entiteList: state => state.table_def,
+        entiteUserList: state => state.entite_user_table_def,
     },
 
     actions: {
 
-        async [GET_CAMPAGNE_LIST]({ commit }, params) {
+        async [GET_ENTITE_LIST]({ commit }, params) {
 
-            return axios.post(`/get-campagne-list`, params).then((response) => {
+            return axios.post(`/get-entite-list`, params).then((response) => {
                 return Promise.resolve(response)
                       
             }).catch((error) => {
@@ -246,9 +280,9 @@ export const campagneList = {
 
         },
 
-        async [GET_USER_CAMPAGNE_LIST]({ commit }, params) {
+        async [GET_ENTITE_LIST_MES]({ commit }, params) {
 
-            return axios.post(`/get-user-campagne-list`, params).then((response) => {
+            return axios.post(`/get-entite-list-user`, params).then((response) => {
                 return Promise.resolve(response)
                       
             }).catch((error) => {

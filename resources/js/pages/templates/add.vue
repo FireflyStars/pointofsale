@@ -205,8 +205,6 @@ $orange: orange;
 
 .left-page-container {
     z-index: 6;
-    width: 793px;
-    height: 1122px;
 }
 
 .right-page-container {

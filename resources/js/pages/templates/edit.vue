@@ -4,11 +4,11 @@
         <transition
             enter-active-class="animate__animated animate__fadeIn"
         >
-            <div class="container-fluid h-100 bg-color" v-if="showcontainer">
+            <div class="container-fluid bg-color" v-if="showcontainer">
                 <main-header />
 
                 <div 
-                class="row d-flex align-content-stretch align-items-stretch flex-row hmax main-view-wrap reports-page" 
+                class="row d-flex align-content-stretch align-items-stretch flex-row main-view-wrap reports-page" 
                 style="z-index:100" >
                     
                     <side-bar />
@@ -150,12 +150,19 @@ export default {
             resetPages()
             resetOrder()
             nextTick(async () => {
+
+                document.getElementsByTagName( 'body' )[0].className=''
+                console.log(document.getElementsByTagName('body')[0].className)
+
                 await getPageTemplate()
+                showcontainer.value = true
+
                 if(window?.screen && window?.screen?.width >= 1500) {
                     showRightContainer.value = true
                 }
-                showcontainer.value = true
+
             })
+
         })
       
         return { 
@@ -174,6 +181,14 @@ export default {
 <style lang="scss" scoped>
 
 $orange: orange;
+
+body {
+    overflow-y: visible !important;
+}
+
+.hide-overflowY {
+    overflow-y: visible !important;
+}
 
 .swal2-container {
     z-index: 999999999999 !important;
@@ -198,8 +213,6 @@ $orange: orange;
 }
 
 .left-page-container {
-    width: 793px;
-    height: 1122px;
     z-index: 6;
     margin-bottom: 2rem;
 }

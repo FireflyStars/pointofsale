@@ -29,9 +29,7 @@
                 :disabled="fetching || loading"
                 :textClass="loading ? 'd-none' : ''"
                 @click="submitPage"
-            >
-                <Icon name="spinner" v-show="loading" />
-            </BaseButton>
+            />
         </div>
 
     </div>

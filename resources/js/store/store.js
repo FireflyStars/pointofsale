@@ -41,6 +41,7 @@ import { mainSearch as SEARCH_MODULE } from './modules/mainSearch'
 import { campagneList as CAMPAGNE_LIST_MODULE } from './modules/campagneList'
 
 import {devisdetail as DEVIS_DETAIL_MODULE } from './modules/devisdetail'
+import { entite as ENTITE_LIST_MODULE } from './modules/entite.js'
 
 
 export default createStore({
@@ -61,6 +62,7 @@ export default createStore({
         CUSTOMERLIST_MODULE,
         CAMPAGNE_LIST_MODULE,
         REPORTS_BUILDER_MODULE,
-        DEVIS_DETAIL_MODULE
+        DEVIS_DETAIL_MODULE,
+        ENTITE_LIST_MODULE
     }
 });

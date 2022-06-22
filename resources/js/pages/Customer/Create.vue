@@ -159,19 +159,20 @@
                             <h3 class="m-0 mulish-extrabold font-22">INFORMATION</h3>
                             <div class="d-flex mt-3">
                                 <div class="col-6 d-flex">
-                                    <div class="col-7">
-                                        <select-box v-model="form.segmentation" :options="customerNafs" :name="'segmentation'" :label="'SEGMENTATION'"></select-box>
-                                    </div>
+                                    <div class="col-7 form-group">
+                                        <label>SEGMENTATION</label>
+                                        <input v-model="form.segmentation" type="text" class="form-control" readonly>
+                                    </div>                                    
                                     <div class="col-1"></div>
                                     <div class="col-4 form-group">
                                         <label>NAF *</label>
-                                        <input v-model="form.naf" type="text" class="form-control">
+                                        <input v-model="form.naf" type="text" class="form-control" v-mask="'####A'">
                                     </div>
                                 </div>
                                 <div class="col-1"></div>
                                 <div class="col-5 form-group">
                                     <label class="text-nowrap">NOM NAF</label>
-                                    <input type="text" v-model="form.nomNaf" class="form-control">
+                                    <input type="text" v-model="form.nomNaf" class="form-control" readonly>
                                 </div>
                             </div>
                             <div class="d-flex mt-3">
@@ -233,13 +234,13 @@
                                 <div class="col-3">
                                     <div class="form-group">
                                         <label>ENVIRONEMENT</label>
-                                        <input type="text" placeholder="ENVIRONEMENT" v-model="form.statusEtablissement" class="form-control">
+                                        <input type="text" placeholder="ENVIRONEMENT" v-model="form.environment" class="form-control">
                                     </div>
                                 </div>
                                 <div class="col-3">
                                     <div class="form-group">
                                         <label>ZPE</label>
-                                        <input type="text" placeholder="ZPE" v-model="form.statusEtablissement" class="form-control">
+                                        <input type="text" placeholder="ZPE" v-model="form.zpe" class="form-control">
                                     </div>
                                 </div>
                             </div>
@@ -298,13 +299,13 @@
                                     </div>
                                 </div>
                                 <div class="col-6 ps-3 d-flex">
-                                    <div class="col-4">
+                                    <div class="col-5">
                                         <div class="form-group">
                                             <label class="text-nowrap">CODE POSTAL *</label>
-                                            <input type="text" v-model="address.postCode" class="form-control">
+                                            <input type="text" v-model="address.postCode" class="form-control" v-mask="'#####'">
                                         </div>
                                     </div>
-                                    <div class="col-8 ps-3">
+                                    <div class="col-7 ps-3">
                                         <div class="form-group">
                                             <label>VILLE *</label>
                                             <input type="text" v-model="address.city" class="form-control">
@@ -346,12 +347,15 @@
                             <hr class="border-bottom border-dark border-2 mt-3">
                             <div class="d-flex mt-3">
                                 <div class="col-4 pe-3">
-                                    <select-box v-model="address.pente" :options="customerPentes" :label="'PENTE (o)'" :name="'customerPente'"></select-box>
+                                    <div class="form-group">
+                                        <label>PENTE (o)</label>
+                                        <input v-model="address.pente" type="text" class="form-control" v-mask="'##.##'">
+                                    </div>                                    
                                 </div>
                                 <div class="col-4 pe-3">
                                     <div class="form-group">
                                         <label>SURFACE TOITURE (M2)</label>
-                                        <input v-model="address.surfacetoiture" type="text" class="form-control">
+                                        <input v-model="address.surfacetoiture" type="text" class="form-control" v-mask="'##.##'">
                                     </div>
                                 </div>
                                 <div class="col-4">
@@ -628,7 +632,7 @@
   </router-view>
 </template>
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import SelectBox from '../../components/miscellaneous/SelectBox';
 import CheckBox from '../../components/miscellaneous/CheckBox';
 import GoogleMap from '../../components/miscellaneous/GoogleMap';
@@ -644,7 +648,12 @@ import {
 import axios from 'axios';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import { mask } from 'vue-the-mask';
+
 export default {
+    directives: {
+        mask
+    },
     components:{
         SelectBox,
         CheckBox,
@@ -658,7 +667,7 @@ export default {
         const customerStatuses  = ref([]);
         const customerOrigins  = ref([]);
         const customerTaxes    = ref([]);
-        const customerNafs    = ref([]);
+        var customerNafs    = [];
         const customerCats   = ref([]);
         const customerPentes   = ref([]);
         const customerQualites   = ref([]);
@@ -673,9 +682,9 @@ export default {
             siret: '',
             numLCDT: '',
             company: '',
-            customerOrigin: 1,
-            customerStatus: 1,
-            sementation: '',
+            customerOrigin: 0,
+            customerStatus: 0,
+            segmentation: '',
             customerCat: '',
             naf: '',
             nomNaf: '',
@@ -686,7 +695,7 @@ export default {
             phoneCountryCode: '+33',
             phoneNumber: '',
             email: '',
-            customerTax: 3,
+            customerTax: 0,
             litige: false,
             actif: true,
             linkedin: '',
@@ -893,6 +902,19 @@ export default {
                 return index != selectedIndex
             });
         }
+        watch(() => form.value.naf, (curVal, preVal)=>{
+            var selectedNaf = customerNafs.filter((item)=>{
+                return item.code == curVal;
+            })[0];
+
+            if(selectedNaf != undefined){
+                form.value.segmentation = selectedNaf.selection;
+                form.value.nomNaf = selectedNaf.name;
+            }else{
+                form.value.segmentation = '';
+                form.value.nomNaf = '';
+            }
+        })
         const submit = ()=>{
             store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Creating a new customer ...']);
             axios.post('/add-customer', form.value).then((res)=>{
@@ -917,8 +939,8 @@ export default {
             axios.post('/get-list-info-for-customer').then((res)=>{
                 customerOrigins.value  = res.data.customerOrigins;
                 customerStatuses.value  = res.data.status;
-                customerTaxes.value    = res.data.taxs;
-                customerNafs.value    = res.data.nafs;
+                customerTaxes.value    = res.data.taxes;
+                customerNafs    = res.data.nafs;
                 customerCats.value   = res.data.customerCats;
                 customerPentes.value   = res.data.customerPentes;
                 addressTypes.value    = res.data.addressTypes;
@@ -926,6 +948,9 @@ export default {
                 customerQualites.value    = res.data.customerQualites;
                 customerTypeBatiments.value    = res.data.customerTypeBatiments;
                 customerMateriaus.value    = res.data.customerMateriaus;
+                form.value.customerOrigin = 1;
+                form.value.customerStatus = 1;
+                form.value.customerTax = 3;
             }).catch((errors)=>{
                 console.log(errors);
             }).finally(()=>{

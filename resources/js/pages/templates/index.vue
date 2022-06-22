@@ -45,17 +45,9 @@
                                 {{ row.pages.length }}
                             </template>
                             <template v-slot:id="{ row }">
-                                <router-link 
-                                    class="link"
-                                    :to="{ 
-                                        name: 'templates-edit',
-                                        params: {
-                                            id: row.id
-                                        } 
-                                    }"
-                                >
-                                    Edit
-                                </router-link>
+
+                                <a href="#" class="link" @click.stop="navigatePage(row.id)">Edit</a>
+                                
                             </template>
                         </item-list-table>
 
@@ -73,6 +65,7 @@
 <script setup>
 
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import { onMounted, ref, nextTick, computed } from 'vue'
 import ItemListTable from '../../components/miscellaneous/ItemListTable/ItemListTable.vue'
 
@@ -81,10 +74,24 @@ import {
 } from '../../store/types/types'
 
 const store = useStore()
+const router = useRouter()
 
 const showcontainer = ref(false)
 
-const templatesList = computed(() => store.getters[`${BUILDER_MODULE_LIST}templateListDefinition`]);
+const templatesList = computed(() => store.getters[`${BUILDER_MODULE_LIST}templateListDefinition`])
+
+const navigatePage = (id) => {
+    console.log("working", document.getElementsByTagName( 'body' )[0].className)
+    document.getElementsByTagName( 'body' )[0].className=''
+
+    router.push({
+        name: 'templates-edit',
+        params: {
+            id
+        }
+    })
+
+}
 
 onMounted(() => {
     nextTick(() => {

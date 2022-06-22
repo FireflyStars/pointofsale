@@ -199,7 +199,9 @@ export const PageBuilder = {
 
     actions: {
 
-        async [GENERATE_PDF]({ commit }, { pages, template, orderId }) {
+        async [GENERATE_PDF]({ state, commit }, { pages, template, orderId }) {
+
+            if(state.loading.id == 'submit' && state.loading.value == true) return
 
             commit(SET_LOADING, { id: 'submit' })
 
@@ -285,6 +287,18 @@ export const PageBuilder = {
             catch(e) {
                 throw e
             }
+        },
+
+        async [GET_REPORT_TEMPLATES]({ commit }, params) {
+
+            try {
+                const { data } = await axios.get('/get-report-templates')
+                commit(SAVE_REPORT_TEMPLATES, data)
+            }
+            catch(e) {
+                throw e
+            }
+
         },
 
         async [GET_REPORT]({ commit }, orderId) {

@@ -1,85 +1,82 @@
 <template>
 
-    <router-view>
-        <transition
-            enter-active-class="animate__animated animate__fadeIn"
+    <transition
+        enter-active-class="animate__animated animate__fadeIn"
+    >
+        <div 
+            class="container-fluid h-100 bg-color" 
+            v-if="showcontainer"
         >
+            
+            <main-header />
+
             <div 
-                class="container-fluid h-100 bg-color" 
-                v-if="showcontainer"
+                class="row d-flex align-content-stretch align-items-stretch flex-row hmax main-view-wrap reports-page" 
+                style="z-index:100" 
             >
                 
-                <main-header />
+                <side-bar />
 
-                <div 
-                    class="row d-flex align-content-stretch align-items-stretch flex-row hmax main-view-wrap reports-page" 
-                    style="z-index:100" 
-                >
+                <div class="col main-view">
                     
-                    <side-bar />
+                    <div>
 
-                    <div class="col main-view">
-                        
-                        <div>
+                        <div class="d-flex gap-3 main-container">
 
-                            <div class="d-flex gap-3 main-container">
+                            <div class="left-page-container">
 
-                                <div class="left-page-container">
+                                <header-section 
+                                    @submitPage="generatePagePdf(id)"
+                                    @save="saveReport" 
+                                />
+                                
+                                <page-builder-container 
+                                    :showcontainer="showcontainer"
+                                />
 
-                                    <header-section 
-                                        @submitPage="generatePagePdf(id)"
-                                        @save="saveReport" 
-                                    />
-                                    
-                                    <page-builder-container 
-                                        :showcontainer="showcontainer"
-                                    />
-
-                                    <Modal 
-                                        id="report-templates"
-                                        readonly
-                                        classes="d-flex justify-content-center" 
-                                        contentClasses="overflow-visible"
-                                        style="z-index: 999999"
-                                    >
-                                        <div>
-                                            <h4>Templates List</h4>
-                                            <div class="mt-3">
-                                                <label>Please choose a template from saved templates</label>
-                                                <select-box
-                                                    v-model="activeReportTemplate" 
-                                                    placeholder="Choose a template" 
-                                                    :options="formattedReportTemplates" 
-                                                    name="page"
-                                                    :selectStyles="{ maxHeight: '12rem', overflow: 'auto' }"
-                                                />          
-                                            </div>
-                                            <BaseButton 
-                                                kind="default" 
-                                                title="Add New" 
-                                                class="mb-2 mt-4"
-                                                size="sm"
-                                                @click="$router.push({
-                                                    name: 'templates-add'
-                                                })"
-                                            />
-                                        </div>
-                                    </Modal>
-
-                                </div>
-
-
-                                <div 
-                                    class="right-page-container" 
-                                    @mouseenter="toggleContainer(true)"
-                                    @mouseleave="toggleContainer"
-                                    :class="showRightContainer ? 'right-page-container-visible': ''"
+                                <Modal 
+                                    id="report-templates"
+                                    readonly
+                                    classes="d-flex justify-content-center" 
+                                    contentClasses="overflow-visible"
+                                    style="z-index: 999999"
                                 >
+                                    <div>
+                                        <h4>Templates List</h4>
+                                        <div class="mt-3">
+                                            <label>Please choose a template from saved templates</label>
+                                            <select-box
+                                                v-model="activeReportTemplate" 
+                                                placeholder="Choose a template" 
+                                                :options="formattedReportTemplates" 
+                                                name="page"
+                                                :selectStyles="{ maxHeight: '12rem', overflow: 'auto' }"
+                                            />          
+                                        </div>
+                                        <BaseButton 
+                                            kind="default" 
+                                            title="Add New" 
+                                            class="mb-2 mt-4"
+                                            size="sm"
+                                            @click="$router.push({
+                                                name: 'templates-add'
+                                            })"
+                                        />
+                                    </div>
+                                </Modal>
 
-                                    <adjouter-zone />
-                                    <report-order-resources />
+                            </div>
 
-                                </div>
+
+                            <div 
+                                class="right-page-container" 
+                                @mouseenter="toggleContainer(true)"
+                                @mouseleave="toggleContainer"
+                                :class="showRightContainer ? 'right-page-container-visible': ''"
+                            >
+
+                                <adjouter-zone />
+                                <report-order-resources />
 
                             </div>
 
@@ -88,10 +85,10 @@
                     </div>
 
                 </div>
-            </div>
-        </transition>
-    </router-view>
 
+            </div>
+        </div>
+    </transition>
 
 </template>
 
@@ -191,15 +188,12 @@ export default {
         }
 
         const getReport = async () => {
-            getOrderDetails()
             await store.dispatch(`${BUILDER_MODULE}/${GET_REPORT}`, props.id)
             if(!pages.value.length) {
                 toggleModal('report-templates')
                 await getReportTemplates()
             }
-            else {
-                // getOrderDetails()
-            }
+            getOrderDetails()
             return Promise.resolve()
         }
 
@@ -288,8 +282,6 @@ $orange: orange;
 }
 
 .left-page-container {
-    width: 793px;
-    height: 1122px;
     z-index: 1;
 }
 

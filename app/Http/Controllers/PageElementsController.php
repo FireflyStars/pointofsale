@@ -33,7 +33,7 @@ class PageElementsController extends Controller
             ]
         );
 
-        return $pdf->download('page.pdf');
+        return $pdf->download('Page.pdf');
         
     }
 

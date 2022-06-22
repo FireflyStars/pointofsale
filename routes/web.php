@@ -18,6 +18,7 @@ use App\Http\Controllers\LcdtFrontController;
 use App\Http\Controllers\TemplatesController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CampagneListController;
+use App\Http\Controllers\EntiteController;
 use App\Http\Controllers\PageElementsController;
 
 
@@ -31,6 +32,7 @@ Route::post('/save-page-elements', [PageElementsController::class, 'store']);
 Route::get('/save-page-elements', [PageElementsController::class, 'store_get']);
 
 Route::post('/report-templates', [TemplatesController::class, 'index']);
+Route::get('/get-report-templates', [TemplatesController::class, 'report_templates']);
 Route::post('/report-template', [TemplatesController::class, 'store']);
 Route::get('/report-template/{template}', [TemplatesController::class, 'show']);
 Route::post('/report-template/{template}', [TemplatesController::class, 'update']);
@@ -65,6 +67,11 @@ Route::get('/get-card-products', [CompagneController::class, 'get_card_products'
 Route::put('/card-product/{card}', [CompagneController::class, 'update_card_product'])->middleware('auth');
 Route::delete('/card-product/{card}', [CompagneController::class, 'delete_card_product'])->middleware('auth');
 Route::post('/valider-card', [CompagneController::class, 'valider_card'])->middleware('auth');
+
+Route::get('/get-entite-list', [EntiteController::class, 'index']);
+Route::post('/get-entite-list', [EntiteController::class, 'index']);
+Route::post('/get-entite-list-user', [EntiteController::class, 'index']);
+
 
 Route::post('/api',[ApiController::class,'index'])->middleware('cors')->name('api');
 

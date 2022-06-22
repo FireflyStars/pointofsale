@@ -389,7 +389,58 @@
         <path transform="translate(5,7)"  d="M2 2.5V0.993C2.00183 0.730378 2.1069 0.479017 2.29251 0.293218C2.47813 0.107418 2.72938 0.00209465 2.992 0H21.008C21.556 0 22 0.445 22 0.993V17.007C21.9982 17.2696 21.8931 17.521 21.7075 17.7068C21.5219 17.8926 21.2706 17.9979 21.008 18H2.992C2.72881 17.9997 2.4765 17.895 2.29049 17.7088C2.10448 17.5226 2 17.2702 2 17.007V16H20V4.3L12 11.5L2 2.5ZM0 7H5V9H0V7ZM0 12H8V14H0V12Z" fill="black" />
     </svg>
 
-        
+    <svg
+        v-else-if="name == 'entite'" 
+        :width="$attrs.width || 32" 
+        :height="$attrs.height || 32" 
+        viewBox="0 0 32 32" 
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg" 
+        class="side-icons"
+        v-bind="$attrs"
+    >
+        <rect width="32" height="32" rx="8" />
+        <path transform="translate(8,5.5)" d="M7 13.062V19H9V13.062C12.946 13.554 16 16.92 16 21H0C3.30739e-05 19.0514 0.711187 17.1698 2 15.7083C3.28882 14.2467 5.0667 13.3058 7 13.062ZM8 12C4.685 12 2 9.315 2 6C2 2.685 4.685 0 8 0C11.315 0 14 2.685 14 6C14 9.315 11.315 12 8 12Z" fill="black"/>
+    </svg>
+
+    <svg
+        v-else-if="name == 'times'" 
+        :width="$attrs.width || 19" 
+        :height="$attrs.height || 19" 
+        viewBox="0 0 19 19" 
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg" 
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+    >
+        <rect width="19" height="19" fill="url(#pattern0)"/>
+        <defs>
+            <pattern id="pattern0" patternContentUnits="objectBoundingBox" width="1" height="1">
+                <use xlink:href="#image0_2538_9185" transform="scale(0.0526316)"/>
+            </pattern>
+            <image id="image0_2538_9185" width="19" height="19" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAATCAYAAAByUDbMAAABd0lEQVQ4T9WUTS8DURSGn37MRJTplFYIsbGTphZYWZAuJNL4iOiCX2DhR1kVGxKS7qRELC0aC4mEWHRDtWKY6NCWVozO3JmpRGzc3c1789xzzvve66vW6u/80fL9L5hxfcLDaRE5uUjPYMA+hOdLintnMJ4iMqoQtKiONo3rQ8rZS2r1xik5Suf8cgvYBO3kMPRPEWk6Te9YCyjAbilt7vKiWa4zgeErC+hL9w+jbKRQvrbOys4PuM8VsFksqwQljepnRebyE0gsEJsZ+G7Vxc0alXyW0rEAtE3OCWrKHtFoB3QHtYE1pOcL7jJHvFaEREt9hNJLRKKCy56V2VxzeR5yP10rC6gC0NnmTyCT7QIUYI88bG2jFwXX4nOovXnKoinyCOH1Wbrdo1FB28+g3RhmkAjEU0STQ0g4TfHFJlFXJwh55Qx0Hne3eSpULSCztxaQSAJ1bYqQxQePaLzxqtXwKx22t2ci3/Qn6OhGEgz9Z1/Qbz/eDz3w1VYBIItlAAAAAElFTkSuQmCC" style="background: transparent" />
+        </defs>
+    </svg>
+
+    <svg 
+        v-else-if="name == 'check'"
+        :width="$attrs.width || 19" 
+        :height="$attrs.height || 19" 
+        viewBox="0 0 19 19" 
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg" 
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+    >
+        <rect width="19" height="19" fill="url(#pattern0)"/>
+        <defs>
+            <pattern id="pattern0" patternContentUnits="objectBoundingBox" width="1" height="1">
+                <use xlink:href="#image0_2538_9187" transform="translate(-0.025) scale(0.05)"/>
+            </pattern>
+            <image id="image0_2538_9187" width="21" height="20" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABUAAAAUCAYAAABiS3YzAAABJ0lEQVQ4T2P88/fffwYqA8ZRQ0kM018M929OYZj55iuDpEQCQ46yLAMzWpyQGKYwA98y/AMbxMEgLZnEkK8kjWIsCYaiGwgxh4nLlaHM0IFBCMlYhKF/XzFce/qKQUBSh0GKFT2N/WV4dGsiw7TXMBdCDWTVYYjUiWTQ50JVDzH072OGrRfmMBz88YeBid2IIUErmEEDrpA0A0HGAw39+v/4pQ6G9Z//wK1jYrdgSNf3ZVBkJd1AqKG//2P1GtBgX97bDJvfEOdl5ACAhulnhhvXZzMseIdqAHrIMuEIQ3R1SLGP32BiDYR6H7lAwW4wE4s6Q5BuHIMZWizjKoewpFNUg0lxIcwSHIkfaPCNRQyrvooy+GuGYaRDQiUlCTmKkFEI+RFuKAAeGsNNWPFBfQAAAABJRU5ErkJggg=="/>
+        </defs>
+    </svg>
+
+
+
     <img 
         v-else-if="name == 'brush'"
         src="data:image/gif;base64,R0lGODlhFgAWAIQbAD04KTRLYzFRjlldZl9vj1dusY14WYODhpWIbbSVFY6O7IOXw5qbms+wUbCztca0ccS4kdDQjdTLtMrL1O3YitHa7OPcsd/f4PfvrvDv8Pv5xv///////////////////yH5BAEKAB8ALAAAAAAWABYAAAV84CeOZGmeaKqubMteyzK547QoBcFWTm/jgsHq4rhMLoxFIehQQSAWR+Z4IAyaJ0kEgtFoLIzLwRE4oCQWrxoTOTAIhMCZ0tVgMBQKZHAYyFEWEV14eQ8IflhnEHmFDQkAiSkQCI2PDC4QBg+OAJc0ewadNCOgo6anqKkoIQA7" 

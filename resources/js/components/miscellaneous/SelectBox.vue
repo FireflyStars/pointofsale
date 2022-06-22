@@ -126,11 +126,11 @@ export default {
 
         const setCurrentDisplay = () => {
             let currentoption = props.options.filter((option) => {
-                if(typeof props.modelValue!="undefined")
-                return option.value.toString() == props.modelValue.toString();
+                if(typeof props.modelValue!="undefined"){
+                    return option.value.toString() == props.modelValue.toString();
+                }
             });
             currentoption = _.cloneDeep(currentoption);
-
             if (typeof currentoption[0] != "undefined") {
                 current_display.value = currentoption[0].display;
             }

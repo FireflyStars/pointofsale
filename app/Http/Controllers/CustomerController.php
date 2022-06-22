@@ -15,8 +15,8 @@ class CustomerController extends Controller
             'status'            => DB::table('customer_statut')->select('id as value', 'name as display')->orderBy('name')->get(),
             'customerCats'      => DB::table('customer_categories')->select('id as value', 'name as display')->orderBy('name')->get(),
             'customerPentes'    => DB::table('customer_pente')->select('id as value', 'name as display')->orderBy('name')->get(),
-            'nafs'              => DB::table('customer_naf')->select('code as value', 'name as display')->orderBy('name')->get(),
-            'taxs'              => DB::table('taxes')->select('taux as value', 'name as display')->orderBy('name')->get(),
+            'nafs'              => DB::table('customer_naf')->select('code', 'name', 'selection')->orderBy('name')->get(),
+            'taxes'              => DB::table('taxes')->select('id as value', 'name as display')->orderBy('name')->get(),
             'addressTypes'      => DB::table('address_type')->select('id as value', 'name as display')->orderBy('name')->get(),
             'contactTypes'      => DB::table('contact_type')->select('id as value', 'name as display')->orderBy('id')->get(),
             'customerQualites'  => DB::table('customer_qualite')->select('id as value', 'name as display')->orderBy('id')->get(),
@@ -30,7 +30,7 @@ class CustomerController extends Controller
      */
     public function storeCustomer(Request $request){
         $validator = Validator::make($request->all(), [
-            'customerNaf'       => 'required',
+            'naf'               => 'required',
             'customerStatus'    => 'required',
             'email'             => $request->email != '' ? 'email' : '',
             'customerTax'       => 'required'
@@ -42,12 +42,12 @@ class CustomerController extends Controller
             $customer = [
                 'affiliate_id'          => auth()->user()->affiliate_id,
                 'taxe_id'               => $request->customerTax,
-                'customer_statut_id'    => $request->customerxStatus,
+                'customer_statut_id'    => $request->customerStatus,
                 'customer_categories_id'=> $request->customerCat,
-                'customer_pente_id'     => $request->customerPente,
+                'customer_pente_id'     => 0,
                 'customer_origin_id'    => $request->customerOrigin,
-                'customer_materiau_id'  => $request->customerMateriau,
-                'naf'                   => $request->customerNaf,
+                'customer_materiau_id'  => 0,
+                'naf'                   => $request->naf,
                 'siret'                 => $request->siret,
                 'email'                 => $request->email,
                 'telephone'             => $request->phoneCountryCode.'|'.$request->phoneNumber,

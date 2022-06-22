@@ -13,6 +13,11 @@ use App\Http\Controllers\TableFiltersController;
 class TemplatesController extends Controller
 {
     use TemplateFormattedFiles;
+
+    public function report_templates() 
+    {
+        return response()->json(Template::all());
+    }
     
     public function index(Request $request) 
     {
