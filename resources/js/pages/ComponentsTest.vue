@@ -127,7 +127,7 @@
                                             class="text-capitalize"
                                             prepend
                                         >
-                                            <icon name="user" />
+                                            <icon name="plus-circle" />
                                         </base-button>
 
                                         <base-button 

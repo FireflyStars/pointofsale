@@ -8,9 +8,10 @@
             <order-state-tag :order_state_id="order.order_state_id" classes="almarai_700_normal" width="auto"></order-state-tag>
         </div>
     </div>
-    <div class="row"  v-if="show" style="margin:40px 0 0 8px;"><div class="col"><h2 class="almarai_700_normal">Date promise du devis</h2></div></div>
-    <div class="row"  v-if="show" style="margin:0 0 0 8px;">
-        <div class="col-8"><h2 class="almarai_700_normal">{{formatDate(order.datefinprevu)}}</h2></div>
+
+    <div class="row"  v-if="show" style="margin:40px 0 0 8px;">
+        <div class="col-4" v-if="order.order_state_id==4" ><h2 class="almarai_700_normal">Date Commande<br/>{{formatDate(order.datecommande)}}</h2></div>
+         <div :class="{'col-8':order.order_state_id!=4,'col-4':order.order_state_id==4}"><h2 class="almarai_700_normal">Date Promise<br/>{{formatDate(order.datefinprevu)}}</h2></div>
         <div class="col-2 font-14 almarai_700_normal">{{order.nbheure}}H</div>
         <div class="col-2 font-16 almarai_700_normal">{{formatPrice(order.total)}}</div>
     </div>
@@ -25,7 +26,8 @@
         <div class="col"><span class="subtitle almarai_700_normal">Mode de paiement</span><br><span>--/--</span></div>
     </div>
      <hr v-if="show"/>
-     <div  v-for="orderzone,index in order.order_zones" :key="index" class="od_orderzone">
+     <template v-if="order.order_state_id!=4">
+     <div  v-for="orderzone,index in order.order_zones" :key="index" class="od_orderzone" >
          <div class="row mb-3">
              <div class="col-8 almarai_700_normal font-14 lcdtgrey d-flex  align-items-center">{{orderzone.name}}</div>
              <div class="col-2 almarai_700_normal font-14 d-flex justify-content-end align-items-center">{{sumZoneH(orderzone)}}H</div>
@@ -46,8 +48,8 @@
              <div class="col-4 od_catname font-14 d-flex align-items-center almarai_700_normal">{{index2}}</div>
              <div class="col-8 font-14 flex-column">
                  <div class="row flex-grow-1 justify-content-between" v-for="orderOuvrage,index3 in groupedOrderOuvrage" :key="index3">
-                     <div class="col-2 d-flex align-items-center justify-content-end">{{orderOuvrage.qty}}</div>
-                     <div class="col-4 d-flex align-items-center">{{orderOuvrage.name}}</div>
+                     <div class="col-2 d-flex align-items-center justify-content-end almarai-light">{{orderOuvrage.qty}}</div>
+                     <div class="col-4 d-flex align-items-center almarai-light">{{orderOuvrage.name}}</div>
                     <div class="col-3 almarai-light font-14 d-flex  justify-content-end align-items-center">{{orderOuvrage.nbheure}}H</div>
                     <div class="col-3 almarai-light font-14 d-flex  justify-content-end align-items-center">{{formatPrice(orderOuvrage.total)}}</div>
                  </div>
@@ -57,30 +59,77 @@
         </div>
       
      </div>
+     </template>
+     <template v-if="order.order_state_id==4">
+        <div class="od_invoices">
+            <div class="row">
+                <div class="col-4 almarai_700_normal font-14 lcdtgrey d-flex align-items-center">Facturation</div>
+                <div class="col-2 almarai_700_normal font-14 d-flex align-items-center">100%</div>
+                <div class="col-2"></div>
+                <div class="col-2  almarai_700_normal font-14 d-flex align-items-center justify-content-end">6300€</div>
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+            </div>
+            <div class="row">
+                <div class="col-4"></div>
+                <div class="col-2 almarai-light lcdtgrey d-flex font-12 align-items-center">Taux</div>
+                <div class="col-2 almarai-light lcdtgrey  d-flex font-12 align-items-center justify-content-center">Date</div>
+                <div class="col-2 almarai-light lcdtgrey  d-flex font-12 align-items-center justify-content-end">Total</div>
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-4"><span class="font-14 mulish_600_normal facture_action noselect" @click="new_echeance"><icon name="plus-circle" /> AJOUTER ÉCHEANCE</span></div>
+                <div class="col-4"><span class="font-14 mulish_600_normal facture_action  noselect"><icon name="plus-circle" /> AJOUTER REMISE</span></div>
+                <div class="col-4"><span class="font-14 mulish_600_normal facture_action  noselect"><icon name="plus-circle" /> AJOUTER AVOIR</span></div>
+            </div>    
+        </div>
+     </template>
      <div class="od_actions mb-3" v-if="show">
         <button class="btn btn-outline-dark almarai_700_normal" @click="goto()">Editer</button>
-        <button class="btn btn-outline-success almarai_700_normal" @click="changeOrderState(4)">Gagne</button>
-        <button class="btn btn-outline-secondary almarai_700_normal"  @click="changeOrderState(20)">Perdu</button>  
-        <button class="btn btn-outline-primary almarai_700_normal"  @click="changeOrderState(18)">Abandonne</button>  
-        <button class="btn btn-outline-warning almarai_700_normal"  @click="changeOrderState(3)">Attente client</button>   
+        <button v-if="order.order_state_id!=4" class="btn btn-outline-success almarai_700_normal" @click="changeOrderState(4)">Gagne</button>
+        <button v-if="order.order_state_id!=4" class="btn btn-outline-secondary almarai_700_normal"  @click="changeOrderState(20)">Perdu</button>  
+        <button v-if="order.order_state_id!=4" class="btn btn-outline-primary almarai_700_normal"  @click="changeOrderState(18)">Abandonne</button>  
+        <button v-if="order.order_state_id!=4" class="btn btn-outline-warning almarai_700_normal"  @click="changeOrderState(3)">Attente client</button>   
      </div>
 
 
 </item-detail-panel>
+
+<simple-modal-popup v-model="showmodal_echeance" title="Nouvelle échéance">
+    <div class="container-fluid">
+<div class="row mb-3">
+    <div class="col-6">Description</div><div class="col-6"><input type="text" class="input-text"/></div>
+</div>
+<div class="row mb-3">
+    <div class="col-6">Taux</div><div class="col-6"><input type="text" class="input-text"/></div>
+</div>
+<div class="row mb-3">
+    <div class="col-6">Date</div><div class="col-6"><date-picker :name="echeance" :droppos="{top:'40px',right:'auto',bottom:'auto',left:'0',transformOrigin:'top center'}"></date-picker></div>
+</div>
+<div class="row mb-3">
+    <div class="col-6">Montant</div><div class="col-6"><input type="text" class="input-text"/></div>
+</div>
+    </div>
+     
+</simple-modal-popup>
 </template>
 
 <script>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref,h } from 'vue';
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex';
 import ItemDetailPanel from '../../components/miscellaneous/ItemListTable/ItemDetailPanel.vue'
 import OrderStateTag from '../../components/miscellaneous/OrderStateTag.vue';
-import { DEVIS_DETAIL_GET, DEVIS_DETAIL_LOAD, DEVIS_DETAIL_MODULE, DEVIS_DETAIL_SET, ORDERSTATETAG_GET_ORDER_STATES, ORDERSTATETAG_MODULE } from '../../store/types/types';
+import { DEVIS_DETAIL_GET, DEVIS_DETAIL_LOAD, DEVIS_DETAIL_MODULE, DEVIS_DETAIL_SET, DEVIS_DETAIL_UPDATE_ORDER_STATE, ITEM_LIST_MODULE, ITEM_LIST_UPDATE_ROW, ORDERSTATETAG_GET_ORDER_STATES, ORDERSTATETAG_MODULE } from '../../store/types/types';
 import { formatPrice,formatDate,br } from '../../components/helpers/helpers';
 import Swal from 'sweetalert2';
+import DatePicker from '../../components/miscellaneous/DatePicker.vue';
+
     export default {
         name: "DevisDetail",
-        components:{ItemDetailPanel,OrderStateTag},
+        components:{ItemDetailPanel,OrderStateTag, DatePicker},
         setup(){
             const route=useRoute();
             const router=useRouter();
@@ -115,8 +164,13 @@ import Swal from 'sweetalert2';
                     cancelButtonText: 'Annuler',
                     confirmButtonText: `Oui, s'il vous plaît.`
                 }).then((result) => {
+                     
                     if (result.isConfirmed) {
-                    
+                        showloader.value=true;
+                        store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_UPDATE_ORDER_STATE}`,order_state_id).then(response=>{
+                            showloader.value=false;
+                            store.commit(`${ITEM_LIST_MODULE}${ITEM_LIST_UPDATE_ROW}`,{id:'id',idValue:order_id,colName:'order_state_id',colValue:order_state_id});
+                        })
                     }
                 });      
             }
@@ -139,6 +193,10 @@ import Swal from 'sweetalert2';
                 }
                 return sum;
             }
+        const showmodal_echeance=ref(false);
+            const new_echeance=()=>{
+             showmodal_echeance.value=true;
+            }
              return {
                  show,
                  showloader,
@@ -151,7 +209,9 @@ import Swal from 'sweetalert2';
                  changeOrderState,
                  goto,
                  sumZoneH,
-                 sumZoneTotal
+                 sumZoneTotal,
+                 new_echeance,
+                 showmodal_echeance
 
              }
         }
@@ -159,9 +219,13 @@ import Swal from 'sweetalert2';
 </script>
 
 <style scoped>
+.facture_action{
+    color:#E8581B;
+    cursor: pointer;
+    }
 h2{
     font-size: 16px;
-    line-height: 16px;
+    line-height: 20px;
     margin-bottom: 8px;
 }
 h3{
@@ -180,7 +244,7 @@ hr{
     font-size:14px;
     font-weight: 400!important;
 }
-.od_orderzone{
+.od_orderzone,.od_invoices{
     background: #F8F8F8;
     display: block;
     margin-bottom:22px;
@@ -215,5 +279,13 @@ hr{
 .od_actions button{
 
 }
-
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
 </style>

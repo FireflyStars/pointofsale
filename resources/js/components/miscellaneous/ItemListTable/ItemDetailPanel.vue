@@ -110,10 +110,10 @@ import { ITEM_LIST_GET_CURRENT, ITEM_LIST_GET_IDENTIFIER, ITEM_LIST_MODULE, ITEM
 
 
  .miniloader{
-    
+    width: 100%;
     height: 4px;
     background: #EEEEEE;
-    position: relative;
+    position: absolute;
     margin:0 -20px;
     display: block;
 }
