@@ -16,7 +16,7 @@ class CustomerController extends Controller
             'customerCats'      => DB::table('customer_categories')->select('id as value', 'name as display')->orderBy('name')->get(),
             'customerPentes'    => DB::table('customer_pente')->select('id as value', 'name as display')->orderBy('name')->get(),
             'nafs'              => DB::table('customer_naf')->select('code', 'name', 'selection')->orderBy('name')->get(),
-            'taxes'              => DB::table('taxes')->select('id as value', 'name as display')->orderBy('name')->get(),
+            'taxes'              => DB::table('taxes')->select('id as value', 'name as display')->orderBy('id')->get(),
             'addressTypes'      => DB::table('address_type')->select('id as value', 'name as display')->orderBy('name')->get(),
             'contactTypes'      => DB::table('contact_type')->select('id as value', 'name as display')->orderBy('id')->get(),
             'customerQualites'  => DB::table('customer_qualite')->select('id as value', 'name as display')->orderBy('id')->get(),
