@@ -74,7 +74,7 @@ class Order extends Model
         $previous_order_state_id=$this->order_state_id;
         if($this->order_state_id!=$order_state_id){
             $this->order_state_id=$order_state_id;
-            if($this->order_state_i)
+      
             $orderHistory=new OrderHistory();
             $orderHistory->order_state_id=$order_state_id;
             $orderHistory->user_id=$user_id;
