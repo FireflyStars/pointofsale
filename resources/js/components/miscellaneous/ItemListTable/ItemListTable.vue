@@ -746,6 +746,7 @@ export default {
     align-items: center;
     display: flex;
     font-size: 16px;
+    word-break: break-word;
    
 }
 .list-row{

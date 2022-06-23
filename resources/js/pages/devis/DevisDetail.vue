@@ -97,19 +97,19 @@
 
 </item-detail-panel>
 
-<simple-modal-popup v-model="showmodal_echeance" title="Nouvelle échéance">
+<simple-modal-popup v-model="showmodal_facturation" :title="modal_facturation_title" @modalconfirm="newOrderInvoice">
     <div class="container-fluid">
 <div class="row mb-3">
-    <div class="col-6">Description</div><div class="col-6"><input type="text" class="input-text"/></div>
+    <div class="col-6">Description</div><div class="col-6"><input type="text" v-model="facture.description" class="input-text"/></div>
 </div>
 <div class="row mb-3">
-    <div class="col-6">Taux</div><div class="col-6"><input type="text" class="input-text"/></div>
+    <div class="col-6">Taux</div><div class="col-6"><input type="text" v-model="facture.taux" class="input-text" v-mask="['#%','##%','###%','##.##%','#.##%']"></div>
 </div>
 <div class="row mb-3">
-    <div class="col-6">Date</div><div class="col-6"><date-picker :name="echeance" :droppos="{top:'40px',right:'auto',bottom:'auto',left:'0',transformOrigin:'top center'}"></date-picker></div>
+    <div class="col-6">Date</div><div class="col-6"><date-picker name="echeance" :droppos="{top:'40px',right:'auto',bottom:'auto',left:'0',transformOrigin:'top center'}"></date-picker></div>
 </div>
 <div class="row mb-3">
-    <div class="col-6">Montant</div><div class="col-6"><input type="text" class="input-text"/></div>
+    <div class="col-6">Montant</div><div class="col-6"> <money3 v-model="facture.montant" v-bind="moneyconfig"></money3> </div>
 </div>
     </div>
      
@@ -126,10 +126,14 @@ import { DEVIS_DETAIL_GET, DEVIS_DETAIL_LOAD, DEVIS_DETAIL_MODULE, DEVIS_DETAIL_
 import { formatPrice,formatDate,br } from '../../components/helpers/helpers';
 import Swal from 'sweetalert2';
 import DatePicker from '../../components/miscellaneous/DatePicker.vue';
+ import { Money3Component } from 'v-money3';
+import { mask } from 'vue-the-mask';
+
 
     export default {
         name: "DevisDetail",
-        components:{ItemDetailPanel,OrderStateTag, DatePicker},
+        components:{ItemDetailPanel,OrderStateTag, DatePicker,money3:Money3Component},
+        directives:{mask},
         setup(){
             const route=useRoute();
             const router=useRouter();
@@ -137,6 +141,28 @@ import DatePicker from '../../components/miscellaneous/DatePicker.vue';
             const show=ref(false);
             const showloader=ref(false);
             let order_id=route.params.id;
+            const moneyconfig=ref({
+                            masked: false,
+                            prefix: '',
+                            suffix: '€',
+                            thousands: ',',
+                            decimal: '.',
+                            precision: 2,
+                            disableNegative: false,
+                            disabled: false,
+                            min: null,
+                            max: null,
+                            allowBlank: false,
+                            minimumNumberOfCharacters: 0,
+                            });
+        
+                        const facture=ref({
+                            invoice_type_id:1,
+                            description:'',
+                            taux:'',
+                            date:'',
+                            montant:''
+                        })         
 
             onMounted(()=>{
                      document.getElementsByTagName( 'body' )[0].className='hide-overflowY';
@@ -193,10 +219,21 @@ import DatePicker from '../../components/miscellaneous/DatePicker.vue';
                 }
                 return sum;
             }
-        const showmodal_echeance=ref(false);
+            const showmodal_facturation=ref(false);
+            const modal_facturation_title=ref('');
+    
             const new_echeance=()=>{
-             showmodal_echeance.value=true;
-            }
+                modal_facturation_title.value='Nouvelle échéance';
+                showmodal_facturation.value=true;
+                facture.value.invoice_type_id=1;
+                facture.value.montant='12';
+                facture.value.taux='50';
+                facture.value.description='Lancement reparation';
+                        }
+            const newOrderInvoice=()=>{
+                showmodal_facturation.value=false;
+                console.log('confirmed');
+            }    
              return {
                  show,
                  showloader,
@@ -211,7 +248,12 @@ import DatePicker from '../../components/miscellaneous/DatePicker.vue';
                  sumZoneH,
                  sumZoneTotal,
                  new_echeance,
-                 showmodal_echeance
+                 showmodal_facturation,
+                 moneyconfig,
+                 facture,
+                 newOrderInvoice,
+                 modal_facturation_title
+    
 
              }
         }

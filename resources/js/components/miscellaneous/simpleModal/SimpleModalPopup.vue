@@ -16,7 +16,7 @@
                    <div class="container-fluid">
                       <div class="d-flex justify-content-center">
                          
-                            <button type="button" class="swal2-confirm swal2-styled swal2-default-outline" aria-label="" style="display: inline-block; background-color: rgb(66, 167, 30);">Enregistrer</button>
+                            <button type="button" @click="confirm" class="swal2-confirm swal2-styled swal2-default-outline" aria-label="" style="display: inline-block; background-color: rgb(66, 167, 30);">Enregistrer</button>
                           
                         
                             <button type="button" @click="annuler" class="swal2-cancel swal2-styled swal2-default-outline" aria-label="" style="display: inline-block; background-color: var(--lcdtOrange);">Annuler</button>
@@ -51,7 +51,7 @@ export default {
             required:false
         }
     },
-      emits: ['update:modelValue'],
+      emits: ['update:modelValue','modalconfirm','modalclose'],
     setup(props,context){
         const showmodalpopup=ref(false);
         const showmodalpopupoverlay=ref(false);
@@ -69,16 +69,21 @@ export default {
                   showmodalpopupoverlay.value=false;
 
                   context.emit("update:modelValue",false);
+                  context.emit("modalclose");
             });   
         }
         const annuler=()=>{
           closeSimpleModal();
         }
+        const confirm=()=>{
+          context.emit("modalconfirm");
+        }
         return {
             showmodalpopupoverlay,
             showmodalpopup,
             closeSimpleModal,
-            annuler
+            annuler,
+            confirm
         }
     }
 }
