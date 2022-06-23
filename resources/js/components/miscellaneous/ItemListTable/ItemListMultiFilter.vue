@@ -9,7 +9,7 @@
                                         classes="almarai_700_normal"
                                         :styles="{}" 
                                         dropdownClasses="almarai_700_normal"
-                                        :dropdownStyles="{ width: '300px',maxHeight:'350px',overflowY:'scroll' }"
+                                        :dropdownStyles="{ width: '300px',maxHeight:'350px',overflowY:'scroll',zIndex:10001 }"
                                         :options="loadedoptions"
                                         transformOrigin="top center"
                                         @onUpdate="onupdate"

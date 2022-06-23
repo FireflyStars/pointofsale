@@ -64,9 +64,9 @@
         <div class="od_invoices">
             <div class="row">
                 <div class="col-4 almarai_700_normal font-14 lcdtgrey d-flex align-items-center">Facturation</div>
-                <div class="col-2 almarai_700_normal font-14 d-flex align-items-center">100%</div>
+                <div class="col-2 almarai_700_normal font-14 d-flex align-items-center">{{facturation_total_taux}}%</div>
                 <div class="col-2"></div>
-                <div class="col-2  almarai_700_normal font-14 d-flex align-items-center justify-content-end">6300€</div>
+                <div class="col-2  almarai_700_normal font-14 d-flex align-items-center justify-content-end">{{formatPrice(facturation_total)}}</div>
                 <div class="col-1"></div>
                 <div class="col-1"></div>
             </div>
@@ -80,7 +80,7 @@
             </div>
 
             <div class="d-flex justify-content-evenly mt-4">
-                <span v-if="order.total>0" class="font-14 mulish_600_normal facture_action noselect" @click="new_echeance"><icon name="plus-circle" /> AJOUTER ÉCHEANCE</span>
+                <span v-if="order.total>0&&facturation_total_taux<100" class="font-14 mulish_600_normal facture_action noselect" @click="new_echeance"><icon name="plus-circle" /> AJOUTER ÉCHEANCE</span>
                 <span class="font-14 mulish_600_normal facture_action  noselect" @click="new_remise" ><icon name="plus-circle" /> AJOUTER REMISE</span>
                <span class="font-14 mulish_600_normal facture_action  noselect" @click="new_avoir" ><icon name="plus-circle" /> AJOUTER AVOIR</span>
             </div>    
@@ -103,7 +103,7 @@
     <div class="col-6">Description</div><div class="col-6"><input type="text" v-model="facture.description" class="input-text"/></div>
 </div>
 <div class="row mb-3">
-    <div class="col-6">Taux</div><div class="col-6"><input type="text" v-model="facture.taux" class="input-text" v-mask="['#%','##%','###%','##.##%','#.##%']"></div>
+    <div class="col-6">Taux</div><div class="col-6"><input type="text" v-model="facture.taux" @keyup="checktaux" class="input-text" v-mask="['#%','##%','###%','#.##%','##.##%','###.##%']"></div> {{facture.taux}}
 </div>
 <div class="row mb-3">
     <div class="col-6">Date</div><div class="col-6"><date-picker :disabledToDate="disabledToDate" name="echeance" :droppos="{top:'40px',right:'auto',bottom:'auto',left:'0',transformOrigin:'top center'}"></date-picker></div>
@@ -141,6 +141,8 @@ import { mask } from 'vue-the-mask';
             const show=ref(false);
             const showloader=ref(false);
             const disabledToDate=ref('');
+            const facturation_total_taux=ref(50);
+            const facturation_total=ref(0);
             disabledToDate.value= new Date(new Date().getTime() - 24*60*60*1000).toJSON().slice(0,10);
             let order_id=route.params.id;
             const moneyconfig=ref({
@@ -229,7 +231,7 @@ import { mask } from 'vue-the-mask';
                 showmodal_facturation.value=true;
                 facture.value.invoice_type_id=1;
                 facture.value.montant='12';
-                facture.value.taux='50';
+                facture.value.taux=(100-facturation_total_taux.value)*100;
                 facture.value.description='Lancement reparation';
                         }
             const new_remise=()=>{
@@ -251,7 +253,15 @@ import { mask } from 'vue-the-mask';
             const newOrderInvoice=()=>{
                 showmodal_facturation.value=false;
                 console.log('confirmed');
-            }    
+            }   
+            const checktaux=()=>{
+                console.log(facture.value.taux);
+                if(facture.value.invoice_type_id==1){
+                    let x=parseFloat(facture.value.taux);
+                    if(x>(100-facturation_total_taux.value))
+                    facture.value.taux=(100-facturation_total_taux.value)*100;
+                }
+            } 
              return {
                  show,
                  showloader,
@@ -273,7 +283,10 @@ import { mask } from 'vue-the-mask';
                  facture,
                  newOrderInvoice,
                  modal_facturation_title,
-                 disabledToDate
+                 disabledToDate,
+                 facturation_total_taux,
+                 facturation_total,
+                 checktaux
     
 
              }

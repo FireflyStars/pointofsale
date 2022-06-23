@@ -521,7 +521,7 @@
         background: #F5F5F5;
         box-shadow: 0px 1px 2px rgba(0, 14, 51, 0.25);
         border-radius: 16px;
-        z-index: 100;
+        z-index: 10001;
         padding: 24px;
         transform-origin: top left;
         transition: min-height 0.3s ease-in-out;
