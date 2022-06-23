@@ -7,7 +7,7 @@ export const featureUnavailable=((feature)=>{
     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`,{message:feature+' feature not yet implemented.',ttl:5,type:'success'});
 });
 
-export const formatPrice=price=>`${price !== 0 ? price.toFixed(2) : 0} €`;
+export const formatPrice=price=>`${price !== 0 && typeof price != 'undefined' ? price?.toFixed(2) : 0} €`;
 
 export const formatDate=(date_str,format)=>{
     if(date_str==null)
