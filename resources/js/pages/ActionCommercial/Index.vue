@@ -23,6 +23,9 @@
                             icon="entite" 
                             name="ACTION COMMERCIAL" 
                             class="almarai_extrabold_normal_normal"
+                            width="32"
+                            height="32"
+                            style="height: 46px;"
                         />
 
                             

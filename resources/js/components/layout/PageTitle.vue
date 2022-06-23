@@ -39,8 +39,9 @@
         <Icon 
             v-else
             :name="icon"
-            :width="$attrs.width"
-            :height="$attrs.height"
+            :width="$attrs.width || 32"
+            :height="$attrs.height || 32"
+            :style="$attrs.style"
         />
 
         <span :class="class">
