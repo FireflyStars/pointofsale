@@ -79,10 +79,10 @@
                 <div class="col-1"></div>
             </div>
 
-            <div class="row mt-4">
-                <div class="col-4"><span class="font-14 mulish_600_normal facture_action noselect" @click="new_echeance"><icon name="plus-circle" /> AJOUTER ÉCHEANCE</span></div>
-                <div class="col-4"><span class="font-14 mulish_600_normal facture_action  noselect"><icon name="plus-circle" /> AJOUTER REMISE</span></div>
-                <div class="col-4"><span class="font-14 mulish_600_normal facture_action  noselect"><icon name="plus-circle" /> AJOUTER AVOIR</span></div>
+            <div class="d-flex justify-content-evenly mt-4">
+                <span v-if="order.total>0" class="font-14 mulish_600_normal facture_action noselect" @click="new_echeance"><icon name="plus-circle" /> AJOUTER ÉCHEANCE</span>
+                <span class="font-14 mulish_600_normal facture_action  noselect" @click="new_remise" ><icon name="plus-circle" /> AJOUTER REMISE</span>
+               <span class="font-14 mulish_600_normal facture_action  noselect" @click="new_avoir" ><icon name="plus-circle" /> AJOUTER AVOIR</span>
             </div>    
         </div>
      </template>
@@ -106,7 +106,7 @@
     <div class="col-6">Taux</div><div class="col-6"><input type="text" v-model="facture.taux" class="input-text" v-mask="['#%','##%','###%','##.##%','#.##%']"></div>
 </div>
 <div class="row mb-3">
-    <div class="col-6">Date</div><div class="col-6"><date-picker name="echeance" :droppos="{top:'40px',right:'auto',bottom:'auto',left:'0',transformOrigin:'top center'}"></date-picker></div>
+    <div class="col-6">Date</div><div class="col-6"><date-picker :disabledToDate="disabledToDate" name="echeance" :droppos="{top:'40px',right:'auto',bottom:'auto',left:'0',transformOrigin:'top center'}"></date-picker></div>
 </div>
 <div class="row mb-3">
     <div class="col-6">Montant</div><div class="col-6"> <money3 v-model="facture.montant" v-bind="moneyconfig"></money3> </div>
@@ -140,6 +140,8 @@ import { mask } from 'vue-the-mask';
             const store=useStore();
             const show=ref(false);
             const showloader=ref(false);
+            const disabledToDate=ref('');
+            disabledToDate.value= new Date(new Date().getTime() - 24*60*60*1000).toJSON().slice(0,10);
             let order_id=route.params.id;
             const moneyconfig=ref({
                             masked: false,
@@ -230,6 +232,22 @@ import { mask } from 'vue-the-mask';
                 facture.value.taux='50';
                 facture.value.description='Lancement reparation';
                         }
+            const new_remise=()=>{
+                modal_facturation_title.value='Nouvelle remise';
+                showmodal_facturation.value=true;
+                facture.value.invoice_type_id=2;
+                facture.value.montant='12';
+                facture.value.taux='50';
+                facture.value.description='Lancement reparation';
+                        }
+            const new_avoir=()=>{
+                modal_facturation_title.value='Nouveau avoir';
+                showmodal_facturation.value=true;
+                facture.value.invoice_type_id=3;
+                facture.value.montant='12';
+                facture.value.taux='50';
+                facture.value.description='Lancement reparation';
+                        }
             const newOrderInvoice=()=>{
                 showmodal_facturation.value=false;
                 console.log('confirmed');
@@ -248,11 +266,14 @@ import { mask } from 'vue-the-mask';
                  sumZoneH,
                  sumZoneTotal,
                  new_echeance,
+                 new_remise,
+                 new_avoir,
                  showmodal_facturation,
                  moneyconfig,
                  facture,
                  newOrderInvoice,
-                 modal_facturation_title
+                 modal_facturation_title,
+                 disabledToDate
     
 
              }
