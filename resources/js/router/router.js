@@ -118,6 +118,16 @@ const router = createRouter({
         },
 
         {
+            path: '/action-commercial',
+            name: 'action-commercial',
+            component: () => import('../pages/ActionCommercial/Index'),
+            meta: {
+                authenticated: true
+            }
+        },
+
+
+        {
             path:'/auth/',
             name:'AuthPage',
             component:()=> import('../components/auth/AuthPage'),

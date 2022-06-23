@@ -1,9 +1,8 @@
 
 import {
-    SAVE_ENTITE_LIST,
-    GET_ENTITE_LIST,
-    GET_ENTITE_LIST_MES,
-    ENTITE_LIST_MODULE
+    GET_ACTION_COMMERCIAL,
+    GET_ACTION_COMMERCIAL_MES,
+    ACTION_COMMERCIAL_MODULE,
 }
 from '../types/types'
 
@@ -34,14 +33,14 @@ const table = {
             suffix: "",
         },     
         {
-            id: "raisonsociale",
-            display_name: "Raison Sociale",
+            id: "client_name",
+            display_name: "Nom Client",
             type: "string",
             class: "justify-content-center",
             header_class: "",
             sort: true,
             filter: true,   
-            having: false,
+            having: true,
             prefix: "",
             suffix: "",
         },
@@ -59,9 +58,9 @@ const table = {
             allow_groupby: true,
         },
         {
-            id: "address",
-            display_name: "Addresse",
-            type: "html",
+            id: "action",
+            display_name: "Action",
+            type: "string",
             class: "justify-content-center",
             header_class: "",
             sort: true,
@@ -69,23 +68,10 @@ const table = {
             having: true,
             prefix: "",
             suffix: "",
-            allow_groupby: true,
         },
         {
-            id: "comment",
-            display_name: "Note",
-            type: "string",
-            class: "justify-content-center",
-            header_class: "",
-            sort: false,
-            filter: true,   
-            having: false,
-            prefix: "",
-            suffix: "",
-        },
-        {
-            id: "created_at",
-            display_name: "DATE Creation",
+            id: "action_date",
+            display_name: "DATE Action",
             type:"date",
             format:"DD/MM/YY",
             class: "justify-content-center",
@@ -98,19 +84,19 @@ const table = {
             allow_groupby: true,
         },
         {
-            id: "origine",
-            display_name: "Origine",
+            id: "event_type",
+            display_name: "Type Action",
             type: "string",
             class: "justify-content-center",
             header_class: "",
             sort: false,
             filter: true,   
-            having: false,
+            having: true,
             prefix: "",
             suffix: "",
         },
         {
-            id: "statut_name",
+            id: "event_status_id",
             display_name: "Statut",
             type: "component",
             class: "justify-content-center",
@@ -121,69 +107,35 @@ const table = {
             prefix: "",
             suffix: "",
             allow_groupby: true,
-            filter_options: [
-                { id: 'Cible', value: 'Cible' },
-                { id: 'Contact', value: 'Contact' },
-                { id: 'Suspect', value: 'Suspect' },
-                { id: 'Prospect', value: 'Prospect' },
-                { id: 'Client', value: 'Client' },
-                { id: 'Fiche obsolète', value: 'Fiche obsolète' },
-                { id: 'Fiche doublons', value: 'Fiche doublons' },
-            ]
+            filter_options: '/action-commercial-statuses'
         },
         {
-            id: "action_co",
-            display_name: "Action co",
+            id: "address",
+            display_name: "Addresse",
             type: "html",
-            class: "justify-content-start",
-            header_class: "",
-            sort: false,
-            filter: true,   
-            having: true,
-            prefix: "",
-            suffix: "",
-        },
-        {
-            id: "litige",
-            display_name: "Litige",
-            type: "component",
-            class: "justify-content-start",
-            header_class: "",
-            sort: false,
-            filter: false,   
-            having: false,
-            prefix: "",
-            suffix: "",
-        },
-        {
-            id: "total_orders",
-            display_name: "NreCde",
-            type: "number",
-            class: "justify-content-start",
+            class: "justify-content-center",
             header_class: "",
             sort: true,
             filter: true,   
             having: true,
             prefix: "",
             suffix: "",
-            group_total: true,
-            footer_total: true,
+            allow_groupby: true,
         },
+        
         {
-            id: "montant",
-            display_name: "MONTANT",
-            type: "price",
-            class: "justify-content-start",
+            id: "origin",
+            display_name: "Origine",
+            type: "string",
+            class: "justify-content-center",
             header_class: "",
             sort: true,
             filter: true,   
             having: true,
             prefix: "",
             suffix: "",
-            group_total: true,
-            footer_total: true,
         },
-    
+       
     ],
     
     batch_actions: {
@@ -216,7 +168,7 @@ const table = {
 }
 
 
-export const entite = {
+export const actionCommercial = {
 
     namespaced: true,
 
@@ -226,8 +178,8 @@ export const entite = {
 
             column_filters: [],//required empty array
             store: {
-              MODULE: ENTITE_LIST_MODULE,//required
-              INIT: GET_ENTITE_LIST,//required
+              MODULE: ACTION_COMMERCIAL_MODULE,//required
+              INIT: GET_ACTION_COMMERCIAL,//required
             },
             batch_actions: table.batch_actions,
             translations: table.translations,
@@ -245,8 +197,8 @@ export const entite = {
 
             column_filters: [],//required empty array
             store: {
-              MODULE: ENTITE_LIST_MODULE,//required
-              INIT: GET_ENTITE_LIST_MES,//required
+              MODULE: ACTION_COMMERCIAL_MODULE,//required
+              INIT: GET_ACTION_COMMERCIAL_MES,//required
             },
             batch_actions: table.batch_actions,
             translations: table.translations,
@@ -263,15 +215,15 @@ export const entite = {
     },
 
     getters: {
-        entiteList: state => state.table_def,
-        entiteUserList: state => state.entite_user_table_def,
+        actionCommercialList: state => state.table_def,
+        actionCommercialListUser: state => state.entite_user_table_def,
     },
 
     actions: {
 
-        async [GET_ENTITE_LIST]({ commit }, params) {
+        async [GET_ACTION_COMMERCIAL]({ commit }, params) {
 
-            return axios.post(`/get-entite-list`, params).then((response) => {
+            return axios.post(`/action-commercial-list`, params).then((response) => {
                 return Promise.resolve(response)
                       
             }).catch((error) => {
@@ -280,9 +232,9 @@ export const entite = {
 
         },
 
-        async [GET_ENTITE_LIST_MES]({ commit }, params) {
+        async [GET_ACTION_COMMERCIAL_MES]({ commit }, params) {
 
-            return axios.post(`/get-entite-list-user`, params).then((response) => {
+            return axios.post(`/action-commercial-list-mes`, params).then((response) => {
                 return Promise.resolve(response)
                       
             }).catch((error) => {

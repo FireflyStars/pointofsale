@@ -43,6 +43,9 @@ import { campagneList as CAMPAGNE_LIST_MODULE } from './modules/campagneList'
 import {devisdetail as DEVIS_DETAIL_MODULE } from './modules/devisdetail'
 import { entite as ENTITE_LIST_MODULE } from './modules/entite.js'
 
+import { actionCommercial as ACTION_COMMERCIAL_MODULE } from './modules/actionCommercial.js'
+import { actionCoStatusTag as ACTION_COMMERCIAL_STATUS_MODULE } from './modules/component_store/actionCoStatusTag'
+
 
 export default createStore({
     modules: {
@@ -63,6 +66,8 @@ export default createStore({
         CAMPAGNE_LIST_MODULE,
         REPORTS_BUILDER_MODULE,
         DEVIS_DETAIL_MODULE,
-        ENTITE_LIST_MODULE
+        ENTITE_LIST_MODULE,
+        ACTION_COMMERCIAL_MODULE,
+        ACTION_COMMERCIAL_STATUS_MODULE
     }
 });
