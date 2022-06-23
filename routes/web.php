@@ -75,8 +75,8 @@ Route::post('/get-entite-list-user', [EntiteController::class, 'index']);
 
 Route::get('/action-commercial-list', [ActionCommercialListController::class, 'index']);
 Route::post('/action-commercial-list', [ActionCommercialListController::class, 'index']);
-Route::get('/action-commercial-list-user', [ActionCommercialListController::class, 'list_user']);
-Route::post('/action-commercial-list-user', [ActionCommercialListController::class, 'list_user']);
+Route::get('/action-commercial-list-mes', [ActionCommercialListController::class, 'list_user']);
+Route::post('/action-commercial-list-mes', [ActionCommercialListController::class, 'list_user']);
 Route::post('/action-commercial-statuses', [ActionCommercialListController::class, 'statuses_formatted']);
 Route::post('/get-action-commercial-statuses', [ActionCommercialListController::class, 'statuses']);
 

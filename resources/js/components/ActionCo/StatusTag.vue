@@ -50,7 +50,6 @@ const loaded = computed(() => store.getters[`${ACTION_COMMERCIAL_STATUS_MODULE}l
 
 
 watch(() => order_states, (current_val) => {
-    console.log("I was here in order_states")
     const order_state = current_val.value.find(obj => obj.id == props.id)
     if(typeof order_state != "undefined") {
         status.value = order_state.name
@@ -61,9 +60,7 @@ watch(() => order_states, (current_val) => {
 })
 
 watch(() => props.id, (current_val) => {
-    console.log(current_val, " is current val")
     const order_state=order_states.value.find(obj => obj.id == current_val)
-    console.log(order_state, " is the value of order_state")
     if(typeof order_state != "undefined") {
         status.value = order_state.name
         style.value = `width:${props.width}; background-color: ${order_state.color}; color: ${order_state.fontcolor}`
@@ -73,7 +70,6 @@ watch(() => props.id, (current_val) => {
 })
 
 onMounted(async ()=> {
-    console.log("I was onMOunted")
     if(loaded.value === false) {
         await store.dispatch(`${ACTION_COMMERCIAL_STATUS_MODULE}${ORDERSTATETAG_LOAD_ORDER_STATES}`) 
     }
