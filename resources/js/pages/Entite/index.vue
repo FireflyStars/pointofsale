@@ -17,53 +17,60 @@
                     leave-active-class="animate__animated animate_fadeOut"
                 >
 
-                    <div class="col main-view container px-5">
+                    <div class="col main-view container">
                         
                         <page-title 
                             icon="entite" 
                             name="ENTITE" 
                             class="almarai_extrabold_normal_normal"
-                            style="height: 46px;"
+                            style="height: 46px; width: 44px;"
                         />
 
+                        <div class="row m-0 ml-5 mr-5">
                             
-                        <tab-pane :tabs="tabs" current='tout' class="almarai_700_normal">
+                            <div class="col">
 
-                            <template v-slot:tout>
-                                
-                                <item-list-table :table_def="entiteList">
+                                <tab-pane :tabs="tabs" current='tout' class="almarai_700_normal">
 
-                                    <template v-slot:statut_name="{ row }">
-
-                                        <span 
-                                            class="tag" 
-                                            :style="{ 
-                                                'background': row.statut_color, 
-                                            }"
-                                            >
-                                            {{ row.statut_name }}
-                                        </span>
-
-                                    </template>    
-
-                                    <template v-slot:litige="{ row }">
+                                    <template v-slot:tout>
                                         
-                                        <span v-if="row.litige"><Icon name="check" /></span>
-                                        <span v-else><Icon name="times" /></span>
+                                        <item-list-table :table_def="entiteList">
 
+                                            <template v-slot:statut_name="{ row }">
+
+                                                <span 
+                                                    class="tag" 
+                                                    :style="{ 
+                                                        'background': row.statut_color, 
+                                                    }"
+                                                    >
+                                                    {{ row.statut_name }}
+                                                </span>
+
+                                            </template>    
+
+                                            <template v-slot:litige="{ row }">
+                                                
+                                                <span v-if="row.litige"><Icon name="check" /></span>
+                                                <span v-else><Icon name="times" /></span>
+
+                                            </template>
+
+                                        </item-list-table>
+                                            
                                     </template>
 
-                                </item-list-table>
+                                    <template v-slot:mes_entities>
+                                        
+                                        <item-list-table :table_def="entiteUserList" />
+
+                                    </template>
                                     
-                            </template>
-
-                            <template v-slot:mes_entities>
-                                
-                                <item-list-table :table_def="entiteUserList" />
-
-                            </template>
+                                </tab-pane>
                             
-                        </tab-pane>
+                            </div>
+                            
+                        </div>
 
                         <component :is="Component" />
 

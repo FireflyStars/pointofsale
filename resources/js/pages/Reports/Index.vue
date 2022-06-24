@@ -13,34 +13,42 @@
                     
                     <side-bar />
 
-                    <div class="col main-view container px-5">
+                    <div class="col main-view container">
 
                         <page-title 
                             icon="report" 
                             name="Reports" 
                             class="almarai_extrabold_normal_normal"
-                            width="32" 
-                            height="32"
+                            width="44" 
+                            height="46"
                         />
 
+                        <div class="row m-0 ml-5 mr-5">
+                            
+                            <div class="col-12">
+                                
+                                <item-list-table 
+                                    :table_def="reports" 
+                                >
 
-                        <item-list-table 
-                            :table_def="reports" 
-                        >
+                                    <template v-slot:pages="{ row }">
+                                        {{ row.pages === null || row.pages === '' ? '' : JSON.parse(row.pages).length }}
+                                    </template>
 
-                            <template v-slot:pages="{ row }">
-                                {{ row.pages === null || row.pages === '' ? '' : JSON.parse(row.pages).length }}
-                            </template>
+                                    <template v-slot:id="{ row }">
 
-                            <template v-slot:id="{ row }">
+                                        <a href="#" class="link" @click.stop="navigatePage(row.id)">
+                                            {{ row.pages != null && row.pages != '' ? 'Edit Report': 'Create Report' }}
+                                        </a>
 
-                                <a href="#" class="link" @click.stop="navigatePage(row.id)">
-                                    {{ row.pages != null && row.pages != '' ? 'Edit Report': 'Create Report' }}
-                                </a>
+                                    </template> 
 
-                            </template> 
+                                </item-list-table>
+                            
+                            </div>
 
-                        </item-list-table>
+                        </div>
+
 
                     </div>
 

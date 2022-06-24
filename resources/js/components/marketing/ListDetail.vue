@@ -1,6 +1,6 @@
 <template>
 
-<item-detail-panel>
+<item-detail-panel :showloader="showloader">
 
     <h1 class="heading">
         <Icon name="emailing" />
@@ -172,6 +172,8 @@ const props = defineProps({
     }
 })
 
+const showLoader = ref(false)
+
 const store = useStore()
 
 const campagne = computed(() => store.getters[`${CIBLE_MODULE}campagne`])
@@ -189,7 +191,7 @@ const grandTotalHt = computed(() => {
 
 const getCampagneDetails = async () => {
     try {
-        store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Loading...'])
+        showLoader.value = true
         await store.dispatch(`${CIBLE_MODULE}${GET_CAMPAGNE_DETAILS}`, props.id)
     }
     catch(e) {
@@ -201,7 +203,7 @@ const getCampagneDetails = async () => {
         throw e
     }
     finally {
-        store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`)
+        showLoader.value = false
     }
 }
 

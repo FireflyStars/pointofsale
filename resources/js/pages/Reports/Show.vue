@@ -19,9 +19,9 @@
 
                 <div class="col main-view">
                     
-                    <div>
+                    <div class="row m-0 ml-5 mr-5">
 
-                        <div class="d-flex gap-3 main-container">
+                        <div class="col-12 d-flex gap-3 main-container">
 
                             <div class="left-page-container">
 

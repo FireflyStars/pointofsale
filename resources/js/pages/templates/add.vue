@@ -15,9 +15,10 @@
                     <side-bar />
 
                     <div class="col main-view">
-                        <div>
 
-                            <div class="d-flex gap-3 main-container">
+                        <div class="row m-0 ml-5 mr-5">
+
+                            <div class="col d-flex gap-3 main-container">
 
                                 <div class="left-page-container">
 
@@ -51,6 +52,7 @@
                             </div>
 
                         </div>
+
                     </div>
 
                 </div>

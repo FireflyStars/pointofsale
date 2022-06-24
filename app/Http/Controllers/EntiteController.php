@@ -110,7 +110,7 @@ class EntiteController extends Controller
                     ->leftJoinSub($status, 'status', function($join) {
                         $join->on('status.id', '=', 'customers.customer_statut_id');
                     })
-                    ->joinSub($events, 'events', function($join) {
+                    ->leftJoinSub($events, 'events', function($join) {
                         $join->on('events.customer_id', '=', 'customers.id')
                         ->where('events.datedebut', '>', now()->format('Y-m-d H:i:s'));
                     });
