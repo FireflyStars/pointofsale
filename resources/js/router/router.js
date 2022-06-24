@@ -51,8 +51,15 @@ const router = createRouter({
             component: () => import('../pages/Customer/Create'),
             meta: {
                 authenticated: true
+            }
+        },
+        {
+            path:'/customer/edit/:id',
+            name:'EditCustomer',
+            component: () => import('../pages/Customer/Edit'),
+            meta: {
+                authenticated: true
             },
-
         },
         {
             path:'/ComponentsTest',

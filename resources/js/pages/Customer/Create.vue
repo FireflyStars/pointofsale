@@ -8,7 +8,7 @@
             <div class="col main-view container">
                 <h1 class="d-flex align-items-center m-0">
                   <span class="customer-icon"></span>
-                  <span class="ms-3 font-22 almarai_extrabold_normal_normal">CREATION / EDITION CLIENT</span>
+                  <span class="ms-3 font-22 almarai_extrabold_normal_normal">CREATION CLIENT</span>
                 </h1>
                 <ul class="full-nav d-flex p-0 m-0 bg-white">
                     <li class="full-nav-item title border-right col-4 d-flex align-items-center justify-content-center"
@@ -916,7 +916,7 @@ export default {
             }
         })
         const submit = ()=>{
-            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Creating a new customer ...']);
+            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Création d`un nouveau client ...']);
             axios.post('/add-customer', form.value).then((res)=>{
                 if(res.data.success){
                     router.push({ name: 'LandingPage' });

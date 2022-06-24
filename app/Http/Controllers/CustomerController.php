@@ -56,17 +56,17 @@ class CustomerController extends Controller
                 'raisonsociale2'        => $request->raisonsociale2,
                 'firstname'             => $request->firstName,
                 'gender'                => $request->gender,
-                'name'                  => $request->firstName.' '.$request->lastName,
+                'name'                  => $request->lastName,
                 
                 'libelleadresse'        => $request->address1,
-                'libelleadresse'        => $request->address2,
+                'libellespecifique'     => $request->address2,
                 'centredistributeur'    => $request->address3,
                 'codepostal'            => $request->postCode,
 
                 'linkedin'              => $request->linkedin,
                 'siteweb'               => $request->website,
                 'litige'                => $request->litige,
-                'active'                => $request->actif,
+                'active'                => 1,
                 'zpe'                   => $request->zpe,
                 'environnement'         => $request->environment,
                 'statutetablissement'   => $request->statusEtablissement,
@@ -125,7 +125,7 @@ class CustomerController extends Controller
                     'num_contact_gx'        => $contact['numGx'],
                     'name'                  => $contact['name'],
                     'firstname'             => $contact['firstName'],
-                    'profilLinedin'         => $contact['profilLinedin'],
+                    'profillinedin'         => $contact['profilLinedin'],
                     'gender'                => $contact['gender'],
                     'email'                 => $contact['email'],
                     'mobile'                => $contact['phoneCountryCode1'].'|'.$contact['phoneNumber1'],
@@ -145,7 +145,170 @@ class CustomerController extends Controller
     }
 
     /**
-     * Adding a new customer
+     * Get a customer by ID
+     */
+    public function getCustomer($id){
+        $customer = DB::table('customers')
+                    ->where('id', $id)
+                    ->select(
+                        'id', 'raisonsociale', 'raisonsociale2', 'siret', 
+                        'num_client_gx as numLCDT', 'company', 'customer_origin_id as customerOrigin', 
+                        'customer_categories_id as customerCat', 'taxe_id as customerTax', 
+                        'customer_statut_id as customerStatus', 'naf', 'email', 
+                        'telephone', 'firstname as firstName', 'gender', 'name as lastName', 
+                        'libelleadresse as address1', 'libellespecifique as address2', 
+                        'centredistributeur as address3', 'codepostal as postCode', 'linkedin', 
+                        'siteweb as website', 'litige', 'zpe', 'environnement as environment', 
+                        'statutetablissement as statusEtablissement', 'trancheca as trancheCA', 
+                        'trancheeffectif as trancheEffectif', 'tranchetaillecommune as trancheCommune', 
+                        'datecreationetablissement as dateCreated', 
+                        DB::raw('DATE_FORMAT(created_at, "%m/%d/%Y") as created_at'), 
+                        DB::raw('DATE_FORMAT(updated_at, "%m/%d/%Y") as updated_at')
+                    )
+                    ->first();
+        $customer->addresses = DB::table('addresses')
+                                ->where('customer_id', $id)
+                                ->select(
+                                    'id', 'address_type_id as addressType', 'lastname as nom', 
+                                    'firstname as firstName', 'address1', 'address2', 'address3', 
+                                    'postcode as postCode', 'city', 'latitude', 'longitude', 'pente', 
+                                    'surfacetoiture', 'materiau', 'presenceamiante', 'presenceepc', 
+                                    'accesexterieur', 'presenceapportlumiere', 'etattoiture', 'accesinterieur', 
+                                    'hauteurbatiment', 'typebatiment', 'comment as infoNote'
+                                )->get();
+        $customer->contacts = DB::table('contacts')
+                                ->where('customer_id', $id)
+                                ->select(
+                                    'id', 'contact_type_id as type', 'contact_qualite_id as qualite', 'actif', 
+                                    'num_contact_gx as numGx', 'name', 'firstname as firstName', 'profillinedin as profilLinedin', 
+                                    'gender', 'email', 'mobile', 'telephone', 'comment as note', 
+                                    'acceptsms as acceptSMS', 'acceptmarketing', 'acceptcourrier'
+                                )
+                                ->get();
+        return response()->json([
+            'customer'  => $customer,
+            'customerOrigins'   => DB::table('customer_origins')->select('id as value', 'name as display')->orderBy('name')->get(),
+            'status'            => DB::table('customer_statut')->select('id as value', 'name as display')->orderBy('name')->get(),
+            'customerCats'      => DB::table('customer_categories')->select('id as value', 'name as display')->orderBy('name')->get(),
+            'customerPentes'    => DB::table('customer_pente')->select('id as value', 'name as display')->orderBy('name')->get(),
+            'nafs'              => DB::table('customer_naf')->select('code', 'name', 'selection')->orderBy('name')->get(),
+            'taxes'              => DB::table('taxes')->select('id as value', 'name as display')->orderBy('id')->get(),
+            'addressTypes'      => DB::table('address_type')->select('id as value', 'name as display')->orderBy('name')->get(),
+            'contactTypes'      => DB::table('contact_type')->select('id as value', 'name as display')->orderBy('id')->get(),
+            'customerQualites'  => DB::table('customer_qualite')->select('id as value', 'name as display')->orderBy('id')->get(),
+            'customerTypeBatiments' => DB::table('customer_typebatiment')->select('id as value', 'name as display')->orderBy('id')->get(),
+            'customerMateriaus'  => DB::table('customer_materiau')->select('name as value', 'name as display')->orderBy('id')->get(),            
+        ]);
+    }
+
+    /**
+     * Update a customer
+     */
+    public function updateCustomer(Request $request){
+        $customerData = [
+            'affiliate_id'          => auth()->user()->affiliate_id,
+            'taxe_id'               => $request->customerTax,
+            'customer_statut_id'    => $request->customerStatus,
+            'customer_categories_id'=> $request->customerCat,
+            'customer_origin_id'    => $request->customerOrigin,
+            'naf'                   => $request->naf,
+            'siret'                 => $request->siret,
+            'email'                 => $request->email,
+            'telephone'             => $request->phoneCountryCode.'|'.$request->phoneNumber,
+            'company'               => $request->company,
+            'raisonsociale'         => $request->raisonsociale,
+            'raisonsociale2'        => $request->raisonsociale2,
+            'firstname'             => $request->firstName,
+            'gender'                => $request->gender,
+            'name'                  => $request->lastName,
+            'libelleadresse'        => $request->address1,
+            'libellespecifique'     => $request->address2,
+            'centredistributeur'    => $request->address3,
+            'codepostal'            => $request->postCode,
+            'linkedin'              => $request->linkedin,
+            'siteweb'               => $request->website,
+            'litige'                => $request->litige,
+            'zpe'                   => $request->zpe,
+            'environnement'         => $request->environment,
+            'statutetablissement'   => $request->statusEtablissement,
+            'trancheca'             => $request->trancheCA,
+            'trancheeffectif'       => $request->trancheEffectif,
+            'tranchetaillecommune'  => $request->trancheCommune,
+            'num_client_gx'         => $request->numLCDT,
+            'datecreationetablissement'=> $request->dateCreated,
+        ];
+        DB::table('customers')->where('id', $request->id)->update($customerData);
+        foreach ($request->addresses as $address) {
+            $addressData = [
+                'address_type_id'       => $address['addressType'],
+                'customer_id'           => $request->id,
+                'company'               => $customerData['company'],
+                'lastname'              => $address['nom'],
+                'firstname'             => $address['firstName'],
+                'gender'                => $customerData['gender'],
+                'address1'              => $address['address1'],
+                'address2'              => $address['address2'],
+                'address3'              => $address['address3'],
+                'postcode'              => $address['postCode'],
+                'city'                  => $address['city'],
+                'latitude'              => $address['latitude'],
+                'longitude'             => $address['longitude'],
+                'pente'                 => $address['pente'],
+                'surfacetoiture'        => $address['surfacetoiture'],
+                'materiau'              => $address['materiau'],
+                'presenceamiante'       => $address['presenceamiante'],
+                'presenceepc'           => $address['presenceepc'],
+                'accesexterieur'        => $address['accesexterieur'],
+                'presenceapportlumiere' => $address['presenceapportlumiere'],
+                'etattoiture'           => $address['etattoiture'],
+                'accesinterieur'        => $address['accesinterieur'],
+                'hauteurbatiment'       => $address['hauteurbatiment'],
+                'typebatiment'          => $address['typebatiment'],
+                'comment'               => $address['infoNote'],
+            ];
+            if($address['id'] == ''){
+                $addressData['country_id'] = 1;
+                $addressData['created_at'] = now();
+                $addressData['updated_at'] = now();
+                $addressID = DB::table('addresses')->insertGetId($addressData);
+            }else{
+                DB::table('addresses')->where('id', $address['id'])->update($addressData);
+            }
+        }
+
+        foreach ($request->contacts as $contact) {
+            $contactData = [
+                'contact_type_id'       => $contact['type'],
+                'contact_qualite_id'    => $contact['qualite'],
+                'customer_id'           => $request->id,
+                'actif'                 => $contact['actif'],
+                'num_contact_gx'        => $contact['numGx'],
+                'name'                  => $contact['name'],
+                'firstname'             => $contact['firstName'],
+                'profillinedin'         => $contact['profilLinedin'],
+                'gender'                => $contact['gender'],
+                'email'                 => $contact['email'],
+                'mobile'                => $contact['phoneCountryCode1'].'|'.$contact['phoneNumber1'],
+                'telephone'             => $contact['phoneCountryCode2'].'|'.$contact['phoneNumber2'],
+                'type'                  => DB::table('contact_type')->find($contact['type'])->name,
+                'comment'               => $contact['note'],
+                'acceptsms'             => $contact['acceptSMS'],
+                'acceptmarketing'       => $contact['acceptmarketing'],
+                'acceptcourrier'        => $contact['acceptcourrier'],
+            ];
+            if($contact['id'] == ''){
+                $contactData['address_id'] = 0;
+                $contactData['created_at'] = now();
+                $contactData['updated_at'] = now();
+                DB::table('contacts')->insert($contactData);
+            }else{
+                DB::table('contacts')->where('id', $contact['id'])->update($contactData);
+            }
+        }
+        return response()->json(['success' => true]);
+    }
+    /**
+     * search customers
      */
     public function searchCustomer(Request $request){
         $query = DB::table('customers')

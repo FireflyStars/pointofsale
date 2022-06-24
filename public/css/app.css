@@ -1,3 +1,4 @@
+@import url(https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap);
 @font-face {
   font-family: "bootstrap-icons";
   src: url(/fonts/vendor/bootstrap-icons/bootstrap-icons.woff2?a13b815539b49de48d2358b4281b2f1a) format("woff2"),
@@ -5783,24 +5784,40 @@ url(/fonts/vendor/bootstrap-icons/bootstrap-icons.woff?c1d7432ee75fa194e49925c1b
   font-weight: normal;
   src: local("Almarai Book"), url(/fonts/Almarai-Bold.ttf?6950c5a6d2dcd9e29b5df6b70d2c6b4e) format("truetype");
 }
+.almarai-bold {
+  font-family: "Almarai Bold" !important;
+}
+
 @font-face {
   font-family: "Almarai ExtraBold";
   font-style: normal;
   font-weight: normal;
   src: local("Almarai ExtraBold"), url(/fonts/Almarai-Bold.ttf?6950c5a6d2dcd9e29b5df6b70d2c6b4e) format("truetype");
 }
+.almarai-extrabold {
+  font-family: "Almarai ExtraBold" !important;
+}
+
 @font-face {
   font-family: "Almarai Light";
   font-style: normal;
   font-weight: normal;
   src: local("Almarai Light"), url(/fonts/Almarai-Light.ttf?e91bfa6b2938b42559924876534363ed) format("truetype");
 }
+.almarai-light {
+  font-family: "Almarai Light" !important;
+}
+
 @font-face {
   font-family: "Almarai Regular";
   font-style: normal;
   font-weight: normal;
   src: local("Almarai Regular"), url(/fonts/Almarai-Regular.ttf?4d8fe12612ad34e16602aa735d84d282) format("truetype");
 }
+.almarai-regular {
+  font-family: "Almarai Regular" !important;
+}
+
 @font-face {
   font-family: "Mulish Bold";
   font-style: normal;
@@ -5837,9 +5854,19 @@ url(/fonts/vendor/bootstrap-icons/bootstrap-icons.woff?c1d7432ee75fa194e49925c1b
   font-weight: normal;
   src: local("Mulish Regular"), url(/fonts/Mulish-Regular.ttf?18a0df44f5ffb1a651c6a4bc040dec70) format("truetype");
 }
+.mulish-regular {
+  font-family: "Mulish Regular" !important;
+}
+
 .mulish_400_normal {
   font-family: "Mulish Regular" !important;
   font-weight: 400 !important;
+  font-style: normal !important;
+}
+
+.mulish_600_normal {
+  font-family: "Mulish Regular" !important;
+  font-weight: 600 !important;
   font-style: normal !important;
 }
 
@@ -5853,6 +5880,10 @@ url(/fonts/vendor/bootstrap-icons/bootstrap-icons.woff?c1d7432ee75fa194e49925c1b
   font-family: "Almarai ExtraBold" !important;
   font-weight: normal !important;
   font-style: normal !important;
+}
+
+.font-light {
+  font-weight: 300 !important;
 }
 
 .font-10 {
@@ -5924,6 +5955,10 @@ url(/fonts/vendor/bootstrap-icons/bootstrap-icons.woff?c1d7432ee75fa194e49925c1b
   background: #E5E5E5;
 }
 
+.text-gray {
+  color: #C3C3C3 !important;
+}
+
 .self-end {
   justify-self: flex-end !important;
 }
@@ -5950,6 +5985,16 @@ url(/fonts/vendor/bootstrap-icons/bootstrap-icons.woff?c1d7432ee75fa194e49925c1b
 .almarai_regular_normal {
   font-family: "Almarai regular";
   font-style: normal;
+}
+
+.devis-icon {
+  display: block;
+  width: 44px;
+  height: 46px;
+  background-image: url(/images/devis-icon.svg?17450be599095812f9e292209f9c04b3);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .edit-icon {
@@ -6005,6 +6050,124 @@ url(/fonts/vendor/bootstrap-icons/bootstrap-icons.woff?c1d7432ee75fa194e49925c1b
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.plus-icon {
+  display: block;
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  background-image: url(/images/plus-icon.svg?c01dafe64f155a03795fd8b71c9c7d82);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.cancel-icon,
+.eye-icon {
+  display: block;
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  background-image: url(/images/cancel-icon.svg?f24276ea3f0c494af9018899ed3d032a);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: black;
+  border-radius: 50%;
+}
+
+.eye-icon {
+  background-image: url(/images/eye.svg?793d08428867b7246ec9bd1405f92b08);
+  background-color: white;
+}
+
+.customer-icon {
+  display: block;
+  cursor: pointer;
+  width: 47px;
+  height: 40px;
+  background-image: url(/images/user-fill-icon.svg?8418f21b759c7d69a44582386534fd86);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.installation-icon,
+.securite-icon,
+.prestation-icon {
+  display: block;
+  width: 53px;
+  height: 53px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.installation-icon {
+  background-image: url(/images/install-icon.svg?0583dee876442b5de28c075356788860);
+}
+
+.securite-icon {
+  background-image: url(/images/securite-icon.svg?f91126e5f0156b13b3b2d6cd173e2734);
+}
+
+.prestation-icon {
+  background-image: url(/images/prestation-icon.svg?187167f4624f0f11077bbf2edf55146b);
+}
+
+.arrow-icon {
+  width: 13px;
+  height: 13px;
+  display: block;
+  background-image: url(/images/left-arrow.svg?c1c25f98149f080fde723a7d914f70d4);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.clock-icon {
+  min-width: 35px;
+  height: 35px;
+  display: block;
+  background-image: url(/images/clock-icon.svg?75656b5fc2026b38f670a81ecb78c4a6);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.book-icon {
+  min-width: 35px;
+  height: 35px;
+  display: block;
+  background-image: url(/images/book-icon.svg?c744a7719dab9c633367114159d3fb97);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.ouvrage-section.open .arrow-icon {
+  background-image: url(/images/down-arrow.svg?521961a8098f84b73237417799c44bc1);
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.custom-text-danger {
+  color: #E8581B !important;
+}
+
+.text-custom-success {
+  color: #42A71E !important;
+}
+
+.bg-gray {
+  background-color: #F8F8F8 !important;
+}
+
+.text-gray {
+  color: #868686 !important;
 }
 
 /*!
@@ -17294,6 +17457,8 @@ textarea.form-control-lg {
   --mainlogoheight: 64px;
   --lcdtOrange:#e86f29;
   --lcdtRed:rgba(232, 88, 27, 0.7);
+  --lcdtGrey:#868686;
+  --bs-font-sans-serif: "Almarai Regular",system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 html:not(.Login):not(.ForgotPassword):not(.NewPassword):not(.not-found) {
@@ -17327,6 +17492,14 @@ html .bg-panel {
 
 .main-view {
   margin-top: 64px;
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+
+.report-page .main-view, .templates .main-view {
+  z-index: 9;
 }
 
 /*list transitions*/
@@ -17383,6 +17556,22 @@ P {
   margin-bottom: 0;
 }
 
+.textarea {
+  width: auto;
+  height: auto;
+  border: 1px solid #ccc;
+  z-index: 13;
+  word-wrap: normal;
+}
+.textarea .heading {
+  font-style: normal;
+  font-family: inherit;
+  font-size: 20px;
+  line-height: 29px;
+  color: #212529;
+  font-weight: 500;
+}
+
 .icon-close {
   display: inline-block;
   width: 20px;
@@ -17422,4 +17611,50 @@ P {
 
 .hide-overflowY {
   overflow-y: hidden;
+}
+
+.list-header-col .dp input {
+  transition: all 0.3s ease-in-out;
+  background-color: #EEE;
+  height: 20px;
+  line-height: 20px;
+  font-size: 14px;
+  border: none;
+}
+.list-header-col .dp input:focus-visible {
+  outline: none;
+  border: none;
+}
+.list-header-col .dp input:focus {
+  background-color: #DDDDDD;
+}
+
+.DevisDetail .od h1.page-title, .DevisDetail .od .page-title.h1 {
+  margin-left: 10px;
+  line-height: 40px;
+  margin-top: 24px;
+  margin-bottom: 0;
+}
+
+.swal2-container {
+  z-index: 10002 !important;
+}
+
+.swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
+  background: rgba(224, 224, 224, 0.5) !important;
+}
+
+.input-text {
+  width: 100%;
+  height: 40px;
+  background: #EEEEEE;
+  border-radius: 5px;
+  border: none;
+  padding: 0 6px;
+  outline: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.input-text:focus {
+  background: #DDDDDD;
 }
