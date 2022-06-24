@@ -64,9 +64,9 @@
         <div class="od_invoices">
             <div class="row">
                 <div class="col-4 almarai_700_normal font-14 lcdtgrey d-flex align-items-center">Facturation</div>
-                <div class="col-2 almarai_700_normal font-14 d-flex align-items-center">100%</div>
+                <div class="col-2 almarai_700_normal font-14 d-flex align-items-center">{{facturation_total_taux}}%</div>
                 <div class="col-2"></div>
-                <div class="col-2  almarai_700_normal font-14 d-flex align-items-center justify-content-end">6300€</div>
+                <div class="col-2  almarai_700_normal font-14 d-flex align-items-center justify-content-end">{{formatPrice(facturation_total)}}</div>
                 <div class="col-1"></div>
                 <div class="col-1"></div>
             </div>
@@ -79,10 +79,10 @@
                 <div class="col-1"></div>
             </div>
 
-            <div class="row mt-4">
-                <div class="col-4"><span class="font-14 mulish_600_normal facture_action noselect" @click="new_echeance"><icon name="plus-circle" /> AJOUTER ÉCHEANCE</span></div>
-                <div class="col-4"><span class="font-14 mulish_600_normal facture_action  noselect"><icon name="plus-circle" /> AJOUTER REMISE</span></div>
-                <div class="col-4"><span class="font-14 mulish_600_normal facture_action  noselect"><icon name="plus-circle" /> AJOUTER AVOIR</span></div>
+            <div class="d-flex justify-content-evenly mt-4">
+                <span v-if="order.total>0&&facturation_total_taux<100" class="font-14 mulish_600_normal facture_action noselect" @click="new_echeance"><icon name="plus-circle" /> AJOUTER ÉCHEANCE</span>
+                <span class="font-14 mulish_600_normal facture_action  noselect" @click="new_remise" ><icon name="plus-circle" /> AJOUTER REMISE</span>
+               <span class="font-14 mulish_600_normal facture_action  noselect" @click="new_avoir" ><icon name="plus-circle" /> AJOUTER AVOIR</span>
             </div>    
         </div>
      </template>
@@ -97,19 +97,19 @@
 
 </item-detail-panel>
 
-<simple-modal-popup v-model="showmodal_echeance" title="Nouvelle échéance">
+<simple-modal-popup v-model="showmodal_facturation" :title="modal_facturation_title" @modalconfirm="newOrderInvoice">
     <div class="container-fluid">
 <div class="row mb-3">
-    <div class="col-6">Description</div><div class="col-6"><input type="text" class="input-text"/></div>
+    <div class="col-6">Description</div><div class="col-6"><input type="text" v-model="facture.description" class="input-text"/></div>
 </div>
 <div class="row mb-3">
-    <div class="col-6">Taux</div><div class="col-6"><input type="text" class="input-text"/></div>
+    <div class="col-6">Taux</div><div class="col-6"><input type="text" v-model="facture.taux" @keyup="checktaux" class="input-text" v-mask="['#%','##%','###%','#.##%','##.##%','###.##%']"></div> {{facture.taux}}
 </div>
 <div class="row mb-3">
-    <div class="col-6">Date</div><div class="col-6"><date-picker :name="echeance" :droppos="{top:'40px',right:'auto',bottom:'auto',left:'0',transformOrigin:'top center'}"></date-picker></div>
+    <div class="col-6">Date</div><div class="col-6"><date-picker :disabledToDate="disabledToDate" name="echeance" :droppos="{top:'40px',right:'auto',bottom:'auto',left:'0',transformOrigin:'top center'}"></date-picker></div>
 </div>
 <div class="row mb-3">
-    <div class="col-6">Montant</div><div class="col-6"><input type="text" class="input-text"/></div>
+    <div class="col-6">Montant</div><div class="col-6"> <money3 v-model="facture.montant" v-bind="moneyconfig"></money3> </div>
 </div>
     </div>
      
@@ -126,17 +126,47 @@ import { DEVIS_DETAIL_GET, DEVIS_DETAIL_LOAD, DEVIS_DETAIL_MODULE, DEVIS_DETAIL_
 import { formatPrice,formatDate,br } from '../../components/helpers/helpers';
 import Swal from 'sweetalert2';
 import DatePicker from '../../components/miscellaneous/DatePicker.vue';
+ import { Money3Component } from 'v-money3';
+import { mask } from 'vue-the-mask';
+
 
     export default {
         name: "DevisDetail",
-        components:{ItemDetailPanel,OrderStateTag, DatePicker},
+        components:{ItemDetailPanel,OrderStateTag, DatePicker,money3:Money3Component},
+        directives:{mask},
         setup(){
             const route=useRoute();
             const router=useRouter();
             const store=useStore();
             const show=ref(false);
             const showloader=ref(false);
+            const disabledToDate=ref('');
+            const facturation_total_taux=ref(50);
+            const facturation_total=ref(0);
+            disabledToDate.value= new Date(new Date().getTime() - 24*60*60*1000).toJSON().slice(0,10);
             let order_id=route.params.id;
+            const moneyconfig=ref({
+                            masked: false,
+                            prefix: '',
+                            suffix: '€',
+                            thousands: ',',
+                            decimal: '.',
+                            precision: 2,
+                            disableNegative: false,
+                            disabled: false,
+                            min: null,
+                            max: null,
+                            allowBlank: false,
+                            minimumNumberOfCharacters: 0,
+                            });
+        
+                        const facture=ref({
+                            invoice_type_id:1,
+                            description:'',
+                            taux:'',
+                            date:'',
+                            montant:''
+                        })         
 
             onMounted(()=>{
                      document.getElementsByTagName( 'body' )[0].className='hide-overflowY';
@@ -193,10 +223,45 @@ import DatePicker from '../../components/miscellaneous/DatePicker.vue';
                 }
                 return sum;
             }
-        const showmodal_echeance=ref(false);
+            const showmodal_facturation=ref(false);
+            const modal_facturation_title=ref('');
+    
             const new_echeance=()=>{
-             showmodal_echeance.value=true;
-            }
+                modal_facturation_title.value='Nouvelle échéance';
+                showmodal_facturation.value=true;
+                facture.value.invoice_type_id=1;
+                facture.value.montant='12';
+                facture.value.taux=(100-facturation_total_taux.value)*100;
+                facture.value.description='Lancement reparation';
+                        }
+            const new_remise=()=>{
+                modal_facturation_title.value='Nouvelle remise';
+                showmodal_facturation.value=true;
+                facture.value.invoice_type_id=2;
+                facture.value.montant='12';
+                facture.value.taux='50';
+                facture.value.description='Lancement reparation';
+                        }
+            const new_avoir=()=>{
+                modal_facturation_title.value='Nouveau avoir';
+                showmodal_facturation.value=true;
+                facture.value.invoice_type_id=3;
+                facture.value.montant='12';
+                facture.value.taux='50';
+                facture.value.description='Lancement reparation';
+                        }
+            const newOrderInvoice=()=>{
+                showmodal_facturation.value=false;
+                console.log('confirmed');
+            }   
+            const checktaux=()=>{
+                console.log(facture.value.taux);
+                if(facture.value.invoice_type_id==1){
+                    let x=parseFloat(facture.value.taux);
+                    if(x>(100-facturation_total_taux.value))
+                    facture.value.taux=(100-facturation_total_taux.value)*100;
+                }
+            } 
              return {
                  show,
                  showloader,
@@ -211,7 +276,18 @@ import DatePicker from '../../components/miscellaneous/DatePicker.vue';
                  sumZoneH,
                  sumZoneTotal,
                  new_echeance,
-                 showmodal_echeance
+                 new_remise,
+                 new_avoir,
+                 showmodal_facturation,
+                 moneyconfig,
+                 facture,
+                 newOrderInvoice,
+                 modal_facturation_title,
+                 disabledToDate,
+                 facturation_total_taux,
+                 facturation_total,
+                 checktaux
+    
 
              }
         }

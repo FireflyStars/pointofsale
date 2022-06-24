@@ -23,6 +23,7 @@
                             icon="entite" 
                             name="ENTITE" 
                             class="almarai_extrabold_normal_normal"
+                            style="height: 46px;"
                         />
 
                             
@@ -35,9 +36,9 @@
                                     <template v-slot:statut_name="{ row }">
 
                                         <span 
-                                            class="text-uppercase" 
+                                            class="tag" 
                                             :style="{ 
-                                                'color': row.statut_color, 
+                                                'background': row.statut_color, 
                                             }"
                                             >
                                             {{ row.statut_name }}
@@ -105,6 +106,23 @@
 </script>
 
 <style lang="scss" scoped>
-
+.tag {
+    text-transform: capitalize;
+    background: #DDD;
+    border-radius: 70px;
+    text-align: center;
+    font-size: 12px;
+    height: 24px;
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 24px;
+    transition: all 0.5s ease-in;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding:0 10px;
+    width: 120px;
+}
 
 </style>

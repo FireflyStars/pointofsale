@@ -478,7 +478,7 @@
         border-radius: 5px;
         background: transparent url('../../../../img/calendar.svg') no-repeat center right 10px;
         background-size: 12px;
-        width: 154px;
+        width: 100%;
         height: 40px;
         line-height: 40px;
         padding-left: 22px;
@@ -511,7 +511,7 @@
     }
     .dp{
         position: relative;
-        width: 154px;
+        width: 100%;
         top:-2px;
     }
     .dp-picker{
@@ -521,7 +521,7 @@
         background: #F5F5F5;
         box-shadow: 0px 1px 2px rgba(0, 14, 51, 0.25);
         border-radius: 16px;
-        z-index: 100;
+        z-index: 10001;
         padding: 24px;
         transform-origin: top left;
         transition: min-height 0.3s ease-in-out;

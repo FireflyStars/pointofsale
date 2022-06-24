@@ -198,7 +198,7 @@ P {
   background: rgba(224, 224, 224,0.5)!important;
 }
 
-.input-text{
+.input-text,.v-money3{
   width: 100%;
     height: 40px;
     background: #EEEEEE;
@@ -208,6 +208,6 @@ P {
     outline: none;
     transition: all 0.3s ease-in-out;
 }
-.input-text:focus{
+.input-text:focus,.v-money3:focus{
  background: #DDDDDD;;
 }

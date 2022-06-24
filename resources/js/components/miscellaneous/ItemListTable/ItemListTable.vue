@@ -640,6 +640,7 @@ export default {
     padding: 23px 5px 4px 5px;
     margin-bottom: 3px;
      box-shadow: inset 0px -1px 0px rgba(168, 168, 168, 0.5);
+     min-width:1600px;
 }
 .list-footer{
     background: #FFF;
@@ -649,6 +650,11 @@ export default {
       box-shadow: inset 0px -1px 0px rgba(168, 168, 168, 0.5);
       min-height: 66px;
       margin-bottom: 10px;
+      min-width: 1600px;
+}
+
+.list{
+    min-width: 1600px;
 }
 .list-header input{
     width:100%;
@@ -746,6 +752,7 @@ export default {
     align-items: center;
     display: flex;
     font-size: 16px;
+    word-break: break-word;
    
 }
 .list-row{

@@ -33,6 +33,7 @@
         "loader": "^2.1.1",
         "moment": "^2.29.1",
         "sweetalert2": "^11.4.4",
+        "v-money3": "^3.21.0",
         "vue": "^3.2.22",
         "vue-html2pdf": "^1.8.0",
         "vue-pdf-embed": "^1.1.2",

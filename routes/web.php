@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActionCommercialListController;
 use App\Models\User;
 use App\Models\Campagne;
 use App\Models\page_builder;
@@ -72,6 +73,13 @@ Route::get('/get-entite-list', [EntiteController::class, 'index']);
 Route::post('/get-entite-list', [EntiteController::class, 'index']);
 Route::post('/get-entite-list-user', [EntiteController::class, 'index']);
 
+Route::get('/action-commercial-list', [ActionCommercialListController::class, 'index']);
+Route::post('/action-commercial-list', [ActionCommercialListController::class, 'index']);
+Route::get('/action-commercial-list-mes', [ActionCommercialListController::class, 'list_user']);
+Route::post('/action-commercial-list-mes', [ActionCommercialListController::class, 'list_user']);
+Route::post('/action-commercial-statuses', [ActionCommercialListController::class, 'statuses_formatted']);
+Route::post('/get-action-commercial-statuses', [ActionCommercialListController::class, 'statuses']);
+
 
 Route::post('/api',[ApiController::class,'index'])->middleware('cors')->name('api');
 
@@ -114,6 +122,9 @@ Route::group([
     Route::post('/get-devis-list',[DevisController::class,'loadList'])->middleware('auth')->name('get-devis-list');
     Route::post('/get-order-detail',[DevisController::class,'getOrderDetail'])->middleware('auth')->name('get-order-detail');
     Route::post('/set-order-state',[DevisController::class,'setOrderState'])->middleware('auth')->name('set-order-state');
+    Route::post('/new-order-invoice',[DevisController::class,'newOrderInvoice'])->middleware('auth')->name('new-order-invoice');
+    Route::post('/remove-order-invoice',[DevisController::class,'removeOrderInvoice'])->middleware('auth')->name('remove-order-invoice');
+    Route::post('/validate-order-invoice',[DevisController::class,'validateOrderInvoice'])->middleware('auth')->name('validate-order-invoice');
     Route::post('/get-order-states',[DevisController::class,'getOrderStates'])->middleware('auth')->name('get-order-states');
     Route::post('/get-order-states-formatted',[DevisController::class,'getOrderStatesFormatted'])->middleware('auth')->name('get-order-states-formatted');
     Route::post('/get-ged-categories', [DevisController::class,'getGedCategories'])->middleware('auth')->name('get.ged.categories');

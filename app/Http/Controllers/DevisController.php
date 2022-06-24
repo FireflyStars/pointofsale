@@ -138,6 +138,15 @@ class DevisController extends Controller
         $order=Order::find($order_id);
         $order->updateState($order_state_id);
     }
+    public function newOrderInvoice(Request $request){
+
+    }
+    public function removeOrderInvoice(Request $request){
+        
+    }
+    public function validateOrderInvoice(Request $request){
+        
+    }
     public function getOrderStates(Request $request){
         return response()->json(OrderState::all());
     }

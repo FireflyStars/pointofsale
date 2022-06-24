@@ -130,8 +130,6 @@ export const itemlist= {
             let bodytag=document.getElementsByTagName( 'body' )[0]
             if(params.current==''){
                 bodytag.className='';
-            }else{
-                bodytag.classList.add('hide-overflowY');
             }
         },
         [ITEM_LIST_TABLEDEF]:({commit,state,dispatch},table)=>{
