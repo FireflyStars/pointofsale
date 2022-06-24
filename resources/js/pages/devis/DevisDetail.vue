@@ -103,13 +103,16 @@
     <div class="col-6">Description</div><div class="col-6"><input type="text" v-model="facture.description" class="input-text"/></div>
 </div>
 <div class="row mb-3">
-    <div class="col-6">Taux</div><div class="col-6"><input type="text" v-model="facture.taux" @keyup="checktaux" class="input-text" v-mask="['#%','##%','###%','#.##%','##.##%','###.##%']"></div> {{facture.taux}}
+    <div class="col-6">Taux</div><div class="col-6"><input type="text" v-model="facture.taux" @keyup="checktaux" @blur="addper" class="input-text" ></div> 
 </div>
 <div class="row mb-3">
     <div class="col-6">Date</div><div class="col-6"><date-picker :disabledToDate="disabledToDate" name="echeance" :droppos="{top:'40px',right:'auto',bottom:'auto',left:'0',transformOrigin:'top center'}"></date-picker></div>
 </div>
 <div class="row mb-3">
-    <div class="col-6">Montant</div><div class="col-6"> <money3 v-model="facture.montant" v-bind="moneyconfig"></money3> </div>
+    <div class="col-6">Montant</div><div class="col-6"> <money3 v-model="facture.montant" v-bind="moneyconfig" @keyup="checkmontant"></money3>
+    <pre>
+    {{facture}}</pre>
+     </div>
 </div>
     </div>
      
@@ -117,7 +120,7 @@
 </template>
 
 <script>
-import { computed, onMounted, ref,h } from 'vue';
+import { computed, onMounted, ref,h, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex';
 import ItemDetailPanel from '../../components/miscellaneous/ItemListTable/ItemDetailPanel.vue'
@@ -142,7 +145,7 @@ import { mask } from 'vue-the-mask';
             const showloader=ref(false);
             const disabledToDate=ref('');
             const facturation_total_taux=ref(50);
-            const facturation_total=ref(0);
+            const facturation_total=ref(890.40);
             disabledToDate.value= new Date(new Date().getTime() - 24*60*60*1000).toJSON().slice(0,10);
             let order_id=route.params.id;
             const moneyconfig=ref({
@@ -225,14 +228,25 @@ import { mask } from 'vue-the-mask';
             }
             const showmodal_facturation=ref(false);
             const modal_facturation_title=ref('');
+
+           /* watch(()=>facture.value.montant,(current_val, previous_val)=>{
+                                if(facture.value.invoice_type_id==1){
+                                        let montant=parseFloat(current_val);
+                                        console.log(montant);
+                                }   
     
+            },{deep:true});
+    */
             const new_echeance=()=>{
                 modal_facturation_title.value='Nouvelle échéance';
                 showmodal_facturation.value=true;
                 facture.value.invoice_type_id=1;
-                facture.value.montant='12';
-                facture.value.taux=(100-facturation_total_taux.value)*100;
+       
+                let taux=(100-facturation_total_taux.value);
+                facture.value.taux=`${taux}%`;
+                facture.value.montant=(order.value.total/100)*taux;
                 facture.value.description='Lancement reparation';
+                console.log(facture);
                         }
             const new_remise=()=>{
                 modal_facturation_title.value='Nouvelle remise';
@@ -247,21 +261,58 @@ import { mask } from 'vue-the-mask';
                 showmodal_facturation.value=true;
                 facture.value.invoice_type_id=3;
                 facture.value.montant='12';
-                facture.value.taux='50';
+                facture.value.taux='50%';
                 facture.value.description='Lancement reparation';
                         }
             const newOrderInvoice=()=>{
                 showmodal_facturation.value=false;
                 console.log('confirmed');
             }   
-            const checktaux=()=>{
-                console.log(facture.value.taux);
-                if(facture.value.invoice_type_id==1){
-                    let x=parseFloat(facture.value.taux);
-                    if(x>(100-facturation_total_taux.value))
-                    facture.value.taux=(100-facturation_total_taux.value)*100;
+            const checktaux=(event)=>{
+              
+                let allowedkey=['0','1','2','3','4','5','6','7','8','9','.','Enter','Backspace','Delete'].filter(key=>key==event.key);
+                if(allowedkey.length>0){
+                    if(facture.value.invoice_type_id==1){
+                        let taux=parseFloat(facture.value.taux);
+                     
+                        if(taux>(100-facturation_total_taux.value))
+                        taux=100-facturation_total_taux.value;
+                           
+
+                        facture.value.taux=isNaN(taux)?'':`${taux}`;
+                        facture.value.montant=isNaN(taux)?'':(order.value.total/100)*taux;
+                    }
+                     if(facture.value.invoice_type_id==2){
+                        let taux=parseFloat(facture.value.taux);
+                     
+                        if(taux>(100-facturation_total_taux.value))
+                        taux=100-facturation_total_taux.value;
+                           
+
+                        facture.value.taux=isNaN(taux)?'':`${taux}`;
+                        facture.value.montant=isNaN(taux)?'':(order.value.total/100)*taux;
+                    }
                 }
             } 
+            const checkmontant=()=>{
+                if(facture.value.invoice_type_id==1){
+                  
+                    let montant=facture.value.montant;
+                    if(montant>(order.value.total-facturation_total.value)){
+                          montant=order.value.total-facturation_total.value;  
+                            
+                    }
+                    facture.value.montant=montant;
+                    let taux=(montant/order.value.total)*100;
+                    facture.value.taux=`${taux.toFixed(2)}%`;
+                }
+
+            }
+            const addper=()=>{
+                  if(facture.value.invoice_type_id==1){
+                    facture.value.taux=`${facture.value.taux}%`;
+                  }
+            }
              return {
                  show,
                  showloader,
@@ -286,7 +337,9 @@ import { mask } from 'vue-the-mask';
                  disabledToDate,
                  facturation_total_taux,
                  facturation_total,
-                 checktaux
+                 checktaux,
+                 checkmontant,
+                 addper
     
 
              }
