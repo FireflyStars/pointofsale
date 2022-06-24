@@ -15,8 +15,8 @@ const mix = require('laravel-mix');
  mix.webpackConfig ({
      plugins: [
          new webpack.DefinePlugin({
-            // __VUE_OPTIONS_API__: false,
-            // __VUE_PROD_DEVTOOLS__: true
+            __VUE_OPTIONS_API__: false,
+            __VUE_PROD_DEVTOOLS__: true
          }),
          new ImageminPlugin( {
                         disable: process.env.NODE_ENV !== 'production', // Disable during development
@@ -28,17 +28,15 @@ const mix = require('laravel-mix');
      ],
  })
 
-// mix.copy('resources/js/images','public/images');
-
-mix.js('resources/js/app.js', 'public/js')
-.sass('resources/css/app.scss', 'public/css').vue()
-// .browserSync({
-//     proxy:'lcdt.local',
-//     files: [
-//         'resources/views/**/*.php',
-//         'public/js/**/*.js',
-//         'public/css/**/*.css'
-//     ]
-// })
-// .version();
+ mix.copy('resources/js/images','public/images');
+ mix.js('resources/js/app.js', 'public/js')
+     .sass('resources/css/app.scss', 'public/css').vue()
+     .browserSync({
+        proxy:'lcdt.local',
+        files: [
+            'resources/views/**/*.php',
+            'public/js/**/*.js',
+            'public/css/**/*.css'
+        ]
+    }).version();
 
