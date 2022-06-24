@@ -8,7 +8,7 @@
             <div class="col main-view container">
                 <h1 class="d-flex align-items-center m-0">
                   <span class="customer-icon"></span>
-                  <span class="ms-3 font-22 almarai_extrabold_normal_normal">CREATION CLIENT</span>
+                  <span class="ms-3 font-22 almarai_extrabold_normal_normal">EDITION CLIENT</span>
                 </h1>
                 <ul class="full-nav d-flex p-0 m-0 bg-white">
                     <li class="full-nav-item title border-right col-4 d-flex align-items-center justify-content-center"
@@ -78,8 +78,8 @@
                                     </div>
                                     <div class="col-4"></div>
                                     <div class="col-4">
-                                        <p class="m-0 mulish-light font-14 text-gray text-nowrap">Date Création :</p>
-                                        <p class="m-0 mulish-light font-14 text-gray text-nowrap">Date Modification :</p>
+                                        <p class="m-0 mulish-light font-14 text-gray text-nowrap">Date Création : {{ form.created_at }}</p>
+                                        <p class="m-0 mulish-light font-14 text-gray text-nowrap">Date Modification : {{ form.created_at }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -647,7 +647,7 @@ import {
   
 import axios from 'axios';
 import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { mask } from 'vue-the-mask';
 
 export default {
@@ -662,6 +662,7 @@ export default {
     setup() {
         const store = useStore();
         const router = useRouter();
+        const route = useRoute();
         const step = ref('client-detail');
         // const step = ref('address');
         const customerStatuses  = ref([]);
@@ -677,6 +678,8 @@ export default {
         const contactTypes     = ref([]);
         const form = ref({
             id: '',
+            created_at: '',
+            updated_at: '',
             raisonsociale: '',
             raisonsociale2: '',
             siret: '',
@@ -709,6 +712,7 @@ export default {
             zpe: '',
             // address tab
             addresses: [{
+                id: '',
                 addressType: '',
                 firstName: '',
                 Nom: '',
@@ -738,6 +742,7 @@ export default {
             }],
             // contacts
             contacts: [{
+                id: '',
                 type: '',
                 actif: true,
                 qualite: '',
@@ -841,6 +846,7 @@ export default {
         }); 
         const addAddress = ()=>{
             form.value.addresses.push({
+                id: '',
                 addressType: '',
                 firstName: '',
                 Nom: '',
@@ -871,6 +877,7 @@ export default {
         }     
         const addContact = ()=>{
             form.value.contacts.push({
+                id: '',
                 type: '',
                 actif: true,
                 quantite: '',
@@ -916,8 +923,8 @@ export default {
             }
         })
         const submit = ()=>{
-            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Création d`un nouveau client ...']);
-            axios.post('/add-customer', form.value).then((res)=>{
+            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Mise à jour du client ...']);
+            axios.post('/update-customer', form.value).then((res)=>{
                 if(res.data.success){
                     router.push({ name: 'LandingPage' });
                 }else{
@@ -930,13 +937,19 @@ export default {
                     });
                 }
             }).catch((errors)=>{
-                console.log(errors);
             }).finally(()=>{
                 store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
             })
         }
+        const formatPhone = (phoneNumber)=>{
+            if(phoneNumber.split('|').length == 1){
+                return ['+33', phoneNumber];
+            }else{
+                return phoneNumber.split('|');
+            }
+        }
         onMounted(()=>{
-            axios.post('/get-list-info-for-customer').then((res)=>{
+            axios.post('/get-customer/'+ route.params.id).then((res)=>{
                 customerOrigins.value  = res.data.customerOrigins;
                 customerStatuses.value  = res.data.status;
                 customerTaxes.value    = res.data.taxes;
@@ -948,11 +961,37 @@ export default {
                 customerQualites.value    = res.data.customerQualites;
                 customerTypeBatiments.value    = res.data.customerTypeBatiments;
                 customerMateriaus.value    = res.data.customerMateriaus;
-                form.value.customerOrigin = 1;
-                form.value.customerStatus = 1;
-                form.value.customerTax = 3;
+
+                var customer = res.data.customer;
+                var phone = formatPhone(customer.telephone);
+                customer.phoneCountryCode = phone[0];
+                customer.phoneNumber = phone[1];
+                for (let index = 0; index < customer.addresses.length; index++) {
+                    if(customer.addresses[index].latitude != null){
+                        customer.addresses[index].latitude = parseFloat(customer.addresses[index].latitude.replace(/[a-zA-Z()]/g, ""));
+                    }else{
+                        customer.addresses[index].latitude = 48.85560142492883;
+                    }
+                    if(customer.addresses[index].longitude != null){
+                        customer.addresses[index].longitude = parseFloat(customer.addresses[index].longitude.replace(/[a-zA-Z()]/g, ""));
+                    }else{
+                        customer.addresses[index].longitude = 2.3491914978706396;
+                    }
+                }
+                for (let index = 0; index < customer.contacts.length; index++) {
+                    var phone = formatPhone(customer.contacts[index].mobile);
+                    customer.contacts[index].phoneCountryCode1 = phone[0];
+                    customer.contacts[index].phoneNumber1 = phone[1];
+                    phone = formatPhone(customer.contacts[index].telephone);
+                    customer.contacts[index].phoneCountryCode2 = phone[0];
+                    customer.contacts[index].phoneNumber2 = phone[1];
+                }
+                form.value = customer;
+                if(form.value.addresses.length == 0)
+                    addAddress();
+                if(form.value.contacts.length == 0)
+                    addContact();
             }).catch((errors)=>{
-                console.log(errors);
             }).finally(()=>{
 
             })

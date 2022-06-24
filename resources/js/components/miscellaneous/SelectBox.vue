@@ -126,7 +126,7 @@ export default {
 
         const setCurrentDisplay = () => {
             let currentoption = props.options.filter((option) => {
-                if(typeof props.modelValue!="undefined"){
+                if(typeof props.modelValue != "undefined" && props.modelValue != null){
                     return option.value.toString() == props.modelValue.toString();
                 }
             });

@@ -9,12 +9,8 @@ import { ref, onMounted } from 'vue';
 export default {
     name: "GoogleMap",
     props: {
-        latitude: {
-            type: Number,
-        },
-        longitude: {
-            type: Number,
-        },
+        latitude: '',
+        longitude: '',
     },
     emits: ['update:latitude', 'update:longitude'],
     setup(props, { emit }){
@@ -22,7 +18,6 @@ export default {
         let markers = [];
         const initMap = ()=>{
             const myLatlng = { lat: props.latitude, lng: props.longitude }; // Paris is set as center.
-            // var mapsElements = document.getElementsByClassName("googleMapToSetLatLon");
             const map = new google.maps.Map(googleMap.value, {
                 zoom: 7,
                 center: myLatlng,
