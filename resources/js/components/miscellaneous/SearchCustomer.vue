@@ -35,7 +35,7 @@
                                     </div>
                                 </div>   
                                 <div class="col-6" style="padding-top:24px">
-                                    <b class ="email body_regular">{{ customer.email.toLowerCase()}}</b>   
+                                    <b class ="email body_regular">{{ customer.email ? customer.email.toLowerCase() : ''}}</b>
                                 </div>
                                 <div class="col-2" style="text-align: end; padding:0">
                                 </div>
