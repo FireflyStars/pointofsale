@@ -13,7 +13,7 @@
                     
                     <side-bar />
 
-                    <div class="col main-view container px-5">
+                    <div class="col main-view container">
 
                         <div class="d-flex justify-content-between align-items-center">
                         
@@ -21,8 +21,8 @@
                                 icon="report" 
                                 name="Templates" 
                                 class="almarai_extrabold_normal_normal"
-                                width="32" 
-                                height="32"
+                                width="44" 
+                                height="46"
                             />
 
 
@@ -37,19 +37,26 @@
                         
                         </div>
 
-                        
-                        <item-list-table 
-                            :table_def="templatesList" 
-                        >
-                            <template v-slot:pages="{ row }">
-                                {{ row.pages.length }}
-                            </template>
-                            <template v-slot:id="{ row }">
+                        <div class="row m-0 ml-5 mr-5">
 
-                                <a href="#" class="link" @click.stop="navigatePage(row.id)">Edit</a>
+                            <div class="col-12">
                                 
-                            </template>
-                        </item-list-table>
+                                <item-list-table 
+                                    :table_def="templatesList" 
+                                >
+                                    <template v-slot:pages="{ row }">
+                                        {{ row.pages.length }}
+                                    </template>
+                                    <template v-slot:id="{ row }">
+
+                                        <a href="#" class="link" @click.stop="navigatePage(row.id)">Edit</a>
+                                        
+                                    </template>
+                                </item-list-table>
+                            
+                            </div>
+
+                        </div>
 
 
                     </div>

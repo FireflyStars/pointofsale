@@ -103,6 +103,10 @@ onMounted(async ()=> {
     overflow: hidden;
     text-overflow: ellipsis;
     padding:0 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
 }
   
 </style>

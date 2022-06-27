@@ -17,49 +17,59 @@
                     leave-active-class="animate__animated animate_fadeOut"
                 >
 
-                    <div class="col main-view container px-5">
+                    <div class="col main-view container">
                         
                         <page-title 
                             icon="entite" 
                             name="ACTION COMMERCIAL" 
                             class="almarai_extrabold_normal_normal"
-                            width="32"
-                            height="32"
-                            style="height: 46px;"
+                            width="44"
+                            height="46"
+                            style="height: 46px; width: 44px;"
                         />
 
+                        <div class="row m-0 ml-5 mr-5">
                             
-                        <tab-pane :tabs="tabs" current='tout' class="almarai_700_normal">
+                            <div class="col-12">
 
-                            <template v-slot:tout>
-                                
-                                <item-list-table :table_def="actionCommercialList">
-
-                                    <template v-slot:event_status_id="{ row }">
-
-                                        <status-tag :id="row.event_status_id" />
-
-                                    </template>    
-
-                                </item-list-table>
                                     
-                            </template>
+                                <tab-pane :tabs="tabs" current='tout' class="almarai_700_normal px-5">
 
-                            <template v-slot:mes_actions_co>
-                                
-                                <item-list-table :table_def="actionCommercialListUser">
+                                    <template v-slot:tout>
+                                        
+                                        <item-list-table :table_def="actionCommercialList">
+
+                                            <template v-slot:event_status_id="{ row }">
+
+                                                <status-tag :id="row.event_status_id" />
+
+                                            </template>    
+
+                                        </item-list-table>
+                                            
+                                    </template>
+
+                                    <template v-slot:mes_actions_co>
+                                        
+                                        <item-list-table :table_def="actionCommercialListUser">
+                                            
+                                            <template v-slot:event_status_id="{ row }">
+
+                                                <status-tag :id="row.event_status_id" />
+
+                                            </template>  
+
+                                        </item-list-table>
+
+                                    </template>
                                     
-                                    <template v-slot:event_status_id="{ row }">
+                                </tab-pane>
 
-                                        <status-tag :id="row.event_status_id" />
 
-                                    </template>  
+                            </div>
 
-                                </item-list-table>
+                        </div>
 
-                            </template>
-                            
-                        </tab-pane>
 
                         <component :is="Component" />
 

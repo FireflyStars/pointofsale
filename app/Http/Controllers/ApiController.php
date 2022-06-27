@@ -244,6 +244,8 @@ class ApiController extends Controller
                     $event->user->makeHidden(['created_at','updated_at']);
                     $event->user->avatar=getenv('APP_URL').Storage::url( $event->user->avatar);
                     $event->customer->makeHidden(['created_at','updated_at','deleted_at']);
+                    $event->address;
+                    if($event->address!=null)
                     $event->address->makeHidden(['created_at','updated_at','deleted_at']);;
                 }
                 return $this->response(1,$events);

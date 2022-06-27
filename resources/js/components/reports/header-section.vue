@@ -4,7 +4,7 @@
 
         <div>
             <h4 class="tile_h1">
-                <Icon name="report" width="32" height="32" />
+                <Icon name="report" width="44" height="46" />
                 {{ title }}
             </h4>
         </div>
