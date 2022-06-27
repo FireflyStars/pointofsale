@@ -169,8 +169,7 @@
                                         <input v-model="form.naf" type="text" class="form-control" v-mask="'####A'">
                                     </div>
                                 </div>
-                                <div class="col-1"></div>
-                                <div class="col-5 form-group">
+                                <div class="col-6 ps-3 form-group">
                                     <label class="text-nowrap">NOM NAF</label>
                                     <input type="text" v-model="form.nomNaf" class="form-control" readonly>
                                 </div>
