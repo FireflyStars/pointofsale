@@ -875,6 +875,8 @@ public function GetGedDetailCategory(Request $request){
                 $event->user->makeHidden(['created_at','updated_at']);
                 $event->user->avatar=getenv('APP_URL').Storage::url( $event->user->avatar);
                 $event->customer->makeHidden(['created_at','updated_at','deleted_at']);
+                $event->address;
+                if($event->address!=null)
                 $event->address->makeHidden(['created_at','updated_at','deleted_at']);
                 $event->eventType->makeHidden(['created_at','updated_at','deleted_at']);
                 if($event->eventOrigin!=null)  
@@ -920,7 +922,9 @@ public function GetDevis(Request $request){
         if($order==null)  
           return $this->response(0,null,'Aucune cotation trouvée pour cet événement.');
         $order->makeHidden(['created_at','updated_at','deleted_at']);
-        $order->orderZones; 
+        $order->orderZones;
+        $order->address; 
+        if($order->address!=null)
         $order->address->makeHidden(['created_at','updated_at','deleted_at']);
         foreach($order->orderZones as &$order_zone){
             $order_zone->makeHidden(['created_at','updated_at','deleted_at']);
