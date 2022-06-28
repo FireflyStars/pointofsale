@@ -441,10 +441,10 @@ class ApiController extends Controller
                 ->whereNull('orders.deleted_at')
                 ->whereNull('events.deleted_at');
                
-          })->join('addresses',function($join){
+          })->LeftJoin('addresses',function($join){
               $join->on('events.address_id','=','addresses.id')
               ->whereNull('addresses.deleted_at');
-          })->join('customers',function($join) use($words){
+          })->LeftJoin('customers',function($join) use($words){
               $join->on('orders.customer_id','=','customers.id')
               ->whereNull('customers.deleted_at')
               ->where('customers.active','=',1);
@@ -875,6 +875,8 @@ public function GetGedDetailCategory(Request $request){
                 $event->user->makeHidden(['created_at','updated_at']);
                 $event->user->avatar=getenv('APP_URL').Storage::url( $event->user->avatar);
                 $event->customer->makeHidden(['created_at','updated_at','deleted_at']);
+                $event->address;
+                if($event->address!=null)
                 $event->address->makeHidden(['created_at','updated_at','deleted_at']);
                 $event->eventType->makeHidden(['created_at','updated_at','deleted_at']);
                 if($event->eventOrigin!=null)  
@@ -920,7 +922,9 @@ public function GetDevis(Request $request){
         if($order==null)  
           return $this->response(0,null,'Aucune cotation trouvée pour cet événement.');
         $order->makeHidden(['created_at','updated_at','deleted_at']);
-        $order->orderZones; 
+        $order->orderZones;
+        $order->address; 
+        if($order->address!=null)
         $order->address->makeHidden(['created_at','updated_at','deleted_at']);
         foreach($order->orderZones as &$order_zone){
             $order_zone->makeHidden(['created_at','updated_at','deleted_at']);
@@ -976,6 +980,8 @@ public function GetDevisByOrderId(Request $request){
         $order->makeHidden(['created_at','updated_at','deleted_at']);
         $order->orderZones;  
         $order->customer->makeHidden(['created_at','updated_at','deleted_at']); 
+        $order->address;
+        if($order->address!=null)
         $order->address->makeHidden(['created_at','updated_at','deleted_at']);
         foreach($order->orderZones as &$order_zone){
             $order_zone->makeHidden(['created_at','updated_at','deleted_at']);
@@ -1032,6 +1038,8 @@ public function GetTechnicianDevisDetails(Request $request){
         $order->makeHidden(['created_at','updated_at','deleted_at']);
         $order->orderZones;  
         $order->customer->makeHidden(['created_at','updated_at','deleted_at']); 
+        $order->address;
+        if($order->address!=null)
         $order->address->makeHidden(['created_at','updated_at','deleted_at']);
         $order->signatures=[];
         $geds=$order->geds()->get();
