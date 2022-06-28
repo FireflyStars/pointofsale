@@ -441,10 +441,10 @@ class ApiController extends Controller
                 ->whereNull('orders.deleted_at')
                 ->whereNull('events.deleted_at');
                
-          })->join('addresses',function($join){
+          })->LeftJoin('addresses',function($join){
               $join->on('events.address_id','=','addresses.id')
               ->whereNull('addresses.deleted_at');
-          })->join('customers',function($join) use($words){
+          })->LeftJoin('customers',function($join) use($words){
               $join->on('orders.customer_id','=','customers.id')
               ->whereNull('customers.deleted_at')
               ->where('customers.active','=',1);
