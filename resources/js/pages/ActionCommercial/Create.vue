@@ -10,7 +10,19 @@
                   <span class="customer-icon"></span>
                   <span class="ms-3 font-22 almarai_extrabold_normal_normal">CREATION ACTION COMMERCIAL</span>
                 </h1>
-                <transition name="list" appear v-if="step =='client-detail'">
+                <ul class="m-0 p-0 breadcrumb mt-3 mb-3" v-if="breadcrumbs.length">
+                    <li class="breadcrumb-item almarai-extrabold font-18 cursor-pointer" 
+                    v-for="(breadcrumb, index) in breadcrumbs" 
+                    @click="goToStep(index)"
+                    :key="index">{{ breadcrumb }}</li>
+                </ul>    
+                <transition  name="list" appear v-if="step =='choose_customer'">
+                    <div class="col-5 bg-white p-3 rounded">
+                        <h2 class="almarai-extrabold font-22">Détail Client <span @click="addNewCustomer" class="ms-3 almarai-bold font-16 cursor-pointer text-decoration-underline text-custom-success">Nouveau</span></h2>
+                        <SearchCustomer name="search" @selected="selectedCustomer" :droppos="{top:'auto',right:'auto',bottom:'auto',left:'0',transformOrigin:'top right'}" label="Rechercher client" hint="disabled till 2021-09-10" ></SearchCustomer>
+                    </div>
+                </transition>            
+                <transition name="list" appear v-if="step =='choose_action'">
                     <div class="cust-page-content client-detail m-auto pt-5">
                         <div class="page-section">
                             <h3 class="m-0 mulish-extrabold font-22">ACTION COMMERCIAL</h3>
@@ -149,14 +161,13 @@
   </router-view>
 </template>
 <script>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watchEffect } from 'vue';
 import SelectBox from '../../components/miscellaneous/SelectBox';
+import SearchCustomer from '../../components/miscellaneous/SearchCustomer';
 import {     
   DISPLAY_LOADER,
   HIDE_LOADER,
   LOADER_MODULE, 
-  TOASTER_MESSAGE, 
-  TOASTER_MODULE
   } from '../../store/types/types';
   
 import axios from 'axios';
@@ -170,13 +181,26 @@ export default {
     },
     components:{
         SelectBox,
-        CheckBox,
-        GoogleMap
+        SearchCustomer
     },
     setup() {
         const store = useStore();
         const router = useRouter();
-        const step = ref('client-detail');
+        const breadcrumbs = ref(['Choix client']);
+        const step = ref('choose_customer');
+        watchEffect(()=>{
+            if(step.value == 'choose_customer'){
+                breadcrumbs.value = ['Choix client'];
+            }else if(step.value == 'choose_address'){
+                breadcrumbs.value = ['Choix client', 'Choix adresse chantier'];
+            }else if(step.value == 'choose_contact'){
+                breadcrumbs.value = ['Choix client', 'Choix adresse chantier', 'Choix contact'];
+            }else if(step.value == 'choose_action'){
+                breadcrumbs.value = ['Choix client', 'Choix adresse chantier', 'Choix contact', 'Action'];
+            }else{
+
+            }
+        })        
         const action = ref({
             libelle: '',
             status: '',
@@ -196,6 +220,22 @@ export default {
         const cancel = ()=>{
 
         }
+        const addNewCustomer = ()=>{
+            router.push({
+                name: "CreateCustomer"
+            })
+        }        
+        const goToStep = (index)=>{
+            if(index == 0){
+                step.value = 'choose_customer';
+            }else if(index == 1){
+                step.value = 'choose_address';
+            }else if(index == 2){
+                step.value = 'choose_contact';
+            }else if(index == 3){
+                step.value = 'choose_action';
+            }
+        }        
         const submit = ()=>{
             store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Création d`un nouveau client ...']);
             axios.post('/add-action', action.value).then((res)=>{
@@ -206,12 +246,32 @@ export default {
                 store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
             })
         }
+        const selectedCustomer = (data)=>{
+            // move on to "addess choose step"
+            step.value = 'choose_address';
+            // set customer value to devis form
+            // form.value.customer = data;
+
+            // loading customer addresses
+            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Chargement des adresses des clients..']);
+            axios.post('/get-customer-addresses', { customer_id: data.id }).then((res)=>{
+                customerAddresses.value = res.data;
+            }).catch((error)=>{
+                console.log(error);
+            }).finally(()=>{
+                store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+            })
+        }        
         onMounted(()=>{
 
         })
         return {
             action,
             step,
+            breadcrumbs,
+            goToStep,
+            addNewCustomer,
+            selectedCustomer,
             cancel,
             submit
         }
@@ -222,14 +282,14 @@ export default {
   .main-view{
       padding: 0;
       h1{
-          padding: 60px 10px 0 80px;
+          padding: 60px 10px 0 0;
       }
   }
 .full-nav{
     margin-top: 28px;
-  height: 70px;
-  border-top: 1px solid #C3C3C3;
-  .full-nav-item{
+    height: 70px;
+    border-top: 1px solid #C3C3C3;
+    .full-nav-item{
       cursor: pointer;
       position: relative;
       .icon{
@@ -260,7 +320,6 @@ export default {
   }
 }  
 .cust-page-content{
-  width: 1000px;
   margin-top: 3.125rem;
   .page-section{
     padding: 1.875rem 5rem 1.875rem;
