@@ -129,7 +129,16 @@ const router = createRouter({
             component: () => import('../pages/entite/index'),
             meta: {
                 authenticated: true
-            }
+            },
+            children: [{
+                path: '/entite/details/:id',
+                name: 'entite-details',
+                component: () => import('../pages/Entite/Details'),
+                props: true,
+                meta: {
+                    authenticated: true
+                }
+            }]
         },
 
         {
@@ -138,7 +147,16 @@ const router = createRouter({
             component: () => import('../pages/ActionCommercial/Index'),
             meta: {
                 authenticated: true
-            }
+            },
+            children: [{
+                path: '/action-commercial/details/:id',
+                name: 'action-commercial-details',
+                component: () => import('../pages/ActionCommercial/Details'),
+                props: true,
+                meta: {
+                    authenticated: true
+                }
+            }]
         },
 
 

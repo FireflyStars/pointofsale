@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\EntiteResource;
 use App\Models\Order;
 use App\Models\Address;
 use App\Models\Contact;
@@ -13,7 +14,6 @@ use Illuminate\Support\Facades\DB;
 
 class EntiteController extends Controller
 {
-
 
     public function index(Request $request) 
     {
@@ -131,61 +131,11 @@ class EntiteController extends Controller
 
     }
 
-
-    public function index_old(Request $request) 
+    public function get_details(Customer $customer) 
     {
-        $customer = Customer::query()
-        ->select(
-            'customers.id',
-            'raisonsociale',
-            'customers.origine',
-            'customer_statut.name as statut',
-            'customers.litige',
-            'orders.total as montant',
-            DB::raw('COUNT(orders.id) as total_orders'),
-            DB::raw(
-                'TRIM(
-                    CONCAT(
-                        contacts.name,
-                        "<br>",
-                        contacts.email,
-                        "<br>",
-                        contacts.mobile
-                    )
-                ) 
-            as contact'),
-            DB::raw(
-                'TRIM(
-                    CONCAT(
-                        addresses.firstname, " ", addresses.lastname,
-                        addresses.address1,
-                        "<br>",
-                        IFNULL(addresses.address2, ""),
-                        IF(addresses.address2, "<br>", ""),
-                        addresses.postcode,
-                        "<br>", 
-                        addresses.city
-                    )
-                ) 
-            as address'),
-            DB::raw('DATE_FORMAT(customers.created_at, "%Y-%m-%d") as created_at'),
-        )
-        ->join('contacts', 'contacts.customer_id', '=', 'customers.id')
-        ->join('addresses', 'addresses.customer_id', '=', 'customers.id')
-        ->join('orders', 'orders.customer_id', '=', 'customers.id')
-        ->join('customer_statut', 'customer_statut.id', '=', 'customers.customer_statut_id')
-        ->where('customers.affiliate_id', $request->user()->affiliate_id);
-
-        $data = (new TableFiltersController)->sorts($request, $customer, 'customers.id');
-        $data = (new TableFiltersController)->filters($request, $customer);
-
-        $data = $customer
-        ->take($request->take ?? 15)
-        ->skip($request->skip ?? 0)
-        ->groupBy('customers.id')
-        ->get();
-
-        return response()->json($data);
-
+        return response()->json(
+            new EntiteResource($customer)
+        );
     }
+
 }

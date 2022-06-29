@@ -72,13 +72,19 @@ Route::post('/valider-card', [CompagneController::class, 'valider_card'])->middl
 Route::get('/get-entite-list', [EntiteController::class, 'index']);
 Route::post('/get-entite-list', [EntiteController::class, 'index']);
 Route::post('/get-entite-list-user', [EntiteController::class, 'index']);
+Route::get('/get-entite-list-details/{customer}', [EntiteController::class, 'get_details']);
 
 Route::get('/action-commercial-list', [ActionCommercialListController::class, 'index']);
 Route::post('/action-commercial-list', [ActionCommercialListController::class, 'index']);
 Route::get('/action-commercial-list-mes', [ActionCommercialListController::class, 'list_user']);
 Route::post('/action-commercial-list-mes', [ActionCommercialListController::class, 'list_user']);
+Route::get('/action-commercial-details/{id}', [ActionCommercialListController::class, 'get_details']);
 Route::post('/action-commercial-statuses', [ActionCommercialListController::class, 'statuses_formatted']);
 Route::post('/get-action-commercial-statuses', [ActionCommercialListController::class, 'statuses']);
+Route::post('/change-action-commercial-event-date/{event}', [ActionCommercialListController::class, 'change_event_date']);
+Route::post('/change-action-commercial-event-user/{event}', [ActionCommercialListController::class, 'change_event_user']);
+Route::get('/get-action-commercial-event-users/{event}', [ActionCommercialListController::class, 'get_event_users']);
+Route::get('/get-event-history/{event}', [ActionCommercialListController::class, 'get_event_history']);
 
 
 Route::post('/api',[ApiController::class,'index'])->middleware('cors')->name('api');

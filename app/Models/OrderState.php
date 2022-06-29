@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class OrderState extends Model
 {
 	use HasFactory;
-    protected $table = 'order_states';
-	//
 	use SoftDeletes;
+
+    protected $table = 'order_states';
 	protected $dates = ['deleted_at'];
 }

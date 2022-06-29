@@ -2,369 +2,774 @@
 
 <item-detail-panel :showloader="showloader">
 
-    <div class="row" v-if="show">
-        <div class="col-4">
-            <page-title icon="pdf" :name="`N° ${order_id}`" class="almarai_extrabold_normal_normal"/>
-        </div>
-        <div class="col-8" style="padding-top:33px">
-            <order-state-tag :order_state_id="order.order_state_id" classes="almarai_700_normal" width="auto"></order-state-tag>
-        </div>
-    </div>
-
-    <div class="row"  v-if="show" style="margin:40px 0 0 8px;">
-        <div class="col-4" v-if="order.order_state_id==4" ><h2 class="almarai_700_normal">Date Commande<br/>{{formatDate(order.datecommande)}}</h2></div>
-         <div :class="{'col-8':order.order_state_id!=4,'col-4':order.order_state_id==4}"><h2 class="almarai_700_normal">Date Promise<br/>{{formatDate(order.datefinprevu)}}</h2></div>
-        <div class="col-2 font-14 almarai_700_normal">{{order.nbheure}}H</div>
-        <div class="col-2 font-16 almarai_700_normal">{{formatPrice(order.total)}}</div>
-    </div>
+    <div class="panel-heading-section d-flex align-items-center gap-4">
     
-    <hr v-if="show"/>
-    <div class="row" v-if="show"><div class="col"><h3 class="almarai_700_normal" v-if="typeof order.customer!='undefined'">{{order.customer.company}}</h3></div></div>
-    <div class="row" v-if="show">
-        <div class="col"><span class="subtitle almarai_700_normal">Adresse du chantier</span><br><span v-html="order.formatted_chantier_address"></span></div>
-        <div class="col"><span class="subtitle almarai_700_normal">Adresse facturation</span><br><span v-html="order.formatted_facturation_address"></span></div>
-    </div>
-    <div class="row" v-if="show">
-        <div class="col"><span class="subtitle almarai_700_normal">Contact</span><br><span v-if="typeof order.contact!='undefined'" v-html="`${typeof order.contact.firstname !='undefined'? order.contact.firstname:''} ${typeof order.contact.name !='undefined'?order.contact.name:''}${br(order.contact.mobile)}${br(order.contact.telephone)}`"></span></div>
-        <div class="col"><span class="subtitle almarai_700_normal">Mode de paiement</span><br><span>--/--</span></div>
-    </div>
-     <hr v-if="show"/>
-     <template v-if="order.order_state_id!=4">
-     <div  v-for="orderzone,index in order.order_zones" :key="index" class="od_orderzone" >
-         <div class="row mb-3">
-             <div class="col-8 almarai_700_normal font-14 lcdtgrey d-flex  align-items-center">{{orderzone.name}}</div>
-             <div class="col-2 almarai_700_normal font-14 d-flex justify-content-end align-items-center">{{sumZoneH(orderzone)}}H</div>
-             <div class="col-2 almarai_700_normal font-14 d-flex justify-content-end align-items-center">{{formatPrice(sumZoneTotal(orderzone))}}</div>
-        </div>
-        <div class="row mb-2">
-             <div class="col-4"></div>
-             <div class="col-8">
-                <div class="row flex-grow-1 justify-content-between">
-                    <div class="col-2 almarai-light font-12 d-flex lcdtgrey justify-content-end align-items-center"></div>
-                    <div class="col-4 almarai-light font-12 d-flex lcdtgrey justify-content-center align-items-center">Ouvrages</div>
-                    <div class="col-3 almarai-light font-12 d-flex lcdtgrey justify-content-end align-items-center">Main-d'œuvre</div>
-                    <div class="col-3 almarai-light font-12 d-flex lcdtgrey justify-content-end align-items-center">Total</div>
-                </div>
-             </div>
-        </div>
-         <div class="row" v-for="groupedOrderOuvrage,index2 in orderzone.groupedOrderOuvrage" :key="index2">
-             <div class="col-4 od_catname font-14 d-flex align-items-center almarai_700_normal">{{index2}}</div>
-             <div class="col-8 font-14 flex-column">
-                 <div class="row flex-grow-1 justify-content-between" v-for="orderOuvrage,index3 in groupedOrderOuvrage" :key="index3">
-                     <div class="col-2 d-flex align-items-center justify-content-end almarai-light">{{orderOuvrage.qty}}</div>
-                     <div class="col-4 d-flex align-items-center almarai-light">{{orderOuvrage.name}}</div>
-                    <div class="col-3 almarai-light font-14 d-flex  justify-content-end align-items-center">{{orderOuvrage.nbheure}}H</div>
-                    <div class="col-3 almarai-light font-14 d-flex  justify-content-end align-items-center">{{formatPrice(orderOuvrage.total)}}</div>
-                 </div>
+        <h1 class="heading">
+            <Icon name="user-star" />
+            <span style="vertical-align: bottom;">N°{{ details.id || '--/--' }}</span>
+        </h1>
 
-             </div>
-           
+        <div class="text-editer">
+            Editer
         </div>
-      
-     </div>
-     </template>
-     <template v-if="order.order_state_id==4">
-        <div class="od_invoices">
-            <div class="row">
-                <div class="col-4 almarai_700_normal font-14 lcdtgrey d-flex align-items-center">Facturation</div>
-                <div class="col-2 almarai_700_normal font-14 d-flex align-items-center">{{facturation_total_taux}}%</div>
-                <div class="col-2"></div>
-                <div class="col-2  almarai_700_normal font-14 d-flex align-items-center justify-content-end">{{formatPrice(facturation_total)}}</div>
-                <div class="col-1"></div>
-                <div class="col-1"></div>
+
+        <div 
+            v-show="show"
+            class="tag" 
+            style="margin-left: 3rem"
+            :style="{ 'background': details?.event_status_color }"
+        >
+            {{ details.event_status }}        
+        </div>
+
+    </div>
+
+    <div class="responsable-section d-flex justify-content-between align-items-center">
+    
+        <div class="d-flex flex-column gap-1">
+            <span class="title-label">Responsable action :</span>
+            <span class="detail text-capitalize">{{ details.client_name || '--/--' }}</span>
+        </div>
+
+        <div class="d-flex flex-column gap-1">
+            <span class="title-label">Date de l action :</span>
+            <span class="detail">{{ details.event_date ? moment(details.event_date).format('Y/MM/DD HH:mm') : '--/--' }}</span>
+        </div>
+
+        <div class="d-flex flex-column gap-1">
+            <span class="title-label">Type action</span>
+            <span class="detail">{{ details.event_type || '--/--' }}</span>
+        </div>
+
+        <div class="d-flex flex-column gap-1">
+            <span class="title-label">Origine</span>
+            <span class="detail">{{ details.event_origin || '--/--' }}</span>
+        </div>
+
+    </div>
+
+    <hr />
+
+
+    <div class="raison-social-entite-section">
+    
+        <h2 class="heading-label">Raison social Entite</h2>
+
+        <div class="row mt-4">
+            <div class="col">
+                <span class="title-label">Adresse du chantier</span>
+                <span class="detail" v-html="formattedAddress"></span>
             </div>
-            <div class="row">
-                <div class="col-4"></div>
-                <div class="col-2 almarai-light lcdtgrey d-flex font-12 align-items-center">Taux</div>
-                <div class="col-2 almarai-light lcdtgrey  d-flex font-12 align-items-center justify-content-center">Date</div>
-                <div class="col-2 almarai-light lcdtgrey  d-flex font-12 align-items-center justify-content-end">Total</div>
-                <div class="col-1"></div>
-                <div class="col-1"></div>
+            <div class="col">
+                <span class="title-label">Adresse facturation</span>
+                <span class="detail">{{ details.address_type?.name  || '--/--'}}</span>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 1.875rem;">
+            <div class="col">
+                <span class="title-label">Contact</span>
+                <span class="detail" v-html="contact"></span>
+            </div>
+            <div class="col">
+                <span class="title-label">Mode de paiement</span>
+                <span class="detail">{{ details.paiement?.name || '--/--' }}</span>
+            </div>
+        </div>
+
+    </div>
+
+    <hr>
+
+    <div class="action-commercial-section">
+
+        <h4 class="heading-label-fade">Action commerciale</h4>
+
+        <h4 class="heading-label" style="margin-left: 2.18rem; margin-top: 10px;">{{ details.event_name || '--/--' }}</h4>
+
+        <p 
+            class="detail-label-fade text-justify" 
+            style="width: 80%; margin: 10px auto 0 auto;"
+        >
+            {{ details.event_description || '--/--' }}
+        </p>
+
+    </div>
+
+    <div class="history-section" v-if="show">
+
+        <a href="#" class="link" @click.prevent="fetchEventHistory" v-if="!fetchedHistory">Voir tout</a>
+
+        <h4 class="heading-label-fade">Historique</h4>
+
+        <div class="title-rows text-center">
+            <div class="title-label">Date</div>
+            <div class="title-label">Status</div>
+            <div class="title-label">Responsable</div>
+            <div class="title-label">Commentaire</div>
+        </div>
+
+        <div 
+            v-for="history in details.event_history"
+            :key="history.id"
+            class="detail-rows" 
+            style="margin-top: 1rem"
+        >
+
+            <div class="d-flex align-items-center gap-3">
+                <div class="radio-button"></div>
+                <div>{{ moment(history.created_at).format('DD/MM/Y HH:mm') }}</div>
             </div>
 
-            <div class="d-flex justify-content-evenly mt-4">
-                <span v-if="order.total>0&&facturation_total_taux<100" class="font-14 mulish_600_normal facture_action noselect" @click="new_echeance"><icon name="plus-circle" /> AJOUTER ÉCHEANCE</span>
-                <span class="font-14 mulish_600_normal facture_action  noselect" @click="new_remise" ><icon name="plus-circle" /> AJOUTER REMISE</span>
-               <span class="font-14 mulish_600_normal facture_action  noselect" @click="new_avoir" ><icon name="plus-circle" /> AJOUTER AVOIR</span>
-            </div>    
+            <div 
+                class="tag"
+                :style="{ 'background': history?.status?.color }"
+            >
+                {{ history?.status?.name }}
+            </div>
+
+            <div class="">{{ history.user?.name }}</div>
+            <div class="">{{ history.comment }}</div>
+
         </div>
-     </template>
-     <div class="od_actions mb-3" v-if="show">
-        <button class="btn btn-outline-dark almarai_700_normal" @click="goto()">Editer</button>
-        <button v-if="order.order_state_id!=4" class="btn btn-outline-success almarai_700_normal" @click="changeOrderState(4)">Gagne</button>
-        <button v-if="order.order_state_id!=4" class="btn btn-outline-secondary almarai_700_normal"  @click="changeOrderState(20)">Perdu</button>  
-        <button v-if="order.order_state_id!=4" class="btn btn-outline-primary almarai_700_normal"  @click="changeOrderState(18)">Abandonne</button>  
-        <button v-if="order.order_state_id!=4" class="btn btn-outline-warning almarai_700_normal"  @click="changeOrderState(3)">Attente client</button>   
-     </div>
+
+    </div>
+
+    <div class="devis-section" v-if="show && details.order">
+
+        <h4 class="heading-label-fade">Devis / Commande</h4>
+
+        <div class="title-rows">
+            <div class="title-label">Date</div>
+            <div class="title-label">Numero</div>
+            <div class="title-label">Responsable</div>
+            <div class="title-label">Type</div>
+            <div class="title-label">Status</div>
+            <div class="title-label total">Total</div>
+        </div>
+
+        <div class="detail-rows" style="margin-top: 1.5rem;">
+
+            <div class="d-flex align-items-center gap-3">
+                <div class="radio-button" style="width: 16px;"></div>
+                <div>{{ details.order?.created_at ? moment(details?.order?.created_at).format('DD/MM/Y HH:mm') : '' }}</div>
+            </div>
+
+
+            <div>
+                <router-link 
+                    class="devisLink"
+                    :to="{ 
+                        name: 'DevisDetail',
+                        params: {
+                            id: details?.order?.nbheure || 0
+                        } 
+                    }"
+
+                >
+                    {{ details?.order?.nbheure }}
+                </router-link>
+            </div>
+            <div>{{ details?.order?.user?.name || '' }}</div>
+            <div>{{ details?.order?.state?.order_type }}</div>
+
+            <div 
+                class="tag" 
+                :style="{ 
+                    background: details?.order?.state?.color, 
+                    color: details?.order?.state?.fontcolor 
+                }"
+            >
+                {{ details?.order?.state?.name }}
+            </div>
+
+            <div class="">{{ details?.order?.total?.toFixed(2) }} &euro;</div>
+
+        </div>
+
+    </div>
+
+    <div class="footer-section d-flex justify-content-between align-items-center gap-2">
+
+        <base-button 
+            :disabled="showloader"
+            title="Editer" 
+            kind="green" 
+            @click.prevent="$router.push({ path: `/action-commercial/edit/${details.id}` })" 
+        />
+
+        <base-button 
+            :disabled="showloader"
+            title="Replanifier" 
+            kind="light-green" 
+            class="text-uppercase"
+            @click.prevent="changeDate" 
+        />
+
+        <base-button 
+            :disabled="showloader"
+            title="affecter a" 
+            kind="primary" 
+            class="text-uppercase" 
+            @click.prevent="changeEventUser"
+        />
+
+        <base-button 
+            :disabled="showloader"
+            title="Effacer" 
+            kind="danger" 
+            class="text-uppercase" 
+            @click.prevent="changeEffacer"
+        />
+
+        <base-button 
+            :disabled="showloader"
+            title="Annuler" 
+            @click.prevent="changeAnnuler"
+        />
+
+
+    </div>
 
 
 </item-detail-panel>
 
-<simple-modal-popup v-model="showmodal_facturation" :title="modal_facturation_title" @modalconfirm="newOrderInvoice">
-    <div class="container-fluid">
-<div class="row mb-3">
-    <div class="col-6">Description</div><div class="col-6"><input type="text" v-model="facture.description" class="input-text"/></div>
-</div>
-<div class="row mb-3">
-    <div class="col-6">Taux</div><div class="col-6"><input type="text" v-model="facture.taux" @keyup="checktaux" class="input-text" v-mask="['#%','##%','###%','#.##%','##.##%','###.##%']"></div> {{facture.taux}}
-</div>
-<div class="row mb-3">
-    <div class="col-6">Date</div><div class="col-6"><date-picker :disabledToDate="disabledToDate" name="echeance" :droppos="{top:'40px',right:'auto',bottom:'auto',left:'0',transformOrigin:'top center'}"></date-picker></div>
-</div>
-<div class="row mb-3">
-    <div class="col-6">Montant</div><div class="col-6"> <money3 v-model="facture.montant" v-bind="moneyconfig"></money3> </div>
-</div>
+<simple-modal-popup 
+    v-model="modal.show" 
+    :title="modal.title" 
+    confirmButtonTitle="Change" 
+    @modalconfirm="commitAction"
+>
+    
+    <div class="container-fluid" v-if="modal.status == 'date'">
+        
+        <div class="row mb-3">
+            <div class="col-6">Datedebut</div>
+            <div class="col-6">
+                <date-picker 
+                    :disabledToDate="disabledToDate" 
+                    name="datedebut" 
+                    :droppos="{ top: '40px', right: 'auto', bottom: 'auto', left: '0', transformOrigin: 'top center'}" 
+                    @changed="datedebut = $event.date"
+                />
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-6">DateFin</div>
+            <div class="col-6">
+                <date-picker 
+                    :disabledToDate="disabledDateFin" 
+                    name="datefin" 
+                    :droppos="{ top: '40px', right: 'auto', bottom: 'auto', left: '0', transformOrigin: 'top center'}"
+                    @changed="datefin = $event.date"
+                />
+            </div>
+        </div>
+
+    </div>
+
+    <div class="container-fluid" v-else-if="modal.status == 'user'">
+
+        <select-box
+            v-model="eventUser" 
+            placeholder="Choose User" 
+            :options="userList" 
+            name="user_list" 
+            label="User List"
+            :disabled="!userList.length" 
+        />
+
+    </div>
+
+    <div class="conatiner-fluid" v-else-if="modal.status == 'effacer'">
+
+        <div class="container-fluid">
+        
+        </div>
+
+    </div>
+
+    <div class="conatiner-fluid" v-else-if="modal.status == 'annuler'">
+
+        <div class="container-fluid">
+        
+        </div>
+
     </div>
      
 </simple-modal-popup>
+
+
 </template>
 
-<script>
-import { computed, onMounted, ref,h } from 'vue';
-import { useRoute, useRouter } from 'vue-router'
-import { useStore } from 'vuex';
+<script setup>
+
+import Swal from 'sweetalert2'
+import moment from 'moment'
+import { computed, onMounted, ref, reactive, onBeforeMount } from 'vue'
+import { useStore } from 'vuex'
+
 import ItemDetailPanel from '../../components/miscellaneous/ItemListTable/ItemDetailPanel.vue'
-import OrderStateTag from '../../components/miscellaneous/OrderStateTag.vue';
-import { DEVIS_DETAIL_GET, DEVIS_DETAIL_LOAD, DEVIS_DETAIL_MODULE, DEVIS_DETAIL_SET, DEVIS_DETAIL_UPDATE_ORDER_STATE, ITEM_LIST_MODULE, ITEM_LIST_UPDATE_ROW, ORDERSTATETAG_GET_ORDER_STATES, ORDERSTATETAG_MODULE } from '../../store/types/types';
-import { formatPrice,formatDate,br } from '../../components/helpers/helpers';
-import Swal from 'sweetalert2';
-import DatePicker from '../../components/miscellaneous/DatePicker.vue';
- import { Money3Component } from 'v-money3';
-import { mask } from 'vue-the-mask';
+import StatusTag from '../../components/ActionCo/StatusTag.vue'
 
+import {
+    TOASTER_MODULE,
+    TOASTER_MESSAGE,
+    ACTION_COMMERCIAL_MODULE,
+    GET_ACTION_COMMERCIAL_DETAILS,
+    CHANGE_EVENT_DATE,
+    GET_EVENT_USER_LIST,
+    CHANGE_EVENT_USER,
+    GET_EVENT_HISTORY,
+    RESET_DETAILS
+}
+from '../../store/types/types'
 
-    export default {
-        name: "DevisDetail",
-        components:{ItemDetailPanel,OrderStateTag, DatePicker,money3:Money3Component},
-        directives:{mask},
-        setup(){
-            const route=useRoute();
-            const router=useRouter();
-            const store=useStore();
-            const show=ref(false);
-            const showloader=ref(false);
-            const disabledToDate=ref('');
-            const facturation_total_taux=ref(50);
-            const facturation_total=ref(0);
-            disabledToDate.value= new Date(new Date().getTime() - 24*60*60*1000).toJSON().slice(0,10);
-            let order_id=route.params.id;
-            const moneyconfig=ref({
-                            masked: false,
-                            prefix: '',
-                            suffix: '€',
-                            thousands: ',',
-                            decimal: '.',
-                            precision: 2,
-                            disableNegative: false,
-                            disabled: false,
-                            min: null,
-                            max: null,
-                            allowBlank: false,
-                            minimumNumberOfCharacters: 0,
-                            });
-        
-                        const facture=ref({
-                            invoice_type_id:1,
-                            description:'',
-                            taux:'',
-                            date:'',
-                            montant:''
-                        })         
-
-            onMounted(()=>{
-                     document.getElementsByTagName( 'body' )[0].className='hide-overflowY';
-                show.value=false;
-                showloader.value=true;
-                store.commit(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_SET}`,{})
-                store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_LOAD}`,order_id).then((response)=>{
-                    show.value=true;
-                    showloader.value=false;
-                });
-            })
-            const order=computed(()=>store.getters[`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_GET}`]);
-
-             const order_states=computed(()=>store.getters[`${ORDERSTATETAG_MODULE}${ORDERSTATETAG_GET_ORDER_STATES}`]);
-
-            const changeOrderState = (order_state_id)=>{
-                const order_state=order_states.value.filter(obj=>obj.id==order_state_id);
-                Swal.fire({
-                    title: 'Veuillez confirmer!',
-                    text: `Voulez-vous changer le statut en ${typeof order_state[0]!="undefined"?order_state[0].name:''}?`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#42A71E',
-                    cancelButtonColor: 'var(--lcdtOrange)',
-                    cancelButtonText: 'Annuler',
-                    confirmButtonText: `Oui, s'il vous plaît.`
-                }).then((result) => {
-                     
-                    if (result.isConfirmed) {
-                        showloader.value=true;
-                        store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_UPDATE_ORDER_STATE}`,order_state_id).then(response=>{
-                            showloader.value=false;
-                            store.commit(`${ITEM_LIST_MODULE}${ITEM_LIST_UPDATE_ROW}`,{id:'id',idValue:order_id,colName:'order_state_id',colValue:order_state_id});
-                        })
-                    }
-                });      
-            }
-
-            const goto=()=>{
-                document.getElementsByTagName( 'body' )[0].className='';
-                router.push({ name: 'EditDevis', params: { id: order_id } })
-            }
-            const sumZoneH=(orderzone)=>{
-                let sum=0;
-                for(const i in orderzone.groupedOrderOuvrage){
-                    sum+=orderzone.groupedOrderOuvrage[i].reduce((a, b) =>  a + b.nbheure, 0);
-                }
-                return sum;
-            }
-            const sumZoneTotal=(orderzone)=>{
-                  let sum=0;
-                for(const i in orderzone.groupedOrderOuvrage){
-                    sum+=orderzone.groupedOrderOuvrage[i].reduce((a, b) =>  a + b.total, 0);
-                }
-                return sum;
-            }
-            const showmodal_facturation=ref(false);
-            const modal_facturation_title=ref('');
-    
-            const new_echeance=()=>{
-                modal_facturation_title.value='Nouvelle échéance';
-                showmodal_facturation.value=true;
-                facture.value.invoice_type_id=1;
-                facture.value.montant='12';
-                facture.value.taux=(100-facturation_total_taux.value)*100;
-                facture.value.description='Lancement reparation';
-                        }
-            const new_remise=()=>{
-                modal_facturation_title.value='Nouvelle remise';
-                showmodal_facturation.value=true;
-                facture.value.invoice_type_id=2;
-                facture.value.montant='12';
-                facture.value.taux='50';
-                facture.value.description='Lancement reparation';
-                        }
-            const new_avoir=()=>{
-                modal_facturation_title.value='Nouveau avoir';
-                showmodal_facturation.value=true;
-                facture.value.invoice_type_id=3;
-                facture.value.montant='12';
-                facture.value.taux='50';
-                facture.value.description='Lancement reparation';
-                        }
-            const newOrderInvoice=()=>{
-                showmodal_facturation.value=false;
-                console.log('confirmed');
-            }   
-            const checktaux=()=>{
-                console.log(facture.value.taux);
-                if(facture.value.invoice_type_id==1){
-                    let x=parseFloat(facture.value.taux);
-                    if(x>(100-facturation_total_taux.value))
-                    facture.value.taux=(100-facturation_total_taux.value)*100;
-                }
-            } 
-             return {
-                 show,
-                 showloader,
-                 order_id,
-                 order,
-                 formatPrice,
-                 formatDate,
-                 br,
-                 router,
-                 changeOrderState,
-                 goto,
-                 sumZoneH,
-                 sumZoneTotal,
-                 new_echeance,
-                 new_remise,
-                 new_avoir,
-                 showmodal_facturation,
-                 moneyconfig,
-                 facture,
-                 newOrderInvoice,
-                 modal_facturation_title,
-                 disabledToDate,
-                 facturation_total_taux,
-                 facturation_total,
-                 checktaux
-    
-
-             }
-        }
+const props = defineProps({
+    id: {
+        required: true,
+        type: [String, Number]
     }
+})
+
+const store = useStore()
+const showloader = ref(false)
+const show = ref(true)
+
+const modal = reactive({
+    show: false,
+    title: '',
+    status: ''
+})
+
+const datedebut = ref(null)
+const datefin = ref(null)
+const eventUser = ref(null)
+
+const disabledToDate = computed(() => new Date(new Date().getTime() - 24*60*60*1000).toJSON().slice(0,10))
+const disabledDateFin = computed(() => datedebut.value ? moment(datedebut.value).format('Y-MM-DD') : disabledToDate.value)
+
+const details = computed(() => store.getters[`${ACTION_COMMERCIAL_MODULE}details`])
+const fetchedHistory = computed(() => store.getters[`${ACTION_COMMERCIAL_MODULE}fetchedHistory`])
+
+
+const formattedAddress = computed(() => {
+    
+    if(typeof details.value?.address == 'undefined') return '--/--'
+    if(!Object.entries(details.value?.address).length) return '--/--'
+    
+    const address = details.value?.address
+    
+    return `
+    ${address?.firstname} ${address?.lastname}
+    <br> ${address?.address1 + '<br>'}
+    ${address?.address2 == null ? '' : address?.address2 + '<br>'}
+    ${address?.postcode + '<br>'}
+    ${address?.city}
+    `
+})
+
+const contact = computed(() => {
+    
+    if(typeof details.value?.contact == 'undefined') return '--/--'
+    if(!Object.entries(details.value?.contact).length) return '--/--'
+
+    return `
+        ${details.value?.contact?.name}<br>
+        ${details.value?.contact?.email}<br>
+        ${details.value?.contact?.mobile}
+    `
+})
+
+const userList = computed(() => {
+    return store.getters[`${ACTION_COMMERCIAL_MODULE}userList`].map(user => {
+        return {
+            value: user.id,
+            display: user.name
+        }
+    })
+})
+
+const fetchEventHistory = () => {
+    
+    try {
+        showloader.value = true
+        store.dispatch(`${ACTION_COMMERCIAL_MODULE}${GET_EVENT_HISTORY}`, { id: details.value.id })
+    } 
+    catch(e) {
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                type: 'danger',
+                message: 'Something went wrong',
+                ttl: 5,
+            })
+        throw e
+    } 
+    finally {
+        showloader.value = false
+    }
+
+}
+
+const changeDate = async () => {
+
+    const result = await Swal.fire({
+        title: 'Veuillez confirmer!',
+        text: `Voulez-vous changer le statut en ?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#42A71E',
+        cancelButtonColor: 'var(--lcdtOrange)',
+        cancelButtonText: 'Annuler',
+        confirmButtonText: `Oui, s'il vous plaît.`
+    })
+
+    if (result.isConfirmed) {
+        modal.show = true
+        modal.title = 'Change Event Date'
+        modal.status = 'date' 
+    }
+
+}
+
+const changeEventUser = async () => {
+
+    const result = await Swal.fire({
+        title: 'Veuillez confirmer!',
+        text: `Voulez-vous changer le statut en ?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#42A71E',
+        cancelButtonColor: 'var(--lcdtOrange)',
+        cancelButtonText: 'Annuler',
+        confirmButtonText: `Oui, s'il vous plaît.`
+    })
+
+    if (result.isConfirmed) {
+        modal.show = true
+        modal.title = 'Change Event User'
+        modal.status = 'user' 
+        store.dispatch(`${ACTION_COMMERCIAL_MODULE}${GET_EVENT_USER_LIST}`, details.value.id)
+    }
+
+}
+
+const changeEffacer = async () => {
+    const result = await Swal.fire({
+        title: 'Veuillez confirmer!',
+        text: `Voulez-vous changer le statut en ?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#42A71E',
+        cancelButtonColor: 'var(--lcdtOrange)',
+        cancelButtonText: 'Annuler',
+        confirmButtonText: `Oui, s'il vous plaît.`
+    })
+    if (result.isConfirmed) {
+        modal.show = true
+        modal.title = 'Change Event Status'
+        modal.status = 'effacer' 
+    }
+}
+
+const changeAnnuler = async () => {
+    const result = await Swal.fire({
+        title: 'Veuillez confirmer!',
+        text: `Voulez-vous changer le statut en ?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#42A71E',
+        cancelButtonColor: 'var(--lcdtOrange)',
+        cancelButtonText: 'Annuler',
+        confirmButtonText: `Oui, s'il vous plaît.`
+    })
+    if (result.isConfirmed) {
+        modal.show = true
+        modal.title = 'Change Event Status'
+        modal.status = 'annuler' 
+    }
+}
+
+const commitAction = async () => {
+
+    if(modal.status == 'date') {
+
+        try {
+
+            showloader.value = true
+            modal.show = false
+
+            await store.dispatch(`${ACTION_COMMERCIAL_MODULE}${CHANGE_EVENT_DATE}`, {
+                id: details.value.id,
+                datedebut: datedebut.value,
+                datefin: datefin.value
+            })
+
+        }
+        catch(e) {
+            store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                type: 'danger',
+                message: 'Something went wrong',
+                ttl: 5,
+            })
+            throw e
+        }
+        finally {
+            showloader.value = false
+        }
+
+    }
+
+
+    else if(modal.status == 'user') {
+
+        try {
+            showloader.value = true
+            modal.show = false
+            store.dispatch(`${ACTION_COMMERCIAL_MODULE}${CHANGE_EVENT_USER}`, {
+                id: details.value.id,
+                userId: eventUser.value
+            })
+        }
+
+        catch(e) {
+            store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                type: 'danger',
+                message: 'Something went wrong',
+                ttl: 5,
+            })
+            throw e
+        }
+
+        finally {
+            showloader.value = false
+        }
+
+    }
+
+    else if(modal.status == 'effacer') {}
+
+    else if(modal.status == 'annuler') {}
+
+
+
+
+}
+
+
+const getActionCommercialDetails = async () => {
+    console.log(props.id, " is the props id")
+    try {
+        showloader.value = true
+        show.value = false
+        await store.dispatch(`${ACTION_COMMERCIAL_MODULE}${GET_ACTION_COMMERCIAL_DETAILS}`, props.id)
+    }
+
+    catch(e) {
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            type: 'danger',
+            message: 'Something went wrong',
+            ttl: 5,
+        })
+        throw e
+    }
+
+    finally {
+        show.value = true
+        showloader.value = false
+    }
+
+}
+
+const resetDetails = () => {
+    store.commit(`${ACTION_COMMERCIAL_MODULE}${RESET_DETAILS}`)
+}
+
+onMounted(() => {
+    getActionCommercialDetails()
+})
+
+onBeforeMount(() => {
+    resetDetails()
+})
+
+
 </script>
 
-<style scoped>
-.facture_action{
-    color:#E8581B;
-    cursor: pointer;
+<style lang="scss" scoped>
+
+
+.devisLink {
+    font-weight: bold; 
+    color: #000; 
+    text-decoration: none;
+    &:hover {
+        text-decoration: underline;
     }
-h2{
-    font-size: 16px;
-    line-height: 20px;
-    margin-bottom: 8px;
 }
-h3{
+
+.panel-heading-section {
+    margin-top: 2.25rem;
+}
+
+.heading {
+    font-family: 'Almarai Bold';
+    font-style: normal;
+    font-weight: 800 !important;
+    font-size: 22px;
+    line-height: 110%;
+    color: #000000;
+    margin-bottom: 0;
+}
+.text-editer {
+    font-family: 'Almarai Light';
+    font-style: normal;
+    font-weight: 400;
     font-size: 14px;
-    line-height: 14px;
-    margin-bottom: 8px;
+    line-height: 140%;
+    display: flex;
+    align-items: flex-end;
+    color: #3E9A4D;
 }
-
-hr{
-    margin:25px -20px;
-    background-color: #E0E0E0;
-
-}
-.subtitle{
-    color:#C3C3C3;
-    font-size:14px;
-    font-weight: 400!important;
-}
-.od_orderzone,.od_invoices{
-    background: #F8F8F8;
-    display: block;
-    margin-bottom:22px;
-    padding:10px 20px;
-    box-shadow: inset 0px -1px 0px rgba(168, 168, 168, 0.25);
-}
-
-.lcdtgrey{
-    color:var(--lcdtGrey);
-}
-.od_catname{
+.tag {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 16px 5px 8px;
+    gap: 8px;
     position: relative;
-    padding-left: 54px;
+    width: 104px;
+    height: 23px;
+    background: rgba(241, 210, 164, 0.7);
+    border-radius: 70px;
+    font-family: 'Almarai Bold';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 13px;
+    color: #000000;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding:0 10px;
 }
-.od_catname::after{
-    content:'';
-    display: block;
+
+.responsable-section {
+    margin-top: 1.93rem;
+    margin-bottom: 2.81rem;
+}
+
+.raison-social-entite-section {
+    margin-top: 0.81rem;
+    margin-bottom: 1.3rem;
+}
+
+.action-commercial-section {
+    margin-top: 10px;
+}
+
+.history-section {
+    margin-top: 10px;
+    position: relative;
+    .link {
+        position: absolute;
+        top: .7rem;
+        right: 1rem;
+        font-family: 'Almarai Regular';
+        font-style: normal;
+        font-weight: 400 !important;
+        font-size: 14px;
+        line-height: 140%;
+        display: flex;
+        align-items: flex-end;
+        color: #3E9A4D;
+    }
+}
+
+.devis-section {
+    margin-top: 10px;
+}
+
+.action-commercial-section, .history-section, .devis-section {
+    background: #F8F8F8;
+    box-shadow: inset 0px -1px 0px rgba(168, 168, 168, 0.25);
+    padding: 1.18rem 1.31rem 2.375rem 1.31rem;
+}
+
+.footer-section {
+    margin-top: 1.56rem;
+    margin-bottom: 2rem;
+}
+
+.radio-button {
+    background: #C4C4C4;
     width: 13px;
     height: 13px;
     border-radius: 50%;
-    background-color: var(--lcdtOrange);
-    position: absolute;
-    top:50%;
-    left: 18px;
-    transform: translateY(-50%);
-
 }
-.od_actions{
+
+.title-label, 
+.heading-label, 
+.heading-label-fade, 
+.detail-label-fade {
+    font-family: 'Almarai Bold';
+    font-style: normal;
+    font-weight: 700 !important;
+    font-size: 14px;
+    line-height: 140%;
     display: flex;
-    justify-content: space-between;
+    align-items: flex-end;
+    color: #C3C3C3;
 }
-.od_actions button{
 
+.heading-label {
+    color: #000000;
 }
-.noselect {
-  -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Old versions of Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome, Edge, Opera and Firefox */
+
+.heading-label-fade {
+    color: #868686;
 }
+
+.detail-label-fade {
+    color: #979797;
+    font-family: 'Almarai Regular';
+    font-weight: 400 !important;
+}
+
+.detail {
+    font-family: 'Almarai Light';
+    font-style: normal;
+    font-weight: 300 !important;
+    font-size: 14px;
+    line-height: 140%;
+    color: #000000;
+}
+
+.title-rows, .detail-rows {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    align-items: center;
+    justify-items: center;
+}
+
+.detail-rows {
+    font-family: 'Almarai Light';
+    font-style: normal;
+    font-weight: 300 !important;
+    font-size: 14px;
+    line-height: 140%;
+    color: #000000;
+}
+
+.devis-section {
+    .title-rows, .detail-rows {
+        grid-template-columns: repeat(6, 1fr) !important;
+        align-items: center;
+    }
+}
+
+
 </style>
+
+

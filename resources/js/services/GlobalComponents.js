@@ -27,5 +27,5 @@ export default function globalComponents(app) {
     app.component('Modal', Modal)
     app.component('loader', loader)
     app.component('DatePicker', DatePicker)
-    app.component('SimpleModalPopup',SimpleModalPopup)
+    app.component('SimpleModalPopup', SimpleModalPopup)
 }

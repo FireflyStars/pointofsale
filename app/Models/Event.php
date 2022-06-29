@@ -2,19 +2,22 @@
 
 namespace App\Models;
 
-use App\Traits\LcdtLog;
 use Exception;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Traits\LcdtLog;
+use App\Models\EventStatus;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
 
 
 use function PHPUnit\Framework\throwException;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Event extends Model
 {
     use HasFactory;
     use LcdtLog;
+
+    protected $guarded = ['id'];
 
 
     public function customer(){
@@ -77,4 +80,15 @@ class Event extends Model
    public function contact(){
        return $this->belongsTo(Contact::class);
    }
+
+   public function eventStatus() 
+   {
+        return $this->belongsTo(EventStatus::class);
+   }
+
+   public function eventHistory() 
+   {
+        return $this->hasMany(EventHistory::class);
+   }
+
 }

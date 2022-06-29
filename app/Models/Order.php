@@ -38,7 +38,7 @@ class Order extends Model
     }
 
     public function state(){
-        return $this->belongsTo(OrderState::class);
+        return $this->belongsTo(OrderState::class, 'order_state_id');
     }
 
     public function geds(){
@@ -91,5 +91,10 @@ class Order extends Model
 
     public function address(){
         return $this->belongsTo(Address::class);
+    }
+
+    public function user() 
+    {
+        return $this->belongsTo(User::class, 'responsable_id');
     }
 }

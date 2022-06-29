@@ -89,7 +89,7 @@
      <div class="od_actions mb-3" v-if="show">
         <button class="btn btn-outline-dark almarai_700_normal" @click="goto()">Editer</button>
         <button v-if="order.order_state_id!=4" class="btn btn-outline-success almarai_700_normal" @click="changeOrderState(4)">Gagne</button>
-        <button v-if="order.order_state_id!=4" class="btn btn-outline-secondary almarai_700_normal"  @click="changeOrderState(20)">Perdu</button>  
+        <button v-if="order.order_state_id!=4" class="btn btn-outline-secondary almarai_700_normal" @click="changeOrderState(20)">Perdu</button>  
         <button v-if="order.order_state_id!=4" class="btn btn-outline-primary almarai_700_normal"  @click="changeOrderState(18)">Abandonne</button>  
         <button v-if="order.order_state_id!=4" class="btn btn-outline-warning almarai_700_normal"  @click="changeOrderState(3)">Attente client</button>   
      </div>
