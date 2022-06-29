@@ -1077,6 +1077,7 @@ export default {
           ouvrage.total = 0;
           ouvrage.totalHour = 0;
           ouvrage.qtyOuvrage = ouvrage.qty;
+          ouvrage.totalWithoutMarge = 0;
           ouvrage.tasks.forEach(task=>{
             task.details.forEach(detail=>{
               zone.installOuvrage.sumUnitPrice += parseInt(detail.unitPrice);
@@ -1129,6 +1130,7 @@ export default {
           ouvrage.total = 0;
           ouvrage.totalHour = 0;
           ouvrage.qtyOuvrage = ouvrage.qty;
+          ouvrage.totalWithoutMarge = 0;
           ouvrage.tasks.forEach(task=>{
             task.details.forEach(detail=>{
               zone.securityOuvrage.sumUnitPrice += parseInt(detail.unitPrice);
@@ -1180,6 +1182,7 @@ export default {
           ouvrage.total = 0;
           ouvrage.totalHour = 0;
           ouvrage.qtyOuvrage = ouvrage.qty;
+          ouvrage.totalWithoutMarge = 0;
           ouvrage.tasks.forEach(task=>{
             task.details.forEach(detail=>{
               detail.sumUnitPrice = parseInt(detail.unitPrice);
