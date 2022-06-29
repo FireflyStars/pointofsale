@@ -20,7 +20,7 @@
                     <div class="col main-view container">
                         
                         <page-title 
-                            icon="entite" 
+                            icon="user-star" 
                             name="ACTION COMMERCIAL" 
                             class="almarai_extrabold_normal_normal"
                             width="44"

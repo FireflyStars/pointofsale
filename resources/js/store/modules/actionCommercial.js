@@ -1,8 +1,18 @@
 
+import axios from 'axios'
 import {
+    CHANGE_EVENT_DATE,
     GET_ACTION_COMMERCIAL,
     GET_ACTION_COMMERCIAL_MES,
     ACTION_COMMERCIAL_MODULE,
+    GET_ACTION_COMMERCIAL_DETAILS,
+    SAVE_ACTION_COMMERCIAL_DETAILS,
+    GET_EVENT_USER_LIST,
+    SAVE_EVENT_USER_LIST,
+    CHANGE_EVENT_USER,
+    GET_EVENT_HISTORY,
+    SAVE_EVENT_HISTORY,
+    FORCE_SET_FETCH_HISTORY_FALSE
 }
 from '../types/types'
 
@@ -197,7 +207,7 @@ export const actionCommercial = {
             batch_actions: table.batch_actions,
             translations: table.translations,
             highlight_row: table.highlight_row,
-            item_route_name: "",// the route to trigger when a line is click 
+            item_route_name: "action-commercial-details",// the route to trigger when a line is click 
             max_per_page: 15,//required          
             identifier: "entite_list_all",//required
             filter: true,// required boolean
@@ -216,7 +226,7 @@ export const actionCommercial = {
             batch_actions: table.batch_actions,
             translations: table.translations,
             highlight_row: table.highlight_row,
-            item_route_name: "",// the route to trigger when a line is click 
+            item_route_name: "action-commercial-details",// the route to trigger when a line is click 
             max_per_page: 15,//required          
             identifier: "entite_list_all_mes",//required
             filter: true,// required boolean
@@ -225,11 +235,47 @@ export const actionCommercial = {
 
         },
 
+        details: {},
+
+        userList: [],
+
+        fetchedHistory: false,
+
     },
 
     getters: {
+        
         actionCommercialList: state => state.table_def,
         actionCommercialListUser: state => state.entite_user_table_def,
+        details: state => state.details,
+        userList: state => state.userList,
+        fetchedHistory: state => state.fetchedHistory,
+
+    },
+
+    mutations: {
+
+        [SAVE_ACTION_COMMERCIAL_DETAILS](state, data) {
+            state.details = data
+        },
+        
+        [SAVE_EVENT_USER_LIST](state, data) {
+            state.userList = data
+        },
+
+        [SAVE_EVENT_HISTORY](state, data) {
+            state.details.event_history = data
+            state.fetchedHistory = true
+        },
+
+        [FORCE_SET_FETCH_HISTORY_FALSE](state) {
+            state.fetchedHistory = false
+        },
+
+        [CHANGE_EVENT_USER](state, user) {
+            state.details.client_name = user.name
+        }
+
     },
 
     actions: {
@@ -255,6 +301,81 @@ export const actionCommercial = {
             })
 
         },
+
+        async [GET_ACTION_COMMERCIAL_DETAILS]({ commit }, id) {
+
+            try {
+                const { data } = await axios.get(`/action-commercial-details/${id}`)
+                commit(SAVE_ACTION_COMMERCIAL_DETAILS, data)
+            }
+
+            catch(e) {
+                throw e
+            }
+
+        },
+
+        async [CHANGE_EVENT_DATE]({ dispatch, commit }, data) {
+            
+            try {
+                await axios.post(`/change-action-commercial-event-date/${data.id}`, {
+                    ...data
+                })
+                await dispatch(GET_EVENT_HISTORY, { id: data.id, limit: 5 })
+                commit(FORCE_SET_FETCH_HISTORY_FALSE)
+            }   
+
+            catch(e) {
+                throw e
+            }
+
+        },
+
+        async [GET_EVENT_USER_LIST]({ commit, state }, id) {
+            if(state.userList.length) return 
+            try {
+                const { data } = await axios.get(`/get-action-commercial-event-users/${id}`)
+                commit(SAVE_EVENT_USER_LIST, data)
+            }
+
+            catch(e) {
+                throw e
+            }
+
+        },
+
+        async [CHANGE_EVENT_USER]({ commit }, payload) {
+            
+            try {
+                const { data } = await axios.post(`/change-action-commercial-event-user/${payload.id}`, {
+                    ...payload
+                })
+                commit(CHANGE_EVENT_USER, data)
+            }   
+
+            catch(e) {
+                throw e
+            }
+
+        },
+
+        async [GET_EVENT_HISTORY]({ commit }, { id, limit = 0 }) {
+            
+            try {
+                const { data } = await axios.get(`/get-event-history/${id}`, {
+                    params: {
+                        limit
+                    }
+                })
+                commit(SAVE_EVENT_HISTORY, data)
+            }
+
+            catch(e) {
+                throw e
+            }
+
+        },
+
 
     }
 }

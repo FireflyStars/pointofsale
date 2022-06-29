@@ -172,7 +172,7 @@ const props = defineProps({
     }
 })
 
-const showLoader = ref(false)
+const showloader = ref(false)
 
 const store = useStore()
 
@@ -191,7 +191,7 @@ const grandTotalHt = computed(() => {
 
 const getCampagneDetails = async () => {
     try {
-        showLoader.value = true
+        showloader.value = true
         await store.dispatch(`${CIBLE_MODULE}${GET_CAMPAGNE_DETAILS}`, props.id)
     }
     catch(e) {
@@ -203,7 +203,7 @@ const getCampagneDetails = async () => {
         throw e
     }
     finally {
-        showLoader.value = false
+        showloader.value = false
     }
 }
 

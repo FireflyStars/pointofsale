@@ -3,7 +3,9 @@ import {
     SAVE_ENTITE_LIST,
     GET_ENTITE_LIST,
     GET_ENTITE_LIST_MES,
-    ENTITE_LIST_MODULE
+    ENTITE_LIST_MODULE,
+    GET_ENTITE_DETAILS,
+    SAVE_ENTITE_DETAILS
 }
 from '../types/types'
 
@@ -232,7 +234,7 @@ export const entite = {
             batch_actions: table.batch_actions,
             translations: table.translations,
             highlight_row: table.highlight_row,
-            item_route_name: "",// the route to trigger when a line is click 
+            item_route_name: "entite-details",// the route to trigger when a line is click 
             max_per_page: 15,//required          
             identifier: "entite_list_all",//required
             filter: true,// required boolean
@@ -251,7 +253,7 @@ export const entite = {
             batch_actions: table.batch_actions,
             translations: table.translations,
             highlight_row: table.highlight_row,
-            item_route_name: "",// the route to trigger when a line is click 
+            item_route_name: "entite-details",// the route to trigger when a line is click 
             max_per_page: 15,//required          
             identifier: "entite_list_all_mes",//required
             filter: true,// required boolean
@@ -265,6 +267,13 @@ export const entite = {
     getters: {
         entiteList: state => state.table_def,
         entiteUserList: state => state.entite_user_table_def,
+        details: state => state.details,
+    },
+
+    mutations: {
+        [SAVE_ENTITE_DETAILS](state, data) {
+            state.details = data
+        }
     },
 
     actions: {
@@ -290,6 +299,20 @@ export const entite = {
             })
 
         },
+
+        async [GET_ENTITE_DETAILS]({ commit }, id) {
+
+            try {
+                const { data } = await axios.get(`/get-entite-list-details/${id}`)
+                commit(SAVE_ENTITE_DETAILS, data)
+            }
+            
+            catch(e) {
+                throw e
+            }
+
+
+        }
 
     }
 }

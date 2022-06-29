@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Event;
 use App\Models\EventStatus;
+use App\Models\EventHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\TableFiltersController;
+use App\Http\Resources\ActionCommercialListResource;
 
 class ActionCommercialListController extends Controller
 {
+
     public function index(Request $request) 
     {
 
@@ -36,6 +41,66 @@ class ActionCommercialListController extends Controller
         ->get();            
 
         return response()->json($data); 
+
+    }
+
+    public function get_event_history(Event $event, Request $request) 
+    {
+        return response()->json(
+            $event->eventHistory()
+            ->latest('created_at')
+            ->when($request->has('limit') && $request->limit > 0, function($query) {
+                $query->limit('5');
+            })
+            ->get()
+            ->load('user', 'status')
+        );
+    }
+
+    public function get_details($id) 
+    {
+        DB::enableQueryLog();
+        return response()->json(
+            new ActionCommercialListResource(
+                Event::find($id)
+            )
+        );
+
+    }
+
+    public function get_event_users(Event $event) 
+    {
+        return response()->json(
+            User::where('affiliate_id', $event->affiliate_id)->get()
+        );
+    }
+
+    public function change_event_user(Event $event, Request $request) 
+    {
+        $event->user_id = $request->userId;
+        $event->save();
+        return response()->json($event->user);
+    }
+
+    public function change_event_date(Request $request, Event $event) 
+    {
+
+        $datedebut = Carbon::parse($event->datedebut)->format('Y-m-d');
+        
+        $event->update([
+            'datedebut' => $request->datedebut,
+            'datefin'   => $request->datefin
+        ]);
+
+        $status = EventStatus::where('name', 'Replanification')->first();
+
+        $event->eventHistory()->create([
+            'event_statut_id' => $status->id ?? 17,
+            'comment'         => "$datedebut (Changed date: $event->datedebut)",
+            'user_id'         => $request->user()->id,
+        ]);
+
+        return response()->json("Event dates updated");
 
     }
 

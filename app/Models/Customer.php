@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\CustomerStatut;
+use App\Models\CustomerPaiement;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Customer extends Model
 {
@@ -21,6 +23,16 @@ class Customer extends Model
 
     public function contacts(){
         return $this->hasMany(Contact::class);
+    }
+
+    public function status() 
+    {
+        return $this->belongsTo(CustomerStatut::class, 'customer_statut_id');
+    }
+
+    public function paiement() 
+    {
+        return $this->belongsTo(CustomerPaiement::class, 'customer_paiement_id');
     }
 
 }

@@ -16,7 +16,7 @@
                    <div class="container-fluid">
                       <div class="d-flex justify-content-center">
                          
-                            <button type="button" @click="confirm" class="swal2-confirm swal2-styled swal2-default-outline" aria-label="" style="display: inline-block; background-color: rgb(66, 167, 30);">Enregistrer</button>
+                            <button type="button" @click="confirm" class="swal2-confirm swal2-styled swal2-default-outline" aria-label="" style="display: inline-block; background-color: rgb(66, 167, 30);">{{ confirmButtonTitle }}</button>
                           
                         
                             <button type="button" @click="annuler" class="swal2-cancel swal2-styled swal2-default-outline" aria-label="" style="display: inline-block; background-color: var(--lcdtOrange);">Annuler</button>
@@ -49,6 +49,11 @@ export default {
             type:String,
             default:'',
             required:false
+        },
+        confirmButtonTitle: {
+          required: false,
+          default: 'Enregistrer',
+          type: String,
         }
     },
       emits: ['update:modelValue','modalconfirm','modalclose'],
