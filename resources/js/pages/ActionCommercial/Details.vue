@@ -135,7 +135,7 @@
 
     </div>
 
-    <div class="devis-section" v-if="show">
+    <div class="devis-section" v-if="show && details.order">
 
         <h4 class="heading-label-fade">Devis / Commande</h4>
 
@@ -152,7 +152,7 @@
 
             <div class="d-flex align-items-center gap-3">
                 <div class="radio-button" style="width: 16px;"></div>
-                <div>{{ moment(details?.order?.created_at).format('DD/MM/Y HH:mm') }}</div>
+                <div>{{ details.order?.created_at ? moment(details?.order?.created_at).format('DD/MM/Y HH:mm') : '' }}</div>
             </div>
 
 
@@ -162,7 +162,7 @@
                     :to="{ 
                         name: 'DevisDetail',
                         params: {
-                            id: details?.order?.nbheure
+                            id: details?.order?.nbheure || 0
                         } 
                     }"
 
@@ -307,7 +307,7 @@
 
 import Swal from 'sweetalert2'
 import moment from 'moment'
-import { computed, onMounted, ref, reactive } from 'vue'
+import { computed, onMounted, ref, reactive, onBeforeMount } from 'vue'
 import { useStore } from 'vuex'
 
 import ItemDetailPanel from '../../components/miscellaneous/ItemListTable/ItemDetailPanel.vue'
@@ -322,6 +322,7 @@ import {
     GET_EVENT_USER_LIST,
     CHANGE_EVENT_USER,
     GET_EVENT_HISTORY,
+    RESET_DETAILS
 }
 from '../../store/types/types'
 
@@ -580,8 +581,16 @@ const getActionCommercialDetails = async () => {
 
 }
 
+const resetDetails = () => {
+    store.commit(`${ACTION_COMMERCIAL_MODULE}${RESET_DETAILS}`)
+}
+
 onMounted(() => {
     getActionCommercialDetails()
+})
+
+onBeforeMount(() => {
+    resetDetails()
 })
 
 

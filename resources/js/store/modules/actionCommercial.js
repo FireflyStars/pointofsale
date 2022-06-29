@@ -12,7 +12,8 @@ import {
     CHANGE_EVENT_USER,
     GET_EVENT_HISTORY,
     SAVE_EVENT_HISTORY,
-    FORCE_SET_FETCH_HISTORY_FALSE
+    FORCE_SET_FETCH_HISTORY_FALSE,
+    RESET_DETAILS,
 }
 from '../types/types'
 
@@ -274,6 +275,11 @@ export const actionCommercial = {
 
         [CHANGE_EVENT_USER](state, user) {
             state.details.client_name = user.name
+        },
+
+        RESET_DETAILS(state) {
+            state.details = {}
+            state.fetchedHistory = false
         }
 
     },

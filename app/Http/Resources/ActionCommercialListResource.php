@@ -21,23 +21,23 @@ class ActionCommercialListResource extends JsonResource
             'client_name'        => $this->user->name,
             'event_name'         => $this->name,
             'event_description'  => $this->description,
-            'event_type'         => $this->eventType->name,
-            'event_status'       => $this->eventStatus->name,
-            'event_status_color' => $this->eventStatus->color,
-            'event_origin'       => $this->eventOrigin->name,
+            'event_type'         => optional($this->eventType)->name,
+            'event_status'       => optional($this->eventStatus)->name,
+            'event_status_color' => optional($this->eventStatus)->color,
+            'event_origin'       => optional($this->eventOrigin)->name,
             'event_date'         => $this->datedebut,
             'event_history'      => $this->get_event_history($this),
             'order'              => !is_null($this->order) ? $this->order->load('state', 'user') : $this->order,
             'contact'            => $this->get_contact($this),
             'address'            => $this->get_address($this),
-            'paiement'           => $this->customer->paiement, 
+            'paiement'           => optional($this->customer)->paiement, 
             'address_type'       => $this->get_address_type($this),
-            'query'              => DB::getQueryLog()   
         ];
     }
 
     private function get_event_history($event) 
     {
+        if(is_null($event->eventHistory)) return [];
         return $event->eventHistory()->latest('created_at')
         ->take(5)
         ->get()
