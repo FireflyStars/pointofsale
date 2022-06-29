@@ -16,12 +16,140 @@
                     @click="goToStep(index)"
                     :key="index">{{ breadcrumb }}</li>
                 </ul>    
-                <transition  name="list" appear v-if="step =='choose_customer'">
+                <transition name="list" appear v-if="step =='choose_customer'">
                     <div class="col-5 bg-white p-3 rounded">
                         <h2 class="almarai-extrabold font-22">Détail Client <span @click="addNewCustomer" class="ms-3 almarai-bold font-16 cursor-pointer text-decoration-underline text-custom-success">Nouveau</span></h2>
                         <SearchCustomer name="search" @selected="selectedCustomer" :droppos="{top:'auto',right:'auto',bottom:'auto',left:'0',transformOrigin:'top right'}" label="Rechercher client" hint="disabled till 2021-09-10" ></SearchCustomer>
                     </div>
-                </transition>            
+                </transition>
+                <transition name="list" appear  v-if="step == 'choose_address'">
+                    <div class="choose-address-panel mt-3">
+                        <div class="col-5 p-3 bg-white rounded">
+                            <div class="d-flex">
+                                <div class="col-6">
+                                <h2 class="almarai-extrabold font-22">{{ form.customer.company }}</h2>
+                                <p class="text-gray font-16 almarai-bold">{{ form.customer.raisonsocial }}</p>
+                                </div>
+                                <div class="col-6 d-flex align-items-center justify-content-end">
+                                <p @click="chooseOtherCustomer" class="text-custom-success font-16 almarai-bold text-decoration-underline cursor-pointer">Autre client</p>
+                                </div>
+                            </div>
+                            <div class="d-flex mt-3">
+                                <div class="col-4">
+                                <label for="" class="text-gray font-16 almarai-bold">GROUPE</label>
+                                <p class="font-16 almarai-bold">{{ form.customer.group }}</p>
+                                </div>
+                                <div class="col-4">
+                                <label for="" class="text-gray font-16 almarai-bold">CONTACT</label>
+                                <p class="font-16 almarai-bold">{{ form.customer.contact }}</p>
+                                </div>
+                                <div class="col-4">
+                                <label for="" class="text-gray font-16 almarai-bold">TELEPHONE</label>
+                                <p class="font-16 almarai-bold">{{ form.customer.telephone }}</p>
+                                </div>
+                            </div>
+                            <div class="d-flex mt-3">
+                                <div class="col-4">
+                                <label for="" class="text-gray font-16 almarai-bold">TVA</label>
+                                <p class="font-16 almarai-bold">{{ form.customer.tax }}</p>
+                                </div>
+                                <div class="col-4">
+                                <label for="" class="text-gray font-16 almarai-bold">NAF</label>
+                                <p class="font-16 almarai-bold">{{ form.customer.naf }}</p>
+                                </div>
+                                <div class="col-4">
+                                <label for="" class="text-gray font-16 almarai-bold">SIRET</label>
+                                <p class="font-16 almarai-bold">{{ form.customer.siret }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-5 p-3 mt-3 rounded bg-white">
+                            <h2 class="almarai-extrabold font-22">Choix adresse Chantier <span @click="addNewAddress" class="ms-3 almarai-bold font-16 cursor-pointer text-decoration-underline text-custom-success">Nouvelle adresse</span></h2>
+                            <div class="mt-3 customer-addresses">
+                                <div class="px-4 py-3 bg-gray mt-2 address-item rounded cursor-pointer" 
+                                @click="chooseCustomerAddress(address)" v-for="(address, index) in customerAddresses" :key="index">
+                                <div class="d-flex">
+                                    <div class="col-7">
+                                    <h3 class="almarai-bold font-16">{{ address.name }}</h3>
+                                    </div>
+                                    <div class="col-5">
+                                    <p class="almarai-bold font-16 text-gray">{{ address.addressType }}</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex">
+                                    <div class="col-4 almarai-bold text-gray">{{ address.address1 }}</div>
+                                    <div class="col-4 almarai-bold text-gray">{{ address.address2 }}</div>
+                                    <div class="col-4 almarai-bold text-gray">{{ address.postcode }} {{ address.city }}</div>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                    
+                </transition>
+                <transition name="list" appear v-if="step =='choose_contact'">
+                    <div class="choose-address-panel mt-3">
+                        <div class="col-5 p-3 bg-white rounded">
+                            <div class="d-flex">
+                                <div class="col-6">
+                                <h2 class="almarai-extrabold font-22">{{ action.customer.company }}</h2>
+                                <p class="text-gray font-16 almarai-bold">{{ action.customer.raisonsocial }}</p>
+                                </div>
+                                <div class="col-6 d-flex align-items-center justify-content-end">
+                                <p @click="chooseOtherCustomer" class="text-custom-success font-16 almarai-bold text-decoration-underline cursor-pointer">Autre client</p>
+                                </div>
+                            </div>
+                            <div class="d-flex mt-3">
+                                <div class="col-4">
+                                <label for="" class="text-gray font-16 almarai-bold">GROUPE</label>
+                                <p class="font-16 almarai-bold">{{ action.customer.group }}</p>
+                                </div>
+                                <div class="col-4">
+                                <label for="" class="text-gray font-16 almarai-bold">CONTACT</label>
+                                <p class="font-16 almarai-bold">{{ action.customer.contact }}</p>
+                                </div>
+                                <div class="col-4">
+                                <label for="" class="text-gray font-16 almarai-bold">TELEPHONE</label>
+                                <p class="font-16 almarai-bold">{{ action.customer.telephone }}</p>
+                                </div>
+                            </div>
+                            <div class="d-flex mt-3">
+                                <div class="col-4">
+                                <label for="" class="text-gray font-16 almarai-bold">TVA</label>
+                                <p class="font-16 almarai-bold">{{ action.customer.tax }}</p>
+                                </div>
+                                <div class="col-4">
+                                <label for="" class="text-gray font-16 almarai-bold">NAF</label>
+                                <p class="font-16 almarai-bold">{{ action.customer.naf }}</p>
+                                </div>
+                                <div class="col-4">
+                                <label for="" class="text-gray font-16 almarai-bold">SIRET</label>
+                                <p class="font-16 almarai-bold">{{ action.customer.siret }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-5 p-3 mt-3 rounded bg-white">
+                            <h2 class="almarai-extrabold font-22">Choix adresse Chantier <span @click="addNewAddress" class="ms-3 almarai-bold font-16 cursor-pointer text-decoration-underline text-custom-success">Nouvelle adresse</span></h2>
+                            <div class="mt-3 customer-addresses">
+                                <div class="px-4 py-3 bg-gray mt-2 address-item rounded cursor-pointer" 
+                                @click="chooseCustomerAddress(address)" v-for="(address, index) in customerAddresses" :key="index">
+                                <div class="d-flex">
+                                    <div class="col-7">
+                                    <h3 class="almarai-bold font-16">{{ address.name }}</h3>
+                                    </div>
+                                    <div class="col-5">
+                                    <p class="almarai-bold font-16 text-gray">{{ address.addressType }}</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex">
+                                    <div class="col-4 almarai-bold text-gray">{{ address.address1 }}</div>
+                                    <div class="col-4 almarai-bold text-gray">{{ address.address2 }}</div>
+                                    <div class="col-4 almarai-bold text-gray">{{ address.postcode }} {{ address.city }}</div>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>      
+                </transition>
                 <transition name="list" appear v-if="step =='choose_action'">
                     <div class="cust-page-content client-detail m-auto pt-5">
                         <div class="page-section">
@@ -158,12 +286,14 @@
         </div>
       </div>
     </transition>
+    <AddressModal ref="addressModal" @addedNewAddress="addedNewAddress"></AddressModal>
   </router-view>
 </template>
 <script>
 import { ref, onMounted, watchEffect } from 'vue';
 import SelectBox from '../../components/miscellaneous/SelectBox';
 import SearchCustomer from '../../components/miscellaneous/SearchCustomer';
+import AddressModal from '../../components/miscellaneous/AddressModal';
 import {     
   DISPLAY_LOADER,
   HIDE_LOADER,
@@ -181,12 +311,15 @@ export default {
     },
     components:{
         SelectBox,
-        SearchCustomer
+        SearchCustomer,
+        AddressModal
     },
     setup() {
         const store = useStore();
         const router = useRouter();
+        const customerAddresses = ref();
         const breadcrumbs = ref(['Choix client']);
+        const addressModal = ref(null);
         const step = ref('choose_customer');
         watchEffect(()=>{
             if(step.value == 'choose_customer'){
@@ -215,6 +348,15 @@ export default {
             nomClient: '',
             address: '',
             nom: '',
+            customer: {
+
+            },
+            contact: {
+
+            },
+            addresses: {
+
+            },
         });
 
         const cancel = ()=>{
@@ -225,6 +367,13 @@ export default {
                 name: "CreateCustomer"
             })
         }        
+        const addNewAddress = ()=>{
+            addressModal.value.openModal(form.value.customer.id)
+        }
+
+        const addedNewAddress = (data)=>{
+            customerAddresses.value.push(data);
+        }
         const goToStep = (index)=>{
             if(index == 0){
                 step.value = 'choose_customer';
@@ -249,9 +398,7 @@ export default {
         const selectedCustomer = (data)=>{
             // move on to "addess choose step"
             step.value = 'choose_address';
-            // set customer value to devis form
-            // form.value.customer = data;
-
+            action.value.customer = data;
             // loading customer addresses
             store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Chargement des adresses des clients..']);
             axios.post('/get-customer-addresses', { customer_id: data.id }).then((res)=>{
@@ -269,6 +416,10 @@ export default {
             action,
             step,
             breadcrumbs,
+            customerAddresses,
+            addressModal,
+            addNewAddress,
+            addedNewAddress,
             goToStep,
             addNewCustomer,
             selectedCustomer,

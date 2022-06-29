@@ -1695,28 +1695,12 @@ export default {
 
     // activate the ouvrage
     const activeOuvrage = (event)=>{
-      // document.querySelectorAll('.ouvrage.custom-option').forEach((item)=>{
-      //   if(item.getAttribute('data-id') != event.target.getAttribute('data-id'))
-      //       item.classList.remove('active');
-      // })
-      // document.querySelectorAll('.tab-pane').forEach((item)=>{
-      //   if(item.id != event.target.getAttribute('data-id'))
-      //     item.classList.remove('active');
-      // })
       event.target.classList.toggle('active');
       document.getElementById(event.target.getAttribute('data-id')).classList.toggle('active');
     }
     // activate the task
     const activeOuvrageTask = (event)=>{
-      // document.querySelectorAll('.task-header.custom-option').forEach((item)=>{
-      //   if(item.getAttribute('data-id') != event.target.getAttribute('data-id'))
-      //     item.classList.remove('active');
-      // })      
       event.target.classList.toggle('active');
-      // document.querySelectorAll('.task-body').forEach((item)=>{
-      //   if(item.id != event.target.getAttribute('data-id'))
-      //     item.classList.remove('show');
-      // })      
       document.getElementById(event.target.getAttribute('data-id')).classList.toggle('show');
     }
     // remove ouvrage from ouvrages
