@@ -1808,7 +1808,7 @@ export default {
           });
           router.push({
             name: 'DevisDetail',
-            params: { id: res.data.orderId }
+            params: { id: route.params.id }
           });          
         }
       }).catch((error)=>{
