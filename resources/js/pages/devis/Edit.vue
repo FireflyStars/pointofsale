@@ -934,7 +934,9 @@ import Swal from 'sweetalert2';
 import {     
   DISPLAY_LOADER,
   HIDE_LOADER,
-  LOADER_MODULE 
+  LOADER_MODULE, 
+  TOASTER_MESSAGE, 
+  TOASTER_MODULE
   } from '../../store/types/types';
 import axios from 'axios';
 import { useRouter, useRoute } from 'vue-router';
@@ -1272,42 +1274,114 @@ export default {
       }      
     }
     const removeImage = (zIndex, id, index)=>{
-      form.value.zones[zIndex].gedCats[id][0].items =  form.value.zones[zIndex].gedCats[id][0].items.filter((item, i)=>{
-        return i != index;
-      })
+      if(form.value.orderStatus.type  != 'COMMANDE'){
+        form.value.zones[zIndex].gedCats[id][0].items =  form.value.zones[zIndex].gedCats[id][0].items.filter((item, i)=>{
+          return i != index;
+        })
+      }else{
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+          type: 'danger',
+          message: 'you can not edit COMMANDE',
+          ttl: 5,
+        });
+      }
     }
     const zoomImage = (content)=>{
       zoomModal.value.openModal(content);
     }
     const togglePanel = (eleID)=>{
-      // toggle open class for 3th parent. (<div class="ouvrage-section bg-white px-4 py-3 mt-2 mb-2">)
       document.getElementById(eleID).classList.toggle('open');
     }
     const openSecuriteModal = (zIndex)=>{
-      securiteModal.value.openModal(zIndex);
+      if(form.value.orderStatus.type  != 'COMMANDE'){
+        securiteModal.value.openModal(zIndex);
+      }else{
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+          type: 'danger',
+          message: 'you can not edit COMMANDE',
+          ttl: 5,
+        });
+      }      
+     
     }
     const openInstallationModal = (zIndex)=>{
-      installationModal.value.openModal(zIndex);
+      if(form.value.orderStatus.type  != 'COMMANDE'){
+        installationModal.value.openModal(zIndex);
+      }else{
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+          type: 'danger',
+          message: 'you can not edit COMMANDE',
+          ttl: 5,
+        });
+      }       
     }
     const openPrestationModal = (zIndex)=>{
-      prestationModal.value.openModal(zIndex);
+      if(form.value.orderStatus.type  != 'COMMANDE'){
+        prestationModal.value.openModal(zIndex);
+      }else{
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+          type: 'danger',
+          message: 'you can not edit COMMANDE',
+          ttl: 5,
+        });
+      } 
     }
     const openSupplierModal = (zIndex, ouvrageType, ouvrageId, taskId)=>{
-      supplierModal.value.openModal(zIndex, ouvrageType, ouvrageId, taskId);
+      if(form.value.orderStatus.type  != 'COMMANDE'){
+        supplierModal.value.openModal(zIndex, ouvrageType, ouvrageId, taskId);
+      }else{
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+          type: 'danger',
+          message: 'you can not edit COMMANDE',
+          ttl: 5,
+        });
+      }       
     }
     const openProductModal = (zIndex, ouvrageType, ouvrageId, taskId)=>{
-      productModal.value.openModal(zIndex, ouvrageType, ouvrageId, taskId);
+      if(form.value.orderStatus.type  != 'COMMANDE'){
+        productModal.value.openModal(zIndex, ouvrageType, ouvrageId, taskId);
+      }else{
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+          type: 'danger',
+          message: 'you can not edit COMMANDE',
+          ttl: 5,
+        });
+      }       
     }
     
     const openInterimModal = (zIndex, ouvrageType, ouvrageId, taskId)=>{
-      interimModal.value.openModal(zIndex, ouvrageType, ouvrageId, taskId);
+      if(form.value.orderStatus.type  != 'COMMANDE'){
+        interimModal.value.openModal(zIndex, ouvrageType, ouvrageId, taskId);
+      }else{
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+          type: 'danger',
+          message: 'you can not edit COMMANDE',
+          ttl: 5,
+        });
+      }       
     }
 
     const openLaborModal = (zIndex, ouvrageType, ouvrageId, taskId)=>{
-      laborModal.value.openModal(zIndex, ouvrageType, ouvrageId, taskId);
+      if(form.value.orderStatus.type  != 'COMMANDE'){
+        laborModal.value.openModal(zIndex, ouvrageType, ouvrageId, taskId);
+      }else{
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+          type: 'danger',
+          message: 'you can not edit COMMANDE',
+          ttl: 5,
+        });
+      }       
     }
     const openTaskModal = (zIndex, ouvrageType, ouvrageId)=>{
-      taskModal.value.openModal(zIndex, ouvrageType, ouvrageId);
+      if(form.value.orderStatus.type  != 'COMMANDE'){
+        taskModal.value.openModal(zIndex, ouvrageType, ouvrageId);
+      }else{
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+          type: 'danger',
+          message: 'you can not edit COMMANDE',
+          ttl: 5,
+        });
+      }       
     }
     const openPdfModal = (data)=>{
       pdfModal.value.openModal(data);
@@ -1641,170 +1715,186 @@ export default {
     }
     // add a zone
     const addZone = (index)=>{
-      form.value.zones.push(
-        {
-          name: 'zone '+ (form.value.zones.length+1),
-          roofAccess: 0,
-          height: '',
-          edit: false,
-          gedCats: gedCats.value,
-          installOuvrage: {
-            name: 'Installation',
+      if(form.value.orderStatus.type  != 'COMMANDE'){
+        form.value.zones.push(
+          {
+            name: 'zone '+ (form.value.zones.length+1),
+            roofAccess: 0,
+            height: '',
             edit: false,
-            totalHour: 0,
-            unitPrice: 0,
-            totalPrice: 0,
-            ouvrages: []
-          },
-          securityOuvrage: {
-            name: 'Sécurité',
-            edit: false,
-            totalHour: 0,
-            unitPrice: 0,
-            totalPrice: 0,
-            ouvrages: []
-          },
-          prestationOuvrage: {
-            name: 'Prestations',
-            edit: false,
-            totalHour: 0,
-            unitPrice: 0,
-            totalPrice: 0,
-            ouvrages: []
-          },
-        } 
-      );
+            gedCats: gedCats.value,
+            installOuvrage: {
+              name: 'Installation',
+              edit: false,
+              totalHour: 0,
+              unitPrice: 0,
+              totalPrice: 0,
+              ouvrages: []
+            },
+            securityOuvrage: {
+              name: 'Sécurité',
+              edit: false,
+              totalHour: 0,
+              unitPrice: 0,
+              totalPrice: 0,
+              ouvrages: []
+            },
+            prestationOuvrage: {
+              name: 'Prestations',
+              edit: false,
+              totalHour: 0,
+              unitPrice: 0,
+              totalPrice: 0,
+              ouvrages: []
+            },
+          } 
+        );
+      }else{
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+          type: 'danger',
+          message: 'you can not edit COMMANDE',
+          ttl: 5,
+        });
+      }       
 
     }
 
     // remove a zone
     const removeZone = (selectedIndex)=>{
-      Swal.fire({
-        title: 'Es-tu sûr?',
-        text: "Vous ne pourrez pas revenir en arrière !",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#42A71E',
-        // cancelButtonColor: '#E8581B',
-        cancelButtonColor: 'var(--lcdtOrange)',
-        cancelButtonText: 'Annuler',
-        confirmButtonText: `Oui, s'il vous plaît.`
-      }).then((result) => {
-        if (result.isConfirmed) {
-          form.value.zones = form.value.zones.filter((item, index)=>{
-            return index != selectedIndex;
-          });
-          Swal.fire(
-            'Supprimé!',
-            "Louvrage a été supprimé.",
-            'success'
-          )          
-          updateAllValues();
-        }
-      });      
+      if(form.value.orderStatus.type  != 'COMMANDE'){
+        Swal.fire({
+          title: 'Es-tu sûr?',
+          text: "Vous ne pourrez pas revenir en arrière !",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#42A71E',
+          // cancelButtonColor: '#E8581B',
+          cancelButtonColor: 'var(--lcdtOrange)',
+          cancelButtonText: 'Annuler',
+          confirmButtonText: `Oui, s'il vous plaît.`
+        }).then((result) => {
+          if (result.isConfirmed) {
+            form.value.zones = form.value.zones.filter((item, index)=>{
+              return index != selectedIndex;
+            });
+            Swal.fire(
+              'Supprimé!',
+              "Louvrage a été supprimé.",
+              'success'
+            )          
+            updateAllValues();
+          }
+        });      
+      }else{
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+          type: 'danger',
+          message: 'you can not edit COMMANDE',
+          ttl: 5,
+        });
+      }       
     }
 
     // activate the ouvrage
     const activeOuvrage = (event)=>{
-      // document.querySelectorAll('.ouvrage.custom-option').forEach((item)=>{
-      //   if(item.getAttribute('data-id') != event.target.getAttribute('data-id'))
-      //       item.classList.remove('active');
-      // })
-      // document.querySelectorAll('.tab-pane').forEach((item)=>{
-      //   if(item.id != event.target.getAttribute('data-id'))
-      //     item.classList.remove('active');
-      // })
       event.target.classList.toggle('active');
       document.getElementById(event.target.getAttribute('data-id')).classList.toggle('active');
     }
     // activate the task
     const activeOuvrageTask = (event)=>{
-      // document.querySelectorAll('.task-header.custom-option').forEach((item)=>{
-      //   if(item.getAttribute('data-id') != event.target.getAttribute('data-id'))
-      //     item.classList.remove('active');
-      // })      
       event.target.classList.toggle('active');
-      // document.querySelectorAll('.task-body').forEach((item)=>{
-      //   if(item.id != event.target.getAttribute('data-id'))
-      //     item.classList.remove('show');
-      // })      
       document.getElementById(event.target.getAttribute('data-id')).classList.toggle('show');
     }
     // remove ouvrage from ouvrages
     const removeOuvrage = (zoneIndex, ouvrageType, ouvrageIndex)=>{
-      Swal.fire({
-        title: 'Es-tu sûr?',
-        text: "Vous ne pourrez pas revenir en arrière !",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#42A71E',
-        // cancelButtonColor: '#E8581B',
-        cancelButtonColor: 'var(--lcdtOrange)',
-        cancelButtonText: 'Annuler',
-        confirmButtonText: `Oui, s'il vous plaît.`
-      }).then((result) => {
-        if (result.isConfirmed) {
-          if(ouvrageType == 1){
-            form.value.zones[zoneIndex].installOuvrage.ouvrages = form.value.zones[zoneIndex].installOuvrage.ouvrages.filter((item, index)=>{
-              return ouvrageIndex != index;
-            });
+      if(form.value.orderStatus.type  != 'COMMANDE'){
+        Swal.fire({
+          title: 'Es-tu sûr?',
+          text: "Vous ne pourrez pas revenir en arrière !",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#42A71E',
+          // cancelButtonColor: '#E8581B',
+          cancelButtonColor: 'var(--lcdtOrange)',
+          cancelButtonText: 'Annuler',
+          confirmButtonText: `Oui, s'il vous plaît.`
+        }).then((result) => {
+          if (result.isConfirmed) {
+            if(ouvrageType == 1){
+              form.value.zones[zoneIndex].installOuvrage.ouvrages = form.value.zones[zoneIndex].installOuvrage.ouvrages.filter((item, index)=>{
+                return ouvrageIndex != index;
+              });
+            }
+            if(ouvrageType == 2){
+              form.value.zones[zoneIndex].securityOuvrage.ouvrages = form.value.zones[zoneIndex].securityOuvrage.ouvrages.filter((item, index)=>{
+                return ouvrageIndex != index;
+              });
+            }
+            if(ouvrageType == 3){
+              form.value.zones[zoneIndex].prestationOuvrage.ouvrages = form.value.zones[zoneIndex].prestationOuvrage.ouvrages.filter((item, index)=>{
+                return ouvrageIndex != index;
+              });            
+            }
+            Swal.fire(
+              'Supprimé!',
+              "Louvrage a été supprimé.",
+              'success'
+            )          
+            updateAllValues();
           }
-          if(ouvrageType == 2){
-            form.value.zones[zoneIndex].securityOuvrage.ouvrages = form.value.zones[zoneIndex].securityOuvrage.ouvrages.filter((item, index)=>{
-              return ouvrageIndex != index;
-            });
-          }
-          if(ouvrageType == 3){
-            form.value.zones[zoneIndex].prestationOuvrage.ouvrages = form.value.zones[zoneIndex].prestationOuvrage.ouvrages.filter((item, index)=>{
-              return ouvrageIndex != index;
-            });            
-          }
-          Swal.fire(
-            'Supprimé!',
-            "Louvrage a été supprimé.",
-            'success'
-          )          
-          updateAllValues();
-        }
-      });
+        });
+      }else{
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+          type: 'danger',
+          message: 'you can not edit COMMANDE',
+          ttl: 5,
+        });
+      }       
     }
     // remove detail from task
     const removeOuvrageDetail = (zoneIndex, ouvrageType, ouvrageIndex, taskIndex, detailIndex)=>{
-      Swal.fire({
-        title: 'Es-tu sûr?',
-        text: "Vous ne pourrez pas revenir en arrière !",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#42A71E',
-        // cancelButtonColor: '#E8581B',
-        cancelButtonColor: 'var(--lcdtOrange)',
-        cancelButtonText: 'Annuler',        
-        confirmButtonText: `Oui, s'il vous plaît.`
-      }).then((result) => {
-        if (result.isConfirmed) {
-          if(ouvrageType == 1){
-            form.value.zones[zoneIndex].installOuvrage.ouvrages[ouvrageIndex].tasks[taskIndex].details = form.value.zones[zoneIndex].installOuvrage.ouvrages[ouvrageIndex].tasks[taskIndex].details.filter((item, index)=>{
-              return detailIndex != index;
-            })
+      if(form.value.orderStatus.type  != 'COMMANDE'){
+        Swal.fire({
+          title: 'Es-tu sûr?',
+          text: "Vous ne pourrez pas revenir en arrière !",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#42A71E',
+          // cancelButtonColor: '#E8581B',
+          cancelButtonColor: 'var(--lcdtOrange)',
+          cancelButtonText: 'Annuler',        
+          confirmButtonText: `Oui, s'il vous plaît.`
+        }).then((result) => {
+          if (result.isConfirmed) {
+            if(ouvrageType == 1){
+              form.value.zones[zoneIndex].installOuvrage.ouvrages[ouvrageIndex].tasks[taskIndex].details = form.value.zones[zoneIndex].installOuvrage.ouvrages[ouvrageIndex].tasks[taskIndex].details.filter((item, index)=>{
+                return detailIndex != index;
+              })
+            }
+            if(ouvrageType == 2){
+              form.value.zones[zoneIndex].securityOuvrage.ouvrages[ouvrageIndex].tasks[taskIndex].details = form.value.zones[zoneIndex].securityOuvrage.ouvrages[ouvrageIndex].tasks[taskIndex].details.filter((item, index)=>{
+                return detailIndex != index;
+              })
+            }
+            if(ouvrageType == 3){
+              form.value.zones[zoneIndex].prestationOuvrage.ouvrages[ouvrageIndex].tasks[taskIndex].details = form.value.zones[zoneIndex].prestationOuvrage.ouvrages[ouvrageIndex].tasks[taskIndex].details.filter((item, index)=>{
+                return detailIndex != index;
+              })            
+            }
+            Swal.fire(
+              'Supprimé!',
+              'Le détail a été supprimé.',
+              'success'
+            )        
+            updateAllValues();
           }
-          if(ouvrageType == 2){
-            form.value.zones[zoneIndex].securityOuvrage.ouvrages[ouvrageIndex].tasks[taskIndex].details = form.value.zones[zoneIndex].securityOuvrage.ouvrages[ouvrageIndex].tasks[taskIndex].details.filter((item, index)=>{
-              return detailIndex != index;
-            })
-          }
-          if(ouvrageType == 3){
-            form.value.zones[zoneIndex].prestationOuvrage.ouvrages[ouvrageIndex].tasks[taskIndex].details = form.value.zones[zoneIndex].prestationOuvrage.ouvrages[ouvrageIndex].tasks[taskIndex].details.filter((item, index)=>{
-              return detailIndex != index;
-            })            
-          }
-          Swal.fire(
-            'Supprimé!',
-            'Le détail a été supprimé.',
-            'success'
-          )        
-          updateAllValues();
-        }
-      })        
+        })        
+      }else{
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+          type: 'danger',
+          message: 'you can not edit COMMANDE',
+          ttl: 5,
+        });
+      }       
     }
     // update Devis
     const updateDevis = ()=>{
