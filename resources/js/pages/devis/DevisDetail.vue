@@ -70,7 +70,7 @@
                 <div class="col-1"></div>
                 <div class="col-1"></div>
             </div>
-            <div class="row">
+            <div class="row mb-3">
                 <div class="col-4"></div>
                 <div class="col-2 almarai-light lcdtgrey d-flex font-12 align-items-center">Taux</div>
                 <div class="col-2 almarai-light lcdtgrey  d-flex font-12 align-items-center justify-content-center">Date</div>
@@ -78,12 +78,28 @@
                 <div class="col-1"></div>
                 <div class="col-1"></div>
             </div>
-
-            <div class="d-flex justify-content-evenly mt-4">
+                <transition-group tag="div" class="list"  name="list" appear>
+            <template v-for="facture,index in facturations" :key="index">
+            <div class="row mb-3" :class="{avoir:facture.invoice_type_name=='AVOIR',remise:facture.invoice_type_name=='REMISE',facturer:(facture.invoice_type_name=='FACTURE'&&facture.facturer==1||facture.invoice_type_name==null&&facture.facturer==1),avenant:facture.invoice_type_name=='AVENANT',reste_a_facturer:facture.facturer==0}" >
+                <div class="col-4 almarai_bold_normal font-14 invoiceline d-flex align-items-center" >{{facture.description}}</div>
+                <div class="col-2 almarai-light  d-flex font-14 align-items-center" :class="{dangerred:facture.sign==-1}">{{isFloat(facture.pourcentage)?facture.pourcentage.toFixed(2):facture.pourcentage}}%</div>
+                <div class="col-2 almarai-light   d-flex font-14 align-items-center justify-content-center">{{formatDate(facture.dateinvoice)}}</div>
+                <div class="col-2 almarai-light   d-flex font-14 align-items-center justify-content-end" :class="{dangerred:facture.sign==-1}">{{formatPrice(facture.sign!=null?facture.sign*facture.montant:facture.montant)}}</div>
+                <div class="col-1"></div>
+                <div class="col-1"></div>  
+            </div>
+            </template>
+                </transition-group>
+ <transition
+            enter-active-class="animate__animated animate__fadeIn"
+            leave-active-class="animate__animated animate__fadeOut"
+    >
+            <div class="d-flex justify-content-evenly mt-4" v-if="showFactureBtn">
                 <span v-if="order.total>0&&facturation_total_taux<100" class="font-14 mulish_600_normal facture_action noselect" @click="new_echeance"><icon name="plus-circle" /> AJOUTER ÉCHEANCE</span>
                 <span class="font-14 mulish_600_normal facture_action  noselect" @click="new_remise" ><icon name="plus-circle" /> AJOUTER REMISE</span>
                <span class="font-14 mulish_600_normal facture_action  noselect" @click="new_avoir" ><icon name="plus-circle" /> AJOUTER AVOIR</span>
             </div>    
+ </transition>
         </div>
      </template>
      <div class="od_actions mb-3" v-if="show">
@@ -97,21 +113,20 @@
 
 </item-detail-panel>
 
-<simple-modal-popup v-model="showmodal_facturation" :title="modal_facturation_title" @modalconfirm="newOrderInvoice">
+<simple-modal-popup v-model="showmodal_facturation" :title="modal_facturation_title" @modalconfirm="newOrderInvoice" @modalclose="closemodal">
     <div class="container-fluid">
 <div class="row mb-3">
     <div class="col-6">Description</div><div class="col-6"><input type="text" v-model="facture.description" class="input-text"/></div>
 </div>
-<div class="row mb-3">
+<div class="row mb-3" v-if="order.total>0">
     <div class="col-6">Taux</div><div class="col-6"><input type="text" v-model="facture.taux" @keyup="checktaux" @blur="addper" class="input-text" ></div> 
 </div>
 <div class="row mb-3">
-    <div class="col-6">Date</div><div class="col-6"><date-picker :disabledToDate="disabledToDate" name="echeance" :droppos="{top:'40px',right:'auto',bottom:'auto',left:'0',transformOrigin:'top center'}"></date-picker></div>
+    <div class="col-6">Date</div><div class="col-6"><date-picker @changed="setEcheanceDate" :disabledToDate="disabledToDate" name="echeance" :droppos="{top:'40px',right:'auto',bottom:'auto',left:'0',transformOrigin:'top center'}"></date-picker></div>
 </div>
 <div class="row mb-3">
     <div class="col-6">Montant</div><div class="col-6"> <money3 v-model="facture.montant" v-bind="moneyconfig" @keyup="checkmontant"></money3>
-    <pre>
-    {{facture}}</pre>
+
      </div>
 </div>
     </div>
@@ -125,8 +140,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex';
 import ItemDetailPanel from '../../components/miscellaneous/ItemListTable/ItemDetailPanel.vue'
 import OrderStateTag from '../../components/miscellaneous/OrderStateTag.vue';
-import { DEVIS_DETAIL_GET, DEVIS_DETAIL_LOAD, DEVIS_DETAIL_MODULE, DEVIS_DETAIL_SET, DEVIS_DETAIL_UPDATE_ORDER_STATE, ITEM_LIST_MODULE, ITEM_LIST_UPDATE_ROW, ORDERSTATETAG_GET_ORDER_STATES, ORDERSTATETAG_MODULE } from '../../store/types/types';
-import { formatPrice,formatDate,br } from '../../components/helpers/helpers';
+import { DEVIS_DETAIL_GET, DEVIS_DETAIL_GET_FACTURATION, DEVIS_DETAIL_LOAD, DEVIS_DETAIL_LOAD_FACTURATION, DEVIS_DETAIL_MODULE, DEVIS_DETAIL_NEW_FACTURATION, DEVIS_DETAIL_SET, DEVIS_DETAIL_UPDATE_ORDER_STATE, ITEM_LIST_MODULE, ITEM_LIST_UPDATE_ROW, ORDERSTATETAG_GET_ORDER_STATES, ORDERSTATETAG_MODULE, TOASTER_CLEAR_TOASTS, TOASTER_MESSAGE, TOASTER_MODULE } from '../../store/types/types';
+import { formatPrice,formatDate,br,isFloat } from '../../components/helpers/helpers';
 import Swal from 'sweetalert2';
 import DatePicker from '../../components/miscellaneous/DatePicker.vue';
  import { Money3Component } from 'v-money3';
@@ -144,8 +159,9 @@ import { mask } from 'vue-the-mask';
             const show=ref(false);
             const showloader=ref(false);
             const disabledToDate=ref('');
-            const facturation_total_taux=ref(50);
-            const facturation_total=ref(890.40);
+            const facturation_total_taux=ref(0);
+            const facturation_total=ref(0);
+            const showFactureBtn=ref(false);
             disabledToDate.value= new Date(new Date().getTime() - 24*60*60*1000).toJSON().slice(0,10);
             let order_id=route.params.id;
             const moneyconfig=ref({
@@ -168,7 +184,7 @@ import { mask } from 'vue-the-mask';
                             description:'',
                             taux:'',
                             date:'',
-                            montant:''
+                            montant:0
                         })         
 
             onMounted(()=>{
@@ -178,10 +194,21 @@ import { mask } from 'vue-the-mask';
                 store.commit(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_SET}`,{})
                 store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_LOAD}`,order_id).then((response)=>{
                     show.value=true;
-                    showloader.value=false;
+               
+                    if(response.data.state.order_type=='COMMANDE'){
+                        store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_LOAD_FACTURATION}`).then((response)=>{
+                            showloader.value=false;
+                            showFactureBtn.value=true;
+                        });
+                    }else{
+                        showloader.value=false;
+                    }
+              
                 });
+                
             })
             const order=computed(()=>store.getters[`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_GET}`]);
+            const facturations=computed(()=>store.getters[`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_GET_FACTURATION}`]);
 
              const order_states=computed(()=>store.getters[`${ORDERSTATETAG_MODULE}${ORDERSTATETAG_GET_ORDER_STATES}`]);
 
@@ -207,7 +234,24 @@ import { mask } from 'vue-the-mask';
                     }
                 });      
             }
-
+              watch(() =>facturations.value, (current_val, previous_val) => {
+                let percentage=0;
+                let total=0
+                for(const i in current_val){
+                    if(current_val[i].sign==-1){
+                        total-=current_val[i].montant;
+                        percentage-=current_val[i].pourcentage;
+                    }else{
+                        total+=current_val[i].montant;  
+                        percentage+=current_val[i].pourcentage; 
+                    }
+                }
+                facturation_total_taux.value=percentage;
+                facturation_total.value=total;
+              
+            },{
+                deep:true
+            });
             const goto=()=>{
                 document.getElementsByTagName( 'body' )[0].className='';
                 router.push({ name: 'EditDevis', params: { id: order_id } })
@@ -239,79 +283,205 @@ import { mask } from 'vue-the-mask';
     */
             const new_echeance=()=>{
                 modal_facturation_title.value='Nouvelle échéance';
+                facture.value.description='';
+                facture.value.taux=0;
+                facture.value.montant=0;
+                facture.value.date='';
                 showmodal_facturation.value=true;
                 facture.value.invoice_type_id=1;
        
                 let taux=(100-facturation_total_taux.value);
-                facture.value.taux=`${taux}%`;
-                facture.value.montant=(order.value.total/100)*taux;
-                facture.value.description='Lancement reparation';
-                console.log(facture);
+                facture.value.taux=`${Math.abs(taux)}%`;
+                facture.value.montant=Math.abs((order.value.total/100)*taux);
+                
+      
                         }
             const new_remise=()=>{
                 modal_facturation_title.value='Nouvelle remise';
+                facture.value.description='';
+                facture.value.taux=0;
+                facture.value.montant=0;
+                 facture.value.date='';
                 showmodal_facturation.value=true;
                 facture.value.invoice_type_id=2;
-                facture.value.montant='12';
-                facture.value.taux='50';
-                facture.value.description='Lancement reparation';
+                if(order.value.total>0){
+                    let taux=(100-facturation_total_taux.value);
+                   // facture.value.taux=`${Math.abs(taux)}%`;
+                   // facture.value.montant=Math.abs((order.value.total/100)*taux);
+                }
+          
                         }
             const new_avoir=()=>{
                 modal_facturation_title.value='Nouveau avoir';
+                facture.value.description='';
+                facture.value.taux=0;
+                facture.value.montant=0;
+                facture.value.date='';
                 showmodal_facturation.value=true;
                 facture.value.invoice_type_id=3;
-                facture.value.montant='12';
-                facture.value.taux='50%';
-                facture.value.description='Lancement reparation';
+                if(order.value.total>0){
+                    let taux=(100-facturation_total_taux.value);
+                   // facture.value.taux=`${Math.abs(taux)}%`;
+                   // facture.value.montant=Math.abs((order.value.total/100)*taux);
+                }
+               
                         }
             const newOrderInvoice=()=>{
-                showmodal_facturation.value=false;
-                console.log('confirmed');
+            let valide=true;
+            store.commit(`${TOASTER_MODULE}${TOASTER_CLEAR_TOASTS}`);
+           if(facture.value.description.trim()==''){
+             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez ajouter une description.',
+                            ttl: 8,
+                        });
+                        valide=false;
+           }
+             if(facture.value.date.trim()==''){
+             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez saisir une échéance.',
+                            ttl: 8,
+                        });
+                        valide=false;
+           }
+              if(facture.value.montant==''){
+             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez saisir un montant.',
+                            ttl: 8,
+                        });
+                        valide=false;
+           }
+               if(facture.value.taux.trim()==''&&order.value.total>0){
+             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez saisir un taux.',
+                            ttl: 8,
+                        });
+                    valide=false;
+           }else if(isNaN(parseFloat(facture.value.taux))){
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Taux invalide.',
+                            ttl: 8,
+                        });
+                    valide=false;
+           }
+                if(valide){
+                      if(facture.value.invoice_type_id==1){
+                            showmodal_facturation.value=false;
+                            showloader.value=true;
+                            store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_NEW_FACTURATION}`,facture.value).then(response=>{
+                                store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_LOAD_FACTURATION}`).then(response=>{
+                                    showloader.value=false;
+                                });
+                            
+                            });
+                      }else   if(facture.value.invoice_type_id==2){
+                        Swal.fire({
+                                title: 'Veuillez confirmer!',
+                                text: `Voulez-vous rajouter un remises? Cette action est irréversible.`,
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#42A71E',
+                                cancelButtonColor: 'var(--lcdtOrange)',
+                                cancelButtonText: 'Annuler',
+                                confirmButtonText: `Oui, s'il vous plaît.`
+                            }).then((result) => {
+                                showmodal_facturation.value=false;
+                                showloader.value=true;
+                                store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_NEW_FACTURATION}`,facture.value).then(response=>{
+                                    store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_LOAD_FACTURATION}`).then(response=>{
+                                        showloader.value=false;
+                                    });
+                                
+                                });
+                                
+                            });
+                      }else   if(facture.value.invoice_type_id==3){
+                        Swal.fire({
+                                title: 'Veuillez confirmer!',
+                                text: `Voulez-vous rajouter un avoir? Cette action est irréversible.`,
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#42A71E',
+                                cancelButtonColor: 'var(--lcdtOrange)',
+                                cancelButtonText: 'Annuler',
+                                confirmButtonText: `Oui, s'il vous plaît.`
+                            }).then((result) => {
+                                showmodal_facturation.value=false;
+                                showloader.value=true;
+                                store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_NEW_FACTURATION}`,facture.value).then(response=>{
+                                    store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_LOAD_FACTURATION}`).then(response=>{
+                                        showloader.value=false;
+                                    });
+                                
+                                });
+                                
+                            });
+                      }
+                }
             }   
             const checktaux=(event)=>{
-              
+              console.log(facture.value);
                 let allowedkey=['0','1','2','3','4','5','6','7','8','9','.','Enter','Backspace','Delete'].filter(key=>key==event.key);
                 if(allowedkey.length>0){
                     if(facture.value.invoice_type_id==1){
+                   
                         let taux=parseFloat(facture.value.taux);
-                     
+               
                         if(taux>(100-facturation_total_taux.value))
                         taux=100-facturation_total_taux.value;
-                           
+                     
 
-                        facture.value.taux=isNaN(taux)?'':`${taux}`;
-                        facture.value.montant=isNaN(taux)?'':(order.value.total/100)*taux;
+                        facture.value.taux=isNaN(taux)?'':`${Math.abs(taux)}`;
+                        facture.value.montant=isNaN(taux)?'':Math.abs((order.value.total/100)*taux);
                     }
-                     if(facture.value.invoice_type_id==2){
+                     if(facture.value.invoice_type_id==2||facture.value.invoice_type_id==3){
                         let taux=parseFloat(facture.value.taux);
                      
                         if(taux>(100-facturation_total_taux.value))
                         taux=100-facturation_total_taux.value;
+                        if(taux==0)
+                        taux=parseFloat(facture.value.taux);
                            
 
-                        facture.value.taux=isNaN(taux)?'':`${taux}`;
-                        facture.value.montant=isNaN(taux)?'':(order.value.total/100)*taux;
+                        facture.value.taux=isNaN(taux)?'':`${Math.abs(taux)}`;
+                        facture.value.montant=isNaN(taux)?'':Math.abs((order.value.total/100)*taux);
                     }
                 }
             } 
+          
             const checkmontant=()=>{
-                if(facture.value.invoice_type_id==1){
-                  
+                if(facture.value.invoice_type_id==1||((facture.value.invoice_type_id==2||facture.value.invoice_type_id==3))&&order.value.total>0){
+        
                     let montant=facture.value.montant;
-                    if(montant>(order.value.total-facturation_total.value)){
-                          montant=order.value.total-facturation_total.value;  
+                    
+                    if(montant>(order.value.total-facturation_total.value.toFixed(2))){
+                          montant=order.value.total-facturation_total.value.toFixed(2);  
                             
                     }
-                    facture.value.montant=montant;
+                    if(montant==0&&(facture.value.invoice_type_id==2||facture.value.invoice_type_id==3)){
+                        montant=facture.value.montant;
+                    }
+             
+                    facture.value.montant=Math.abs(montant);
                     let taux=(montant/order.value.total)*100;
-                    facture.value.taux=`${taux.toFixed(2)}%`;
+                    facture.value.taux=`${Math.abs(taux)}%`;
                 }
 
             }
             const addper=()=>{
                   if(facture.value.invoice_type_id==1){
-                    facture.value.taux=`${facture.value.taux}%`;
+                    facture.value.taux=`${Math.abs(parseFloat(facture.value.taux))}%`;
                   }
+            }
+            const setEcheanceDate=(datepicker)=>{
+                    facture.value.date=datepicker.date;
+            }
+            const closemodal=()=>{
+                             store.commit(`${TOASTER_MODULE}${TOASTER_CLEAR_TOASTS}`);
             }
              return {
                  show,
@@ -339,8 +509,12 @@ import { mask } from 'vue-the-mask';
                  facturation_total,
                  checktaux,
                  checkmontant,
-                 addper
-    
+                 addper,
+                 setEcheanceDate,
+                 closemodal,
+                facturations,
+                isFloat,
+                showFactureBtn
 
              }
         }
@@ -417,4 +591,68 @@ hr{
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
 }
+.invoiceline{
+    padding-left: 48px;
+    position: relative;
+}
+
+.invoiceline::before{
+    content: "";
+    width: 13px;
+    height: 13px;
+    background-color:white;
+    border-radius: 50%;
+    display: block;
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: background-color ease-in-out 0.3s;
+}
+.reste_a_facturer .invoiceline::before{
+    background-color: var(--lcdtOrange);
+}
+.facturer .invoiceline::before{
+    background-color: #78DC70;
+}
+
+.remise .invoiceline::before,.avoir .invoiceline::before{
+    background-color: rgba(255, 0, 0, 0.7);
+}
+.dangerred{
+    color:rgba(255, 0, 0, 0.7);
+}
+
+  .list-enter-from{
+        opacity: 0;
+        transform: scale(0.6);
+    }
+    .list-enter-to{
+        opacity: 1;
+        transform: scale(1);
+    }
+    .list-enter-active{
+        transition: all 1s ease;
+    }
+
+    .list-leave-from{
+        transform-origin: right center;
+        opacity: 1;
+        transform: scale(1);
+   
+    }
+    .list-leave-to{
+        transform-origin: right center;
+        opacity: 0;
+        transform: scale(0.6);
+    }
+    .list-leave-active{
+               transition: all 1s ease;
+         transform-origin: right center;
+        position:absolute;     
+        width: 100%;
+    }
+    .list-move{
+        transition:all 0.3s ease;
+    }
 </style>

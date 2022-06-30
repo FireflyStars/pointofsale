@@ -17,6 +17,9 @@ use App\Models\Order;
 use App\Models\OrderZone;
 use App\Models\GedCategory;
 use App\Models\GedDetail;
+use App\Models\Invoice;
+use App\Models\OrderInvoice;
+use Exception;
 use stdClass;
 
 class DevisController extends Controller
@@ -129,6 +132,7 @@ class DevisController extends Controller
         }
         $facturation_address=$order->customer->addresses()->where('address_type_id','=',1)->first();
         $order->formatted_facturation_address=$facturation_address==null?'--/--':$facturation_address->getformattedAddress();
+        $order->state=OrderState::find($order->order_state_id);
         return response()->json($order);
     }
 
@@ -138,7 +142,71 @@ class DevisController extends Controller
         $order=Order::find($order_id);
         $order->updateState($order_state_id);
     }
+    public function loadOrderInvoices(Request $request){
+        $order_id=$request->post('order_id'); 
+        $user=Auth::user();
+        $order=Order::find($order_id);
+        if($order->affiliate_id!=$user->affiliate_id)
+        throw new Exception('Order is not affiliated to user.Cannot load invoices.');
+
+        $orderInvoices=DB::table('order_invoices')->select(['order_invoices.*','invoice_type.sign','invoice_type.name as invoice_type_name','invoice_type.color as invoice_type_color'])->leftJoin('invoices',function($join){
+             $join->on('invoices.order_invoice_id','=','order_invoices.id')
+             ->whereNull('invoices.deleted_at');  
+        })->leftJoin('invoice_type',function($join){
+             $join->on('invoice_type.id','=','invoices.invoice_type_id')
+             ->whereNull('invoice_type.deleted_at');  
+        })->orderBy('order_invoices.id')
+        
+        ->get();
+        return response()->json($orderInvoices);
+
+    }
     public function newOrderInvoice(Request $request){
+
+        $description=$request->post('description');
+        $taux=$request->post('taux');
+        $montant=$request->post('montant');
+        $order_id=$request->post('order_id');
+        $date=$request->post('date');
+        $invoice_type_id=$request->post('invoice_type_id');
+        $user=Auth::user();
+        $order=Order::find($order_id);
+        if($order->affiliate_id!=$user->affiliate_id)
+        throw new Exception('Order is not affiliated to user.Cannot add invoice.');
+     
+
+        $oi=new OrderInvoice();
+        $oi->description=$description;
+        $oi->dateinvoice=$date;
+        $oi->pourcentage=str_replace('%','',$taux);
+        $oi->montant=$montant;
+        $oi->order_id=$order_id;
+        $oi->save();
+        $oi->fresh();
+
+        if($invoice_type_id==2||$invoice_type_id==3){
+            $oi->facturer=1;
+            $in=new Invoice();
+            $in->order_id=$order_id;
+            $in->montant=$montant;
+            $in->pourcentage=str_replace('%','',$taux);
+            $in->lang_id=1;
+            $in->customer_id=$order->customer_id;
+            $in->order_invoice_id=$oi->id;
+            $in->responsable_id=$user->id;
+            $in->affiliate_id=$order->affiliate_id;
+            $in->invoice_type_id=$invoice_type_id;
+            $in->dateecheance=$date;
+            $in->save();
+            $in->fresh();
+            $in->updateState(1);//creation
+            $oi->invoice_id=$in->id;
+            $oi->save();
+         
+
+        }
+
+
 
     }
     public function removeOrderInvoice(Request $request){

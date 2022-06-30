@@ -1,7 +1,7 @@
 import {
     TOASTER_MESSAGE,
     TOASTER_GET_ALL,
-    TOASTER_ADD_TOAST, TOASTER_REMOVE_TOAST
+    TOASTER_ADD_TOAST, TOASTER_REMOVE_TOAST, TOASTER_CLEAR_TOASTS
 } from '../types/types';
 
 export const toaster= {
@@ -24,7 +24,10 @@ export const toaster= {
             },
         [TOASTER_REMOVE_TOAST]:(state,payload)=>{
             state.toast=state.toast.filter((item)=>item.id!=payload);
-        }
+        },
+        [TOASTER_CLEAR_TOASTS]:(state)=>{
+            state.toast=[];
+        },
     },
     actions:{
         [TOASTER_MESSAGE]:({commit,state}, payload)=>{

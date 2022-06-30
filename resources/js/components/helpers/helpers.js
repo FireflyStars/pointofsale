@@ -9,6 +9,21 @@ export const featureUnavailable=((feature)=>{
 
 export const formatPrice=price=>`${price !== 0 && typeof price != 'undefined' ? price?.toFixed(2) : 0} €`;
 
+export const isFloat=x=>{
+    if(typeof x == 'number' && !isNaN(x)){
+
+        if (Number.isInteger(x)) {
+            return false
+        }
+        else {
+            return true;
+        }
+
+    } else {
+        return false;
+    }
+}
+
 export const formatDate=(date_str,format)=>{
     if(date_str==null)
     return "--/--";

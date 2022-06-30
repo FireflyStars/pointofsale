@@ -10,22 +10,30 @@
            <div>
                
                 <search></search>  
-
                 <base-button
                     prepend
-                    @click="featureunavailable('Nouveau Rendez vous')"
-                    class="btn btn-newrdv body_medium"
-                    kind="warning"
-                    title="Nouveau Rendez Vous"
+                    @click="router.push( { name: 'CreateCustomer' });"
+                    class="btn btn-newcustomer body_medium"
+                    kind=""
+                    title="Nouveau Client"
                 >
                     <icon name="user" color="white" />
+                </base-button>
+                <base-button
+                    prepend
+                    @click="router.push( { name: 'CreateAction' });"
+                    class="btn btn-newrdv body_medium"
+                    kind=""
+                    title="Nouveau Rendez Vous"
+                >
+                    <icon name="user-star" color="white" />
                 </base-button>
 
                 <base-button
                     prepend
                     @click="createDevis"
-                    class="btn btn-newrdv body_medium"
-                    kind="warning"
+                    class="btn btn-newdevis body_medium"
+                    kind=""
                     title="Nouveau Devis"
                 >
                     <icon name="clipboard" />
@@ -72,7 +80,8 @@
                neworder,
                slideinMenu,
                featureunavailable,
-               createDevis
+               createDevis,
+               router
            }
         }
     }
@@ -86,8 +95,34 @@
         z-index: 10;
         box-shadow: 0px 0px 4px rgba(80, 80, 80, 0.2);
     }
+    .btn-newdevis {
+        background: var(--lcdtOrange);
+        margin-right:7px;
+        margin-top: 9px;
+        float: left;
+        font-size: 12px;
+        font-weight: 700;
+        width: auto;
+        color:#FFF;
+        font-family: "Open Sans";
+        height: 48px;
+        border-radius: 10px;
+    }
     .btn-newrdv {
         background: rgba(232, 88, 27, 0.7);
+        margin-right:7px;
+        margin-top: 9px;
+        float: left;
+        font-size: 12px;
+        font-weight: 700;
+        width: auto;
+        color:#FFF;
+        font-family: "Open Sans";
+        height: 48px;
+        border-radius: 10px;
+    }
+      .btn-newcustomer {
+        background: rgba(232, 88, 27, 0.47);
         margin-right:7px;
         margin-top: 9px;
         float: left;

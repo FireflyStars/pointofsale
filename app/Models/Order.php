@@ -65,7 +65,7 @@ class Order extends Model
             $user_id=Auth::user()->id;
         $user=User::find($user_id);
         if($user->affiliate->id!=$this->affiliate_id)
-        throw new Exception('Order does not affiliated to user.');
+        throw new Exception('Order is not affiliated to user.');
 
         $orderState=OrderState::find($order_state_id);
         if($orderState==null)
