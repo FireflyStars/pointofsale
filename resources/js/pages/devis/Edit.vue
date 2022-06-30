@@ -9,11 +9,13 @@
             <div class="col-6">
               <h1 class="d-flex align-items-center m-0">
                 <span class="devis-icon"></span>
-                <span class="ms-3 font-22 almarai_extrabold_normal_normal">Nouveau Devis</span>
+                <span class="ms-3 font-22 almarai_extrabold_normal_normal me-5">{{ form.orderStatus.type }} : {{ route.params.id }}</span>
+                <span class="font-14 text-center almarai-bold p-1 rounded-pill" :style="'width: 120px; background-color: ' + form.orderStatus.color + ';' + 'color: ' + form.orderStatus.fontcolor">{{ form.orderStatus.name }}</span>
               </h1>
             </div>
             <div class="col-6 d-flex" v-if="devisCreateStep == 'create_devis'">
-              <button class="btn btn-save me-3 text-white" @click="updateDevis">Mise à jour</button>
+              <button class="btn btn-save me-3 text-white" v-if="form.orderStatus.type != 'COMMANDE'" @click="updateDevis">Mise à jour</button>
+              <button class="btn btn-save me-3 text-white" v-else>VOIR LISTE</button>
               <button class="btn btn-pdf text-white rounded-3" @click="PDFDevis">PDF</button>
             </div>
           </div>
@@ -992,6 +994,12 @@ export default {
     const gedCats = ref([]);
     const roofAccesses = ref([]);
     const form = ref({
+      orderStatus: {
+        name: 'EN PREPA',
+        type: 'DEVIS',
+        fontcolor: '#42a71e',
+        color: '#d9edd2',
+      },
       customer: {
         id: 1,
         company: '',
@@ -1902,6 +1910,7 @@ export default {
       updateAllValues();
     }
     return {
+      route,
       breadcrumbs,
       taxes,
       units,
