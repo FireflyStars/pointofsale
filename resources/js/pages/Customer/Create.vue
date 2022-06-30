@@ -623,7 +623,7 @@
                             <button class="custom-btn btn-ok text-uppercase" @click="submit">VALIDATUON</button>
                         </div>
                     </div>
-                </transition>                
+                </transition>
             </div>
         </div>
       </div>
@@ -674,6 +674,7 @@ export default {
         const customerMateriaus   = ref([]);
         const addressTypes     = ref([]);
         const contactTypes     = ref([]);
+        const contactQualites   = ref([]);
         const form = ref({
             id: '',
             raisonsociale: '',
@@ -945,6 +946,7 @@ export default {
                 addressTypes.value    = res.data.addressTypes;
                 contactTypes.value    = res.data.contactTypes;
                 customerQualites.value    = res.data.customerQualites;
+                contactQualites.value    = res.data.contactQualites;
                 customerTypeBatiments.value    = res.data.customerTypeBatiments;
                 customerMateriaus.value    = res.data.customerMateriaus;
                 form.value.customerOrigin = 1;
@@ -968,6 +970,7 @@ export default {
             addressTypes,
             contactTypes,
             customerQualites,
+            contactQualites,
             customerMateriaus,
             customerTypeBatiments,
             phoneCodesSorted,

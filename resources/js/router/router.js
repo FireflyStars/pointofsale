@@ -62,9 +62,17 @@ const router = createRouter({
             },
         },
         {
-            path:'/action/create',
+            path:'/action-commercial/create',
             name:'CreateAction',
             component: () => import('../pages/ActionCommercial/Create'),
+            meta: {
+                authenticated: true
+            }
+        },        
+        {
+            path:'/action-commercial/edit/:id',
+            name:'EditAction',
+            component: () => import('../pages/ActionCommercial/Edit'),
             meta: {
                 authenticated: true
             }
