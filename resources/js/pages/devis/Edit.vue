@@ -2179,7 +2179,7 @@ export default {
     }
   }
   .main-view{
-    padding: 60px 10px 0 80px;
+    padding: 60px 10px 0 0;
     .devis-panel{
       margin-top: 28px;
       .left-panel{
