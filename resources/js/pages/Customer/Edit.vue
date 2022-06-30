@@ -518,7 +518,7 @@
                             <div class="d-flex mt-3">
                                 <div class="col-7">
                                     <select-box v-model="contact.qualite" 
-                                        :options="customerQualites" 
+                                        :options="contactQualites" 
                                         :name="'QUANTITE'+index"
                                         :label="'QUANTITE'"
                                         ></select-box>                                    
@@ -671,6 +671,7 @@ export default {
         const customerCats   = ref([]);
         const customerPentes   = ref([]);
         const customerQualites   = ref([]);
+        const contactQualites   = ref([]);
         const customerTypeBatiments   = ref([]);
         const customerMateriaus   = ref([]);
         const addressTypes     = ref([]);
@@ -958,6 +959,7 @@ export default {
                 addressTypes.value    = res.data.addressTypes;
                 contactTypes.value    = res.data.contactTypes;
                 customerQualites.value    = res.data.customerQualites;
+                contactQualites.value    = res.data.contactQualites;
                 customerTypeBatiments.value    = res.data.customerTypeBatiments;
                 customerMateriaus.value    = res.data.customerMateriaus;
 
@@ -1007,6 +1009,7 @@ export default {
             addressTypes,
             contactTypes,
             customerQualites,
+            contactQualites,
             customerMateriaus,
             customerTypeBatiments,
             phoneCodesSorted,
