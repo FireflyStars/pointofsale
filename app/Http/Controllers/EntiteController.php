@@ -133,6 +133,7 @@ class EntiteController extends Controller
 
     public function get_details(Customer $customer) 
     {
+        DB::enableQueryLog();
         return response()->json(
             new EntiteResource($customer)
         );

@@ -129,7 +129,7 @@
 
             <div class="d-flex align-items-center gap-3">
                 <div class="radio-button"></div>
-                <div>{{ moment(history.created_at).format('DD/MM/Y HH:mm') }}</div>
+                <div>{{ history.created_at ? moment(history.created_at).format('DD/MM/Y HH:mm') : '' }}</div>
             </div>
 
             <div 
@@ -568,6 +568,7 @@ const commitAction = async () => {
             })
 
         }
+        
         catch(e) {
             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                 type: 'danger',
@@ -576,6 +577,7 @@ const commitAction = async () => {
             })
             throw e
         }
+
         finally {
             showloader.value = false
         }

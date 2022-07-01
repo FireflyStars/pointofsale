@@ -4,7 +4,7 @@
 
     <h1 class="heading">
         <Icon name="emailing" />
-        {{ campagne.id }}
+        {{ campagne.id || '--/--' }}
     </h1>
     
     <div class="row campagne-detail-grid">
@@ -17,19 +17,19 @@
         
         <div class="col">
             <h4 class="text-fade">Detail</h4>
-            <p class="text-normal">{{ campagne.email }}</p>
+            <p class="text-normal">{{ campagne.email || '--/--' }}</p>
             <p 
                 v-if="campagne.type?.toLowerCase() == 'commande produit'"
                 class="text-normal" 
             >
-                {{ campagne.nb }} Clients
+                {{ campagne.nb || 0 }} Clients
             </p>
         </div>
         
         <div class="col">
             <h4 class="text-fade">Date</h4>
-            <p class="text-normal">Lancement: {{ moment(campagne.datelancement).format('DD/MM/Y') }}</p>
-            <p class="text-normal">Creaction: {{ moment(campagne.created_at).format('DD/MM/Y') }}</p>
+            <p class="text-normal">Lancement: {{ campagne.datelancement ? moment(campagne.datelancement).format('DD/MM/Y') : '--/--' }}</p>
+            <p class="text-normal">Créaction: {{ campagne.created_at ? moment(campagne.created_at).format('DD/MM/Y') : '--/--' }}</p>
         </div>
 
     </div>
@@ -152,7 +152,7 @@
 
 import moment from 'moment'
 import { useStore } from 'vuex'
-import { computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import ItemDetailPanel from '../miscellaneous/ItemListTable/ItemDetailPanel.vue'
 import {
         CIBLE_MODULE,

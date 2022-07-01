@@ -1,23 +1,48 @@
 <template>
 
 <item-detail-panel :showloader="showloader">
-    {{ details }}
-    <div class="panel-heading-section d-flex align-items-center gap-4" v-if="show">
+
+    <div class="panel-heading-section d-flex align-items-center" style="gap: 8rem;">
+
+        <div class="d-flex gap-4 align-items-center">
+
+            <h1 class="heading">
+                <Icon name="entite" />
+                <span style="vertical-align: bottom;">N°{{ details.id || '--/--' }}</span>
+            </h1>
+
+            <div class="text-editer cursor-pointer" @click.prevent="$router.push({
+                    path: `/customer/edit/${details.id}`
+                })"
+            >
+                Editer
+            </div>
+        
+        </div>
     
-        <h1 class="heading">
-            <Icon name="user-star" />
-            <span style="vertical-align: bottom;">N°{{ details.id }}</span>
-        </h1>
-        <div class="text-editer">
-            Editer
+
+        <div class="d-flex align-items-center justify-content-center gap-2">
+
+            <div 
+                class="tag text-uppercase"
+                :style="{ background: actifBackground }" 
+            >
+                Actif        
+            </div>
+
+            <div 
+                class="tag text-uppercase"
+                :style="{ background: litigeBackground }"
+            >
+                No litige        
+            </div>
+        
         </div>
-        <div class="tag" style="margin-left: 3rem">
-            A envoyer        
-        </div>
+
 
     </div>
 
-    <div class="responsable-section d-flex justify-content-between align-items-center" v-if="show">
+    <div class="responsable-section d-flex justify-content-between align-items-center">
     
         <div class="d-flex flex-column gap-1">
             <span class="title-label">Responsable action :</span>
@@ -43,53 +68,88 @@
 
     <hr />
 
+    <div class="raison-social-entite-section">
 
-    <div class="raison-social-entite-section" v-if="show">
+        <div class="d-flex align-items-center justify-content-between">
+
+            <h2 class="heading-label">{{ details?.raisonsociale }}</h2>
+            <h2 class="heading-label">{{ details?.company }}</h2>
+            <h2 class="heading-label">{{ details?.raisonsociale2 }}</h2>
+        
+        </div>
     
-        <h2 class="heading-label">Raison social Entite</h2>
 
         <div class="row mt-4">
             <div class="col">
                 <span class="title-label">Adresse du chantier</span>
-                <span class="detail" v-html="details.address"></span>
+                <span class="detail"></span>
             </div>
             <div class="col">
                 <span class="title-label">Adresse facturation</span>
-                <span class="detail">12 Leonard Street 31000 Toulouse</span>
+                <span class="detail"></span>
             </div>
         </div>
 
         <div class="row" style="margin-top: 1.875rem;">
             <div class="col">
                 <span class="title-label">Contact</span>
-                <span class="detail" v-html="details.contact"></span>
+                <span class="detail"></span>
             </div>
             <div class="col">
                 <span class="title-label">Mode de paiement</span>
-                <span class="detail">50% au lancement</span>
+                <span class="detail"></span>
             </div>
         </div>
 
     </div>
 
-    <hr>
+    <hr />
 
-    <div class="action-commercial-section" v-if="show">
 
-        <h4 class="heading-label-fade">Action commerciale</h4>
+    <div class="history-section" v-if="show">
 
-        <h4 class="heading-label" style="margin-left: 2.18rem; margin-top: 10px;">{{ details.action }}</h4>
+        <a href="#" class="link">Voir tout</a>
 
-        <p 
-            class="detail-label-fade text-justify" 
-            style="width: 80%; margin: 10px auto 0 auto;"
+        <h4 class="heading-label-fade">Historique</h4>
+
+        <div class="title-rows text-center">
+            <div class="title-label">Date</div>
+            <div class="title-label">Num</div>
+            <div class="title-label">Action</div>
+            <div class="title-label">Status</div>
+            <div class="title-label">Responsable</div>
+            <div class="title-label">Commentaire</div>
+        </div>
+
+        <div 
+            v-for="history in details.event_history"
+            :key="history.id"
+            class="detail-rows" 
+            style="margin-top: 1rem"
         >
-            {{ details.description }}
-        </p>
+
+            <div class="d-flex align-items-center gap-3">
+                <div class="radio-button"></div>
+                <div>{{ history.created_at ? moment(history.created_at).format('DD/MM/Y HH:mm') : '' }}</div>
+            </div>
+
+            <div 
+                :title="history?.status?.name"
+                class="tag"
+                :style="{ 'background': history?.status?.color }"
+            >
+                {{ history?.status?.name }}
+            </div>
+
+            <div class="">{{ history.user?.name }}</div>
+            <div class="">{{ history.comment }}</div>
+
+        </div>
 
     </div>
 
-    <div class="history-section" v-if="show">
+
+    <div class="history-section">
 
         <h4 class="heading-label-fade">Historique</h4>
 
@@ -193,6 +253,15 @@ const show = ref(true)
 
 const details = computed(() => store.getters[`${ENTITE_LIST_MODULE}details`])
 
+const actifBackground = computed(() => {
+    return details.value?.active == 1 ? 'rgba(66, 167, 30, 0.2)' : '#ff000045'
+})
+
+const litigeBackground = computed(() => {
+    return details.value?.litige == 1 ? 'rgba(66, 167, 30, 0.2)' : '#ff000045'
+})
+
+
 const getEntiteDetails = async () => {
 
     try {
@@ -226,8 +295,9 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 
+
 .panel-heading-section {
-    margin-top: 2.25rem;
+    margin-top: 2.35rem;
 }
 
 .heading {
@@ -259,7 +329,7 @@ onMounted(() => {
     position: relative;
     width: 104px;
     height: 23px;
-    background: rgba(241, 210, 164, 0.7);
+    background: rgba(66, 167, 30, 0.2);
     border-radius: 70px;
     font-family: 'Almarai Bold';
     font-style: normal;

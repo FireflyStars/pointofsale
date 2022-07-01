@@ -39,4 +39,7 @@ class Invoice extends Model
             $this->l('INVOICE STATE UPDATED','Invoice #'.$this->id.': status changed '.($previous_invoice_state_id==null?'':'from '.$previous_invoice_state_id).' to '.$invoice_state_id,$user_id);
         }
     }
+
+
+
 }
