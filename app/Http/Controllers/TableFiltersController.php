@@ -17,7 +17,7 @@ class TableFiltersController extends Controller
         }
         else 
         {
-            $data = $data->orderBy($sort, 'asc');
+            $data = $data->orderBy($sort, 'DESC');
         }
         return $data;
     }

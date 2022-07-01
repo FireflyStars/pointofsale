@@ -11,11 +11,13 @@ use Illuminate\Database\Eloquent\Model;
 
 use function PHPUnit\Framework\throwException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Event extends Model
 {
     use HasFactory;
     use LcdtLog;
+    use SoftDeletes;
 
     protected $guarded = ['id'];
 

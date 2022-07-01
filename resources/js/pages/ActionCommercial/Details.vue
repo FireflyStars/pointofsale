@@ -9,11 +9,17 @@
             <span style="vertical-align: bottom;">N°{{ details.id || '--/--' }}</span>
         </h1>
 
-        <div class="text-editer">
+        <div 
+            class="text-editer cursor-pointer" 
+            @click.prevent="$router.push({
+                path: `/action-commercial/edit/${details.id}`
+            })"
+        >
             Editer
         </div>
 
         <div 
+            :title="details?.event_status"
             v-show="show"
             class="tag" 
             style="margin-left: 3rem"
@@ -52,8 +58,13 @@
 
 
     <div class="raison-social-entite-section">
+
+        <div class="d-flex align-items-center justify-content-between">
+            <h2 class="heading-label">{{ details?.customer?.raisonsociale }}</h2>
+            <h2 class="heading-label">{{ details?.customer?.company }}</h2>
+            <h2 class="heading-label">{{ details?.customer?.raisonsociale2 }}</h2>
+        </div>
     
-        <h2 class="heading-label">Raison social Entite</h2>
 
         <div class="row mt-4">
             <div class="col">
@@ -62,7 +73,7 @@
             </div>
             <div class="col">
                 <span class="title-label">Adresse facturation</span>
-                <span class="detail">{{ details.address_type?.name  || '--/--'}}</span>
+                <span class="detail">{{ details?.address?.address_type?.name  || 'PAS D ADRESSE CLIENTE'}}</span>
             </div>
         </div>
 
@@ -73,7 +84,7 @@
             </div>
             <div class="col">
                 <span class="title-label">Mode de paiement</span>
-                <span class="detail">{{ details.paiement?.name || '--/--' }}</span>
+                <span class="detail">{{ details.customer?.paiement?.name || '--/--' }}</span>
             </div>
         </div>
 
@@ -122,6 +133,7 @@
             </div>
 
             <div 
+                :title="history?.status?.name"
                 class="tag"
                 :style="{ 'background': history?.status?.color }"
             >
@@ -162,18 +174,19 @@
                     :to="{ 
                         name: 'DevisDetail',
                         params: {
-                            id: details?.order?.nbheure || 0
+                            id: details?.order?.id || 0
                         } 
                     }"
 
                 >
-                    {{ details?.order?.nbheure }}
+                    {{ details?.order?.id }}
                 </router-link>
             </div>
             <div>{{ details?.order?.user?.name || '' }}</div>
             <div>{{ details?.order?.state?.order_type }}</div>
 
             <div 
+                :title="details?.order?.state?.name"
                 class="tag" 
                 :style="{ 
                     background: details?.order?.state?.color, 
@@ -245,25 +258,21 @@
         
         <div class="row mb-3">
             <div class="col-6">Datedebut</div>
-            <div class="col-6">
+            <div class="col-6 d-flex align-items-center gap-2">
                 <date-picker 
                     :disabledToDate="disabledToDate" 
                     name="datedebut" 
                     :droppos="{ top: '40px', right: 'auto', bottom: 'auto', left: '0', transformOrigin: 'top center'}" 
                     @changed="datedebut = $event.date"
                 />
+                <input type="time" v-model="datedebutTime">
             </div>
         </div>
 
         <div class="row mb-3">
-            <div class="col-6">DateFin</div>
+            <div class="col-6">DateFin Time</div>
             <div class="col-6">
-                <date-picker 
-                    :disabledToDate="disabledDateFin" 
-                    name="datefin" 
-                    :droppos="{ top: '40px', right: 'auto', bottom: 'auto', left: '0', transformOrigin: 'top center'}"
-                    @changed="datefin = $event.date"
-                />
+                <input type="time" v-model="datefinTime">
             </div>
         </div>
 
@@ -282,21 +291,19 @@
 
     </div>
 
-    <div class="conatiner-fluid" v-else-if="modal.status == 'effacer'">
+    <div class="conatiner-fluid" v-else-if="['effacer', 'annuler'].includes(modal.status)">
 
-        <div class="container-fluid">
+        <select-box
+            v-model="eventStatus" 
+            placeholder="Choose Event Status" 
+            :options="eventStatuses" 
+            name="event_list" 
+            label="Event List"
+            :disabled="!eventStatuses.length" 
+        />
         
-        </div>
-
     </div>
 
-    <div class="conatiner-fluid" v-else-if="modal.status == 'annuler'">
-
-        <div class="container-fluid">
-        
-        </div>
-
-    </div>
      
 </simple-modal-popup>
 
@@ -307,11 +314,14 @@
 
 import Swal from 'sweetalert2'
 import moment from 'moment'
-import { computed, onMounted, ref, reactive, onBeforeMount } from 'vue'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import { computed, onMounted, ref, reactive, onBeforeMount } from 'vue'
 
 import ItemDetailPanel from '../../components/miscellaneous/ItemListTable/ItemDetailPanel.vue'
 import StatusTag from '../../components/ActionCo/StatusTag.vue'
+
+
 
 import {
     TOASTER_MODULE,
@@ -322,7 +332,9 @@ import {
     GET_EVENT_USER_LIST,
     CHANGE_EVENT_USER,
     GET_EVENT_HISTORY,
-    RESET_DETAILS
+    RESET_DETAILS,
+    GET_EVENT_STATUSES,
+    CHANGE_EVENT_STATUS,
 }
 from '../../store/types/types'
 
@@ -333,6 +345,7 @@ const props = defineProps({
     }
 })
 
+const router = useRouter()
 const store = useStore()
 const showloader = ref(false)
 const show = ref(true)
@@ -345,7 +358,15 @@ const modal = reactive({
 
 const datedebut = ref(null)
 const datefin = ref(null)
+const datedebutTime = ref(null)
+const datefinTime = ref(null)
 const eventUser = ref(null)
+const eventStatus = ref(null)
+
+const minTime = computed(() => {
+    const date = new Date()
+    return `${date.getHours()}:${date.getMinutes()}`
+})
 
 const disabledToDate = computed(() => new Date(new Date().getTime() - 24*60*60*1000).toJSON().slice(0,10))
 const disabledDateFin = computed(() => datedebut.value ? moment(datedebut.value).format('Y-MM-DD') : disabledToDate.value)
@@ -356,8 +377,8 @@ const fetchedHistory = computed(() => store.getters[`${ACTION_COMMERCIAL_MODULE}
 
 const formattedAddress = computed(() => {
     
-    if(typeof details.value?.address == 'undefined') return '--/--'
-    if(!Object.entries(details.value?.address).length) return '--/--'
+    if(typeof details.value?.address == 'undefined') return 'PAS D ADRESSE CLIENTE'
+    if(!Object.entries(details.value?.address).length) return 'PAS D ADRESSE CLIENTE'
     
     const address = details.value?.address
     
@@ -390,6 +411,16 @@ const userList = computed(() => {
         }
     })
 })
+
+const eventStatuses = computed(() => {
+    return store.getters[`${ACTION_COMMERCIAL_MODULE}eventStatuses`].map(status => {
+        return {
+            value: status.id,
+            display: status.name
+        }
+    })
+})
+
 
 const fetchEventHistory = () => {
     
@@ -469,6 +500,7 @@ const changeEffacer = async () => {
         modal.show = true
         modal.title = 'Change Event Status'
         modal.status = 'effacer' 
+        store.dispatch(`${ACTION_COMMERCIAL_MODULE}${GET_EVENT_STATUSES}`)
     }
 }
 
@@ -487,6 +519,7 @@ const changeAnnuler = async () => {
         modal.show = true
         modal.title = 'Change Event Status'
         modal.status = 'annuler' 
+        store.dispatch(`${ACTION_COMMERCIAL_MODULE}${GET_EVENT_STATUSES}`)
     }
 }
 
@@ -502,7 +535,9 @@ const commitAction = async () => {
             await store.dispatch(`${ACTION_COMMERCIAL_MODULE}${CHANGE_EVENT_DATE}`, {
                 id: details.value.id,
                 datedebut: datedebut.value,
-                datefin: datefin.value
+                datefin: datefin.value,
+                datedebutTime: datedebutTime.value,
+                datefinTime: datefinTime.value
             })
 
         }
@@ -547,18 +582,61 @@ const commitAction = async () => {
 
     }
 
-    else if(modal.status == 'effacer') {}
+    else if(modal.status == 'effacer' || modal.status == 'annuler') {
 
-    else if(modal.status == 'annuler') {}
+        if(eventStatus.value == null || eventStatus.value == '' || eventStatus.value == undefined) {
+            store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                type: 'danger',
+                message: 'Status is empty',
+                ttl: 5,
+            })
+            return
+        }
+
+        try {
+
+            showloader.value = true
+            modal.show = false
+            const annuler = modal.status == 'annuler' ? true : false
+
+            await store.dispatch(`${ACTION_COMMERCIAL_MODULE}${CHANGE_EVENT_STATUS}`, {
+                id: details.value.id,
+                statusId: eventStatus.value,
+                annuler
+            })
+
+            if(modal.status == 'effacer') {
+
+                router.replace({
+                    name: 'action-commercial'
+                })
+
+            }
 
 
+        }
+
+        catch(e) {
+            store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                type: 'danger',
+                message: 'Something went wrong',
+                ttl: 5,
+            })
+            throw e
+        }
+
+        finally {
+            showloader.value = false
+        }
+
+    }
 
 
 }
 
 
 const getActionCommercialDetails = async () => {
-    console.log(props.id, " is the props id")
+
     try {
         showloader.value = true
         show.value = false
@@ -598,6 +676,18 @@ onBeforeMount(() => {
 
 <style lang="scss" scoped>
 
+input[type="time"] {
+    width: 154px;
+    height: 40px;
+    line-height: 40px;
+    color: #000000;
+    vertical-align: middle;
+    font-size: 18px;
+    border: 1px solid #000;
+    box-sizing: border-box;
+    border-radius: 5px;
+    margin-top: -3px;
+}
 
 .devisLink {
     font-weight: bold; 

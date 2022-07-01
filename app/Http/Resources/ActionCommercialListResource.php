@@ -30,24 +30,29 @@ class ActionCommercialListResource extends JsonResource
             'order'              => !is_null($this->order) ? $this->order->load('state', 'user') : $this->order,
             'contact'            => $this->get_contact($this),
             'address'            => $this->get_address($this),
-            'paiement'           => optional($this->customer)->paiement, 
-            'address_type'       => $this->get_address_type($this),
+            'customer'           => $this->get_customer($this),
+            'query'              => DB::getQueryLog()
         ];
+    }
+
+    private function get_customer($event) 
+    {
+        if(is_null($event->customer)) return (Object) [];
+        return $event->customer->only([
+            'raisonsociale',
+            'raisonsociale2',
+            'company',
+            'paiement'
+        ]);
     }
 
     private function get_event_history($event) 
     {
         if(is_null($event->eventHistory)) return [];
         return $event->eventHistory()->latest('created_at')
-        ->take(5)
+        ->take(3)
         ->get()
         ->load('status', 'user');
-    }
-
-    private function get_address_type($event) 
-    {
-        $type = optional($event->address)->address_type;
-        return is_null($type) ? AddressType::find(3) : $type;
     }
 
     private function get_contact($event) 
@@ -63,16 +68,30 @@ class ActionCommercialListResource extends JsonResource
 
     private function get_address($event) 
     {
+
         if(is_null($event->address)) return (Object) [];
-        return $event->address
-        ->only([
+        $address = $event->address()->where('address_type_id', 1)->first();
+
+        if(is_null($address)) 
+        {
+            $address = $event->address()->where('address_type_id', 3)->first();
+        }
+
+        if(is_null($address)) 
+        {
+            $address = $event->address;
+        }
+        
+        return $address->only([
             'firstname',
             'lastname',
             'address1',
             'address2',
             'postcode',
-            'city'
+            'city',
+            'address_type'
         ]);
+
     }
 
 }

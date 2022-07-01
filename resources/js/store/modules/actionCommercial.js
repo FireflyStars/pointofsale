@@ -14,6 +14,9 @@ import {
     SAVE_EVENT_HISTORY,
     FORCE_SET_FETCH_HISTORY_FALSE,
     RESET_DETAILS,
+    GET_EVENT_STATUSES,
+    SAVE_EVENT_STATUSES,
+    CHANGE_EVENT_STATUS
 }
 from '../types/types'
 
@@ -210,14 +213,14 @@ export const actionCommercial = {
             highlight_row: table.highlight_row,
             item_route_name: "action-commercial-details",// the route to trigger when a line is click 
             max_per_page: 15,//required          
-            identifier: "entite_list_all",//required
+            identifier: "action_co_list_all",//required
             filter: true,// required boolean
             rearrange_columns: true,// required boolean
             columns_def: table.columns_def,
 
         },
 
-        entite_user_table_def: {
+        action_co_user_table_def: {
 
             column_filters: [],//required empty array
             store: {
@@ -242,15 +245,18 @@ export const actionCommercial = {
 
         fetchedHistory: false,
 
+        eventStatuses: []
+
     },
 
     getters: {
         
         actionCommercialList: state => state.table_def,
-        actionCommercialListUser: state => state.entite_user_table_def,
+        actionCommercialListUser: state => state.action_co_user_table_def,
         details: state => state.details,
         userList: state => state.userList,
         fetchedHistory: state => state.fetchedHistory,
+        eventStatuses: state => state.eventStatuses,
 
     },
 
@@ -277,9 +283,13 @@ export const actionCommercial = {
             state.details.client_name = user.name
         },
 
-        RESET_DETAILS(state) {
+        [RESET_DETAILS](state) {
             state.details = {}
             state.fetchedHistory = false
+        },
+
+        [SAVE_EVENT_STATUSES](state, data) {
+            state.eventStatuses = data
         }
 
     },
@@ -381,6 +391,33 @@ export const actionCommercial = {
             }
 
         },
+
+        async [GET_EVENT_STATUSES]({ commit, state }) {
+
+            if(state.eventStatuses.length) return 
+
+            try {
+                const { data } = await axios.get('/get-event-statuses-all')
+                commit(SAVE_EVENT_STATUSES, data)
+            }
+
+            catch(e) {
+                throw e
+            }
+
+        },
+
+        async [CHANGE_EVENT_STATUS](_, data) {
+
+            const { id, statusId, annuler = false } = data
+
+            await axios.post(`/change-event-status/${id}`, {
+                id,
+                statusId,
+                annuler
+            })
+
+        }
 
 
     }
