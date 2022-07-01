@@ -42,6 +42,7 @@
         "vue-the-mask": "^0.11.1",
         "vue3-click-away": "^1.2.1",
         "vue3-moveable": "^0.2.3",
+        "vue3-timepicker": "^1.0.0-beta.2",
         "vuex": "^4.0.2"
     }
 }

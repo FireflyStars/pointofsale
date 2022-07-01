@@ -257,22 +257,22 @@
     <div class="container-fluid" v-if="modal.status == 'date'">
         
         <div class="row mb-3">
-            <div class="col-6">Datedebut</div>
-            <div class="col-6 d-flex align-items-center gap-2">
+            <div class="col-4">Datedebut</div>
+            <div class="col-8 d-flex align-items-center gap-2">
                 <date-picker 
                     :disabledToDate="disabledToDate" 
                     name="datedebut" 
                     :droppos="{ top: '40px', right: 'auto', bottom: 'auto', left: '0', transformOrigin: 'top center'}" 
                     @changed="datedebut = $event.date"
                 />
-                <input type="time" v-model="datedebutTime">
+                <vue-timepicker v-model="datedebutTime"></vue-timepicker>
             </div>
         </div>
 
         <div class="row mb-3">
-            <div class="col-6">DateFin Time</div>
-            <div class="col-6">
-                <input type="time" v-model="datefinTime">
+            <div class="col-4">DateFin Time</div>
+            <div class="col-8">
+                <vue-timepicker v-model="datefinTime"></vue-timepicker>
             </div>
         </div>
 
@@ -320,7 +320,8 @@ import { computed, onMounted, ref, reactive, onBeforeMount } from 'vue'
 
 import ItemDetailPanel from '../../components/miscellaneous/ItemListTable/ItemDetailPanel.vue'
 import StatusTag from '../../components/ActionCo/StatusTag.vue'
-
+import VueTimepicker from 'vue3-timepicker'
+import 'vue3-timepicker/dist/VueTimepicker.css'
 
 
 import {
@@ -357,7 +358,6 @@ const modal = reactive({
 })
 
 const datedebut = ref(null)
-const datefin = ref(null)
 const datedebutTime = ref(null)
 const datefinTime = ref(null)
 const eventUser = ref(null)
@@ -527,6 +527,34 @@ const commitAction = async () => {
 
     if(modal.status == 'date') {
 
+        if(datedebut.value == null) {
+            store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                type: 'danger',
+                message: 'Datedebut is empty',
+                ttl: 5,
+            })
+            return
+        }
+
+        if((datedebutTime.value?.HH == '' || datedebutTime.value?.HH == undefined) || (datedebutTime.value?.mm == '' || datedebutTime.value?.mm == undefined)) {
+            store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                type: 'danger',
+                message: 'Datedebut time is incorrect',
+                ttl: 5,
+            })
+            return
+        }
+
+        if((datefinTime.value?.HH == '' || datefinTime.value?.HH == undefined) || (datefinTime.value?.mm == '' || datefinTime.value?.mm == undefined)) {
+            store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                type: 'danger',
+                message: 'datefin time is incorrect',
+                ttl: 5,
+            })
+            return
+        }
+
+
         try {
 
             showloader.value = true
@@ -535,9 +563,8 @@ const commitAction = async () => {
             await store.dispatch(`${ACTION_COMMERCIAL_MODULE}${CHANGE_EVENT_DATE}`, {
                 id: details.value.id,
                 datedebut: datedebut.value,
-                datefin: datefin.value,
-                datedebutTime: datedebutTime.value,
-                datefinTime: datefinTime.value
+                datedebutTime: datedebutTime.value?.HH + ':' + datedebutTime.value?.mm,
+                datefinTime: datefinTime.value?.HH + ':' + datefinTime.value?.mm
             })
 
         }
@@ -613,7 +640,6 @@ const commitAction = async () => {
 
             }
 
-
         }
 
         catch(e) {
@@ -674,20 +700,24 @@ onBeforeMount(() => {
 
 </script>
 
+<style>
+    .vue__time-picker input {
+        width: 154px !important;
+        height: 40px !important;
+        line-height: 40px;
+        color: #000000 !important;
+        vertical-align: middle !important;
+        font-size: 18px !important;
+        border: 1px solid #000 !important;
+        box-sizing: border-box;
+        border-radius: 5px !important;
+        margin-top: -3px;
+    }
+</style>
+
 <style lang="scss" scoped>
 
-input[type="time"] {
-    width: 154px;
-    height: 40px;
-    line-height: 40px;
-    color: #000000;
-    vertical-align: middle;
-    font-size: 18px;
-    border: 1px solid #000;
-    box-sizing: border-box;
-    border-radius: 5px;
-    margin-top: -3px;
-}
+
 
 .devisLink {
     font-weight: bold; 
