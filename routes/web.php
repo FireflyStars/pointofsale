@@ -85,6 +85,8 @@ Route::post('/change-action-commercial-event-date/{event}', [ActionCommercialLis
 Route::post('/change-action-commercial-event-user/{event}', [ActionCommercialListController::class, 'change_event_user']);
 Route::get('/get-action-commercial-event-users/{event}', [ActionCommercialListController::class, 'get_event_users']);
 Route::get('/get-event-history/{event}', [ActionCommercialListController::class, 'get_event_history']);
+Route::get('/get-event-statuses-all', [ActionCommercialListController::class, 'get_event_statuses']);
+Route::post('/change-event-status/{event}', [ActionCommercialListController::class, 'change_event_status']);
 
 
 Route::post('/api',[ApiController::class,'index'])->middleware('cors')->name('api');

@@ -29,15 +29,16 @@ class ReportsResource extends JsonResource
 
     private function get_contact_details() 
     {
-        return is_null($this->contact) ? [] : [
-            'name' => $this->contact->name,
-            'firstname' => $this->contact->firstname,
-            'gender' => $this->contact->gender,
-            'email' => $this->contact->email,
-            'mobile' => $this->contact->mobile,
-            'telephone' => $this->contact->telephone,
-            'type' => $this->contact->type,
-            'comment' => $this->contact->comment,
+        $contact = optional($this->events()->latest('created_at')->first())->contact;
+        return is_null($contact) ? [] : [
+            'name' => $contact->name,
+            'firstname' => $contact->firstname,
+            'gender' => $contact->gender,
+            'email' => $contact->email,
+            'mobile' => $contact->mobile,
+            'telephone' => $contact->telephone,
+            'type' => $contact->type,
+            'comment' => $contact->comment,
         ];
     }
 

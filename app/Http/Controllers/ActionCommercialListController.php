@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Event;
 use App\Models\EventStatus;
-use App\Models\EventHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\TableFiltersController;
@@ -44,13 +43,35 @@ class ActionCommercialListController extends Controller
 
     }
 
+    public function change_event_status(Event $event, Request $request) 
+    {
+
+        $event->event_status_id = $request->statusId;
+
+        if($request->annuler == false) 
+        {
+            $event->deleted_at = now();
+        }
+
+        $event->save();
+
+        $event->eventHistory()->create([
+            'event_statut_id' => 17,
+            'comment'         => "Effacer event",
+            'user_id'         => $request->user()->id,
+        ]);
+
+        return response()->json("Event status changed");
+
+    }
+
     public function get_event_history(Event $event, Request $request) 
     {
         return response()->json(
             $event->eventHistory()
             ->latest('created_at')
             ->when($request->has('limit') && $request->limit > 0, function($query) {
-                $query->limit('5');
+                $query->limit('3');
             })
             ->get()
             ->load('user', 'status')
@@ -75,6 +96,13 @@ class ActionCommercialListController extends Controller
         );
     }
 
+    public function get_event_statuses() 
+    {
+        return response()->json(
+            EventStatus::all()
+        );   
+    }
+
     public function change_event_user(Event $event, Request $request) 
     {
         $event->user_id = $request->userId;
@@ -86,17 +114,20 @@ class ActionCommercialListController extends Controller
     {
 
         $datedebut = Carbon::parse($event->datedebut)->format('Y-m-d');
+        $datefin = Carbon::parse($event->datefin)->format('Y-m-d');
         
         $event->update([
-            'datedebut' => $request->datedebut,
-            'datefin'   => $request->datefin
+            'datedebut' => $request->datedebut . ' ' . $request->datedebutTime . ':00',
+            'datefin'   => $datefin . ' ' . $request->datefinTime . ':00'
         ]);
 
         $status = EventStatus::where('name', 'Replanification')->first();
 
+        $newDateDebut = Carbon::parse($event->datedebut)->format('Y-m-d');
+
         $event->eventHistory()->create([
             'event_statut_id' => $status->id ?? 17,
-            'comment'         => "$datedebut (Changed date: $event->datedebut)",
+            'comment'         => "$datedebut (Changed date: $newDateDebut, start hours: $request->datedebutTime)",
             'user_id'         => $request->user()->id,
         ]);
 
