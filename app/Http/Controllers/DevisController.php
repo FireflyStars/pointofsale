@@ -155,7 +155,7 @@ class DevisController extends Controller
         })->leftJoin('invoice_type',function($join){
              $join->on('invoice_type.id','=','invoices.invoice_type_id')
              ->whereNull('invoice_type.deleted_at');  
-        })->orderBy('order_invoices.id')
+        })->where('order_invoices.order_id','=',$order->id)->orderBy('order_invoices.id')
         
         ->get();
         return response()->json($orderInvoices);

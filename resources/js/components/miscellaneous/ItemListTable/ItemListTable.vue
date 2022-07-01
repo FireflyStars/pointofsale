@@ -374,13 +374,17 @@ export default {
          const selectrow=(id,colname)=>{
    
                 if(colname=='line_select') return;
-                store.dispatch(`${ITEM_LIST_MODULE}${ITEM_LIST_SELECT_CURRENT}`,{current:id});
-                  router.push({
-                    name:table.value.item_route_name,
-                    params: {
-                        id:id,
-                    },
-                })
+                if(typeof CURRENT_SELECTED.value!="undefined"&&CURRENT_SELECTED.value==id){
+                    store.dispatch(`${ITEM_LIST_MODULE}${ITEM_LIST_SELECT_CURRENT}`,{current:''});
+                }else{
+                    store.dispatch(`${ITEM_LIST_MODULE}${ITEM_LIST_SELECT_CURRENT}`,{current:id});
+                    router.push({
+                        name:table.value.item_route_name,
+                        params: {
+                            id:id,
+                        },
+                    });
+                }
             }
         const checkboxclicked=(checkbox)=>{
              

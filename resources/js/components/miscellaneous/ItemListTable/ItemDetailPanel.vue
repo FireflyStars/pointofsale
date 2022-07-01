@@ -6,14 +6,18 @@
       <transition enter-active-class="animate__animated animate__slideInRight" leave-active-class="animate__animated animate__slideOutRight"  >
         <div class="od" :style="{width:width}" v-if="show">
                 <div class="miniloader" v-if="showloader"></div>
-            <i class="icon-close" @click="close"></i>
+                 <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
+                <div class="close-wrapper" v-if="showclose">
+                    <i class="icon-close" @click="close"></i>
+                </div>
+                 </transition>
            <slot></slot>
         </div>
     </transition>
 </template>
 
 <script>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { ITEM_LIST_GET_CURRENT, ITEM_LIST_GET_IDENTIFIER, ITEM_LIST_MODULE, ITEM_LIST_SELECT_CURRENT } from '../../../store/types/types';
@@ -43,9 +47,12 @@ import { ITEM_LIST_GET_CURRENT, ITEM_LIST_GET_IDENTIFIER, ITEM_LIST_MODULE, ITEM
             const store=useStore();
             const router=useRouter();
             const show=ref(false);
-
+            const showclose=ref(false);
             onMounted(()=>{
                 show.value=true;
+                 setTimeout(()=>{
+                showclose.value=true;
+                },1000)
             })
             const identifier=computed(()=>store.getters[`${ITEM_LIST_MODULE}${ITEM_LIST_GET_IDENTIFIER}`])
             const current_sel=computed(()=>store.getters[`${ITEM_LIST_MODULE}${ITEM_LIST_GET_CURRENT}`]);
@@ -73,14 +80,23 @@ import { ITEM_LIST_GET_CURRENT, ITEM_LIST_GET_IDENTIFIER, ITEM_LIST_MODULE, ITEM
                  close,
                  width:props.width,
                  current_sel,
-                 identifier
+                 identifier,
+                 showclose
              }
         }
     }
 </script>
 
 <style scoped>
-
+.close-wrapper{
+    position: fixed;
+    right: 30px;
+    width: 30px;
+    height: 30px;
+    top: 80px;
+    background-color: rgb(221 221 221 / 70%);
+    border-radius: 5px;
+}
 .od{
       
         background: #FFF;
@@ -94,10 +110,14 @@ import { ITEM_LIST_GET_CURRENT, ITEM_LIST_GET_IDENTIFIER, ITEM_LIST_MODULE, ITEM
         padding: 0 20px;
     }
      .icon-close{
-        top:24px;
-        right: 24px;
+        top:50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        transform-origin: center;
     }
-
+.icon-close:hover {
+  transform:translate(-50%,-50%) scale(1.5);
+}
     .back-layer {
         background: rgba(224, 224, 224,0.6);
         position: fixed;

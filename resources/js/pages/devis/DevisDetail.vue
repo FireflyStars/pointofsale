@@ -64,7 +64,7 @@
         <div class="od_invoices">
             <div class="row">
                 <div class="col-4 almarai_700_normal font-14 lcdtgrey d-flex align-items-center">Facturation</div>
-                <div class="col-2 almarai_700_normal font-14 d-flex align-items-center">{{facturation_total_taux}}%</div>
+                <div class="col-2 almarai_700_normal font-14 d-flex align-items-center">{{facturation_total_taux.toFixed(2)}}%</div>
                 <div class="col-2"></div>
                 <div class="col-2  almarai_700_normal font-14 d-flex align-items-center justify-content-end">{{formatPrice(facturation_total)}}</div>
                 <div class="col-1"></div>
