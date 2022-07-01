@@ -16,10 +16,12 @@ export const itemlist= {
     },
     mutations: {
       [ITEM_LIST_UPDATE_ROW]:(state,params)=>{
-        console.log(params);
         let row=state.lists[state.current_table_identifier].filter(obj=>obj[params.id]==params.idValue);
         row[0][params.colName]=params.colValue;
       }, 
+      [ITEM_LIST_REMOVE_ROW]:(state,params)=>{
+        state.lists[state.current_table_identifier]=state.lists[state.current_table_identifier].filter(obj=>obj[params.id]!=params.idValue);
+      },
       [ITEM_LIST_UPDATE_FILTER]:(state,params)=>{
    
             if(typeof state.column_filters[state.current_table_identifier]=="undefined")
