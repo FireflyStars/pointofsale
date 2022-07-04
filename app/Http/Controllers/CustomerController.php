@@ -342,6 +342,22 @@ class CustomerController extends Controller
     }
 
     /**
+     * get customer contacts
+     *  @param customerId
+     */
+    public function getCustomerContacts(Request $request){
+        $contacts = DB::table('contacts')->join('contact_qualite', 'contacts.contact_qualite_id', '=', 'contact_qualite.id')
+                    ->select( 
+                        DB::raw('CONCAT(contacts.firstname, " ", contacts.lastname) as name'),
+                        'contact_qualite.name as qualite', 'contacts.mobile', 'contacts.email',
+                        'contacts.comment', 'contacts.id'
+                    )
+                    ->where('customer_id', $request->customerId)
+                    ->get();
+        return response()->json($contacts);
+    }
+
+    /**
      * Add customer address
      */
     public function addCustomerAddress(Request $request){
@@ -365,6 +381,34 @@ class CustomerController extends Controller
         return response()->json([
             'id' => $addressID,
             'addressType' => DB::table('address_type')->find($request->addressType)->name,
+        ]);
+    }
+    /**
+     * Add customer contact
+     */
+    public function addCustomerContact(Request $request){
+        $contactData = [
+            'contact_type_id'       => $request->type,
+            'contact_qualite_id'    => $request->qualite,
+            'customer_id'           => $request->id,
+            'actif'                 => $request->actif,
+            'num_contact_gx'        => $request->numGx,
+            'name'                  => $request->name,
+            'firstname'             => $request->firstName,
+            'profillinedin'         => $request->profilLinedin,
+            'gender'                => $request->gender,
+            'email'                 => $request->email,
+            'mobile'                => $request->phoneCountryCode1.'|'.$request->phoneNumber1,
+            'telephone'             => $request->phoneCountryCode2.'|'.$request->phoneNumber2,
+            'type'                  => DB::table('contact_type')->find($request->type)->name,
+            'comment'               => $request->note,
+            'acceptsms'             => $request->acceptSMS,
+            'acceptmarketing'       => $request->acceptmarketing,
+            'acceptcourrier'        => $request->acceptcourrier,
+        ];        
+        $contactId = DB::table('contacts')->insertGetId($contactData);
+        return response()->json([
+            'id' => $contactId
         ]);
     }
 }

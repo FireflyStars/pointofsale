@@ -224,7 +224,7 @@ export default {
         const addNewContact = ()=>{
             // loading customer addresses
             store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'creating contact..']);
-            axios.post('/add-contact', contact.value).then((res)=>{
+            axios.post('/add-customer-contact', contact.value).then((res)=>{
                 emit('addedNewContact', {
                     id: res.data.id,
                     name: contact.value.firstName + " " + contact.value.name,

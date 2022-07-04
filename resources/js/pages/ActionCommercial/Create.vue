@@ -26,41 +26,41 @@
                     <div class="choose-address-panel mt-3">
                         <div class="col-5 p-3 bg-white rounded">
                             <div class="d-flex">
-                                <div class="col-6">
-                                <h2 class="almarai-extrabold font-22">{{ form.customer.company }}</h2>
-                                <p class="text-gray font-16 almarai-bold">{{ form.customer.raisonsocial }}</p>
+                                <div class="col-8">
+                                <h2 class="almarai-extrabold font-22">{{ action.customer.company }}</h2>
+                                <p class="text-gray font-16 almarai-bold">{{ action.customer.raisonsocial }}</p>
                                 </div>
-                                <div class="col-6 d-flex align-items-center justify-content-end">
-                                <p @click="withoutAddress" class="text-custom-success font-16 almarai-bold text-decoration-underline cursor-pointer">Pas d adresse</p>
-                                <p @click="chooseOtherCustomer" class="text-custom-success font-16 almarai-bold text-decoration-underline cursor-pointer">Autre client</p>
+                                <div class="col-4">
+                                    <p @click="withoutAddress" class="text-custom-success font-16 almarai-bold text-decoration-underline cursor-pointer">Pas d adresse</p>
+                                    <p @click="chooseOtherCustomer" class="text-custom-success font-16 almarai-bold text-decoration-underline cursor-pointer">Autre client</p>
                                 </div>
                             </div>
                             <div class="d-flex mt-3">
                                 <div class="col-4">
                                 <label for="" class="text-gray font-16 almarai-bold">GROUPE</label>
-                                <p class="font-16 almarai-bold">{{ form.customer.group }}</p>
+                                <p class="font-16 almarai-bold">{{ action.customer.group }}</p>
                                 </div>
                                 <div class="col-4">
                                 <label for="" class="text-gray font-16 almarai-bold">CONTACT</label>
-                                <p class="font-16 almarai-bold">{{ form.customer.contact }}</p>
+                                <p class="font-16 almarai-bold">{{ action.customer.contact }}</p>
                                 </div>
                                 <div class="col-4">
                                 <label for="" class="text-gray font-16 almarai-bold">TELEPHONE</label>
-                                <p class="font-16 almarai-bold">{{ form.customer.telephone }}</p>
+                                <p class="font-16 almarai-bold">{{ action.customer.telephone }}</p>
                                 </div>
                             </div>
                             <div class="d-flex mt-3">
                                 <div class="col-4">
                                 <label for="" class="text-gray font-16 almarai-bold">TVA</label>
-                                <p class="font-16 almarai-bold">{{ form.customer.tax }}</p>
+                                <p class="font-16 almarai-bold">{{ action.customer.tax }}</p>
                                 </div>
                                 <div class="col-4">
                                 <label for="" class="text-gray font-16 almarai-bold">NAF</label>
-                                <p class="font-16 almarai-bold">{{ form.customer.naf }}</p>
+                                <p class="font-16 almarai-bold">{{ action.customer.naf }}</p>
                                 </div>
                                 <div class="col-4">
                                 <label for="" class="text-gray font-16 almarai-bold">SIRET</label>
-                                <p class="font-16 almarai-bold">{{ form.customer.siret }}</p>
+                                <p class="font-16 almarai-bold">{{ action.customer.siret }}</p>
                                 </div>
                             </div>
                         </div>
@@ -129,7 +129,7 @@
                                     </div>
                                 </div>
                             </div>
-
+                            <div class="col-1"></div>
                             <div class="col-5 p-3 bg-white rounded" v-if="action.address.id !=''">
                                 <div class="d-flex">
                                     <div class="col-6">
@@ -168,19 +168,18 @@
                             <div class="mt-3 action-contacts">
                                 <div class="px-4 py-3 bg-gray mt-2 address-item rounded cursor-pointer" 
                                 @click="chooseActionContact(contact)" v-for="(contact, index) in actionContacts" :key="index">
-                                <div class="d-flex">
-                                    <div class="col-7">
-                                    <h3 class="almarai-bold font-16">{{ contact.name }}</h3>
+                                    <div class="d-flex">
+                                        <div class="col-7">
+                                            <p class="almarai-bold font-16">{{ contact.name }}</p>
+                                            <p class="almarai-bold font-16 text-gray">{{ contact.qualite }}</p>
+                                            <p class="almarai-bold font-16 text-gray">{{ contact.comment }}</p>
+                                        </div>
+                                        <div class="col-5">
+                                            <p class="almarai-bold font-16  text-gray">{{ contact.email }}</p>
+                                            <p class="almarai-bold font-16  text-gray">&nbsp;</p>
+                                            <p class="almarai-bold font-16  text-gray">{{ contact.mobile }}</p>
+                                        </div>
                                     </div>
-                                    <div class="col-5">
-                                    <p class="almarai-bold font-16 text-gray">{{ contact.contactType }}</p>
-                                    </div>
-                                </div>
-                                <div class="d-flex">
-                                    <div class="col-4 almarai-bold text-gray">{{ contact.contact1 }}</div>
-                                    <div class="col-4 almarai-bold text-gray">{{ contact.contact2 }}</div>
-                                    <div class="col-4 almarai-bold text-gray">{{ contact.postcode }} {{ contact.city }}</div>
-                                </div>
                                 </div>
                             </div>
                         </div>
@@ -409,14 +408,14 @@ export default {
             })
         }        
         const addNewAddress = ()=>{
-            addressModal.value.openModal(form.value.customer.id)
+            addressModal.value.openModal(action.value.customer.id)
         }
 
         const addedNewAddress = (data)=>{
             actionAddresses.value.push(data);
         }
         const addNewContact = ()=>{
-            contactModal.value.openModal(form.value.customer.id)
+            contactModal.value.openModal(action.value.customer.id)
         }
         const addedNewContact = (data)=>{
             actionContacts.value.push(data);
@@ -456,13 +455,25 @@ export default {
                 store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
             })
         }        
+        const getActionContacts = ()=>{
+            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Chargement des contacts des clients..']);
+            axios.post('/get-customer-contacts', { customerId: action.value.customer.id }).then((res)=>{
+                actionContacts.value = res.data;
+            }).catch((error)=>{
+                console.log(error);
+            }).finally(()=>{
+                store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+            });
+        }
         const withoutAddress = ()=>{
             action.value.address = { id: '' };
             step.value = 'choose_contact';
+            getActionContacts();
         }
         const chooseActionAddress = (address)=>{
             action.value.address = address;
             step.value = 'choose_contact';
+            getActionContacts();
         }
         const chooseActionContact = (contact)=>{
             action.value.contact = contact;
@@ -477,6 +488,7 @@ export default {
             addressModal,
             contactModal,
             addNewAddress,
+            addNewContact,
             addedNewAddress,
             addedNewContact,
             goToStep,

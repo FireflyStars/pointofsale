@@ -159,7 +159,9 @@ Route::group([
     Route::post('/update-customer', [ CustomerController::class, 'updateCustomer' ])->middleware('auth')->name('update.customer');
     Route::post('/search-customer', [ CustomerController::class, 'searchCustomer' ])->middleware('auth')->name('search.customer');
     Route::post('/get-customer-addresses', [ CustomerController::class, 'getCustomerAddresses' ])->middleware('auth')->name('get.customer.addresses');
+    Route::post('/get-customer-contacts', [ CustomerController::class, 'getCustomerContacts' ])->middleware('auth')->name('get.customer.contacts');
     Route::post('/add-customer-address', [ CustomerController::class, 'addCustomerAddress' ])->middleware('auth')->name('add.customer.address');
+    Route::post('/add-customer-contact', [ CustomerController::class, 'addCustomerContact' ])->middleware('auth')->name('add.customer.contact');
     // End Customer
     
     Route::put('deleteCompagneCible/', [CompagneController::class, 'deleteCompagneCible'])->middleware('auth')->name('deleteCompagneCible');
