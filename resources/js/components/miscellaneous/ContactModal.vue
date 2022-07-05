@@ -103,7 +103,7 @@
                                 <div class="col-7">
                                     <div class="form-group">
                                         <label class="mulish-medium font-16">EMAIL</label>
-                                        <input type="text" v-model="contact.email" placeholder="email" class="form-control">
+                                        <input type="text" v-model="contact.email" @change="validationUniqueEmail($event, 'contacts')" placeholder="email" class="form-control">
                                     </div>
                                 </div>                               
                                 <div class="col-5 ps-4">
@@ -229,6 +229,22 @@ export default {
                 });
             });
         }  
+        const validationUniqueEmail = (event, tableName)=>{
+            axios.post('/check-email-exists', { table: tableName, email:  event.target.value })
+            .then((res)=>{
+                if( !res.data.success ){
+                    Object.values(res.data.errors).forEach(item => {
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: item[0],
+                            ttl: 5,
+                        });
+                    });                    
+                }
+            }).catch((error)=>{
+                console.log(error);
+            })
+        }        
         const addNewContact = ()=>{
             // loading customer addresses
             store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'creating contact..']);
@@ -260,6 +276,7 @@ export default {
             contactTypes,
             contactQualites,
             phoneCodesSorted,
+            validationUniqueEmail,
             closeModal,
             openModal,
             addNewContact,

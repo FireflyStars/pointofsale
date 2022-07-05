@@ -412,4 +412,23 @@ class CustomerController extends Controller
             'id' => $contactId
         ]);
     }
+
+    /**
+     * Check if email exists or not
+     *  @param tableName, email
+     * 
+     *  @return true | false 
+     */
+    public function checkEmailExists(Request $request){
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|unique:contacts|email',
+        ]);
+ 
+        if ($validator->fails()) {
+            return response()->json( ['success'=> false, 'errors'=> $validator->errors()] );
+        }else{
+            return response()->json( ['success'=> true ] );
+        }        
+    }
+
 }
