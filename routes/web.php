@@ -32,6 +32,8 @@ Route::group(['prefix' => 'admin'], function () {
 Route::post('/save-page-elements', [PageElementsController::class, 'generate_pdf']);
 Route::post('/generate-pdf/{report}', [PageElementsController::class, 'generate_pdf_by_id']);
 
+Route::delete('delete-report/{report}', [PageElementsController::class, 'delete_report']);
+
 Route::post('/report-templates', [TemplatesController::class, 'index']);
 Route::get('/get-report-templates', [TemplatesController::class, 'report_templates']);
 Route::post('/report-template', [TemplatesController::class, 'store']);

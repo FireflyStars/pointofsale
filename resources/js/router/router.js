@@ -84,7 +84,6 @@ const router = createRouter({
             meta: {
                 authenticated:true
             },
-
         },
         {
             path: '/reports',
@@ -94,7 +93,6 @@ const router = createRouter({
             meta: {
                 authenticated: true
             },
-
         },
         {
             path: '/report/create/:id',

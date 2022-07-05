@@ -12,6 +12,12 @@ use App\Http\Resources\reportsResource;
 class PageElementsController extends Controller
 {
 
+    public function delete_report(Report $report) 
+    {
+        $report->delete();
+        return response()->json("Report deleted");
+    }
+
     public function generate_pdf_by_id(Report $report) 
     {
         

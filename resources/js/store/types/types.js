@@ -174,6 +174,7 @@ export const UPDATE_ELEMENT_TABLE = 'updateElementTable'
 export const SET_PAGE_BACKGROUND = 'setPageBackground'
 export const SET_LOADING = 'setLoading'
 export const UPDATE_SVG = 'updateSvg'
+export const DELETE_REPORT = 'DELETE_REPORT'
 
 export const SAVE_META = 'saveMeta'
 

@@ -40,6 +40,7 @@ import {
     SAVE_REPORT,
     GET_REPORT,
     SET_PAGE_BACKGROUND,
+    DELETE_REPORT
 
 } from "../types/types"
 
@@ -200,6 +201,19 @@ export const PageBuilder = {
 
     actions: {
 
+        async [DELETE_REPORT](_, reportId) {
+
+            try {
+                await axios.delete(`/delete-report/${reportId}`)
+            }
+
+            catch(e) {
+                throw e
+            }
+
+
+        },
+
         async [GENERATE_PDF_BY_ID]({ state, commit }, reportId) {
 
             if(state.loading.id == 'submit' && state.loading.value == true) return
@@ -224,6 +238,7 @@ export const PageBuilder = {
             }
 
         },
+
 
         async [GENERATE_PDF]({ state, commit }, { pages, template, orderId }) {
 
