@@ -382,14 +382,16 @@ const formattedAddress = computed(() => {
     if(typeof details.value?.address == 'undefined') return 'PAS D ADRESSE CLIENTE'
     if(!Object.entries(details.value?.address).length) return 'PAS D ADRESSE CLIENTE'
     
-    const address = details.value?.address
+    const { firstname = '', lastname = '', address1 = '', address2 = '', postcode = '', city = '' } = details.value?.address
+
+    const name = firstname + ' ' + lastname
     
     return `
-    ${address?.firstname} ${address?.lastname}
-    <br> ${address?.address1 + '<br>'}
-    ${address?.address2 == null ? '' : address?.address2 + '<br>'}
-    ${address?.postcode + '<br>'}
-    ${address?.city}
+    ${name ? name + '<br>' : ''}
+    ${address1 ? address1 + '<br>' : ''}
+    ${address2 == null ? '' : address2 + '<br>'}
+    ${postcode ? postcode + '<br>' : ''}
+    ${city || ''}
     `
 })
 
@@ -398,10 +400,12 @@ const contact = computed(() => {
     if(typeof details.value?.contact == 'undefined') return '--/--'
     if(!Object.entries(details.value?.contact).length) return '--/--'
 
+    const { name = '', email = '', mobile = '' } = details.value?.contact
+
     return `
-        ${details.value?.contact?.name}<br>
-        ${details.value?.contact?.email}<br>
-        ${details.value?.contact?.mobile}
+        ${name ? name + '<br>' : ''}
+        ${email ? email + '<br>' : ''}
+        ${mobile || ''}
     `
 })
 
@@ -638,7 +642,7 @@ const commitAction = async () => {
 
             if(modal.status == 'effacer') {
 
-                store.commit(`${ITEM_LIST_MODULE}${ITEM_LIST_REMOVE_ROW}`,{ id:'id', idValue: details.value?.id });
+                store.commit(`${ITEM_LIST_MODULE}${ITEM_LIST_REMOVE_ROW}`,{ id: 'id', idValue: details.value?.id })
 
                 router.replace({
                     name: 'action-commercial'
@@ -722,9 +726,6 @@ onBeforeMount(() => {
 </style>
 
 <style lang="scss" scoped>
-
-
-
 .devisLink {
     font-weight: bold; 
     color: #000; 
@@ -739,7 +740,7 @@ onBeforeMount(() => {
 }
 
 .heading {
-    font-family: 'Almarai Bold';
+    font-family: 'Almarai Regular';
     font-style: normal;
     font-weight: 800 !important;
     font-size: 22px;
@@ -765,11 +766,12 @@ onBeforeMount(() => {
     padding: 5px 16px 5px 8px;
     gap: 8px;
     position: relative;
-    width: 104px;
+    min-width: 104px;
+    width: auto;
     height: 23px;
     background: rgba(241, 210, 164, 0.7);
     border-radius: 70px;
-    font-family: 'Almarai Bold';
+    font-family: 'Almarai Regular';
     font-style: normal;
     font-weight: 700;
     font-size: 12px;

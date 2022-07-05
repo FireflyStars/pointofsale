@@ -121,16 +121,16 @@ const router = createRouter({
             }
         },
         {
-            path:'/templates/add',
-            name:'templates-add',
+            path: '/templates/add',
+            name: 'templates-add',
             component: () => import('../pages/templates/add'),
             meta: {
                 authenticated: true
             },
         },
         {
-            path:'/templates/:id',
-            name:'templates-edit',
+            path: '/templates/:id',
+            name: 'templates-edit',
             component: () => import('../pages/templates/edit'),
             props: true,
             meta: {

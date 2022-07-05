@@ -75,6 +75,9 @@ Route::get('/get-entite-list', [EntiteController::class, 'index']);
 Route::post('/get-entite-list', [EntiteController::class, 'index']);
 Route::post('/get-entite-list-user', [EntiteController::class, 'index']);
 Route::get('/get-entite-list-details/{customer}', [EntiteController::class, 'get_details']);
+Route::post('/change-entite-actif/{customer}', [EntiteController::class, 'change_entite_actif']);
+Route::post('/change-entite-litige/{customer}', [EntiteController::class, 'change_entite_litige']);
+Route::get('/get-entite-results/{customer}', [EntiteController::class, 'get_entite_results']);
 
 Route::get('/action-commercial-list', [ActionCommercialListController::class, 'index']);
 Route::post('/action-commercial-list', [ActionCommercialListController::class, 'index']);
