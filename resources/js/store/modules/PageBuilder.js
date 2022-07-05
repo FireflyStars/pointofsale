@@ -12,6 +12,7 @@ import {
     UPDATE_SVG,
     SET_LOADING,
     GENERATE_PDF, 
+    GENERATE_PDF_BY_ID,
     ADD_PAGE,
     DELETE_PAGE,
     SAVE_PAGE_ELEMENTS, 
@@ -199,6 +200,31 @@ export const PageBuilder = {
 
     actions: {
 
+        async [GENERATE_PDF_BY_ID]({ state, commit }, reportId) {
+
+            if(state.loading.id == 'submit' && state.loading.value == true) return
+
+            commit(SET_LOADING, { id: 'submit', value: true })
+
+            const formData = new FormData()
+
+            try {
+                const { data } = await axios.post(`/generate-pdf/${reportId}`, formData, {
+                    responseType: 'arraybuffer'
+                })
+                return data
+            }
+
+            catch(e) {
+                throw e
+            }
+
+            finally {
+                commit(SET_LOADING, { id: 'submit', value: false })
+            }
+
+        },
+
         async [GENERATE_PDF]({ state, commit }, { pages, template, orderId }) {
 
             if(state.loading.id == 'submit' && state.loading.value == true) return
@@ -301,12 +327,12 @@ export const PageBuilder = {
 
         },
 
-        async [GET_REPORT]({ commit }, orderId) {
+        async [GET_REPORT]({ commit }, reportId) {
             try {
-                const { data } = await axios.get(`/page-report/${orderId}`)
+                const { data } = await axios.get(`/page-report/${reportId}`)
                 saveReportPages(data)
-                data.report_id != null ? commit(SAVE_REPORT, {
-                    id: data.report_id, 
+                data.id != null ? commit(SAVE_REPORT, {
+                    id: data.id, 
                     status: 'update' 
                 }) : {}
             }
@@ -315,10 +341,11 @@ export const PageBuilder = {
             }
         },
 
-        async [SAVE_REPORT]({ commit, state }, { pages, orderId, templateId }) {
+        async [SAVE_REPORT]({ commit, state }, { pages, orderId, templateId, name }) {
             
             let path = '/page-report'
             if(state.report.status == 'update') path += `/${orderId}`
+
             try {
                 
                 commit(SET_LOADING, { id: 'save-report' })
@@ -327,6 +354,7 @@ export const PageBuilder = {
                 formData.append('template_id', templateId)
                 formData.append('order_id', orderId)
                 formData.append('report_id', state.report.id)
+                formData.append('name', name)
 
                 const { data } = await axios.post(path, formData)
                 commit(SAVE_REPORT, { id: data.id, status: 'update' })

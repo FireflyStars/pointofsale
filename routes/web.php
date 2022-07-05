@@ -29,8 +29,8 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('/get-text-pos',[LcdtAdminController::class,'getTextPos'])->name('get-text-pos');
 });
 
-Route::post('/save-page-elements', [PageElementsController::class, 'store']);
-Route::get('/save-page-elements', [PageElementsController::class, 'store_get']);
+Route::post('/save-page-elements', [PageElementsController::class, 'generate_pdf']);
+Route::post('/generate-pdf/{report}', [PageElementsController::class, 'generate_pdf_by_id']);
 
 Route::post('/report-templates', [TemplatesController::class, 'index']);
 Route::get('/get-report-templates', [TemplatesController::class, 'report_templates']);
@@ -40,8 +40,8 @@ Route::post('/report-template/{template}', [TemplatesController::class, 'update'
 
 Route::post('/page-reports', [ReportsController::class, 'index'])->middleware('auth');
 Route::post('/page-report', [ReportsController::class, 'store']);
-Route::get('/page-report/{order}', [ReportsController::class, 'show']);
-Route::post('/page-report/{order}', [ReportsController::class, 'update']);
+Route::get('/page-report/{report}', [ReportsController::class, 'show']);
+Route::post('/page-report/{report}', [ReportsController::class, 'update']);
 
 
 Route::get('/get-page-order/{order}', [PageElementsController::class, 'get_page_order']);

@@ -50,9 +50,9 @@ class Order extends Model
         return $this->belongsTo(Contact::class, 'responsable_id');
     }
 
-    public function report() 
+    public function reports() 
     {
-        return $this->hasOne(Report::class);
+        return $this->hasMany(Report::class);
     }
 
     public function affiliate() 

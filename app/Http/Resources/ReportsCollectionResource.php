@@ -14,12 +14,11 @@ class ReportsCollectionResource extends JsonResource
     {
         return [
             'id'            => $this->id,
-            'template_name' => optional(optional($this->report)->template)->name,
-            'report_id'     => optional($this->report)->id, 
+            'template_name' => optional($this->template)->name,
             'affiliate'     => optional($this->affiliate)->name,
-            'pages'         => optional($this->report)->pages ? $this->report->pages : [],
-            'page_files'    => optional($this->report)->page_files 
-                                ? $this->get_formatted_files($this->report->page_files)
+            'pages'         => count($this->pages) ? $this->pages : [],
+            'page_files'    => count($this->page_files) 
+                                ? $this->get_formatted_files($this->page_files)
                                 : [],
             'created_at'    => $this->created_at->format('Y-m-d'),
         ];

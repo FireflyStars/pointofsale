@@ -5,7 +5,8 @@ import {
     GET_ENTITE_LIST_MES,
     ENTITE_LIST_MODULE,
     GET_ENTITE_DETAILS,
-    SAVE_ENTITE_DETAILS
+    SAVE_ENTITE_DETAILS,
+    RESET_DETAILS,
 }
 from '../types/types'
 
@@ -273,7 +274,10 @@ export const entite = {
     mutations: {
         [SAVE_ENTITE_DETAILS](state, data) {
             state.details = data
-        }
+        },
+        [RESET_DETAILS](state) {
+            state.details = {}
+        },
     },
 
     actions: {
@@ -310,7 +314,6 @@ export const entite = {
             catch(e) {
                 throw e
             }
-
 
         }
 

@@ -24,18 +24,25 @@ trait TemplateFormattedFiles
 
     private function get_file_public_path($file, $key) 
     {
+        
+        $app_url = rtrim(config('app.url'), '/');
+
         if($key == 'backgroundImage_' . $file['page']) 
         {
+            
             $filename = ltrim($file['file'], '\/');
+
             if(strpos($filename, 'report-templates') !== false) 
             {
-                return config('app.url') . Storage::url($file['file']);
+                return $app_url . Storage::url($file['file']);
             }
-            return config('app.url') . '/' . $filename;
+
+            return $app_url . '/' . $filename;
+
         }
         else 
         {
-            return config('app.url') . Storage::url($file['file']);
+            return $app_url . Storage::url($file['file']);
         }
     }
 

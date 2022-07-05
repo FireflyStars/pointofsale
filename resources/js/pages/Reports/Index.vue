@@ -26,6 +26,8 @@
                         <div class="row m-0 ml-5 mr-5">
                             
                             <div class="col-12">
+
+                                <button @click.prevent="generatePdfById(26)">Generate pdf by Id</button>
                                 
                                 <item-list-table 
                                     :table_def="reports" 
@@ -68,7 +70,10 @@ import { onMounted, ref, nextTick, computed } from 'vue'
 
 import { 
     REPORTS_BUILDER_MODULE, 
+    BUILDER_MODULE,
 } from '../../store/types/types'
+
+import useReports from '../../composables/reports/useReports'
 
 import ItemListTable from '../../components/miscellaneous/ItemListTable/ItemListTable.vue'
 
@@ -78,6 +83,8 @@ const router = useRouter()
 const showcontainer = ref(false)
 
 const reports = computed(() => store.getters[`${REPORTS_BUILDER_MODULE}reportListDefinition`])
+
+const { generatePdfById } = useReports()
 
 const navigatePage = (id) => {
     

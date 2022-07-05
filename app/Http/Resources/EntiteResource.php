@@ -7,31 +7,62 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class EntiteResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
-     */
+  
     public function toArray($request)
     {
         return [
-            'id'            => $this->id,
-            'raisonsociale' => $this->raisonsociale,
-            'raisonsociale2'=> $this->raisonsociale2,
-            'company'       => $this->company,
-            'origine'       => $this->origine,
-            'litige'        => $this->litige,
-            'active'        => $this->active,
-            'comment'       => $this->comment,
-            'contacts'      => $this->contacts,
-            'addresses'     => $this->addresses,
-            'status'        => $this->status,
-            'orders'        => $this->orders()->take(3)->get(),
-            'event_history' => $this->get_event_history($this),
-            'event_invoices' => $this->invoices,
-            'query'         => DB::getQueryLog()
+            'id'              => $this->id,
+            'raisonsociale'   => $this->raisonsociale,
+            'raisonsociale2'  => $this->raisonsociale2,
+            'company'         => $this->company,
+            'origin'          => $this->customerOrigin,
+            'paiement'        => $this->paiement,
+            'litige'          => $this->litige,
+            'active'          => $this->active,
+            'comment'         => $this->comment,
+            'contact'         => $this->get_contacts($this),
+            'address'         => $this->get_addresses($this),
+            'status'          => $this->status,
+            'orders'          => $this->get_orders($this),
+            'event_history'   => $this->get_event_history($this),
+            'event_invoices'  => $this->get_invoices($this),
+            'query'           => DB::getQueryLog()
         ];
+    }
+
+    private function get_contacts($customer) 
+    {
+        return $customer->contacts()
+        ->select('firstname', 'email', 'mobile')
+        ->take(1)
+        ->latest('created_at')
+        ->first();
+    }
+
+    private function get_addresses($customer) 
+    {
+        return $customer->addresses()
+        ->select(
+            'firstname',
+            'lastname',
+            'address1',
+            'address2',
+            'postcode',
+            'city',
+        )
+        ->take(1)
+        ->latest('created_at')
+        ->first()
+        ->load('address_type');
+    }
+
+    private function get_orders($customer) 
+    {
+        return $customer->orders()
+        ->take(3)
+        ->latest('created_at')
+        ->get()
+        ->load('user', 'state');
     }
 
 
@@ -39,8 +70,17 @@ class EntiteResource extends JsonResource
     {
         return $customer->eventsHistory()
             ->take(3)
+            ->latest('created_at')
             ->get()
-            ->load('user', 'status');
+            ->load('user', 'status', 'event');
+    }
+
+    private function get_invoices($customer) 
+    {
+        return $customer->invoices()
+            ->take(3)
+            ->latest('created_at')
+            ->get();
     }
 
 }

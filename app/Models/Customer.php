@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Event;
 use App\Models\Invoice;
+use App\Models\CustomerOrigin;
 use App\Models\CustomerStatut;
 use App\Models\CustomerPaiement;
 use Illuminate\Database\Eloquent\Model;
@@ -53,6 +54,11 @@ class Customer extends Model
     public function invoices() 
     {
         return $this->hasMany(Invoice::class);
+    }
+
+    public function customerOrigin() 
+    {
+        return $this->belongsTo(CustomerOrigin::class, 'customer_origin_id');
     }
 
 }

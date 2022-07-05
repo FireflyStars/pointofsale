@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Exception;
 use App\Models\Order;
+use App\Models\Report;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -47,23 +48,26 @@ class ReportsController extends Controller
         
     }
 
-    public function show(Order $order) 
+    public function show(Report $report) 
     {
         return response()->json(
-            new ReportsCollectionResource($order)
+            new ReportsCollectionResource($report)
         );
     }
     
     public function store(Request $request) 
     {
+
         $page_files = $this->get_page_files($request);
         $pages = gettype($request->pages) == 'string' ? json_decode($request->pages, true) : $request->pages;
 
         $order = Order::find($request->order_id);
 
-        $report = $order->report()->create([
+        $report = $order->reports()->create([
+            'name'         => $request->name,
             'template_id'  => $request->template_id, 
-            'affiliate_id' => optional(Auth::user())->id,
+            'affiliate_id' => optional(optional(Auth::user())->affiliate)->id,
+            'user_id'      => optional(Auth::user())->id,
             'pages'        => $pages,
             'page_files'   => $page_files,
         ]);  
@@ -72,18 +76,18 @@ class ReportsController extends Controller
 
     }
 
-    public function update(Order $order, Request $request) 
+    public function update(Report $report, Request $request) 
     {
         
         $pages = gettype($request->pages) == 'string' ? json_decode($request->pages, true) : $request->pages;
         $page_files = $this->get_page_files($request);
 
-        $order->report()->update([
+        $report->update([
             'pages'      => $pages,
             'page_files' => $page_files 
         ]);
 
-        return response()->json($order->report, 201); 
+        return response()->json($report, 201); 
 
     }
 }

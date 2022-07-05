@@ -87,8 +87,8 @@ const router = createRouter({
 
         },
         {
-            path:'/reports',
-            name:'reports',
+            path: '/reports',
+            name: 'reports',
             component: () => import('../pages/Reports/Index'),
             props: true,
             meta: {
@@ -97,9 +97,18 @@ const router = createRouter({
 
         },
         {
-            path:'/reports/:id',
-            name:'report-page',
-            component: () => import('../pages/Reports/Show'),
+            path: '/report/create/:id',
+            name: 'create-report-page',
+            component: () => import('../pages/Reports/Create'),
+            props: true,
+            meta: {
+                authenticated: true
+            },
+        },
+        {
+            path: '/report/edit/:id',
+            name: 'edit-report-page',
+            component: () => import('../pages/Reports/Edit'),
             props: true,
             meta: {
                 authenticated: true

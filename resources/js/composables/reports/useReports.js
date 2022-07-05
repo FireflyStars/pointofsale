@@ -17,6 +17,7 @@ import {
     TOASTER_MODULE,
     TOASTER_MESSAGE,
     HIDE_LOADER,
+    GENERATE_PDF_BY_ID,
 }
 from '../../store/types/types'
 
@@ -192,6 +193,24 @@ export default function useReports() {
 
     }
 
+    const generatePdfById = async (id) => {
+        
+        try {
+            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Generating PDF...'])
+            const data = await store.dispatch(`${[BUILDER_MODULE]}/${[GENERATE_PDF_BY_ID]}`, id)
+            console.log(data, " is the pdf data")
+            if(data) generatePDF(data)
+        }
+
+        catch(e) {
+            throw e
+        }
+
+        finally {
+            store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`)
+        }
+    }
+
     const generatePDF = (data) => {
         let blob = new Blob([data], { type: 'application/pdf' })
         let link = document.createElement('a')
@@ -206,6 +225,7 @@ export default function useReports() {
         generatePDF,
         formatFormData,
         generatePagePdf,
+        generatePdfById,
         saveReportPages,
         getFormattedPages,
     }

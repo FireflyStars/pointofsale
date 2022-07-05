@@ -45,23 +45,18 @@
     <div class="responsable-section d-flex justify-content-between align-items-center">
     
         <div class="d-flex flex-column gap-1">
-            <span class="title-label">Responsable action :</span>
-            <span class="detail text-capitalize">{{ details.action }}</span>
-        </div>
-
-        <div class="d-flex flex-column gap-1">
-            <span class="title-label">Date de l action :</span>
-            <span class="detail">{{ moment(details.action_date).format('Y/MM/DD') }}</span>
+            <span class="title-label">Date créaction :</span>
+            <span class="detail">{{ moment(details.created_at).format('Y/MM/DD') }}</span>
         </div>
 
         <div class="d-flex flex-column gap-1">
             <span class="title-label">Type action</span>
-            <span class="detail">{{ details.event_type }}</span>
+            <span class="detail">{{ details.status.name }}</span>
         </div>
 
         <div class="d-flex flex-column gap-1">
             <span class="title-label">Origine</span>
-            <span class="detail">{{ details.origin }}</span>
+            <span class="detail">{{ details.origin?.name || '--/--' }}</span>
         </div>
 
     </div>
@@ -82,22 +77,22 @@
         <div class="row mt-4">
             <div class="col">
                 <span class="title-label">Adresse du chantier</span>
-                <span class="detail"></span>
+                <span class="detail" v-html="formattedAddress"></span>
             </div>
             <div class="col">
                 <span class="title-label">Adresse facturation</span>
-                <span class="detail"></span>
+                <span class="detail">{{ details?.address?.address_type?.name  || 'PAS D ADRESSE CLIENTE' }}</span>
             </div>
         </div>
 
         <div class="row" style="margin-top: 1.875rem;">
             <div class="col">
                 <span class="title-label">Contact</span>
-                <span class="detail"></span>
+                <span class="detail" v-html="contact"></span>
             </div>
             <div class="col">
                 <span class="title-label">Mode de paiement</span>
-                <span class="detail"></span>
+                <span class="detail">{{ details?.paiement?.name || '--/--'  }}</span>
             </div>
         </div>
 
@@ -106,11 +101,11 @@
     <hr />
 
 
-    <div class="history-section" v-if="show">
+    <div class="history-section position-relative" v-if="show">
 
         <a href="#" class="link">Voir tout</a>
 
-        <h4 class="heading-label-fade">Historique</h4>
+        <h4 class="heading-label-fade">Historique Action commerciale</h4>
 
         <div class="title-rows text-center">
             <div class="title-label">Date</div>
@@ -129,9 +124,26 @@
         >
 
             <div class="d-flex align-items-center gap-3">
-                <div class="radio-button"></div>
+                <div class="radio-button" style="width: 16px;"></div>
                 <div>{{ history.created_at ? moment(history.created_at).format('DD/MM/Y HH:mm') : '' }}</div>
             </div>
+
+            <div>
+                <router-link 
+                    class="routerLink"
+                    :to="{ 
+                        name: 'action-commercial',
+                        params: {
+                            id: history.id
+                        } 
+                    }"
+
+                >
+                    {{ history.id }}
+                </router-link>
+            </div>
+
+            <div>{{ history?.event?.name }}</div>
 
             <div 
                 :title="history?.status?.name"
@@ -149,71 +161,77 @@
     </div>
 
 
-    <div class="history-section">
+    <div class="devis-section position-relative" v-if="show && details.orders.length">
 
-        <h4 class="heading-label-fade">Historique</h4>
-
-        <div class="title-rows text-center">
-            <div class="title-label"></div>
-            <div class="title-label">Contact</div>
-            <div class="title-label">Status</div>
-            <div class="title-label">Contact</div>
-            <div class="title-label">Commentaire</div>
-        </div>
-
-        <div class="detail-rows" style="margin-top: 1rem">
-
-            <div class="radio-button"></div>
-
-            <div>Laurent</div>
-
-            <div class="tag">Creation</div>
-
-            <div class="">Laurent</div>
-            <div class="">Laurent</div>
-
-        </div>
-
-    </div>
-
-    <div class="devis-section" v-if="show">
+        <a href="#" class="link">Voir tout</a>
 
         <h4 class="heading-label-fade">Devis / Commande</h4>
 
         <div class="title-rows">
-            <div class="title-label"></div>
+            <div class="title-label">Date</div>
             <div class="title-label">Numero</div>
-            <div class="title-label">Status</div>
+            <div class="title-label">Responsable</div>
             <div class="title-label">Type</div>
             <div class="title-label">Status</div>
             <div class="title-label total">Total</div>
         </div>
 
-        <div class="detail-rows" style="margin-top: 1.5rem;">
+        <div 
+            v-for="order in details.orders"
+            :key="order.id"
+            class="detail-rows" 
+            style="margin-top: 1.5rem;"
+        >
 
-            <div class="radio-button"></div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="radio-button" style="width: 16px;"></div>
+                <div>{{ order?.created_at ? moment(order?.created_at).format('DD/MM/Y HH:mm') : '' }}</div>
+            </div>
 
-            <div>8547</div>
-            <div>Laurent</div>
-            <div>Devis</div>
 
-            <div class="tag">Creation</div>
+            <div>
+                <router-link 
+                    class="routerLink"
+                    :to="{ 
+                        name: 'DevisDetail',
+                        params: {
+                            id: order?.id
+                        } 
+                    }"
 
-            <div class="">2300, 00 &euro;</div>
+                >
+                    {{ order?.id }}
+                </router-link>
+            </div>
+            <div>{{ order?.user?.name || '' }}</div>
+            <div>{{ order?.state?.order_type }}</div>
+
+            <div 
+                :title="order?.state?.name"
+                class="tag" 
+                :style="{ 
+                    background: order?.state?.color, 
+                    color: order?.state?.fontcolor 
+                }"
+            >
+                {{ order?.state?.name }}
+            </div>
+
+            <div class="">{{ order?.total?.toFixed(2) }} &euro;</div>
 
         </div>
 
     </div>
 
-    <div class="footer-section d-flex align-items-center gap-4">
+
+    <div class="footer-section d-flex align-items-center gap-4" v-if="show">
 
         <div style="flex: 1">
             <base-button title="Editer" kind="green" />
         </div>
 
-        <base-button title="affecter a" kind="primary" class="text-capitalize" />
-        <base-button title="Litige" kind="danger" class="text-capitalize" />
-        <base-button title="Annuler" />
+        <base-button title="effacer" kind="primary" class="text-uppercase" />
+        <base-button title="Litige" kind="danger" class="text-uppercase" />
         
 
     </div>
@@ -227,7 +245,7 @@
 <script setup>
 
 import moment from 'moment'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, onBeforeMount } from 'vue'
 import ItemDetailPanel from '../../components/miscellaneous/ItemListTable/ItemDetailPanel.vue'
 import StatusTag from '../../components/ActionCo/StatusTag.vue'
 import { useStore } from 'vuex'
@@ -237,6 +255,7 @@ import {
     TOASTER_MESSAGE,
     ENTITE_LIST_MODULE,
     GET_ENTITE_DETAILS,
+    RESET_DETAILS
 }
 from '../../store/types/types'
 
@@ -259,6 +278,35 @@ const actifBackground = computed(() => {
 
 const litigeBackground = computed(() => {
     return details.value?.litige == 1 ? 'rgba(66, 167, 30, 0.2)' : '#ff000045'
+})
+
+
+const formattedAddress = computed(() => {
+    
+    if(typeof details.value?.address == 'undefined') return 'PAS D ADRESSE CLIENTE'
+    if(!Object.entries(details.value?.address).length) return 'PAS D ADRESSE CLIENTE'
+    
+    const address = details.value?.address
+    
+    return `
+    ${address?.firstname} ${address?.lastname}
+    <br> ${address?.address1 + '<br>'}
+    ${address?.address2 == null ? '' : address?.address2 + '<br>'}
+    ${address?.postcode + '<br>'}
+    ${address?.city}
+    `
+})
+
+const contact = computed(() => {
+    
+    if(typeof details.value?.contact == 'undefined') return '--/--'
+    if(!Object.entries(details.value?.contact).length) return '--/--'
+
+    return `
+        ${details.value?.contact?.name}<br>
+        ${details.value?.contact?.email}<br>
+        ${details.value?.contact?.mobile}
+    `
 })
 
 
@@ -286,8 +334,16 @@ const getEntiteDetails = async () => {
 
 }
 
+const resetDetails = () => {
+    store.commit(`${ENTITE_LIST_MODULE}${RESET_DETAILS}`)
+}
+
 onMounted(() => {
     getEntiteDetails()
+})
+
+onBeforeMount(() => {
+    resetDetails()
 })
 
 
@@ -295,6 +351,28 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 
+.routerLink {
+    font-weight: bold; 
+    color: #000; 
+    text-decoration: none;
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+ .link {
+    position: absolute;
+    top: .7rem;
+    right: 1rem;
+    font-family: 'Almarai Regular';
+    font-style: normal;
+    font-weight: 400 !important;
+    font-size: 14px;
+    line-height: 140%;
+    display: flex;
+    align-items: flex-end;
+    color: #3E9A4D;
+}
 
 .panel-heading-section {
     margin-top: 2.35rem;
@@ -385,7 +463,7 @@ onMounted(() => {
 .heading-label, 
 .heading-label-fade, 
 .detail-label-fade {
-    font-family: 'Almarai Bold';
+    font-family: 'Almarai Regular';
     font-style: normal;
     font-weight: 700 !important;
     font-size: 14px;
@@ -420,7 +498,7 @@ onMounted(() => {
 
 .title-rows, .detail-rows {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     align-items: center;
     justify-items: center;
 }

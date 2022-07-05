@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Order;
 use App\Models\Template;
+use App\Models\Affiliate;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -26,12 +27,17 @@ class Report extends Model
 
     public function user() 
     {
-        return $this->belongsTo(User::class, 'affiliate_id');
+        return $this->belongsTo(User::class);
     }
 
     public function template() 
     {
         return $this->belongsTo(Template::class, 'template_id');
+    }
+
+    public function affiliate() 
+    {
+        return $this->belongsTo(Affiliate::class);
     }
 
 }
