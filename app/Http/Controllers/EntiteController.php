@@ -133,10 +133,78 @@ class EntiteController extends Controller
 
     public function get_details(Customer $customer) 
     {
-        DB::enableQueryLog();
         return response()->json(
             new EntiteResource($customer)
         );
     }
+
+
+    public function change_entite_actif(Customer $customer) 
+    {
+
+        $customer->update([
+            'active'             => 0,
+            'customer_statut_id' => 6,
+            'deleted_at'         => now()
+        ]);
+
+        return response()->json("Customer updated");
+
+    }
+
+
+    public function change_entite_litige(Customer $customer, Request $request) 
+    {
+        $customer->update([
+            'litige' => 1,
+            'comment' => $request->comment
+        ]);
+
+        return response()->json("Customer updated");
+
+    }
+
+    public function get_entite_results(Customer $customer, Request $request) 
+    {
+
+        $results = [];
+
+        $types = [
+            'event_history' => $this->get_event_history($customer), 
+            'orders'        => $this->get_orders($customer), 
+            'event_invoices'=> $this->get_invoices($customer)
+        ];
+
+        $results = $types[$request->type];
+
+        return response()->json($results);
+
+    }
+
+    private function get_orders($customer) 
+    {
+        return $customer->orders()
+        ->latest('created_at')
+        ->get()
+        ->load('user', 'state');
+    }
+
+
+    private function get_event_history($customer) 
+    {
+        return $customer->eventsHistory()
+            ->latest('created_at')
+            ->get()
+            ->load('user', 'status', 'event');
+    }
+
+    private function get_invoices($customer) 
+    {
+        return $customer->invoices()
+            ->latest('created_at')
+            ->get()
+            ->load('state');
+    }
+
 
 }

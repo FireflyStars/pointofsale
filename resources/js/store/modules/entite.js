@@ -7,6 +7,11 @@ import {
     GET_ENTITE_DETAILS,
     SAVE_ENTITE_DETAILS,
     RESET_DETAILS,
+    CHANGE_ACTIF,
+    CHANGE_LITIGE,
+    GET_ENTITE_RESULTS,
+    UPDATE_ENTITE_RESULTS,
+    SET_LOADING
 }
 from '../types/types'
 
@@ -260,8 +265,15 @@ export const entite = {
             filter: true,// required boolean
             rearrange_columns: true,// required boolean
             columns_def: table.columns_def,
-
+            
         },
+
+        loading: {
+            id: '',
+            status: false
+        },
+
+        details: {},
 
     },
 
@@ -269,6 +281,7 @@ export const entite = {
         entiteList: state => state.table_def,
         entiteUserList: state => state.entite_user_table_def,
         details: state => state.details,
+        loading: state => state.loading,
     },
 
     mutations: {
@@ -278,6 +291,16 @@ export const entite = {
         [RESET_DETAILS](state) {
             state.details = {}
         },
+        [CHANGE_LITIGE](state) {
+            state.details.litige = 1
+        },
+        [UPDATE_ENTITE_RESULTS](state, { data, type }) {
+            state.details[type] = data
+        },
+        [SET_LOADING](state, payload) {
+            state.loading.id = payload.id
+            state.loading.status = payload.status
+        }
     },
 
     actions: {
@@ -313,6 +336,57 @@ export const entite = {
             
             catch(e) {
                 throw e
+            }
+
+        },
+
+        async [CHANGE_ACTIF]({ commit }, id) {
+
+            try {
+                await axios.post(`/change-entite-actif/${id}`)
+            }
+            catch(e) {
+                throw e
+            }
+
+        },
+
+        async [CHANGE_LITIGE]({ commit }, { id, comment }) {
+
+            try {
+                await axios.post(`/change-entite-litige/${id}`, {
+                    comment
+                })
+                commit(CHANGE_LITIGE)
+            }
+
+            catch(e) {
+                throw e
+            }
+
+        },
+
+        async [GET_ENTITE_RESULTS]({ commit }, { type, id }) {
+
+            try {
+                commit(SET_LOADING, { status: true, id: type })
+
+                const { data } = await axios.get(`/get-entite-results/${id}`, {
+                    params: {
+                        type
+                    }
+                })
+
+                commit(UPDATE_ENTITE_RESULTS, { data, type }) 
+
+            }
+
+            catch(e) {
+                throw e
+            }
+
+            finally {
+                commit(SET_LOADING, { status: false, id: type })
             }
 
         }

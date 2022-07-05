@@ -2,18 +2,27 @@
 
 namespace App\Models;
 
-use App\Traits\LcdtLog;
 use Exception;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\LcdtLog;
+use App\Models\InvoiceState;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Invoice extends Model
 {
     use HasFactory;
     use LcdtLog;
     use SoftDeletes;
+
+
+    public function state() 
+    {
+        return $this->belongsTo(InvoiceState::class, 'invoice_state_id');
+    }
+
+
     
     public function updateState($invoice_state_id, $user_id=null){
         if($user_id==null)

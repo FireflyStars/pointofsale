@@ -16,6 +16,9 @@ class Customer extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $guarded = ['id'];
+
+
     public function orders()
     {
         return $this->hasMany(Order::class);

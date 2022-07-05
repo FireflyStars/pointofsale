@@ -20,13 +20,13 @@ class EntiteResource extends JsonResource
             'litige'          => $this->litige,
             'active'          => $this->active,
             'comment'         => $this->comment,
+            'created_at'      => $this->created_at,
             'contact'         => $this->get_contacts($this),
             'address'         => $this->get_addresses($this),
             'status'          => $this->status,
             'orders'          => $this->get_orders($this),
             'event_history'   => $this->get_event_history($this),
             'event_invoices'  => $this->get_invoices($this),
-            'query'           => DB::getQueryLog()
         ];
     }
 
@@ -80,7 +80,8 @@ class EntiteResource extends JsonResource
         return $customer->invoices()
             ->take(3)
             ->latest('created_at')
-            ->get();
+            ->get()
+            ->load('state');
     }
 
 }

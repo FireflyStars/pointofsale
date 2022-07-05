@@ -193,12 +193,12 @@ export default function useReports() {
 
     }
 
-    const generatePdfById = async (id) => {
+    const generatePdfById = async (id, name = 'Report.pdf') => {
         
         try {
             store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Generating PDF...'])
             const data = await store.dispatch(`${[BUILDER_MODULE]}/${[GENERATE_PDF_BY_ID]}`, id)
-            if(data) generatePDF(data)
+            if(data) generatePDF(data, name)
         }
 
         catch(e) {
@@ -210,11 +210,11 @@ export default function useReports() {
         }
     }
 
-    const generatePDF = (data) => {
+    const generatePDF = (data, name = 'Report.pdf') => {
         let blob = new Blob([data], { type: 'application/pdf' })
         let link = document.createElement('a')
         link.href = window.URL.createObjectURL(blob)
-        link.download = 'Report.pdf'
+        link.download = name
         link.click()
     }
 
