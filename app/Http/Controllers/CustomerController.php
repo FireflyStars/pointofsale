@@ -365,7 +365,7 @@ class CustomerController extends Controller
         $newAddress = [
             'address_type_id'       => $request->addressType,
             'country_id'            => 1, // france
-            'customer_id'           => $request->customerID, // france
+            'customer_id'           => $request->customerID,
             'lastname'              => $request->lastName,
             'firstname'             => $request->firstName,
             'address1'              => $request->address1,
@@ -389,13 +389,14 @@ class CustomerController extends Controller
      */
     public function addCustomerContact(Request $request){
         $contactData = [
-            'contact_type_id'       => $request->type,
-            'contact_qualite_id'    => $request->qualite,
-            'customer_id'           => $request->id,
+            'contact_type_id'       => $request->type == '' ? 1 : $request->type,
+            'contact_qualite_id'    => $request->qualite == '' ? 1 : $request->qualite,
+            'customer_id'           => $request->customerId,
             'actif'                 => $request->actif,
             'num_contact_gx'        => $request->numGx,
             'name'                  => $request->name,
             'firstname'             => $request->firstName,
+            'address_id'            => $request->address == '' ? 0 : $request->address,
             'profillinedin'         => $request->profilLinedin,
             'gender'                => $request->gender,
             'email'                 => $request->email,
@@ -420,7 +421,7 @@ class CustomerController extends Controller
      */
     public function checkEmailExists(Request $request){
         $validator = Validator::make($request->all(), [
-            'email' => 'required|unique:'.$request->table.'|email',
+            'email' => 'required|email|unique:'.$request->table,
         ]);
  
         if ($validator->fails()) {

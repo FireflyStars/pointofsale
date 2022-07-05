@@ -661,7 +661,7 @@ export default {
     setup() {
         const store = useStore();
         const router = useRouter();
-        const uniqueEmail = ref(true);
+        const uniqueEmail = ref({ status: true, msg: '' });
         const step = ref('client-detail');
         // const step = ref('address');
         const customerStatuses  = ref([]);
@@ -849,8 +849,9 @@ export default {
             axios.post('/check-email-exists', { table: tableName, email:  event.target.value })
             .then((res)=>{
                 if( !res.data.success ){
-                    uniqueEmail.value = false;
+                    uniqueEmail.value.status = false;
                     Object.values(res.data.errors).forEach(item => {
+                        uniqueEmail.value.item[0];
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
                             message: item[0],
@@ -858,7 +859,8 @@ export default {
                         });
                     });                    
                 }{
-                    uniqueEmail.value = true;
+                    uniqueEmail.value.status = true;
+                    uniqueEmail.value.msg = '';
                 }
             }).catch((error)=>{
                 console.log(error);
@@ -1062,10 +1064,10 @@ export default {
             if(flag){
                 return;
             }else{
-                if(uniqueEmail.value){
+                if(uniqueEmail.value.status == false){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
-                        message: 'Email has already been taken',
+                        message: uniqueEmail.value.message,
                         ttl: 5,
                     });  
                 }else{
