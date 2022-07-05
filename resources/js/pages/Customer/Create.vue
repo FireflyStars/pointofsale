@@ -203,7 +203,7 @@
                             <div class="d-flex mt-3">
                                 <div class="col-7">
                                     <div class="form-group">
-                                        <select-box v-model="form.customerCat" :options="customerCats" :name="'customerCat'" :label="'CATEGORIE JURIDIQUE'"></select-box>
+                                        <select-box v-model="form.customerCat" :options="customerCats" :name="'customerCat'" :label="'CATEGORIE JURIDIQUE*'"></select-box>
                                     </div>
                                 </div>                                
                             </div>
@@ -761,7 +761,86 @@ export default {
         });
 
         const selectNav = (value)=>{
-            step.value = value;
+            if(step.value == 'client-detail'){
+                if(form.value.raisonsociale == ''){
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Please enter RAISON SOCIALE',
+                        ttl: 5,
+                    });
+                }else if(form.value.siret == ''){
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Please enter SIRET',
+                        ttl: 5,
+                    });                    
+                }else if(form.value.customerStatus == 0){
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Please select status',
+                        ttl: 5,
+                    });                    
+                }else if(form.value.customerCat == 0){
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Please select Category',
+                        ttl: 5,
+                    });                    
+                }else if(form.value.naf == ''){
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Please enter NAF',
+                        ttl: 5,
+                    });                    
+                }else{
+                    step.value = value;
+                }
+            }
+            if( step.value == 'address' ){
+                var error = false;
+                form.value.addresses.forEach(address => {
+                    if(address.addressType == ''){
+                        error = true;
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Please select address type',
+                            ttl: 5,
+                        });  
+                    }else if(address.address1 == ''){
+                        error = true;
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Please fill in address1',
+                            ttl: 5,
+                        });                          
+                    }else if(address.postCode == ''){
+                        error = true;
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Please enter CODE POSTAL',
+                            ttl: 5,
+                        });                          
+                    }else if(address.city == ''){
+                        error = true;
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Please enter CODE VILLE *',
+                            ttl: 5,
+                        });                                                  
+                    }else if(address.firstName == ''){
+                        error = true;
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Please enter PRENOM / NOM BATIMENT',
+                            ttl: 5,
+                        });
+                    }
+                });
+                if(!error){
+                    step.value = value;
+                }
+            } 
+            
         }
         const cancel = ()=>{
 
@@ -821,38 +900,38 @@ export default {
                     step.value = 'address';
                 }
             }else if( step.value == 'address' ){
-                var flag = false;
+                var error = false;
                 form.value.addresses.forEach(address => {
                     if(address.addressType == ''){
-                        flag = true;
+                        error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
                             message: 'Please select address type',
                             ttl: 5,
                         });  
                     }else if(address.address1 == ''){
-                        flag = true;
+                        error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
                             message: 'Please fill in address1',
                             ttl: 5,
                         });                          
                     }else if(address.postCode == ''){
-                        flag = true;
+                        error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
                             message: 'Please enter CODE POSTAL',
                             ttl: 5,
                         });                          
                     }else if(address.city == ''){
-                        flag = true;
+                        error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
                             message: 'Please enter CODE VILLE *',
                             ttl: 5,
                         });                                                  
                     }else if(address.firstName == ''){
-                        flag = true;
+                        error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
                             message: 'Please enter PRENOM / NOM BATIMENT',
@@ -860,7 +939,7 @@ export default {
                         });
                     }
                 });
-                if(!flag){
+                if(!error){
                     step.value = 'contact';
                 }
             }else{
