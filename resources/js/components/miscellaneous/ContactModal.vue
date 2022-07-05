@@ -72,11 +72,7 @@
                             <div class="d-flex mt-3">
                                 <div class="col-7">
                                     <select-box v-model="contact.address" 
-                                        :options="[
-                                            { value: 'M', display: 'M' },
-                                            { value: 'Mme', display: 'Mme' },
-                                            { value: 'Mlle', display: 'Mlle' },
-                                        ]" 
+                                        :options="customerAddresses" 
                                         :name="'ADRESSE_BATIMENTS'"
                                         :label="'ADRESSE / BATIMENTS'"
                                         ></select-box>                                    
@@ -102,7 +98,7 @@
                             <div class="d-flex mt-3">
                                 <div class="col-7">
                                     <div class="form-group">
-                                        <label class="mulish-medium font-16">EMAIL</label>
+                                        <label class="mulish-medium font-16">EMAIL*</label>
                                         <input type="text" v-model="contact.email" @change="validationUniqueEmail($event, 'contacts')" placeholder="email" class="form-control">
                                     </div>
                                 </div>                               
@@ -183,7 +179,7 @@ export default {
         const store = useStore();
         const contactTypes = ref([]);
         const contactQualites = ref([]);
-        const uniqueEmail = ref(true);
+        const uniqueEmail = ref({ status: true, msg: '' });
         const customerAddresses = ref([]);
         const contact = ref(
             {
@@ -227,7 +223,7 @@ export default {
             showModal.value = !showModal.value;
             addresses.forEach(element => {
                 customerAddresses.value.push({
-                    display: element.address1 + ' ' + element.postCode + ' ' + element.city,
+                    display: element.address1 + ', ' + element.postcode + ', ' + element.city,
                     value: element.id
                 });
             });
@@ -236,8 +232,9 @@ export default {
             axios.post('/check-email-exists', { table: tableName, email:  event.target.value })
             .then((res)=>{
                 if( !res.data.success ){
-                    uniqueEmail.value = false;
+                    uniqueEmail.value.status = false;
                     Object.values(res.data.errors).forEach(item => {
+                        uniqueEmail.value.msg = item[0];
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
                             message: item[0],
@@ -246,6 +243,7 @@ export default {
                     });                    
                 }else{
                     uniqueEmail.value = true;
+                    uniqueEmail.value.msg = '';
                 }
             }).catch((error)=>{
                 console.log(error);
@@ -284,7 +282,7 @@ export default {
             }            
             // loading customer addresses
             if(!error){
-                if(uniqueEmail.value){
+                if(uniqueEmail.value.status){
                     store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'creating contact..']);
                     axios.post('/add-customer-contact', contact.value).then((res)=>{
                         emit('addedNewContact', {
@@ -304,9 +302,9 @@ export default {
                 }else{
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
-                        message: 'Email has already been taken',
+                        message: uniqueEmail.value.msg,
                         ttl: 5,
-                    });                
+                    });
                 }
             }
         }
@@ -322,6 +320,7 @@ export default {
             contactTypes,
             contactQualites,
             phoneCodesSorted,
+            customerAddresses,
             validationUniqueEmail,
             closeModal,
             openModal,
