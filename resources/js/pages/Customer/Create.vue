@@ -661,6 +661,7 @@ export default {
     setup() {
         const store = useStore();
         const router = useRouter();
+        const uniqueEmail = ref(true);
         const step = ref('client-detail');
         // const step = ref('address');
         const customerStatuses  = ref([]);
@@ -769,6 +770,7 @@ export default {
             axios.post('/check-email-exists', { table: tableName, email:  event.target.value })
             .then((res)=>{
                 if( !res.data.success ){
+                    uniqueEmail.value = false;
                     Object.values(res.data.errors).forEach(item => {
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
@@ -776,6 +778,8 @@ export default {
                             ttl: 5,
                         });
                     });                    
+                }{
+                    uniqueEmail.value = true;
                 }
             }).catch((error)=>{
                 console.log(error);
@@ -960,6 +964,13 @@ export default {
                         message: 'Please enter PRENOM',
                         ttl: 5,
                     });                          
+                }else if(contact.email == ''){
+                    flag = true;
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Please enter email',
+                        ttl: 5,
+                    });
                 }else if(contact.name == ''){
                     flag = true;
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
@@ -972,24 +983,32 @@ export default {
             if(flag){
                 return;
             }else{
-                store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Création d`un nouveau client ...']);
-                axios.post('/add-customer', form.value).then((res)=>{
-                    if(res.data.success){
-                        router.push({ name: 'LandingPage' });
-                    }else{
-                        Object.values(res.data.errors).forEach(item => {
-                            store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                                type: 'danger',
-                                message: item[0],
-                                ttl: 5,
+                if(uniqueEmail.value){
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Email has already been taken',
+                        ttl: 5,
+                    });  
+                }else{
+                    store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Création d`un nouveau client ...']);
+                    axios.post('/add-customer', form.value).then((res)=>{
+                        if(res.data.success){
+                            router.push({ name: 'LandingPage' });
+                        }else{
+                            Object.values(res.data.errors).forEach(item => {
+                                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                                    type: 'danger',
+                                    message: item[0],
+                                    ttl: 5,
+                                });
                             });
-                        });
-                    }
-                }).catch((errors)=>{
-                    console.log(errors);
-                }).finally(()=>{
-                    store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
-                })
+                        }
+                    }).catch((errors)=>{
+                        console.log(errors);
+                    }).finally(()=>{
+                        store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+                    })
+                }
             }            
         }
         onMounted(()=>{

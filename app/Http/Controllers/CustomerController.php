@@ -415,13 +415,12 @@ class CustomerController extends Controller
 
     /**
      * Check if email exists or not
-     *  @param tableName, email
+     *  @param { table, email }
      * 
-     *  @return true | false 
      */
     public function checkEmailExists(Request $request){
         $validator = Validator::make($request->all(), [
-            'email' => 'required|unique:contacts|email',
+            'email' => 'required|unique:'.$request->table.'|email',
         ]);
  
         if ($validator->fails()) {

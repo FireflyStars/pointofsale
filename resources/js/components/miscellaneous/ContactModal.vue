@@ -155,7 +155,7 @@
 </template>
 <script>
 
-import {nextTick, onMounted, ref} from 'vue';
+import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import SelectBox from '../../components/miscellaneous/SelectBox';
 import CheckBox from '../../components/miscellaneous/CheckBox';
@@ -163,7 +163,9 @@ import { phoneCountryCode as phoneCodes } from '../../static/PhoneCountryCodes';
 import {     
   DISPLAY_LOADER,
   HIDE_LOADER,
-  LOADER_MODULE 
+  LOADER_MODULE,
+  TOASTER_MODULE, 
+  TOASTER_MESSAGE
   } from '../../store/types/types';
 import { useStore } from 'vuex';
   
@@ -181,6 +183,7 @@ export default {
         const store = useStore();
         const contactTypes = ref([]);
         const contactQualites = ref([]);
+        const uniqueEmail = ref(true);
         const customerAddresses = ref([]);
         const contact = ref(
             {
@@ -233,6 +236,7 @@ export default {
             axios.post('/check-email-exists', { table: tableName, email:  event.target.value })
             .then((res)=>{
                 if( !res.data.success ){
+                    uniqueEmail.value = false;
                     Object.values(res.data.errors).forEach(item => {
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
@@ -240,29 +244,71 @@ export default {
                             ttl: 5,
                         });
                     });                    
+                }else{
+                    uniqueEmail.value = true;
                 }
             }).catch((error)=>{
                 console.log(error);
             })
         }        
         const addNewContact = ()=>{
-            // loading customer addresses
-            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'creating contact..']);
-            axios.post('/add-customer-contact', contact.value).then((res)=>{
-                emit('addedNewContact', {
-                    id: res.data.id,
-                    name: contact.value.firstName + " " + contact.value.name,
-                    qualite: contactQualites.value.find( (item)=>{ item.value = contact.value.qualite } ).display,
-                    comment: contact.value.comment,
-                    email: contact.value.email,
-                    mobile: contact.value.phoneCountryCode1 + ' ' + contact.value.phoneNumber1,
+            var error = false;
+            if(contact.value.type == ''){
+                error = true;
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Please select contact type',
+                    ttl: 5,
+                });  
+            }else if(contact.value.firstName == ''){
+                error = true;
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Please enter PRENOM',
+                    ttl: 5,
+                });                          
+            }else if(contact.value.email == ''){
+                error = true;
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Please enter email',
+                    ttl: 5,
                 });
-                showModal.value = false;                
-            }).catch((error)=>{
-                console.log(error);
-            }).finally(()=>{
-                store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
-            })            
+            }else if(contact.value.name == ''){
+                error = true;
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Please enter NOM',
+                    ttl: 5,
+                });                          
+            }            
+            // loading customer addresses
+            if(!error){
+                if(uniqueEmail.value){
+                    store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'creating contact..']);
+                    axios.post('/add-customer-contact', contact.value).then((res)=>{
+                        emit('addedNewContact', {
+                            id: res.data.id,
+                            name: contact.value.firstName + " " + contact.value.name,
+                            qualite: contactQualites.value.find( (item)=>{ item.value = contact.value.qualite } ).display,
+                            comment: contact.value.comment,
+                            email: contact.value.email,
+                            mobile: contact.value.phoneCountryCode1 + ' ' + contact.value.phoneNumber1,
+                        });
+                        showModal.value = false;                
+                    }).catch((error)=>{
+                        console.log(error);
+                    }).finally(()=>{
+                        store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+                    })            
+                }else{
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Email has already been taken',
+                        ttl: 5,
+                    });                
+                }
+            }
         }
 
         const phoneCodesSorted = [...new Map(phoneCodes.map(item =>
