@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\Report;
 use App\Models\page_builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -11,7 +12,39 @@ use App\Http\Resources\reportsResource;
 class PageElementsController extends Controller
 {
 
-    public function store(Request $request) 
+    public function delete_report(Report $report) 
+    {
+        $report->delete();
+        return response()->json("Report deleted");
+    }
+
+    public function generate_pdf_by_id(Report $report) 
+    {
+        
+        $pages = json_encode($report->pages);
+
+        $pdf = App::make('dompdf.wrapper');
+
+        $pdf->setOptions([
+            'enable_php'           => true,
+            'isRemoteEnabled'      => true, 
+            'isHtml5ParserEnabled' => true, 
+        ]);
+
+        $pdf->loadView(
+            'page-multiple', [
+                'pages'     => json_decode($pages),
+                'svgs'      => page_builder::get_svgs(),
+                'builder'   => (new page_builder),
+                'affiliate' => $report->affiliate
+            ]
+        );
+
+        return $pdf->download('Report.pdf');
+
+    }
+
+    public function generate_pdf(Request $request) 
     {
 
         $pages = json_decode($request->pages);

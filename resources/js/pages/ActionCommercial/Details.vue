@@ -73,7 +73,7 @@
             </div>
             <div class="col">
                 <span class="title-label">Adresse facturation</span>
-                <span class="detail">{{ details?.address?.address_type?.name  || 'PAS D ADRESSE CLIENTE'}}</span>
+                <span class="detail">{{ details?.address?.address_type?.name  || 'PAS D ADRESSE CLIENTE' }}</span>
             </div>
         </div>
 
@@ -336,6 +336,8 @@ import {
     RESET_DETAILS,
     GET_EVENT_STATUSES,
     CHANGE_EVENT_STATUS,
+    ITEM_LIST_REMOVE_ROW,
+    ITEM_LIST_MODULE,
 }
 from '../../store/types/types'
 
@@ -636,6 +638,8 @@ const commitAction = async () => {
 
             if(modal.status == 'effacer') {
 
+                store.commit(`${ITEM_LIST_MODULE}${ITEM_LIST_REMOVE_ROW}`,{ id:'id', idValue: details.value?.id });
+
                 router.replace({
                     name: 'action-commercial'
                 })
@@ -835,7 +839,7 @@ onBeforeMount(() => {
 .heading-label, 
 .heading-label-fade, 
 .detail-label-fade {
-    font-family: 'Almarai Bold';
+    font-family: 'Almarai Regular';
     font-style: normal;
     font-weight: 700 !important;
     font-size: 14px;

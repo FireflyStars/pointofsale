@@ -26,7 +26,7 @@
                         <div class="row m-0 ml-5 mr-5">
                             
                             <div class="col-12">
-                                
+
                                 <item-list-table 
                                     :table_def="reports" 
                                 >
@@ -84,7 +84,7 @@ const navigatePage = (id) => {
     document.getElementsByTagName( 'body' )[0].className=''
 
     router.push({
-        name: 'report-page',
+        name: 'create-report-page',
         params: {
             id
         }

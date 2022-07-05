@@ -17,6 +17,8 @@ import {
     TOASTER_MODULE,
     TOASTER_MESSAGE,
     HIDE_LOADER,
+    GENERATE_PDF_BY_ID,
+    DELETE_REPORT,
 }
 from '../../store/types/types'
 
@@ -26,7 +28,6 @@ export default function useReports() {
     const { generateElement, generatePreRenderedTags } = useElementsGenerator()
 
     const pages = computed(() => store.getters[`${BUILDER_MODULE}/pages`])
-
 
     const formatFormData = (pages) => {
 
@@ -192,6 +193,23 @@ export default function useReports() {
 
     }
 
+    const generatePdfById = async (id) => {
+        
+        try {
+            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Generating PDF...'])
+            const data = await store.dispatch(`${[BUILDER_MODULE]}/${[GENERATE_PDF_BY_ID]}`, id)
+            if(data) generatePDF(data)
+        }
+
+        catch(e) {
+            throw e
+        }
+
+        finally {
+            store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`)
+        }
+    }
+
     const generatePDF = (data) => {
         let blob = new Blob([data], { type: 'application/pdf' })
         let link = document.createElement('a')
@@ -200,12 +218,36 @@ export default function useReports() {
         link.click()
     }
 
+    const deleteReport = async (id) => {
+        
+        try {
+            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Processing...'])
+            await store.dispatch(`${BUILDER_MODULE}/${DELETE_REPORT}`, id)
+            store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                type: 'success',
+                message: 'Report deleted',
+                ttl: 5,
+            })
+        }
+
+        catch(e) {
+            throw e
+        }
+
+        finally {
+            store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`)
+        }
+
+    }
+
     return {
         resetOrder,
         resetPages,
         generatePDF,
+        deleteReport,
         formatFormData,
         generatePagePdf,
+        generatePdfById,
         saveReportPages,
         getFormattedPages,
     }

@@ -16,11 +16,8 @@
                 class="me-12 heading-buttons justify-content-center"
                 :class="{ 'not-allowed': fetching || saving }"
                 :disabled="fetching || saving"
-                :textClass="saving ? 'd-none' : ''"
-                @click="save" 
-            >
-                <Icon name="spinner" v-show="saving" />
-            </BaseButton>
+                @click.prevent="save" 
+            />
             <BaseButton 
                 title="pdf" 
                 kind="danger" 
@@ -28,7 +25,7 @@
                 :class="{ 'not-allowed': fetching }" 
                 :disabled="fetching || loading"
                 :textClass="loading ? 'd-none' : ''"
-                @click="submitPage"
+                @click.prevent="submitPage"
             />
         </div>
 

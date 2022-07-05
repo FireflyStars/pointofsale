@@ -104,6 +104,11 @@ import {
     GET_ORDER_DETAILS, 
     GET_REPORT_TEMPLATE,
     GET_REPORT_TEMPLATES,
+    LOADER_MODULE,
+    DISPLAY_LOADER,
+    TOASTER_MODULE,
+    TOASTER_MESSAGE,
+    HIDE_LOADER
 } from '../../store/types/types'
 
 import adjouterZone from '../../components/reports/adjouter-zone'
@@ -117,6 +122,8 @@ import pageBuilderContainer from '../../components/reports/page-builder-containe
 import useModal from '../../composables/useModal'
 import useElementsGenerator from '../../composables/reports/useElementsGenerator'
 import useReports from '../../composables/reports/useReports'
+
+import Swal from 'sweetalert2'
 
 export default {
 
@@ -167,23 +174,70 @@ export default {
             return store.dispatch(`${BUILDER_MODULE}/${GET_ORDER_DETAILS}`, props.id)
         }
 
-        const saveReport = () => {
-            store.dispatch(`${[BUILDER_MODULE]}/${[SAVE_REPORT]}`, {
-                pages,
-                orderId: props.id,
-                templateId: activeReportTemplate.value
+        const saveReport = async () => {
+
+            const { value: name } = await Swal.fire({
+                title: 'Sauvegarde',
+                input: 'text',
+                inputLabel: 'Voulez vous sauvegarder ce rapport comme template',
+                inputPlaceholder: 'Nom du rapport',
+                showCancelButton: true,
+                confirmButtonText: 'Sauvegarde',
             })
+
+            if(name) {
+
+                try {
+
+                    store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Loading...'])
+                    
+                    await store.dispatch(`${[BUILDER_MODULE]}/${[SAVE_REPORT]}`, {
+                        pages,
+                        orderId: props.id,
+                        templateId: activeReportTemplate.value,
+                        name
+                    })
+                    
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'success',
+                        message: 'Report Saved',
+                        ttl: 5,
+                    })
+
+                }   
+
+                catch(e) {
+
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Something went wrong',
+                        ttl: 5,
+                    })
+
+                    throw e
+
+                }
+
+                finally {
+
+                    store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`)
+
+                }
+                
+
+            }
+
+
         }
 
         const getReportTemplates = async () => {
             await store.dispatch(`${[BUILDER_MODULE]}/${[GET_REPORT_TEMPLATES]}`)
-            const templates = reportTemplates.value.map(({ id, name }) => {
+            formattedReportTemplates.value = reportTemplates.value.map(({ id, name }) => {
                 return {
                     value: id,
                     display: name
                 }
             })
-            formattedReportTemplates.value = templates
             return Promise.resolve()
         }
 
@@ -229,7 +283,10 @@ export default {
             resetOrder()
             nextTick(async () => {
                 showcontainer.value = true
-                await getReport()
+                // await getReport()
+                await getReportTemplates()
+                toggleModal('report-templates')
+                await getOrderDetails()
                 if(window?.screen && window?.screen?.width >= 1500) {
                     showRightContainer.value = true
                 }
@@ -274,6 +331,8 @@ $orange: orange;
 
 .main-view {
     margin-top: 7rem;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
 }
 
 .main-container {
