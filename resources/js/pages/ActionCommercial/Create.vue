@@ -7,7 +7,7 @@
             <side-bar />
             <div class="col main-view container">
                 <h1 class="d-flex align-items-center m-0">
-                  <span class="customer-icon"></span>
+                  <span class="action-icon"></span>
                   <span class="ms-3 font-22 almarai_extrabold_normal_normal">CREATION ACTION COMMERCIAL</span>
                 </h1>
                 <ul class="m-0 p-0 breadcrumb mt-3 mb-3" v-if="breadcrumbs.length">

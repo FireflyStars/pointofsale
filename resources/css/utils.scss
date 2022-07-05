@@ -142,7 +142,8 @@
     background-image: url(../js/images/eye.svg);
     background-color: white;
 }
-.customer-icon{
+.customer-icon,
+.action-icon{
     display: block;
     cursor: pointer;
     width: 47px;
@@ -151,6 +152,9 @@
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
+}
+.action-icon{
+    background-image: url(../js/images/action-icon.svg);
 }
 .installation-icon,
 .securite-icon,
