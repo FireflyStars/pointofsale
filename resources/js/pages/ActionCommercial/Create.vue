@@ -139,21 +139,25 @@
                                 <div class="d-flex mt-3">
                                     <div class="col-4">
                                     <label for="" class="text-gray font-16 almarai-bold">PRENOM/BATIEMNTS</label>
-                                    <p class="font-16 almarai-bold">{{ action.address.name }}</p>
+                                    <p class="font-16 almarai-bold">{{ action.address.firstname }}</p>
                                     </div>
                                     <div class="col-4">
                                     <label for="" class="text-gray font-16 almarai-bold">ADRESSE</label>
-                                    <p class="font-16 almarai-bold">{{ action.address.contact }}</p>
+                                    <p class="font-16 almarai-bold">{{ action.address.address1 }}</p>
                                     </div>
                                     <div class="col-4">
                                     <label for="" class="text-gray font-16 almarai-bold">Code Postal / Ville</label>
-                                    <p class="font-16 almarai-bold">{{ action.address.postcode }}</p>
+                                    <p class="font-16 almarai-bold">{{ action.address.postcode }} / {{ action.address.city }}</p>
                                     </div>
                                 </div>
                                 <div class="d-flex mt-3">
                                     <div class="col-4">
                                     <label for="" class="text-gray font-16 almarai-bold">NOM</label>
-                                    <p class="font-16 almarai-bold">{{ action.address.name }}</p>
+                                    <p class="font-16 almarai-bold">{{ action.address.nom }}</p>
+                                    </div>
+                                    <div class="col-4">
+                                    <p class="font-16 almarai-bold">{{ action.address.address2 }}</p>
+                                    <p class="font-16 almarai-bold">{{ action.address.address3 }}</p>
                                     </div>
                                 </div>
                             </div>

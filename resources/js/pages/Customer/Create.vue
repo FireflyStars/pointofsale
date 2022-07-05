@@ -765,31 +765,31 @@ export default {
                 if(form.value.raisonsociale == ''){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
-                        message: 'Please enter RAISON SOCIALE',
+                        message: 'Veuillez entrer RAISON SOCIALE',
                         ttl: 5,
                     });
                 }else if(form.value.siret == ''){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
-                        message: 'Please enter SIRET',
+                        message: 'Veuillez entrer SIRET',
                         ttl: 5,
                     });                    
                 }else if(form.value.customerStatus == 0){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
-                        message: 'Please select status',
+                        message: 'Veuillez sélectionner le statut',
                         ttl: 5,
                     });                    
                 }else if(form.value.customerCat == 0){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
-                        message: 'Please select Category',
+                        message: 'Veuillez sélectionner la catégorie',
                         ttl: 5,
                     });                    
                 }else if(form.value.naf == ''){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
-                        message: 'Please enter NAF',
+                        message: 'Veuillez entrer NAF',
                         ttl: 5,
                     });                    
                 }else{
@@ -803,28 +803,28 @@ export default {
                         error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
-                            message: 'Please select address type',
+                            message: 'Veuillez sélectionner le type d`adresse',
                             ttl: 5,
                         });  
                     }else if(address.address1 == ''){
                         error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
-                            message: 'Please fill in address1',
+                            message: 'Veuillez entrer l`adresse1',
                             ttl: 5,
                         });                          
                     }else if(address.postCode == ''){
                         error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
-                            message: 'Please enter CODE POSTAL',
+                            message: 'Veuillez entrer le CODE POSTAL',
                             ttl: 5,
                         });                          
                     }else if(address.city == ''){
                         error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
-                            message: 'Please enter CODE VILLE *',
+                            message: 'Veuillez saisir VILLE',
                             ttl: 5,
                         });                                                  
                     }else if(address.firstName == ''){
@@ -871,31 +871,31 @@ export default {
                 if(form.value.raisonsociale == ''){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
-                        message: 'Please enter RAISON SOCIALE',
+                        message: 'Veuillez entrer RAISON SOCIALE',
                         ttl: 5,
                     });
                 }else if(form.value.siret == ''){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
-                        message: 'Please enter SIRET',
+                        message: 'Veuillez entrer SIRET',
                         ttl: 5,
                     });                    
                 }else if(form.value.customerStatus == 0){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
-                        message: 'Please select status',
+                        message: 'Veuillez sélectionner le statut',
                         ttl: 5,
                     });                    
                 }else if(form.value.customerCat == 0){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
-                        message: 'Please select Category',
+                        message: 'Veuillez sélectionner la catégorie',
                         ttl: 5,
                     });                    
                 }else if(form.value.naf == ''){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
-                        message: 'Please enter NAF',
+                        message: 'Veuillez entrer NAF',
                         ttl: 5,
                     });                    
                 }else{
@@ -908,28 +908,28 @@ export default {
                         error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
-                            message: 'Please select address type',
+                            message: 'Veuillez sélectionner le type d`adresse',
                             ttl: 5,
                         });  
                     }else if(address.address1 == ''){
                         error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
-                            message: 'Please fill in address1',
+                            message: 'Veuillez entrer l`adresse1',
                             ttl: 5,
                         });                          
                     }else if(address.postCode == ''){
                         error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
-                            message: 'Please enter CODE POSTAL',
+                            message: 'Veuillez entrer le CODE POSTAL',
                             ttl: 5,
                         });                          
                     }else if(address.city == ''){
                         error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
-                            message: 'Please enter CODE VILLE *',
+                            message: 'Veuillez saisir VILLE',
                             ttl: 5,
                         });                                                  
                     }else if(address.firstName == ''){
@@ -1035,28 +1035,28 @@ export default {
                     flag = true;
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
-                        message: 'Please select contact type',
+                        message: 'Veuillez sélectionner le type de contact',
                         ttl: 5,
                     });  
                 }else if(contact.firstName == ''){
                     flag = true;
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
-                        message: 'Please enter PRENOM',
+                        message: 'Veuillez entrer PRENOM',
                         ttl: 5,
                     });                          
                 }else if(contact.email == ''){
                     flag = true;
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
-                        message: 'Please enter email',
+                        message: 'Veuillez saisir un e-mail',
                         ttl: 5,
                     });
                 }else if(contact.name == ''){
                     flag = true;
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
-                        message: 'Please enter NOM',
+                        message: 'Veuillez entrer NOM',
                         ttl: 5,
                     });                          
                 }

@@ -334,8 +334,11 @@ class CustomerController extends Controller
     public function getCustomerAddresses(Request $request){
         $addresses = DB::table('addresses')->join('address_type', 'addresses.address_type_id', '=', 'address_type.id')
                     ->select( 
-                        DB::raw('CONCAT(addresses.firstname, " ", addresses.lastname) as name'), 'addresses.address1', 'addresses.address2',
-                        'addresses.postcode', 'addresses.city', 'address_type.name as addressType', 'addresses.id', 'latitude as lat', 'longitude as lon'
+                        'addresses.id', DB::raw('CONCAT(addresses.firstname, " ", addresses.lastname) as name'), 
+                        'addresses.address1', 'addresses.address2',
+                        'addresses.postcode', 'addresses.city', 'address_type.name as addressType', 
+                        'addresses.address1', 'latitude as lat', 'longitude as lon',
+                        'addresses.firstname', 'addresses.lastname as nom'
                     )
                     ->where('customer_id', $request->customer_id)
                     ->get();
@@ -391,7 +394,7 @@ class CustomerController extends Controller
         $contactData = [
             'contact_type_id'       => $request->type == '' ? 1 : $request->type,
             'contact_qualite_id'    => $request->qualite == '' ? 1 : $request->qualite,
-            'customer_id'           => $request->customerId,
+            'customer_id'           => $request->customerID,
             'actif'                 => $request->actif,
             'num_contact_gx'        => $request->numGx,
             'name'                  => $request->name,

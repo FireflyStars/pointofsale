@@ -183,7 +183,7 @@ export default {
         const customerAddresses = ref([]);
         const contact = ref(
             {
-                customerId: '',
+                customerID: '',
                 type: '',
                 actif: true,
                 qualite: '',
@@ -219,7 +219,27 @@ export default {
         }
         const showModal = ref(false);
         const openModal = (id, addresses)=>{
-            contact.value.customerID = id;
+            contact.value =             {
+                customerID: id,
+                type: '',
+                actif: true,
+                qualite: '',
+                gender: 'M',
+                firstName: '',
+                address: '',
+                profilLinedin: '',
+                name: '',
+                email: '',
+                note: '',
+                numGx: '',
+                phoneCountryCode1: '+33',
+                phoneNumber1: '',
+                phoneCountryCode2: '+33',
+                phoneNumber2: '',
+                acceptSMS: true,
+                acceptmarketing: true,
+                acceptcourrier: true,
+            };            
             showModal.value = !showModal.value;
             addresses.forEach(element => {
                 customerAddresses.value.push({
@@ -242,7 +262,7 @@ export default {
                         });
                     });                    
                 }else{
-                    uniqueEmail.value = true;
+                    uniqueEmail.value.status = true;
                     uniqueEmail.value.msg = '';
                 }
             }).catch((error)=>{
@@ -255,41 +275,44 @@ export default {
                 error = true;
                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                     type: 'danger',
-                    message: 'Please select contact type',
+                    message: 'Veuillez sélectionner le type de contact',
                     ttl: 5,
                 });  
             }else if(contact.value.firstName == ''){
                 error = true;
                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                     type: 'danger',
-                    message: 'Please enter PRENOM',
+                    message: 'Veuillez entrer PRENOM',
                     ttl: 5,
                 });                          
             }else if(contact.value.email == ''){
                 error = true;
                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                     type: 'danger',
-                    message: 'Please enter email',
+                    message: 'Veuillez saisir un e-mail',
                     ttl: 5,
                 });
             }else if(contact.value.name == ''){
                 error = true;
                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                     type: 'danger',
-                    message: 'Please enter NOM',
+                    message: 'Veuillez entrer NOM',
                     ttl: 5,
                 });                          
             }            
             // loading customer addresses
             if(!error){
                 if(uniqueEmail.value.status){
-                    store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'creating contact..']);
+                    store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'créer un contact..']);
                     axios.post('/add-customer-contact', contact.value).then((res)=>{
+                        const qualite = contactQualites.value.find((item) => { 
+                                return item.value == contact.value.qualite
+                            }); 
                         emit('addedNewContact', {
                             id: res.data.id,
                             name: contact.value.firstName + " " + contact.value.name,
-                            qualite: contactQualites.value.find( (item)=>{ item.value = contact.value.qualite } ).display,
-                            comment: contact.value.comment,
+                            qualite: qualite ? qualite.display : '',
+                            comment: contact.value.note,
                             email: contact.value.email,
                             mobile: contact.value.phoneCountryCode1 + ' ' + contact.value.phoneNumber1,
                         });
@@ -371,7 +394,7 @@ export default {
     background: rgba(0, 0, 0, 0.3);
     .search-panel{
         width: 1020px;
-        padding: 15px 80px;
+        padding: 15px;
         .search-header{
             .close-icon{
                 position: absolute;
