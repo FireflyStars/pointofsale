@@ -19,7 +19,7 @@
                             </div>
                             <div class="d-flex mt-3">
                                 <div class="col-4">
-                                    <select-box v-model="contact.type" :options="contactTypes" :name="'contactType'+index" :label="'TYPE CONTACT *'"></select-box>
+                                    <select-box v-model="contact.type" :options="contactTypes" :name="'contactType'" :label="'TYPE CONTACT *'"></select-box>
                                 </div>
                                 <div class="col-8 d-flex ps-3">
                                     <div class="col-2 form-group">
@@ -29,7 +29,7 @@
                                                 { value: 'Mme', display: 'Mme' },
                                                 { value: 'Mlle', display: 'Mlle' },
                                             ]" 
-                                            :name="'customerGender'+index"
+                                            :name="'customerGender'"
                                             :label="'&nbsp;'"
                                             ></select-box>
                                     </div>
@@ -46,8 +46,8 @@
                             <div class="d-flex mt-3">
                                 <div class="col-7">
                                     <select-box v-model="contact.qualite" 
-                                        :options="customerQualites" 
-                                        :name="'QUANTITE'+index"
+                                        :options="contactQualites" 
+                                        :name="'QUANTITE'"
                                         :label="'QUANTITE'"
                                         ></select-box>                                    
                                 </div>
@@ -77,7 +77,7 @@
                                             { value: 'Mme', display: 'Mme' },
                                             { value: 'Mlle', display: 'Mlle' },
                                         ]" 
-                                        :name="'ADRESSE_BATIMENTS'+index"
+                                        :name="'ADRESSE_BATIMENTS'"
                                         :label="'ADRESSE / BATIMENTS'"
                                         ></select-box>                                    
                                 </div>                                
@@ -159,6 +159,7 @@ import {nextTick, onMounted, ref} from 'vue';
 import axios from 'axios';
 import SelectBox from '../../components/miscellaneous/SelectBox';
 import CheckBox from '../../components/miscellaneous/CheckBox';
+import { phoneCountryCode as phoneCodes } from '../../static/PhoneCountryCodes';
 import {     
   DISPLAY_LOADER,
   HIDE_LOADER,
@@ -180,6 +181,7 @@ export default {
         const store = useStore();
         const contactTypes = ref([]);
         const contactQualites = ref([]);
+        const customerAddresses = ref([]);
         const contact = ref(
             {
                 customerId: '',
@@ -217,9 +219,15 @@ export default {
             showModal.value = !showModal.value;
         }
         const showModal = ref(false);
-        const openModal = (id)=>{
+        const openModal = (id, addresses)=>{
             contact.value.customerID = id;
             showModal.value = !showModal.value;
+            addresses.forEach(element => {
+                customerAddresses.value.push({
+                    display: element.address1 + ' ' + element.postCode + ' ' + element.city,
+                    value: element.id
+                });
+            });
         }  
         const addNewContact = ()=>{
             // loading customer addresses
@@ -240,12 +248,18 @@ export default {
                 store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
             })            
         }
-        
+
+        const phoneCodesSorted = [...new Map(phoneCodes.map(item =>
+            [item.value, item])).values()].sort((a, b)=>{
+            return parseInt(a.value.replace(/\D/g, '')) - parseInt(b.value.replace(/\D/g, ''));
+        }); 
+                
         return {
             showModal,
             contact,
             contactTypes,
             contactQualites,
+            phoneCodesSorted,
             closeModal,
             openModal,
             addNewContact,
@@ -295,7 +309,6 @@ export default {
     background: rgba(0, 0, 0, 0.3);
     .search-panel{
         width: 1020px;
-        height: 477px;
         padding: 15px 80px;
         .search-header{
             .close-icon{

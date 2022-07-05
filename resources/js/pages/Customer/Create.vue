@@ -685,7 +685,7 @@ export default {
             customerOrigin: 0,
             customerStatus: 0,
             segmentation: '',
-            customerCat: '',
+            customerCat: 0,
             naf: '',
             nomNaf: '',
             gender: 'M',
@@ -777,6 +777,18 @@ export default {
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
                         message: 'Please enter SIRET',
+                        ttl: 5,
+                    });                    
+                }else if(form.value.customerStatus == 0){
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Please select status',
+                        ttl: 5,
+                    });                    
+                }else if(form.value.customerCat == 0){
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Please select Category',
                         ttl: 5,
                     });                    
                 }else if(form.value.naf == ''){
@@ -916,24 +928,53 @@ export default {
             }
         })
         const submit = ()=>{
-            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Création d`un nouveau client ...']);
-            axios.post('/add-customer', form.value).then((res)=>{
-                if(res.data.success){
-                    router.push({ name: 'LandingPage' });
-                }else{
-                    Object.values(res.data.errors).forEach(item => {
-                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                            type: 'danger',
-                            message: item[0],
-                            ttl: 5,
-                        });
-                    });
+            var flag = false;
+            form.value.contacts.forEach(contact => {
+                if(contact.type == ''){
+                    flag = true;
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Please select contact type',
+                        ttl: 5,
+                    });  
+                }else if(contact.firstName == ''){
+                    flag = true;
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Please enter PRENOM',
+                        ttl: 5,
+                    });                          
+                }else if(contact.name == ''){
+                    flag = true;
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Please enter NOM',
+                        ttl: 5,
+                    });                          
                 }
-            }).catch((errors)=>{
-                console.log(errors);
-            }).finally(()=>{
-                store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
-            })
+            });
+            if(!flag){
+                return;
+            }else{
+                store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Création d`un nouveau client ...']);
+                axios.post('/add-customer', form.value).then((res)=>{
+                    if(res.data.success){
+                        router.push({ name: 'LandingPage' });
+                    }else{
+                        Object.values(res.data.errors).forEach(item => {
+                            store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                                type: 'danger',
+                                message: item[0],
+                                ttl: 5,
+                            });
+                        });
+                    }
+                }).catch((errors)=>{
+                    console.log(errors);
+                }).finally(()=>{
+                    store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+                })
+            }            
         }
         onMounted(()=>{
             axios.post('/get-list-info-for-customer').then((res)=>{

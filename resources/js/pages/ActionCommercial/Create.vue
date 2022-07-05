@@ -129,8 +129,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-1"></div>
-                            <div class="col-5 p-3 bg-white rounded" v-if="action.address.id !=''">
+                            <div class="col-5 ms-3 p-3 bg-white rounded" v-if="action.address.id !=''">
                                 <div class="d-flex">
                                     <div class="col-6">
                                     <h2 class="almarai-extrabold font-22">addresse</h2>
@@ -140,25 +139,21 @@
                                 <div class="d-flex mt-3">
                                     <div class="col-4">
                                     <label for="" class="text-gray font-16 almarai-bold">PRENOM/BATIEMNTS</label>
-                                    <p class="font-16 almarai-bold">{{ action.customer.group }}</p>
+                                    <p class="font-16 almarai-bold">{{ action.address.name }}</p>
                                     </div>
                                     <div class="col-4">
                                     <label for="" class="text-gray font-16 almarai-bold">ADRESSE</label>
-                                    <p class="font-16 almarai-bold">{{ action.customer.contact }}</p>
+                                    <p class="font-16 almarai-bold">{{ action.address.contact }}</p>
                                     </div>
                                     <div class="col-4">
                                     <label for="" class="text-gray font-16 almarai-bold">Code Postal / Ville</label>
-                                    <p class="font-16 almarai-bold">{{ action.customer.telephone }}</p>
+                                    <p class="font-16 almarai-bold">{{ action.address.postcode }}</p>
                                     </div>
                                 </div>
                                 <div class="d-flex mt-3">
                                     <div class="col-4">
                                     <label for="" class="text-gray font-16 almarai-bold">NOM</label>
-                                    <p class="font-16 almarai-bold">{{ action.customer.tax }}</p>
-                                    </div>
-                                    <div class="col-4">
-                                    <label for="" class="text-gray font-16 almarai-bold">NAF</label>
-                                    <p class="font-16 almarai-bold">{{ action.customer.naf }}</p>
+                                    <p class="font-16 almarai-bold">{{ action.address.name }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -415,7 +410,7 @@ export default {
             actionAddresses.value.push(data);
         }
         const addNewContact = ()=>{
-            contactModal.value.openModal(action.value.customer.id)
+            contactModal.value.openModal(action.value.customer.id, actionAddresses.value)
         }
         const addedNewContact = (data)=>{
             actionContacts.value.push(data);

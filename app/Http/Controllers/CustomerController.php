@@ -16,12 +16,13 @@ class CustomerController extends Controller
             'customerCats'      => DB::table('customer_categories')->select('id as value', 'name as display')->orderBy('name')->get(),
             'customerPentes'    => DB::table('customer_pente')->select('id as value', 'name as display')->orderBy('name')->get(),
             'nafs'              => DB::table('customer_naf')->select('code', 'name', 'selection')->orderBy('name')->get(),
-            'taxes'              => DB::table('taxes')->select('id as value', 'name as display')->orderBy('id')->get(),
+            'taxes'             => DB::table('taxes')->select('id as value', 'name as display')->orderBy('id')->get(),
             'addressTypes'      => DB::table('address_type')->select('id as value', 'name as display')->orderBy('name')->get(),
-            'contactTypes'      => DB::table('contact_type')->select('id as value', 'name as display')->orderBy('id')->get(),
             'customerQualites'  => DB::table('customer_qualite')->select('id as value', 'name as display')->orderBy('id')->get(),
             'customerTypeBatiments' => DB::table('customer_typebatiment')->select('id as value', 'name as display')->orderBy('id')->get(),
-            'customerMateriaus'  => DB::table('customer_materiau')->select('name as value', 'name as display')->orderBy('id')->get(),
+            'customerMateriaus' => DB::table('customer_materiau')->select('name as value', 'name as display')->orderBy('id')->get(),
+            'contactTypes'      => DB::table('contact_type')->select('id as value', 'name as display')->orderBy('id')->get(),
+            'contactQualites'   => DB::table('contact_qualite')->select('id as value', 'name as display')->orderBy('id')->get(),            
         ]);
     }
 
@@ -194,11 +195,11 @@ class CustomerController extends Controller
             'nafs'              => DB::table('customer_naf')->select('code', 'name', 'selection')->orderBy('name')->get(),
             'taxes'             => DB::table('taxes')->select('id as value', 'name as display')->orderBy('id')->get(),
             'addressTypes'      => DB::table('address_type')->select('id as value', 'name as display')->orderBy('name')->get(),
-            'contactTypes'      => DB::table('contact_type')->select('id as value', 'name as display')->orderBy('id')->get(),
             'customerQualites'  => DB::table('customer_qualite')->select('id as value', 'name as display')->orderBy('id')->get(),
-            'contactQualites'   => DB::table('contact_qualite')->select('id as value', 'name as display')->orderBy('id')->get(),
             'customerTypeBatiments' => DB::table('customer_typebatiment')->select('id as value', 'name as display')->orderBy('id')->get(),
-            'customerMateriaus'  => DB::table('customer_materiau')->select('name as value', 'name as display')->orderBy('id')->get(),            
+            'customerMateriaus' => DB::table('customer_materiau')->select('name as value', 'name as display')->orderBy('id')->get(),            
+            'contactTypes'      => DB::table('contact_type')->select('id as value', 'name as display')->orderBy('id')->get(),
+            'contactQualites'   => DB::table('contact_qualite')->select('id as value', 'name as display')->orderBy('id')->get(),
         ]);
     }
 
@@ -348,7 +349,7 @@ class CustomerController extends Controller
     public function getCustomerContacts(Request $request){
         $contacts = DB::table('contacts')->join('contact_qualite', 'contacts.contact_qualite_id', '=', 'contact_qualite.id')
                     ->select( 
-                        DB::raw('CONCAT(contacts.firstname, " ", contacts.lastname) as name'),
+                        DB::raw('CONCAT(contacts.firstname, " ", contacts.name) as name'),
                         'contact_qualite.name as qualite', 'contacts.mobile', 'contacts.email',
                         'contacts.comment', 'contacts.id'
                     )
