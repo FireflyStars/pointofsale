@@ -46,7 +46,7 @@ const router = createRouter({
 
         },
         {
-            path:'/customer/create',
+            path:'/entite/create',
             name:'CreateCustomer',
             component: () => import('../pages/Customer/Create'),
             meta: {
@@ -54,7 +54,7 @@ const router = createRouter({
             }
         },
         {
-            path:'/customer/edit/:id',
+            path:'/entite/edit/:id',
             name:'EditCustomer',
             component: () => import('../pages/Customer/Edit'),
             meta: {

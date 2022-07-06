@@ -160,7 +160,6 @@ export default {
         const showModal = ref(false);
         const openModal = (id)=>{
             setTimeout(() => {
-                console.log(googleAddressInput.value);
                 const addr = new google.maps.places.Autocomplete(googleAddressInput.value);
                 addr.addListener("place_changed", () => {
                     const place = addr.getPlace();

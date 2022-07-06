@@ -8,7 +8,7 @@
             <div class="col main-view container">
                 <h1 class="d-flex align-items-center m-0">
                   <span class="customer-icon"></span>
-                  <span class="ms-3 font-22 almarai_extrabold_normal_normal">CREATION CLIENT</span>
+                  <span class="ms-3 font-22 almarai_extrabold_normal_normal">CREATION ENTITE</span>
                 </h1>
                 <ul class="full-nav d-flex p-0 m-0 bg-white">
                     <li class="full-nav-item title border-right col-4 d-flex align-items-center justify-content-center"
@@ -201,9 +201,14 @@
                                 </div>
                             </div>
                             <div class="d-flex mt-3">
-                                <div class="col-7">
+                                <div class="col-6 pe-3">
                                     <div class="form-group">
                                         <select-box v-model="form.customerCat" :options="customerCats" :name="'customerCat'" :label="'CATEGORIE JURIDIQUE*'"></select-box>
+                                    </div>
+                                </div>                                
+                                <div class="col-6 ps-3">
+                                    <div class="form-group">
+                                        <select-box v-model="form.customerPaiement" :options="customerPaiements" :name="'customerPaiement'" :label="'MODE DE PAIEMENT *'"></select-box>
                                     </div>
                                 </div>                                
                             </div>
@@ -286,7 +291,7 @@
                                 <div class="col-6 ps-3">
                                     <div class="form-group">
                                         <label class="text-nowrap">ADRESSE 3 (Lieu-dit, bâtiment, boîte postale…)</label>
-                                        <input type="text" placeholder="Adresse1" v-model="address.address3" class="form-control">
+                                        <input type="text" placeholder="Adresse3" v-model="address.address3" class="form-control">
                                     </div>
                                 </div>
                             </div>
@@ -294,7 +299,7 @@
                                 <div class="col-6">
                                     <div class="form-group">
                                         <label class="text-nowrap">ADRESSE 2 (ZI, ZA…)</label>
-                                        <input type="text" v-model="address.address2" placeholder="Address1" class="form-control">
+                                        <input type="text" v-model="address.address2" placeholder="Address2" class="form-control">
                                     </div>
                                 </div>
                                 <div class="col-6 ps-3 d-flex">
@@ -672,6 +677,7 @@ export default {
         const contactTypes     = ref([]);
         const contactQualites   = ref([]);
         const customerAddresses   = ref([]);
+        const customerPaiements   = ref([]);
         const form = ref({
             id: '',
             raisonsociale: '',
@@ -683,11 +689,11 @@ export default {
             customerStatus: 0,
             segmentation: '',
             customerCat: 0,
+            customerPaiement: 0,
             naf: '',
             nomNaf: '',
             gender: 'M',
             firstName: '',
-            lastName: '',
             lastName: '',
             phoneCountryCode: '+33',
             phoneNumber: '',
@@ -781,8 +787,14 @@ export default {
                         type: 'danger',
                         message: 'Veuillez sélectionner la catégorie',
                         ttl: 5,
-                    });                    
-                }else if(form.value.naf == ''){
+                    });        
+                }else if(form.value.customerPaiement == 0){
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Veuillez sélectionner la MODE DE PAIEMENT',
+                        ttl: 5,
+                    });           
+                }else if(form.value.naf == '' || form.value.naf.length != 5){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
                         message: 'Veuillez entrer NAF',
@@ -835,8 +847,10 @@ export default {
                 if(!error){
                     step.value = value;
                 }
-            } 
-            
+            }
+            if(step.value == 'contact'){
+                step.value = value;
+            }
         }
         const cancel = ()=>{
 
@@ -887,11 +901,17 @@ export default {
                         type: 'danger',
                         message: 'Veuillez sélectionner la catégorie',
                         ttl: 5,
-                    });                    
-                }else if(form.value.naf == ''){
+                    });        
+                }else if(form.value.customerPaiement == 0){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
-                        message: 'Veuillez entrer NAF',
+                        message: 'Veuillez sélectionner la MODE DE PAIEMENT',
+                        ttl: 5,
+                    });               
+                }else if(form.value.naf == '' || form.value.naf.length != 5){
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'merci de saisir un NAF valide',
                         ttl: 5,
                     });                    
                 }else{
@@ -1025,41 +1045,41 @@ export default {
             }
         })
         const submit = ()=>{
-            var error = false;
-            form.value.contacts.forEach(contact => {
-                if(contact.type == ''){
-                    error = true;
-                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                        type: 'danger',
-                        message: 'Veuillez sélectionner le type de contact',
-                        ttl: 5,
-                    });  
-                }else if(contact.firstName == ''){
-                    error = true;
-                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                        type: 'danger',
-                        message: 'Veuillez entrer PRENOM',
-                        ttl: 5,
-                    });                          
-                }else if(contact.email == ''){
-                    error = true;
-                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                        type: 'danger',
-                        message: 'Veuillez saisir un e-mail',
-                        ttl: 5,
-                    });
-                }else if(contact.name == ''){
-                    error = true;
-                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                        type: 'danger',
-                        message: 'Veuillez entrer NOM',
-                        ttl: 5,
-                    });                          
-                }
-            });
-            if(error){
-                return;
-            }else{
+            // var error = false;
+            // form.value.contacts.forEach(contact => {
+            //     if(contact.type == ''){
+            //         error = true;
+            //         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            //             type: 'danger',
+            //             message: 'Veuillez sélectionner le type de contact',
+            //             ttl: 5,
+            //         });  
+            //     }else if(contact.firstName == ''){
+            //         error = true;
+            //         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            //             type: 'danger',
+            //             message: 'Veuillez entrer PRENOM',
+            //             ttl: 5,
+            //         });                          
+            //     }else if(contact.email == ''){
+            //         error = true;
+            //         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            //             type: 'danger',
+            //             message: 'Veuillez saisir un e-mail',
+            //             ttl: 5,
+            //         });
+            //     }else if(contact.name == ''){
+            //         error = true;
+            //         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            //             type: 'danger',
+            //             message: 'Veuillez entrer NOM',
+            //             ttl: 5,
+            //         });                          
+            //     }
+            // });
+            // if(error){
+            //     return;
+            // }else{
                 if(uniqueEmail.value.status == false){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
@@ -1070,7 +1090,7 @@ export default {
                     store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Création d`un nouveau client ...']);
                     axios.post('/add-customer', form.value).then((res)=>{
                         if(res.data.success){
-                            router.push({ name: 'LandingPage' });
+                            router.push({ name: 'entite-details', params: { id: res.data.id } });
                         }else{
                             Object.values(res.data.errors).forEach(item => {
                                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
@@ -1086,7 +1106,7 @@ export default {
                         store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
                     })
                 }
-            }            
+            // }            
         }
         onMounted(()=>{
             axios.post('/get-list-info-for-customer').then((res)=>{
@@ -1102,6 +1122,7 @@ export default {
                 contactQualites.value    = res.data.contactQualites;
                 customerTypeBatiments.value    = res.data.customerTypeBatiments;
                 customerMateriaus.value    = res.data.customerMateriaus;
+                customerPaiements.value    = res.data.customerPaiements;
                 form.value.customerOrigin = 1;
                 form.value.customerStatus = 1;
                 form.value.customerTax = 3;
@@ -1126,6 +1147,7 @@ export default {
             contactQualites,
             customerMateriaus,
             customerTypeBatiments,
+            customerPaiements,
             phoneCodesSorted,
             customerAddresses,
             addAddress,

@@ -186,7 +186,108 @@
                 </transition>
                 <transition name="list" appear v-if="step =='choose_action'">
                     <div class="cust-page-content client-detail m-auto pt-5">
-                        <div class="page-section">
+                        <div class="d-flex">
+                            <div class="col-4 p-3 bg-white rounded">
+                                <div class="d-flex">
+                                    <div class="col-6">
+                                    <h2 class="almarai-extrabold font-22">{{ action.customer.company }}</h2>
+                                    <p class="text-gray font-16 almarai-bold">{{ action.customer.raisonsocial }}</p>
+                                    </div>
+                                    <div class="col-6 d-flex align-items-center justify-content-end">
+                                    <p @click="chooseOtherCustomer" class="text-custom-success font-16 almarai-bold text-decoration-underline cursor-pointer">Autre client</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex mt-3">
+                                    <div class="col-4">
+                                    <label for="" class="text-gray font-16 almarai-bold">GROUPE</label>
+                                    <p class="font-16 almarai-bold">{{ action.customer.group }}</p>
+                                    </div>
+                                    <div class="col-4">
+                                    <label for="" class="text-gray font-16 almarai-bold">CONTACT</label>
+                                    <p class="font-16 almarai-bold">{{ action.customer.contact }}</p>
+                                    </div>
+                                    <div class="col-4">
+                                    <label for="" class="text-gray font-16 almarai-bold">TELEPHONE</label>
+                                    <p class="font-16 almarai-bold">{{ action.customer.telephone }}</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex mt-3">
+                                    <div class="col-4">
+                                    <label for="" class="text-gray font-16 almarai-bold">TVA</label>
+                                    <p class="font-16 almarai-bold">{{ action.customer.tax }}</p>
+                                    </div>
+                                    <div class="col-4">
+                                    <label for="" class="text-gray font-16 almarai-bold">NAF</label>
+                                    <p class="font-16 almarai-bold">{{ action.customer.naf }}</p>
+                                    </div>
+                                    <div class="col-4">
+                                    <label for="" class="text-gray font-16 almarai-bold">SIRET</label>
+                                    <p class="font-16 almarai-bold">{{ action.customer.siret }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4 ms-3 p-3 bg-white rounded" v-if="action.address.id !=''">
+                                <div class="d-flex">
+                                    <div class="col-6">
+                                    <h2 class="almarai-extrabold font-22">Adresse de l action</h2>
+                                    <p class="text-gray font-16 almarai-bold">{{ }}</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex mt-3">
+                                    <div class="col-4">
+                                    <label for="" class="text-gray font-16 almarai-bold">PRENOM/BATIEMNTS</label>
+                                    <p class="font-16 almarai-bold">{{ action.address.firstname }}</p>
+                                    </div>
+                                    <div class="col-4">
+                                    <label for="" class="text-gray font-16 almarai-bold">ADRESSE</label>
+                                    <p class="font-16 almarai-bold">{{ action.address.address1 }}</p>
+                                    </div>
+                                    <div class="col-4">
+                                    <label for="" class="text-gray font-16 almarai-bold">Code Postal / Ville</label>
+                                    <p class="font-16 almarai-bold">{{ action.address.postcode }} / {{ action.address.city }}</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex mt-3">
+                                    <div class="col-4">
+                                    <label for="" class="text-gray font-16 almarai-bold">NOM</label>
+                                    <p class="font-16 almarai-bold">{{ action.address.nom }}</p>
+                                    </div>
+                                    <div class="col-4">
+                                    <p class="font-16 almarai-bold">{{ action.address.address2 }}</p>
+                                    <p class="font-16 almarai-bold">{{ action.address.address3 }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4 ms-3 p-3 bg-white rounded" v-if="action.contact.id !=''">
+                                <div class="d-flex">
+                                    <div class="col-6">
+                                    <h2 class="almarai-extrabold font-22">Contact</h2>
+                                    <p class="text-gray font-16 almarai-bold">{{ }}</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex mt-3">
+                                    <div class="col-4">
+                                        <label for="" class="text-gray font-16 almarai-bold">PRENOM</label>
+                                        <p class="font-16 almarai-bold">{{ action.contact.firstname }}</p>
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="" class="text-gray font-16 almarai-bold">EMAIL</label>
+                                        <p class="font-16 almarai-bold">{{ action.contact.email }}</p>
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="" class="text-gray font-16 almarai-bold">Téléphone</label>
+                                        <p class="font-16 almarai-bold">{{ action.contact.mobile }}</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex mt-3">
+                                    <div class="col-4">
+                                        <label for="" class="text-gray font-16 almarai-bold">NOM</label>
+                                        <p class="font-16 almarai-bold">{{ action.contact.nom }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="page-section mt-3">
                             <h3 class="m-0 mulish-extrabold font-22">ACTION COMMERCIAL</h3>
                             <div class="d-flex mt-3">
                                 <div class="col-3">
@@ -267,49 +368,6 @@
                                 </div>
                             </div>                                           
                         </div>
-                        <div class="page-section mt-3">
-                            <h3 class="m-0 mulish-extrabold font-22">ENTITE / ADRESSE / CONTACT</h3>
-                            <div class="d-flex mt-3">
-                                <div class="col-4 pe-3">
-                                    <div class="form-group">
-                                        <label class="mulish-medium font-16 text-nowrap">NOM ENTITE</label>
-                                        <input type="text" v-model="action.nomEntitie" placeholder="NOM ENTITE" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-4 pe-3">
-                                    <div class="form-group">
-                                        <label class="mulish-medium font-16 text-nowrap">PRENOM / BATIMENT</label>
-                                        <input type="text" v-model="action.prenom" placeholder="PRENOM / BATIMENT" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-4 pe-3">
-                                    <div class="form-group">
-                                        <label class="mulish-medium font-16 text-nowrap">PRENOM / BATIMENT</label>
-                                        <input type="text" v-model="action.batiment" placeholder="BATIMENT" class="form-control">
-                                    </div>                                    
-                                </div>
-                            </div>
-                            <div class="d-flex mt-3">
-                                <div class="col-4 pe-3 ">
-                                    <div class="form-group">
-                                        <label class="mulish-medium font-16 text-nowrap">NOM CLIENT COMPLEMENTAIRE</label>
-                                        <input type="text" v-model="action.nomClient" placeholder="NOM CLIENT COMPLEMENTAIRE" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-4 pe-3">
-                                    <div class="form-group">
-                                        <label class="mulish-medium font-16 text-nowrap">ADRESSE</label>
-                                        <input type="text" v-model="action.addr" placeholder="ADRESSE" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-4 pe-3">
-                                    <div class="form-group">
-                                        <label class="mulish-medium font-16 text-nowrap">NOM</label>
-                                        <input type="text" v-model="action.nom" placeholder="NOM" class="form-control">
-                                    </div>                                    
-                                </div>
-                            </div>
-                        </div>
                         <div class="btns d-flex justify-content-end mb-3">
                             <button class="custom-btn btn-cancel me-3" @click="cancel">Annuler</button>
                             <button class="custom-btn btn-ok text-uppercase" @click="nextStep">Suivant</button>
@@ -359,7 +417,8 @@ export default {
         const breadcrumbs = ref(['Choix client']);
         const addressModal = ref(null);
         const contactModal = ref(null);
-        const step = ref('choose_customer');
+        const step = ref('choose_action');
+        // const step = ref('choose_customer');
         watchEffect(()=>{
             if(step.value == 'choose_customer'){
                 breadcrumbs.value = ['Choix client'];
@@ -374,27 +433,48 @@ export default {
             }
         })        
         const action = ref({
-            libelle: '',
-            status: '',
-            realiser: '',
+            id: '',
+            name: '',
+            actioncosId: '',
+            typeId: '',
+            originId: '',
+            statusId: '',
             date: '',
-            hour: '',
-            affecte: '',
-            note: '',
-            nomEntitie: '',
-            prenom: '',
-            batiment: '',
-            nomClient: '',
-            addr: '',
-            nom: '',
+            startTime: '',
+            endTime: '',
+            userId: '',
+            description: '',
             customer: {
-
+                id: '',
+                company: '',
+                raisonsocial: '',
+                group: '',
+                contact: '',
+                telephone: '',
+                tax: '',
+                naf: '',
+                siret: '',
             },
             contact: {
-
+                id: '',
+                firstname: '',
+                nom: '',
+                name: '',
+                qualite: '',
+                mobile: '',
+                email: '',
+                comment: '',
             },
             address:{
-
+                id: '',
+                name: '',
+                address1: '',
+                address2: '',
+                address3: '',
+                postcode: '',
+                city: '',
+                firstname: '',
+                nom: '',
             }
         });
 
