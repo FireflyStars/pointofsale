@@ -26,8 +26,8 @@
         <div class="col"><span class="subtitle almarai_700_normal">Mode de paiement</span><br><span>--/--</span></div>
     </div>
      <hr v-if="show"/>
-     <template v-if="order.order_state_id!=4">
-     <div  v-for="orderzone,index in order.order_zones" :key="index" class="od_orderzone" >
+     <template v-if="typeof order.state!='undefined'&&order.state.order_type=='DEVIS'">
+     <mini-panel  v-for="orderzone,index in order.order_zones" :key="index"  >
          <div class="row mb-3">
              <div class="col-8 almarai_700_normal font-14 lcdtgrey d-flex  align-items-center">{{orderzone.name}}</div>
              <div class="col-2 almarai_700_normal font-14 d-flex justify-content-end align-items-center">{{sumZoneH(orderzone)}}H</div>
@@ -58,10 +58,14 @@
            
         </div>
       
-     </div>
+     </mini-panel>
      </template>
-     <template v-if="order.order_state_id==4">
-        <div class="od_invoices">
+     <template v-if="typeof order.state!='undefined'&&order.state.order_type=='COMMANDE'">
+         <transition
+                        enter-active-class="animate__animated animate__fadeIn"
+                        leave-active-class="animate__animated animate__fadeOut"
+                >
+        <mini-panel >
             <div class="row">
                 <div class="col-4 almarai_700_normal font-14 lcdtgrey d-flex align-items-center">Facturation</div>
                 <div class="col-2 almarai_700_normal font-14 d-flex align-items-center">{{facturation_total_taux.toFixed(2)}}%</div>
@@ -80,34 +84,48 @@
             </div>
                 <transition-group tag="div" class="list"  name="list" appear>
             <template v-for="facture,index in facturations" :key="index">
-            <div class="row mb-3" :class="{avoir:facture.invoice_type_name=='AVOIR',remise:facture.invoice_type_name=='REMISE',facturer:(facture.invoice_type_name=='FACTURE'&&facture.facturer==1||facture.invoice_type_name==null&&facture.facturer==1),avenant:facture.invoice_type_name=='AVENANT',reste_a_facturer:facture.facturer==0}" >
-                <div class="col-4 almarai_bold_normal font-14 invoiceline d-flex align-items-center" >{{facture.description}}</div>
-                <div class="col-2 almarai-light  d-flex font-14 align-items-center" :class="{dangerred:facture.sign==-1}">{{isFloat(facture.pourcentage)?facture.pourcentage.toFixed(2):facture.pourcentage}}%</div>
-                <div class="col-2 almarai-light   d-flex font-14 align-items-center justify-content-center">{{formatDate(facture.dateinvoice)}}</div>
-                <div class="col-2 almarai-light   d-flex font-14 align-items-center justify-content-end" :class="{dangerred:facture.sign==-1}">{{formatPrice(facture.sign!=null?facture.sign*facture.montant:facture.montant)}}</div>
-                <div class="col-1"></div>
-                <div class="col-1"></div>  
-            </div>
-            </template>
-                </transition-group>
- <transition
-            enter-active-class="animate__animated animate__fadeIn"
-            leave-active-class="animate__animated animate__fadeOut"
-    >
-            <div class="d-flex justify-content-evenly mt-4" v-if="showFactureBtn">
-                <span v-if="order.total>0&&facturation_total_taux<100" class="font-14 mulish_600_normal facture_action noselect" @click="new_echeance"><icon name="plus-circle" /> AJOUTER ÉCHEANCE</span>
-                <span class="font-14 mulish_600_normal facture_action  noselect" @click="new_remise" ><icon name="plus-circle" /> AJOUTER REMISE</span>
-               <span class="font-14 mulish_600_normal facture_action  noselect" @click="new_avoir" ><icon name="plus-circle" /> AJOUTER AVOIR</span>
-            </div>    
- </transition>
-        </div>
+                        <div class="row mb-3" :class="{avoir:facture.invoice_type_name=='AVOIR',remise:facture.invoice_type_name=='REMISE',facturer:(facture.invoice_type_name=='FACTURE'&&facture.facturer==1||facture.invoice_type_name==null&&facture.facturer==1),avenant:facture.invoice_type_name=='AVENANT',reste_a_facturer:facture.facturer==0}" >
+                            <div class="col-4 almarai_bold_normal font-14 invoiceline d-flex align-items-center" >{{facture.description}}</div>
+                            <div class="col-2 almarai-light  d-flex font-14 align-items-center" :class="{dangerred:facture.sign==-1}">{{isFloat(facture.pourcentage)?facture.pourcentage.toFixed(2):facture.pourcentage}}%</div>
+                            <div class="col-2 almarai-light   d-flex font-14 align-items-center justify-content-center">{{formatDate(facture.dateinvoice)}}</div>
+                            <div class="col-2 almarai-light   d-flex font-14 align-items-center justify-content-end" :class="{dangerred:facture.sign==-1}">{{formatPrice(facture.sign!=null?facture.sign*facture.montant:facture.montant)}}</div>
+                            <div class="col-1 d-flex align-items-center justify-content-center"> <transition
+                        enter-active-class="animate__animated animate__fadeIn"
+                        leave-active-class="animate__animated animate__fadeOut"
+                ><icon v-if="(facture.invoice_type_name=='FACTURE'&&facture.facturer==0||facture.invoice_type_name==null&&facture.facturer==0)" name="plus-circle" width="16px" height="16px" class="cursor-pointer" @click.once="createInvoice(facture)"></icon></transition></div>
+                            <div class="col-1 d-flex align-items-center justify-content-center"> <transition
+                        enter-active-class="animate__animated animate__fadeIn"
+                        leave-active-class="animate__animated animate__fadeOut"
+                ><icon v-if="(facture.invoice_type_name=='FACTURE'&&facture.facturer==0||facture.invoice_type_name==null&&facture.facturer==0)" name="trash-x" width="20px" height="20px" class="cursor-pointer" @click.once="removeInvoice(facture)"></icon></transition></div>  
+                        </div>
+                        </template>
+                            </transition-group>
+            <transition
+                        enter-active-class="animate__animated animate__fadeIn"
+                        leave-active-class="animate__animated animate__fadeOut"
+                >
+                        <div class="d-flex justify-content-evenly mt-4" v-if="showFactureBtn">
+                            <span v-if="order.total>0&&facturation_total_taux<100" class="font-14 mulish_600_normal facture_action noselect" @click="new_echeance"><icon name="plus-circle" width="16px" height="16px" /> AJOUTER ÉCHEANCE</span>
+                            <span class="font-14 mulish_600_normal facture_action  noselect" @click="new_remise" ><icon name="plus-circle" width="16px" height="16px"/> AJOUTER REMISE</span>
+                        <span class="font-14 mulish_600_normal facture_action  noselect" @click="new_avoir" ><icon name="plus-circle" width="16px" height="16px"/> AJOUTER AVOIR</span>
+                        </div>    
+                </transition>
+        </mini-panel>
+         </transition>
      </template>
+ <transition
+                        enter-active-class="animate__animated animate__fadeIn"
+                        leave-active-class="animate__animated animate__fadeOut"
+                >
+                
+     <order-documents v-if="typeof order!='undefined'&& typeof order.state!='undefined'&&order.state.order_type=='COMMANDE'"  :order_id="order.id"></order-documents>
+ </transition>
      <div class="od_actions mb-3" v-if="show">
         <button class="btn btn-outline-dark almarai_700_normal" @click="goto()">Editer</button>
-        <button v-if="order.order_state_id!=4" class="btn btn-outline-success almarai_700_normal" @click="changeOrderState(4)">Gagne</button>
-        <button v-if="order.order_state_id!=4" class="btn btn-outline-secondary almarai_700_normal" @click="changeOrderState(20)">Perdu</button>  
-        <button v-if="order.order_state_id!=4" class="btn btn-outline-primary almarai_700_normal"  @click="changeOrderState(18)">Abandonne</button>  
-        <button v-if="order.order_state_id!=4" class="btn btn-outline-warning almarai_700_normal"  @click="changeOrderState(3)">Attente client</button>   
+        <button v-if="order.order_state_id!=4" class="btn btn-outline-success almarai_700_normal" @click.once="changeOrderState(4)">Gagne</button>
+        <button v-if="order.order_state_id!=4 && order.order_state_id!=20" class="btn btn-outline-secondary almarai_700_normal" @click.once="changeOrderState(20)">Perdu</button>  
+        <button v-if="order.order_state_id!=4 && order.order_state_id!=18" class="btn btn-outline-primary almarai_700_normal"  @click.once="changeOrderState(18)">Abandonne</button>  
+        <button v-if="order.order_state_id!=4 && order.order_state_id!=3" class="btn btn-outline-warning almarai_700_normal"  @click.once="changeOrderState(3)">Attente client</button>   
      </div>
 
 
@@ -132,6 +150,8 @@
     </div>
      
 </simple-modal-popup>
+
+
 </template>
 
 <script>
@@ -140,17 +160,19 @@ import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex';
 import ItemDetailPanel from '../../components/miscellaneous/ItemListTable/ItemDetailPanel.vue'
 import OrderStateTag from '../../components/miscellaneous/OrderStateTag.vue';
-import { DEVIS_DETAIL_GET, DEVIS_DETAIL_GET_FACTURATION, DEVIS_DETAIL_LOAD, DEVIS_DETAIL_LOAD_FACTURATION, DEVIS_DETAIL_MODULE, DEVIS_DETAIL_NEW_FACTURATION, DEVIS_DETAIL_SET, DEVIS_DETAIL_UPDATE_ORDER_STATE, ITEM_LIST_MODULE, ITEM_LIST_UPDATE_ROW, ORDERSTATETAG_GET_ORDER_STATES, ORDERSTATETAG_MODULE, TOASTER_CLEAR_TOASTS, TOASTER_MESSAGE, TOASTER_MODULE } from '../../store/types/types';
+import { DEVIS_DETAIL_CREATE_FACTURATION, DEVIS_DETAIL_GET, DEVIS_DETAIL_GET_FACTURATION, DEVIS_DETAIL_LOAD, DEVIS_DETAIL_LOAD_FACTURATION, DEVIS_DETAIL_MODULE, DEVIS_DETAIL_NEW_FACTURATION, DEVIS_DETAIL_REMOVE_FACTURATION, DEVIS_DETAIL_SET, DEVIS_DETAIL_SET_FACTURATION, DEVIS_DETAIL_UPDATE_ORDER_STATE, ITEM_LIST_MODULE, ITEM_LIST_UPDATE_ROW, ORDERSTATETAG_GET_ORDER_STATES, ORDERSTATETAG_MODULE, TOASTER_CLEAR_TOASTS, TOASTER_MESSAGE, TOASTER_MODULE } from '../../store/types/types';
 import { formatPrice,formatDate,br,isFloat } from '../../components/helpers/helpers';
 import Swal from 'sweetalert2';
 import DatePicker from '../../components/miscellaneous/DatePicker.vue';
  import { Money3Component } from 'v-money3';
 import { mask } from 'vue-the-mask';
-
+import Icon from '../../components/miscellaneous/Icon.vue';
+import OrderDocuments from './OrderDocuments.vue'
+import MiniPanel from './MiniPanel.vue'
 
     export default {
         name: "DevisDetail",
-        components:{ItemDetailPanel,OrderStateTag, DatePicker,money3:Money3Component},
+        components:{ItemDetailPanel,OrderStateTag, DatePicker,money3:Money3Component, Icon,OrderDocuments,MiniPanel},
         directives:{mask},
         setup(){
             const route=useRoute();
@@ -188,6 +210,7 @@ import { mask } from 'vue-the-mask';
                         })         
 
             onMounted(()=>{
+                store.commit(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_SET_FACTURATION}`,[]);
                      document.getElementsByTagName( 'body' )[0].className='hide-overflowY';
                 show.value=false;
                 showloader.value=true;
@@ -483,6 +506,23 @@ import { mask } from 'vue-the-mask';
             const closemodal=()=>{
                              store.commit(`${TOASTER_MODULE}${TOASTER_CLEAR_TOASTS}`);
             }
+            const createInvoice=(facture)=>{
+                   showloader.value=true;
+                store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_CREATE_FACTURATION}`,facture).then(()=>{
+                    showloader.value=false;
+                }).finally(()=>{
+                       showloader.value=false;
+                })
+            
+            }
+            const removeInvoice=(facture)=>{
+                                    showloader.value=true;
+                store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_REMOVE_FACTURATION}`,facture).then(()=>{
+                    showloader.value=false;
+                }).finally(()=>{
+                       showloader.value=false;
+                })
+            }
              return {
                  show,
                  showloader,
@@ -514,7 +554,9 @@ import { mask } from 'vue-the-mask';
                  closemodal,
                 facturations,
                 isFloat,
-                showFactureBtn
+                showFactureBtn,
+                createInvoice,
+                removeInvoice,
 
              }
         }
@@ -546,13 +588,6 @@ hr{
     color:#C3C3C3;
     font-size:14px;
     font-weight: 400!important;
-}
-.od_orderzone,.od_invoices{
-    background: #F8F8F8;
-    display: block;
-    margin-bottom:22px;
-    padding:10px 20px;
-    box-shadow: inset 0px -1px 0px rgba(168, 168, 168, 0.25);
 }
 
 .lcdtgrey{

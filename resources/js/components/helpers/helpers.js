@@ -38,7 +38,7 @@ export const formatDate=(date_str,format)=>{
 
     if(format==='DD/MM/YY')
     options = { year: 'numeric',  month: 'numeric', day: 'numeric' };  
-    const dateTimeFormat = new Intl.DateTimeFormat('en-GB', options);
+    const dateTimeFormat = new Intl.DateTimeFormat('fr-FR', options);
 
     return dateTimeFormat.format(date).replace(',','').toUpperCase();
 }
