@@ -196,7 +196,7 @@ export default function useReports() {
     const generatePdfById = async (id, name = 'Report.pdf') => {
         
         try {
-            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Generating PDF...'])
+            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Veuillez patienter. Génération du PDF en cours...'])
             const data = await store.dispatch(`${[BUILDER_MODULE]}/${[GENERATE_PDF_BY_ID]}`, id)
             if(data) generatePDF(data, name)
         }
