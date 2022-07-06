@@ -544,11 +544,7 @@
                             <div class="d-flex mt-3">
                                 <div class="col-7">
                                     <select-box v-model="contact.address" 
-                                        :options="[
-                                            { value: 'M', display: 'M' },
-                                            { value: 'Mme', display: 'Mme' },
-                                            { value: 'Mlle', display: 'Mlle' },
-                                        ]" 
+                                        :options="customerAddresses" 
                                         :name="'ADRESSE_BATIMENTS'+index"
                                         :label="'ADRESSE / BATIMENTS'"
                                         ></select-box>                                    
@@ -674,6 +670,7 @@ export default {
         const contactQualites   = ref([]);
         const customerTypeBatiments   = ref([]);
         const customerMateriaus   = ref([]);
+        const customerAddresses   = ref([]);
         const addressTypes     = ref([]);
         const contactTypes     = ref([]);
         const form = ref({
@@ -765,7 +762,86 @@ export default {
         });
 
         const selectNav = (value)=>{
-            step.value = value;
+            if(step.value == 'client-detail'){
+                if(form.value.raisonsociale == ''){
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Veuillez entrer RAISON SOCIALE',
+                        ttl: 5,
+                    });
+                }else if(form.value.siret == ''){
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Veuillez entrer SIRET',
+                        ttl: 5,
+                    });                    
+                }else if(form.value.customerStatus == 0){
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Veuillez sélectionner le statut',
+                        ttl: 5,
+                    });                    
+                }else if(form.value.customerCat == 0){
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Veuillez sélectionner la catégorie',
+                        ttl: 5,
+                    });                    
+                }else if(form.value.naf == ''){
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Veuillez entrer NAF',
+                        ttl: 5,
+                    });                    
+                }else{
+                    step.value = value;
+                }
+            }
+            if( step.value == 'address' ){
+                var error = false;
+                form.value.addresses.forEach((address, index) => {
+                    if(address.addressType == ''){
+                        error = true;
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez sélectionner le type d`adresse',
+                            ttl: 5,
+                        });  
+                    }else if(address.address1 == ''){
+                        error = true;
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez entrer l`adresse1',
+                            ttl: 5,
+                        });                          
+                    }else if(address.postCode == ''){
+                        error = true;
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez entrer le CODE POSTAL',
+                            ttl: 5,
+                        });                          
+                    }else if(address.city == ''){
+                        error = true;
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez saisir VILLE',
+                            ttl: 5,
+                        });                                                  
+                    }else if(address.firstName == ''){
+                        error = true;
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Please enter PRENOM / NOM BATIMENT',
+                            ttl: 5,
+                        });
+                    }
+                });
+                if(!error){
+                    step.value = value;
+                }
+            } 
+            
         }
         const cancel = ()=>{
 
@@ -775,57 +851,69 @@ export default {
                 if(form.value.raisonsociale == ''){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
-                        message: 'Please enter RAISON SOCIALE',
+                        message: 'Veuillez entrer RAISON SOCIALE',
                         ttl: 5,
                     });
                 }else if(form.value.siret == ''){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
-                        message: 'Please enter SIRET',
+                        message: 'Veuillez entrer SIRET',
+                        ttl: 5,
+                    });                    
+                }else if(form.value.customerStatus == 0){
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Veuillez sélectionner le statut',
+                        ttl: 5,
+                    });                    
+                }else if(form.value.customerCat == 0){
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Veuillez sélectionner la catégorie',
                         ttl: 5,
                     });                    
                 }else if(form.value.naf == ''){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
-                        message: 'Please enter NAF',
+                        message: 'Veuillez entrer NAF',
                         ttl: 5,
                     });                    
                 }else{
                     step.value = 'address';
                 }
             }else if( step.value == 'address' ){
-                var flag = false;
+                var error = false;
                 form.value.addresses.forEach(address => {
                     if(address.addressType == ''){
-                        flag = true;
+                        error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
-                            message: 'Please select address type',
+                            message: 'Veuillez sélectionner le type d`adresse',
                             ttl: 5,
                         });  
                     }else if(address.address1 == ''){
-                        flag = true;
+                        error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
-                            message: 'Please fill in address1',
+                            message: 'Veuillez entrer l`adresse1',
                             ttl: 5,
                         });                          
                     }else if(address.postCode == ''){
-                        flag = true;
+                        error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
-                            message: 'Please enter CODE POSTAL',
+                            message: 'Veuillez entrer le CODE POSTAL',
                             ttl: 5,
                         });                          
                     }else if(address.city == ''){
-                        flag = true;
+                        error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
-                            message: 'Please enter CODE VILLE *',
+                            message: 'Veuillez saisir VILLE',
                             ttl: 5,
                         });                                                  
                     }else if(address.firstName == ''){
-                        flag = true;
+                        error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
                             message: 'Please enter PRENOM / NOM BATIMENT',
@@ -833,7 +921,7 @@ export default {
                         });
                     }
                 });
-                if(!flag){
+                if(!error){
                     step.value = 'contact';
                 }
             }else{
@@ -923,23 +1011,59 @@ export default {
             }
         })
         const submit = ()=>{
-            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Mise à jour du client ...']);
-            axios.post('/update-customer', form.value).then((res)=>{
-                if(res.data.success){
-                    router.push({ name: 'LandingPage' });
-                }else{
-                    Object.values(res.data.errors).forEach(item => {
-                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                            type: 'danger',
-                            message: item[0],
-                            ttl: 5,
-                        });
+            var error = false;
+            form.value.contacts.forEach(contact => {
+                if(contact.type == ''){
+                    error = true;
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Veuillez sélectionner le type de contact',
+                        ttl: 5,
+                    });  
+                }else if(contact.firstName == ''){
+                    error = true;
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Veuillez entrer PRENOM',
+                        ttl: 5,
+                    });                          
+                }else if(contact.email == ''){
+                    error = true;
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Veuillez saisir un e-mail',
+                        ttl: 5,
                     });
+                }else if(contact.name == ''){
+                    error = true;
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Veuillez entrer NOM',
+                        ttl: 5,
+                    });                          
                 }
-            }).catch((errors)=>{
-            }).finally(()=>{
-                store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
-            })
+            });
+            if(error){
+                return;
+            }else{            
+                store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Mise à jour du client ...']);
+                axios.post('/update-customer', form.value).then((res)=>{
+                    if(res.data.success){
+                        router.push({ name: 'LandingPage' });
+                    }else{
+                        Object.values(res.data.errors).forEach(item => {
+                            store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                                type: 'danger',
+                                message: item[0],
+                                ttl: 5,
+                            });
+                        });
+                    }
+                }).catch((errors)=>{
+                }).finally(()=>{
+                    store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+                })
+            }
         }
         const formatPhone = (phoneNumber)=>{
             if(phoneNumber.split('|').length == 1){
@@ -962,7 +1086,7 @@ export default {
                 contactQualites.value    = res.data.contactQualites;
                 customerTypeBatiments.value    = res.data.customerTypeBatiments;
                 customerMateriaus.value    = res.data.customerMateriaus;
-
+                customerAddresses.value = res.data.customerAddresses;
                 var customer = res.data.customer;
                 var phone = formatPhone(customer.telephone);
                 customer.phoneCountryCode = phone[0];
@@ -1013,6 +1137,7 @@ export default {
             customerMateriaus,
             customerTypeBatiments,
             phoneCodesSorted,
+            customerAddresses,
             addAddress,
             addContact,
             removeAddress,

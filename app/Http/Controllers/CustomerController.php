@@ -200,6 +200,10 @@ class CustomerController extends Controller
             'customerMateriaus' => DB::table('customer_materiau')->select('name as value', 'name as display')->orderBy('id')->get(),            
             'contactTypes'      => DB::table('contact_type')->select('id as value', 'name as display')->orderBy('id')->get(),
             'contactQualites'   => DB::table('contact_qualite')->select('id as value', 'name as display')->orderBy('id')->get(),
+            'customerAddresses' => DB::table('addresses')
+                                    ->select('id as value', DB::raw('CONCAT(address1, ", ", CONCAT(postcode, ", ", city)) as display'))
+                                    ->where('customer_id', $id)
+                                    ->orderBy('id')->get(),
         ]);
     }
 

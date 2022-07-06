@@ -544,11 +544,7 @@
                             <div class="d-flex mt-3">
                                 <div class="col-7">
                                     <select-box v-model="contact.address" 
-                                        :options="[
-                                            { value: 'M', display: 'M' },
-                                            { value: 'Mme', display: 'Mme' },
-                                            { value: 'Mlle', display: 'Mlle' },
-                                        ]" 
+                                        :options="customerAddresses" 
                                         :name="'ADRESSE_BATIMENTS'+index"
                                         :label="'ADRESSE / BATIMENTS'"
                                         ></select-box>                                    
@@ -663,7 +659,6 @@ export default {
         const router = useRouter();
         const uniqueEmail = ref({ status: true, msg: '' });
         const step = ref('client-detail');
-        // const step = ref('address');
         const customerStatuses  = ref([]);
         const customerOrigins  = ref([]);
         const customerTaxes    = ref([]);
@@ -676,6 +671,7 @@ export default {
         const addressTypes     = ref([]);
         const contactTypes     = ref([]);
         const contactQualites   = ref([]);
+        const customerAddresses   = ref([]);
         const form = ref({
             id: '',
             raisonsociale: '',
@@ -1029,31 +1025,31 @@ export default {
             }
         })
         const submit = ()=>{
-            var flag = false;
+            var error = false;
             form.value.contacts.forEach(contact => {
                 if(contact.type == ''){
-                    flag = true;
+                    error = true;
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
                         message: 'Veuillez sélectionner le type de contact',
                         ttl: 5,
                     });  
                 }else if(contact.firstName == ''){
-                    flag = true;
+                    error = true;
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
                         message: 'Veuillez entrer PRENOM',
                         ttl: 5,
                     });                          
                 }else if(contact.email == ''){
-                    flag = true;
+                    error = true;
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
                         message: 'Veuillez saisir un e-mail',
                         ttl: 5,
                     });
                 }else if(contact.name == ''){
-                    flag = true;
+                    error = true;
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
                         message: 'Veuillez entrer NOM',
@@ -1061,7 +1057,7 @@ export default {
                     });                          
                 }
             });
-            if(flag){
+            if(error){
                 return;
             }else{
                 if(uniqueEmail.value.status == false){
@@ -1131,6 +1127,7 @@ export default {
             customerMateriaus,
             customerTypeBatiments,
             phoneCodesSorted,
+            customerAddresses,
             addAddress,
             addContact,
             removeAddress,
