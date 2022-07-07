@@ -328,7 +328,7 @@
                                     <div class="col-5">
                                         <div class="form-group">
                                             <label class="mulish-medium font-16 text-nowrap">DATE*</label>
-                                            <Datepicker v-model="action.date" position="left" :hideInputIcon="true" inputClassName="form-control" autoApply placeholder="DATE" :format="dateFormat"/>
+                                            <Datepicker v-model="action.date" calendarCellClassName="dp-cell-bgcolor" position="left" :hideInputIcon="true" inputClassName="form-control" autoApply placeholder="DATE" :format="dateFormat"/>
                                         </div>
                                     </div>
                                     <div class="col-2"></div>
@@ -491,7 +491,7 @@ export default {
             const month = date.getMonth() + 1;
             const year = date.getFullYear();
 
-            return `${month}/${day}/${year}`;
+            return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
         }
         const cancel = ()=>{
 
@@ -670,13 +670,21 @@ export default {
   },
 }
 </script>
+<style>
+.dp__active_date{
+    background: var(--lcdtOrange) !important;
+}
+.dp__today{
+    border: solid 1px var(--lcdtOrange) !important;
+}
+</style>
 <style lang="scss" scoped>
-  .main-view{
-      padding: 0;
-      h1{
-          padding: 60px 10px 0 0;
-      }
-  }
+.main-view{
+    padding: 0;
+    h1{
+        padding: 60px 10px 0 0;
+    }
+}
 .full-nav{
     margin-top: 28px;
     height: 70px;
