@@ -30,6 +30,7 @@ Route::group(['prefix' => 'admin'], function () {
 });
 
 Route::post('/save-page-elements', [PageElementsController::class, 'generate_pdf']);
+Route::get('/generate-pdf/{report}', [PageElementsController::class, 'generate_pdf_by_id']);
 Route::post('/generate-pdf/{report}', [PageElementsController::class, 'generate_pdf_by_id']);
 
 Route::delete('delete-report/{report}', [PageElementsController::class, 'delete_report']);
