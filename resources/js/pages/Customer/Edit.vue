@@ -196,7 +196,7 @@
                                 <div class="col-3">
                                     <div class="form-group">
                                         <label class="text-nowrap">DATE CREATION ENTITE</label>
-                                        <input type="date" v-model="form.dateCreated" class="form-control">
+                                        <Datepicker v-model="form.dateCreated" calendarCellClassName="dp-cell-bgcolor" position="left" :hideInputIcon="true" inputClassName="form-control" autoApply :format="dateFormat"/>
                                     </div>
                                 </div>
                             </div>
