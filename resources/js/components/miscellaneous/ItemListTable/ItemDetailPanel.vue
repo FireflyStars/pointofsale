@@ -5,7 +5,7 @@
      </transition>
       <transition enter-active-class="animate__animated animate__slideInRight" leave-active-class="animate__animated animate__slideOutRight"  >
         <div class="od" :style="{width:width}" v-if="show">
-            <div class="position-sticky"  :style="{width:width,top:'0px',margin:'0 -20px'}">
+            <div class="position-sticky"  :style="{width:`calc(100% + 40px)`,top:'0px',margin:'0 -20px'}">
                 <div class="miniloader" v-if="showloader"></div>
             </div>
                  <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">

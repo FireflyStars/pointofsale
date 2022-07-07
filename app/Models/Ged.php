@@ -21,4 +21,11 @@ class Ged extends Model
         return $this->hasMany(GedDetail::class);
     }
     
+    public function orderDocuments(){
+        return $this->hasMany(OrderDocument::class);
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
 }
