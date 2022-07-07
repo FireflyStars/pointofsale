@@ -714,6 +714,7 @@ export default {
             trancheCommune: '',
             statusEtablissement: '',
             environment: '',
+            dateCreated: '',
             zpe: '',
             // address tab
             addresses: [{
@@ -811,7 +812,7 @@ export default {
                         message: 'Veuillez sélectionner la MODE DE PAIEMENT',
                         ttl: 5,
                     });           
-                }else if(form.value.naf == '' || form.value.naf.length != 5 || customerNafs.find((item)=>{ item.code == form.value.naf }) == undefined){
+                }else if(form.value.naf == '' || form.value.naf.length != 5 || customerNafs.find((item)=>{ return item.code == form.value.naf }) == undefined){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
                         message: 'Veuillez entrer NAF',
@@ -925,7 +926,7 @@ export default {
                         message: 'Veuillez sélectionner la MODE DE PAIEMENT',
                         ttl: 5,
                     });               
-                }else if(form.value.naf == '' || form.value.naf.length != 5 || customerNafs.find((item)=>{ item.code == form.value.naf }) == undefined){
+                }else if(form.value.naf == '' || form.value.naf.length != 5 || customerNafs.find((item)=>{ return item.code == form.value.naf }) == undefined){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
                         message: 'merci de saisir un NAF valide',
