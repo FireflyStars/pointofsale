@@ -304,73 +304,71 @@
                                 </div>
                             </div>
                             <div class="d-flex mt-3">
-                                <div class="col-7 d-flex">
-                                    <div class="col-5">
-                                        <div class="form-group">
-                                            <label class="mulish-medium font-16 text-nowrap">LIBELLE DE L ACTION *</label>
-                                            <input type="text" v-model="action.libelle" placeholder="LIBELLE DE L ACTION" class="form-control">
-                                        </div>
+                                <div class="col-5">
+                                    <div class="form-group">
+                                        <label class="mulish-medium font-16 text-nowrap">LIBELLE DE L ACTION *</label>
+                                        <input type="text" v-model="action.name" placeholder="LIBELLE DE L ACTION" class="form-control">
                                     </div>
-                                    <div class="col-2"></div>
-                                    <div class="col-5">
-                                        <select-box v-model="action.status" 
-                                            :options="[
-                                                {
-                                                    display: 'status1',
-                                                    value: 'status1',
-                                                },
-                                                {
-                                                    display: 'status2',
-                                                    value: 'status1',
-                                                },
-                                                {
-                                                    display: 'status3',
-                                                    value: 'status1',
-                                                },
-                                            ]" 
-                                            :name="'actionStatus'"
-                                            :label="'STATUS DE L ACTION'"
-                                            ></select-box>
-                                    </div>
+                                </div>
+                                <div class="col-2"></div>
+                                <div class="col-5">
+                                    <select-box v-model="action.statusId" 
+                                        :options="actionStatus" 
+                                        :name="'actionStatus'"
+                                        :label="'STATUS DE L ACTION *'"
+                                        ></select-box>
                                 </div>
                             </div>    
                             <div class="d-flex mt-3">
                                 <div class="col-5">
-                                    <select-box v-model="action.realiser" :options="[{ display: 'a', value: 'a' }]" :label="'TYPE D ACTION A REALISER'" :name="'actionRealiser'"></select-box>
+                                    <select-box v-model="action.actioncosId" :options="actionCos" :label="'TYPE D ACTION A REALISER'" :name="'actionRealiser'"></select-box>
                                 </div>
                                 <div class="col-2"></div>
                                 <div class="col-5 d-flex">
                                     <div class="col-5">
                                         <div class="form-group">
-                                            <label class="mulish-medium font-16 text-nowrap">DATE</label>
-                                            <input type="text" v-model="action.date" placeholder="DATE" class="form-control">
+                                            <label class="mulish-medium font-16 text-nowrap">DATE*</label>
+                                            <Datepicker v-model="action.date" position="left" :hideInputIcon="true" inputClassName="form-control" autoApply placeholder="DATE" :format="dateFormat"/>
                                         </div>
                                     </div>
                                     <div class="col-2"></div>
                                     <div class="col-5">
                                         <div class="form-group">
-                                            <label class="mulish-medium font-16 text-nowrap">HEURE</label>
-                                            <input type="text" v-model="action.hour" placeholder="HEURE" class="form-control">
+                                            <label class="mulish-medium font-16 text-nowrap">DEBUT *</label>
+                                            <Datepicker v-model="action.startTime" position="left" :hideInputIcon="true" inputClassName="form-control" :timePicker="true"/>
+                                        </div>
+                                        <div class="form-group mt-3">
+                                            <label class="mulish-medium font-16 text-nowrap">FIN *</label>
+                                            <Datepicker v-model="action.endTime" position="left" :hideInputIcon="true" inputClassName="form-control" :timePicker="true"/>
                                         </div>
                                     </div>
                                 </div>
                             </div>                                           
                             <div class="d-flex mt-3">
                                 <div class="col-5">
-                                    <select-box v-model="action.affecte" :options="[{ display: 'a', value: 'a' }]" :label="'AFFECTE  A'" :name="'actionAffecte'"></select-box>
+                                    <select-box v-model="action.typeId" :options="actionType" :label="'TYPE D ACTION *'" :name="'actionType'"></select-box>
+                                </div>
+                                <div class="col-2"></div>
+                                <div class="col-5">
+                                    <select-box v-model="action.userId" :options="users" :label="'AFFECTE  A *'" :name="'userId'"></select-box>
+                                </div>
+                            </div>                                           
+                            <div class="d-flex mt-3">
+                                <div class="col-5">
+                                    <select-box v-model="action.originId" :options="actionOrigin" :label="'ORIGINE ACTION *'" :name="'actionOrigin'"></select-box>
                                 </div>
                                 <div class="col-2"></div>
                                 <div class="col-5">
                                     <div class="col-9 form-group">
                                         <label class="text-nowrap">NOTES / INFORMATIONS / COMMENTAIRES</label>
-                                        <textarea rows="4" class="form-control" v-model="action.note"></textarea>
+                                        <textarea rows="4" class="form-control" v-model="action.description"></textarea>
                                     </div>
                                 </div>
                             </div>                                           
                         </div>
                         <div class="btns d-flex justify-content-end mb-3">
                             <button class="custom-btn btn-cancel me-3" @click="cancel">Annuler</button>
-                            <button class="custom-btn btn-ok text-uppercase" @click="nextStep">Suivant</button>
+                            <button class="custom-btn btn-ok text-uppercase" @click="submit">ENREGISTRER</button>
                         </div>
                     </div>
                 </transition>
@@ -388,10 +386,15 @@ import SelectBox from '../../components/miscellaneous/SelectBox';
 import SearchCustomer from '../../components/miscellaneous/SearchCustomer';
 import AddressModal from '../../components/miscellaneous/AddressModal';
 import ContactModal from '../../components/miscellaneous/ContactModal';
+import Datepicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
+
 import {     
   DISPLAY_LOADER,
   HIDE_LOADER,
-  LOADER_MODULE, 
+  LOADER_MODULE,
+  TOASTER_MESSAGE,
+  TOASTER_MODULE, 
   } from '../../store/types/types';
   
 import axios from 'axios';
@@ -408,17 +411,23 @@ export default {
         SearchCustomer,
         AddressModal,
         ContactModal,
+        Datepicker
     },
     setup() {
         const store = useStore();
         const router = useRouter();
         const actionAddresses = ref();
         const actionContacts = ref();
+        const actionStatus = ref([]);
+        const actionCos = ref([]);
+        const actionType = ref([]);
+        const actionOrigin = ref([]);
+        const users = ref([]);
         const breadcrumbs = ref(['Choix client']);
         const addressModal = ref(null);
         const contactModal = ref(null);
-        const step = ref('choose_action');
-        // const step = ref('choose_customer');
+        const step = ref('choose_customer');
+
         watchEffect(()=>{
             if(step.value == 'choose_customer'){
                 breadcrumbs.value = ['Choix client'];
@@ -435,17 +444,17 @@ export default {
         const action = ref({
             id: '',
             name: '',
-            actioncosId: '',
-            typeId: '',
-            originId: '',
-            statusId: '',
+            actioncosId: 0,
+            typeId: 0,
+            originId: 0,
+            statusId: 0,
             date: '',
             startTime: '',
             endTime: '',
-            userId: '',
+            userId: 0,
             description: '',
             customer: {
-                id: '',
+                id: 0,
                 company: '',
                 raisonsocial: '',
                 group: '',
@@ -456,7 +465,7 @@ export default {
                 siret: '',
             },
             contact: {
-                id: '',
+                id: 0,
                 firstname: '',
                 nom: '',
                 name: '',
@@ -466,7 +475,7 @@ export default {
                 comment: '',
             },
             address:{
-                id: '',
+                id: 0,
                 name: '',
                 address1: '',
                 address2: '',
@@ -477,7 +486,13 @@ export default {
                 nom: '',
             }
         });
+        const dateFormat = (date) => {
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
 
+            return `${month}/${day}/${year}`;
+        }
         const cancel = ()=>{
 
         }
@@ -511,9 +526,64 @@ export default {
             }
         }        
         const submit = ()=>{
-            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Création d`un nouveau client ...']);
-            axios.post('/add-action', action.value).then((res)=>{
-
+            if( action.value.name == '' ){
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Veuillez saisir LIBELLE DE L ACTION',
+                    ttl: 5,
+                });    
+            }else if( action.value.actioncosId == 0 ){
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Veuillez saisir TYPE D ACTION A REALISER',
+                    ttl: 5,
+                });                    
+            }else if( action.value.typeId == 0 ){
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Veuillez saisir TYPE D ACTION',
+                    ttl: 5,
+                });                    
+            }else if( action.value.originId == 0 ){
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Veuillez saisir ORIGINE ACTION',
+                    ttl: 5,
+                });                    
+            }else if( action.value.statusId == 0 ){
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Veuillez saisir STATUS DE L ACTION',
+                    ttl: 5,
+                });                    
+            }else if( action.value.date == '' ){
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Veuillez saisir DATE',
+                    ttl: 5,
+                });
+            }else if( action.value.startTime == '' ){
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Veuillez saisir DEBUT',
+                    ttl: 5,
+                });
+            }else if( action.value.endTime == '' ){
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Veuillez saisir FIN',
+                    ttl: 5,
+                });
+            }else if( action.value.userId == 0 ){
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Veuillez saisir AFFECTE  A',
+                    ttl: 5,
+                });
+            }
+            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Création d`un ACTION COMMERCIAL ...']);
+            axios.post('/action/create', action.value).then((res)=>{
+                router.push({ name: 'action-commercial-details', params: { id: res.data.id } });
             }).catch((errors)=>{
                 console.log(errors);
             }).finally(()=>{
@@ -545,7 +615,7 @@ export default {
             });
         }
         const withoutAddress = ()=>{
-            action.value.address = { id: '' };
+            action.value.address = { id: 0 };
             step.value = 'choose_contact';
             getActionContacts();
         }
@@ -558,6 +628,18 @@ export default {
             action.value.contact = contact;
             step.value = 'choose_action';
         }
+        onMounted(()=>{
+            axios.post('/get-action-info').then((res)=>{
+                actionStatus.value = res.data.actionStatus;
+                actionCos.value = res.data.actionCos;
+                actionType.value = res.data.actionType;
+                actionOrigin.value = res.data.actionOrigin;
+                users.value = res.data.users;
+                action.value.userId = res.data.userId;
+            }).catch((error)=>{
+                console.log(error);
+            })
+        })
         return {
             action,
             step,
@@ -566,6 +648,12 @@ export default {
             actionContacts,
             addressModal,
             contactModal,
+            actionStatus,
+            actionCos,
+            actionType,
+            actionOrigin,
+            users,
+            dateFormat,
             addNewAddress,
             addNewContact,
             addedNewAddress,

@@ -60,22 +60,6 @@ const router = createRouter({
             meta: {
                 authenticated: true
             },
-        },
-        {
-            path:'/action-commercial/create',
-            name:'CreateAction',
-            component: () => import('../pages/ActionCommercial/Create'),
-            meta: {
-                authenticated: true
-            }
-        },        
-        {
-            path:'/action-commercial/edit/:id',
-            name:'EditAction',
-            component: () => import('../pages/ActionCommercial/Edit'),
-            meta: {
-                authenticated: true
-            }
         },        
         {
             path:'/ComponentsTest',
@@ -173,7 +157,22 @@ const router = createRouter({
                 }
             }]
         },
-
+        {
+            path:'/action-commercial/create',
+            name:'CreateAction',
+            component: () => import('../pages/ActionCommercial/Create'),
+            meta: {
+                authenticated: true
+            }
+        },        
+        {
+            path:'/action-commercial/edit/:id',
+            name:'EditAction',
+            component: () => import('../pages/ActionCommercial/Edit'),
+            meta: {
+                authenticated: true
+            }
+        },
 
         {
             path:'/auth/',

@@ -308,7 +308,7 @@ class CustomerController extends Controller
                 'acceptmarketing'       => $contact['acceptmarketing'],
                 'acceptcourrier'        => $contact['acceptcourrier'],
             ];
-            if($contact['id'] == ''){
+            if($contact['id'] == '' && $contact['name'] != '' && $contact['firstName'] !='' && $contact['type'] != 0){
                 $contactData['address_id'] = 0;
                 $contactData['created_at'] = now();
                 $contactData['updated_at'] = now();
