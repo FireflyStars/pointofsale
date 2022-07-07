@@ -285,7 +285,8 @@
                                 <div class="col-6">
                                     <div class="form-group">
                                         <label class="text-nowrap">ADRESSE 1 (N° et libellé de voie…)  * </label>
-                                        <input type="text" placeholder="Adresse1" v-model="address.address1" class="form-control">
+                                        <GoogleAddress :address="address.address1" :index="index" :placeholder="'Adresse1'" @updateAddressInfo="updateAddressInfo"></GoogleAddress>
+                                        <!-- <input type="text" placeholder="Adresse1" v-model="address.address1" class="form-control"> -->
                                     </div>
                                 </div>
                                 <div class="col-6 ps-3">
@@ -636,6 +637,7 @@ import { ref, onMounted, watch } from 'vue';
 import SelectBox from '../../components/miscellaneous/SelectBox';
 import CheckBox from '../../components/miscellaneous/CheckBox';
 import GoogleMap from '../../components/miscellaneous/GoogleMap';
+import GoogleAddress from '../../components/miscellaneous/GoogleAddress';
 import { phoneCountryCode as phoneCodes } from '../../static/PhoneCountryCodes';
 import {     
   DISPLAY_LOADER,
@@ -657,7 +659,8 @@ export default {
     components:{
         SelectBox,
         CheckBox,
-        GoogleMap
+        GoogleMap,
+        GoogleAddress
     },
     setup() {
         const store = useStore();
@@ -761,7 +764,13 @@ export default {
                 acceptcourrier: true,
             }],            
         });
-
+        const updateAddressInfo = (data)=>{
+            form.value.addresses[data.index].address1 = data.street;
+            form.value.addresses[data.index].latitude = data.lat;
+            form.value.addresses[data.index].longitude = data.lon;
+            form.value.addresses[data.index].city = data.city;
+            form.value.addresses[data.index].postCode = data.postcode;
+        }
         const selectNav = (value)=>{
             if(step.value == 'client-detail'){
                 if(form.value.raisonsociale == ''){
@@ -1158,6 +1167,7 @@ export default {
             cancel,
             nextStep,
             validationUniqueEmail,
+            updateAddressInfo,
             submit
         }
   },
