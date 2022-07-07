@@ -18,6 +18,7 @@ use App\Models\OrderZone;
 use App\Models\GedCategory;
 use App\Models\GedDetail;
 use App\Models\Invoice;
+use App\Models\OrderDocument;
 use App\Models\OrderInvoice;
 use Exception;
 use stdClass;
@@ -166,20 +167,91 @@ class DevisController extends Controller
     public function loadOrderDocuments(Request $request){
             $order_id=$request->post('order_id');
             $order=Order::find($order_id);
+            $order_documents=array();
             
             $user=Auth::user();
             if($order->affiliate_id!=$user->affiliate_id)
             return response('Order is not affiliated to user.Cannot load order documents.',509);
 
-            $reports=$order->reports->makeHidden(['pages','page_files','deleted_at','updated_at']);
-            foreach($reports as &$report){
+            $reports=$order->reports->makeHidden(['pages','page_files','deleted_at','updated_at','affiliate_id','user_id']);
+            foreach($reports as $report){
                 $carbon=Carbon::createFromFormat('Y-m-d H:i:s',$report->created_at);
                 $report->formatted_date=$carbon->day.'/'.$carbon->month.'/'.$carbon->year.' '.$carbon->hour.':'.$carbon->minute;
                 $report->user;
+                $report->strtotime=strtotime($report->created_at);
+                $order_documents[]=$report;
             }
+            $geds=$order->geds;
+           // $documents=$order->orderDocuments;
+           foreach($geds as $ged){
+                $documents=$ged->orderDocuments;
+                foreach($documents as $document){
+                    $carbon=Carbon::createFromFormat('Y-m-d H:i:s',$document->created_at);
+                    $document->formatted_date=$carbon->day.'/'.$carbon->month.'/'.$carbon->year.' '.$carbon->hour.':'.$carbon->minute;
+                    $document->user=$ged->user;
+                    $document->name=$document->human_readable_filename;
+                    $document->strtotime=strtotime($document->created_at);
+                    $order_documents[]=$document;
+                }
 
+           }
 
-            return response()->json($reports);
+      
+            return response()->json($order_documents);
+    }
+
+    public function uploadOrderDocument(Request $request){
+        $file =$request->file('files');
+        $order_id=$request->post('order_id');
+        $fileName = time().'_'.$file->getClientOriginalName();
+        $filePath = $file->storeAs('uploads', $fileName, 'public');
+        $user=Auth::user();
+        $order=Order::find($order_id);
+        if($order==null)
+        return response('Order not found.',509);
+        
+        if($order->affiliate_id!=$user->affiliate_id)
+        return response('Order is not affiliated to user.Cannot save order document.',509);
+        
+        $ged=Ged::where('user_id','=',$user->id)->where('order_id','=',$order_id)->whereNull('deleted_at')->first();
+        if($ged==null){
+            $ged=new Ged();
+            $ged->user_id=$user->id;
+            $ged->order_id=$order_id;
+            $ged->customer_id=$order->customer->id;
+            $ged->save();
+            $ged->fresh();
+        }
+        $od=new OrderDocument();
+        $od->ged_id=$ged->id;
+        $od->human_readable_filename=$file->getClientOriginalName();
+        $uuid_filename = DB::select('select UUID() AS uuid')[0]->uuid;
+        $od->name=$uuid_filename.'.'.$file->getClientOriginalExtension();
+        $od->file_path=$file->storeAs('GED/GED_'.$od->ged_id.'/order_documents', $od->name, 'public');
+        $od->save();
+    }
+    public function removeOrderDocument(Request $request){
+        $order_document_id=$request->post('order_document_id');
+        $od=OrderDocument::find($order_document_id);
+        $order=$od->ged->order;
+        $user=Auth::user();
+
+        if($order->affiliate_id!=$user->affiliate_id)
+        return response('Order is not affiliated to user.Cannot save order document.',509);
+
+        $od->delete();
+    }
+
+    public function getOrderDocumentUrl(Request $request){
+        $order_document_id=$request->post('order_document_id');
+        $od=OrderDocument::find($order_document_id);
+        $order=$od->ged->order;
+        $user=Auth::user();
+
+        if($order->affiliate_id!=$user->affiliate_id)
+        return response('Order is not affiliated to user.Cannot download.',509);
+
+        return response()->json(array('document_url'=>route('downloadPdfFile').'?path='.$od->file_path.'&filename='.$od->human_readable_filename));
     }
     public function newOrderInvoice(Request $request){
 

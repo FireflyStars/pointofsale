@@ -60,11 +60,12 @@
       
      </mini-panel>
      </template>
-     <template v-if="typeof order.state!='undefined'&&order.state.order_type=='COMMANDE'">
          <transition
                         enter-active-class="animate__animated animate__fadeIn"
                         leave-active-class="animate__animated animate__fadeOut"
                 >
+     <template v-if="typeof order.state!='undefined'&&order.state.order_type=='COMMANDE'">
+     
         <mini-panel >
             <div class="row">
                 <div class="col-4 almarai_700_normal font-14 lcdtgrey d-flex align-items-center">Facturation</div>
@@ -111,8 +112,9 @@
                         </div>    
                 </transition>
         </mini-panel>
-         </transition>
+     
      </template>
+         </transition>
  <transition
                         enter-active-class="animate__animated animate__fadeIn"
                         leave-active-class="animate__animated animate__fadeOut"

@@ -172,7 +172,7 @@ export default function useReports() {
     const generatePagePdf = async (orderId = null) => {
 
         try {
-            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Generating PDF...'])
+            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Veuillez patienter. Génération du PDF en cours...'])
 
             const data = await store.dispatch(`${[BUILDER_MODULE]}/${[GENERATE_PDF]}`, { 
                 pages: pages.value,
@@ -221,11 +221,11 @@ export default function useReports() {
     const deleteReport = async (id) => {
         
         try {
-            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Processing...'])
+            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Suppression du rapport en cours...'])
             await store.dispatch(`${BUILDER_MODULE}/${DELETE_REPORT}`, id)
             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                 type: 'success',
-                message: 'Report deleted',
+                message: 'Rapport supprimé',
                 ttl: 5,
             })
         }
