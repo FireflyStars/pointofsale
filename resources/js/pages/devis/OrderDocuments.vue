@@ -27,7 +27,7 @@
   </div>
              </transition-group>
     <div class="d-flex justify-content-evenly mt-4">
-                            <span class="font-14 mulish_600_normal document_action noselect" @click="router.push( {name: 'create-report-page', params: { id: order_id }})" ><icon name="plus-circle" width="16px" height="16px" /> AJOUTER RAPPORT</span>
+                            <span class="font-14 mulish_600_normal document_action noselect" @click="createReport" ><icon name="plus-circle" width="16px" height="16px" /> AJOUTER RAPPORT</span>
                             <span class="font-14 mulish_600_normal document_action  noselect"  @click="addfile" ><icon name="plus-circle" width="16px" height="16px"/> AJOUTER DOCUMENT</span>
 
                         </div>  
@@ -125,9 +125,13 @@ export default {
                     });
                     
                 });
-
+              
               
             }
+              const createReport=()=>{
+                    document.getElementsByTagName( 'body' )[0].className='';
+                    router.push( {name: 'create-report-page', params: { id: props.order_id }});
+                }
             return{
                 documents,
                 formatDate,
@@ -138,7 +142,8 @@ export default {
                 addfile,
                 fileElUpdated,
                 removeDoc,
-                downloadDoc
+                downloadDoc,
+                createReport
             }
         }
 }
