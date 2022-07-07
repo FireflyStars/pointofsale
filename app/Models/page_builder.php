@@ -9,11 +9,37 @@ class page_builder extends Model
 {
     use HasFactory;
 
+
+    public static function get_page_background_by_id($page) 
+    {
+        
+        $base_path = rtrim(config('app.url'), '/');
+        $page = (array) $page;
+
+        if(count((array) $page['background'])) 
+        {
+            $background = $page['background'];
+            
+            $filename = $background->dataFile;
+            
+            if(strpos($filename, 'report-templates') !== false) 
+            {
+                $src = $base_path . '/' . 'storage/' . $filename;
+            }
+            else 
+            {
+                $src = $base_path . $filename;
+            }
+            
+            return self::convert_base64($src);
+        }
+    }
+
     
     public static function get_page_background($page) 
     {
         
-        $base_path = config('app.url');
+        $base_path = rtrim(config('app.url'), '/');
         $page = (array) $page;
 
         if(count((array) $page['background'])) 
