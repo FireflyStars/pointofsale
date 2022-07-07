@@ -514,15 +514,16 @@
     const fields = computed(() => store.getters[`${CIBLE_MODULE}fields`])
 
     const canGeneratePdf = computed(() => {
-        return category.value.typeofproduct?.toLowerCase() == 'download'
+        return (category.value.typeofproduct?.toLowerCase() == 'download'
+        || (category.value.typeofproduct?.toLowerCase() == 'product perso'))
         && category.value.type == 'Produit' 
-        && (category.value.typeofproduct?.toLowerCase() == 'product perso')
     })
 
     const canAddToCart = computed(() => {
-        return category.value.typeofproduct?.toLowerCase() == 'product'
+        return (category.value.typeofproduct?.toLowerCase() == 'product' 
+        || (category.value.typeofproduct?.toLowerCase() == 'product perso'))
         && category.value.type == 'Produit'
-        && (category.value.typeofproduct?.toLowerCase() == 'product perso') 
+
     })
 
     const cardQuantity = computed(() => category.value?.card_detail?.qty || 0)
