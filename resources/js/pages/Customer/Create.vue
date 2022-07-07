@@ -196,7 +196,8 @@
                                 <div class="col-3">
                                     <div class="form-group">
                                         <label class="text-nowrap">DATE CREATION ENTITE</label>
-                                        <input type="date" v-model="form.dateCreated" class="form-control">
+                                        <Datepicker v-model="action.dateCreated" calendarCellClassName="dp-cell-bgcolor" position="left" :hideInputIcon="true" inputClassName="form-control" autoApply :format="dateFormat"/>
+                                        <!-- <input type="date" v-model="form.dateCreated" class="form-control"> -->
                                     </div>
                                 </div>
                             </div>
@@ -638,6 +639,8 @@ import CheckBox from '../../components/miscellaneous/CheckBox';
 import GoogleMap from '../../components/miscellaneous/GoogleMap';
 import GoogleAddress from '../../components/miscellaneous/GoogleAddress';
 import { phoneCountryCode as phoneCodes } from '../../static/PhoneCountryCodes';
+import Datepicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
 import {     
   DISPLAY_LOADER,
   HIDE_LOADER,
@@ -659,7 +662,8 @@ export default {
         SelectBox,
         CheckBox,
         GoogleMap,
-        GoogleAddress
+        GoogleAddress,
+        Datepicker
     },
     setup() {
         const store = useStore();
@@ -763,6 +767,12 @@ export default {
                 acceptcourrier: true,
             }],            
         });
+        const dateFormat = (date) => {
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
+            return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
+        }        
         const updateAddressInfo = (data)=>{
             form.value.addresses[data.index].address1 = data.street;
             form.value.addresses[data.index].latitude = data.lat;
@@ -1158,6 +1168,7 @@ export default {
             customerPaiements,
             phoneCodesSorted,
             customerAddresses,
+            dateFormat,
             addAddress,
             addContact,
             removeAddress,
