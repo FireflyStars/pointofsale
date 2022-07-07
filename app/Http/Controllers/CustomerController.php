@@ -21,6 +21,7 @@ class CustomerController extends Controller
             'customerQualites'  => DB::table('customer_qualite')->select('id as value', 'name as display')->orderBy('id')->get(),
             'customerTypeBatiments' => DB::table('customer_typebatiment')->select('id as value', 'name as display')->orderBy('id')->get(),
             'customerMateriaus' => DB::table('customer_materiau')->select('name as value', 'name as display')->orderBy('id')->get(),
+            'customerPaiements' => DB::table('customer_paiement')->select('id as value', 'name as display')->orderBy('id')->get(),            
             'contactTypes'      => DB::table('contact_type')->select('id as value', 'name as display')->orderBy('id')->get(),
             'contactQualites'   => DB::table('contact_qualite')->select('id as value', 'name as display')->orderBy('id')->get(),            
         ]);
@@ -45,6 +46,7 @@ class CustomerController extends Controller
                 'taxe_id'               => $request->customerTax,
                 'customer_statut_id'    => $request->customerStatus,
                 'customer_categories_id'=> $request->customerCat,
+                'customer_paiement_id'  => $request->customerPaiement,
                 'customer_pente_id'     => 0,
                 'customer_origin_id'    => $request->customerOrigin,
                 'customer_materiau_id'  => 0,
@@ -117,32 +119,34 @@ class CustomerController extends Controller
             }
 
             foreach ($request->contacts as $contact) {
-                $newContact = [
-                    'contact_type_id'       => $contact['type'],
-                    'contact_qualite_id'    => $contact['qualite'],
-                    'customer_id'           => $customerID,
-                    'actif'                 => $contact['actif'],
-                    'address_id'            => 0,
-                    'num_contact_gx'        => $contact['numGx'],
-                    'name'                  => $contact['name'],
-                    'firstname'             => $contact['firstName'],
-                    'profillinedin'         => $contact['profilLinedin'],
-                    'gender'                => $contact['gender'],
-                    'email'                 => $contact['email'],
-                    'mobile'                => $contact['phoneCountryCode1'].'|'.$contact['phoneNumber1'],
-                    'telephone'             => $contact['phoneCountryCode2'].'|'.$contact['phoneNumber2'],
-                    'type'                  => DB::table('contact_type')->find($contact['type'])->name,
-                    'comment'               => $contact['note'],
-                    'acceptsms'             => $contact['acceptSMS'],
-                    'acceptmarketing'       => $contact['acceptmarketing'],
-                    'acceptcourrier'        => $contact['acceptcourrier'],
-                    'created_at'            => now(),
-                    'updated_at'            => now(),
-                ];
-                DB::table('contacts')->insert($newContact);
+                if( $contact['firstName'] != '' && $contact['name']){
+                    $newContact = [
+                        'contact_type_id'       => $contact['type'],
+                        'contact_qualite_id'    => $contact['qualite'],
+                        'customer_id'           => $customerID,
+                        'actif'                 => $contact['actif'],
+                        'address_id'            => 0,
+                        'num_contact_gx'        => $contact['numGx'],
+                        'name'                  => $contact['name'],
+                        'firstname'             => $contact['firstName'],
+                        'profillinedin'         => $contact['profilLinedin'],
+                        'gender'                => $contact['gender'],
+                        'email'                 => $contact['email'],
+                        'mobile'                => $contact['phoneCountryCode1'].'|'.$contact['phoneNumber1'],
+                        'telephone'             => $contact['phoneCountryCode2'].'|'.$contact['phoneNumber2'],
+                        'type'                  => DB::table('contact_type')->find($contact['type'])->name,
+                        'comment'               => $contact['note'],
+                        'acceptsms'             => $contact['acceptSMS'],
+                        'acceptmarketing'       => $contact['acceptmarketing'],
+                        'acceptcourrier'        => $contact['acceptcourrier'],
+                        'created_at'            => now(),
+                        'updated_at'            => now(),
+                    ];
+                    DB::table('contacts')->insert($newContact);
+                }
             }
         }
-        return response()->json(['success'=> true]);
+        return response()->json(['success'=> true, 'id'=> $customerID]);
     }
 
     /**
@@ -154,8 +158,8 @@ class CustomerController extends Controller
                     ->select(
                         'id', 'raisonsociale', 'raisonsociale2', 'siret', 
                         'num_client_gx as numLCDT', 'company', 'customer_origin_id as customerOrigin', 
-                        'customer_categories_id as customerCat', 'taxe_id as customerTax', 
-                        'customer_statut_id as customerStatus', 'naf', 'email', 
+                        'customer_categories_id as customerCat', 'customer_paiement_id as customerPaiement', 
+                        'taxe_id as customerTax', 'customer_statut_id as customerStatus', 'naf', 'email', 
                         'telephone', 'firstname as firstName', 'gender', 'name as lastName', 
                         'libelleadresse as address1', 'libellespecifique as address2', 
                         'centredistributeur as address3', 'codepostal as postCode', 'linkedin', 
@@ -198,6 +202,7 @@ class CustomerController extends Controller
             'customerQualites'  => DB::table('customer_qualite')->select('id as value', 'name as display')->orderBy('id')->get(),
             'customerTypeBatiments' => DB::table('customer_typebatiment')->select('id as value', 'name as display')->orderBy('id')->get(),
             'customerMateriaus' => DB::table('customer_materiau')->select('name as value', 'name as display')->orderBy('id')->get(),            
+            'customerPaiements' => DB::table('customer_paiement')->select('id as value', 'name as display')->orderBy('id')->get(),            
             'contactTypes'      => DB::table('contact_type')->select('id as value', 'name as display')->orderBy('id')->get(),
             'contactQualites'   => DB::table('contact_qualite')->select('id as value', 'name as display')->orderBy('id')->get(),
             'customerAddresses' => DB::table('addresses')
@@ -216,6 +221,7 @@ class CustomerController extends Controller
             'taxe_id'               => $request->customerTax,
             'customer_statut_id'    => $request->customerStatus,
             'customer_categories_id'=> $request->customerCat,
+            'customer_paiement_id'  => $request->customerPaiement,
             'customer_origin_id'    => $request->customerOrigin,
             'naf'                   => $request->naf,
             'siret'                 => $request->siret,
@@ -302,7 +308,7 @@ class CustomerController extends Controller
                 'acceptmarketing'       => $contact['acceptmarketing'],
                 'acceptcourrier'        => $contact['acceptcourrier'],
             ];
-            if($contact['id'] == ''){
+            if($contact['id'] == '' && $contact['name'] != '' && $contact['firstName'] !='' && $contact['type'] != 0){
                 $contactData['address_id'] = 0;
                 $contactData['created_at'] = now();
                 $contactData['updated_at'] = now();
@@ -356,8 +362,8 @@ class CustomerController extends Controller
     public function getCustomerContacts(Request $request){
         $contacts = DB::table('contacts')->join('contact_qualite', 'contacts.contact_qualite_id', '=', 'contact_qualite.id')
                     ->select( 
-                        DB::raw('CONCAT(contacts.firstname, " ", contacts.name) as name'),
-                        'contact_qualite.name as qualite', 'contacts.mobile', 'contacts.email',
+                        DB::raw('CONCAT(contacts.firstname, " ", contacts.name) as name'), 'contacts.firstname',
+                        'contact_qualite.name as qualite', 'contacts.mobile', 'contacts.email', 'contacts.name as nom',
                         'contacts.comment', 'contacts.id'
                     )
                     ->where('customer_id', $request->customerId)

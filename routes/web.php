@@ -30,6 +30,7 @@ Route::group(['prefix' => 'admin'], function () {
 });
 
 Route::post('/save-page-elements', [PageElementsController::class, 'generate_pdf']);
+Route::get('/generate-pdf/{report}', [PageElementsController::class, 'generate_pdf_by_id']);
 Route::post('/generate-pdf/{report}', [PageElementsController::class, 'generate_pdf_by_id']);
 
 Route::delete('delete-report/{report}', [PageElementsController::class, 'delete_report']);
@@ -92,6 +93,11 @@ Route::get('/get-action-commercial-event-users/{event}', [ActionCommercialListCo
 Route::get('/get-event-history/{event}', [ActionCommercialListController::class, 'get_event_history']);
 Route::get('/get-event-statuses-all', [ActionCommercialListController::class, 'get_event_statuses']);
 Route::post('/change-event-status/{event}', [ActionCommercialListController::class, 'change_event_status']);
+// create action
+Route::post('/get-action-info', [ActionCommercialListController::class, 'getActionInfo'])->name('get.action.info');
+Route::post('/action/create', [ActionCommercialListController::class, 'createAction'])->name('create.action');
+Route::post('/action/edit/{event}', [ActionCommercialListController::class, 'updateAction'])->name('update.action');
+Route::post('/get-action/{event}', [ActionCommercialListController::class, 'getAction'])->name('get.action');
 
 
 Route::post('/api',[ApiController::class,'index'])->middleware('cors')->name('api');

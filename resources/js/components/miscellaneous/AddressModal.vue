@@ -47,14 +47,14 @@
                                 <div class="col-6">
                                     <div class="form-group">
                                         <label for="">LIBELLE ADRESSE</label>
-                                        <input type="text" v-model="address.address1" placeholder="Address1" class="form-control">
+                                        <input type="text" ref="googleAddressInput" v-model="address.address1" placeholder="Address1" class="form-control">
                                     </div>
                                 </div>
                                 <div class="col-6 ps-3 d-flex">
                                     <div class="col-8">
                                         <div class="form-group">
                                             <label for="">CODE POSTAL</label>
-                                            <input type="text" ref="googleAddressInput" v-model="address.postcode" class="form-control">
+                                            <input type="text" v-model="address.postcode" class="form-control">
                                         </div>
                                     </div>
                                     <div class="col-4 ps-3">
@@ -143,14 +143,18 @@ export default {
         })
         // google address autocomplete for delivery address
         const setAddress = ( address_components )=>{
+            address.value.address1 = [
+                ( address_components[0] && address_components[0].short_name ) || "",
+                ( address_components[1] && address_components[1].short_name) || "",
+                ( address_components[2] && address_components[2].short_name) || "",
+            ].join(" ");            
             address_components.forEach(component => {
                 const type = component.types[0];
                 if(type == "postal_code"){
                     address.value.postcode = component.long_name
-                }else if(type == "locality"){
+                }
+                if(type == "locality"){
                     address.value.city = component.long_name
-                }else if(type == "street_number"){
-                    form.value.address1 = component.long_name
                 }
             });
         }        
@@ -160,12 +164,16 @@ export default {
         const showModal = ref(false);
         const openModal = (id)=>{
             setTimeout(() => {
-                console.log(googleAddressInput.value);
-                const addr = new google.maps.places.Autocomplete(googleAddressInput.value);
+                const addr = new google.maps.places.Autocomplete(googleAddressInput.value,
+                    { 
+                        componentRestrictions: { country: "fr" },
+                        fields: ["address_components", "geometry"],
+                    } 
+                );
                 addr.addListener("place_changed", () => {
                     const place = addr.getPlace();
-                    address.value.lat = place.geometry.location.lat();
-                    address.value.lon = place.geometry.location.lng();
+                    address.value.latitude = place.geometry.location.lat();
+                    address.value.longitude = place.geometry.location.lng();
                     setAddress(place.address_components);
                 });
             }, 100);
@@ -184,8 +192,8 @@ export default {
                     addressType: res.data.addressType,
                     postcode: address.value.postcode,
                     city: address.value.city,
-                    lat: address.value.city,
-                    lon: address.value.city,
+                    lat: address.value.longitude,
+                    lon: address.value.longitude,
                 });
                 showModal.value = false;                
             }).catch((error)=>{
@@ -249,7 +257,6 @@ export default {
     background: rgba(0, 0, 0, 0.3);
     .search-panel{
         width: 1020px;
-        height: 477px;
         padding: 15px 80px;
         .search-header{
             .close-icon{

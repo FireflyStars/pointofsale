@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\TableFiltersController;
 use App\Http\Resources\ActionCommercialListResource;
+use App\Models\EventHistory;
+use Illuminate\Support\Facades\Auth;
 
 class ActionCommercialListController extends Controller
 {
@@ -205,4 +207,132 @@ class ActionCommercialListController extends Controller
 
     }
 
-}
+    /**
+     * get necessary infos to create action commercial
+     */
+
+    public function getActionInfo(){
+        return response()->json([
+            'actionStatus'  => DB::table('event_statuses')->select('id as value', 'name as display')->orderBy('id')->get(),
+            'actionCos'     => DB::table('event_actioncos')->select('id as value', 'name as display')->orderBy('id')->get(),
+            'actionType'    => DB::table('event_types')->select('id as value', 'name as display')->orderBy('id')->get(),
+            'actionOrigin'  => DB::table('event_origins')->select('id as value', 'name as display')->orderBy('id')->get(),
+            'users'         => DB::table('users')->select('id as value', 'name as display')->orderBy('id')->get(),
+            'userId'        => Auth::id(),
+        ]);
+    }
+
+    /**
+     * Create a action
+     */
+    public function createAction(Request $request){
+        $event = new Event();
+        $event->contact_id = $request->contact['id'];
+        $event->event_origin_id   = $request->originId;
+        $event->affiliate_id      = Auth::user()->affiliate_id;
+        $event->event_actionco_id = $request->actioncosId;
+        $event->event_type_id     = $request->typeId;
+        $event->event_status_id   = $request->statusId;
+        $event->customer_id       = $request->customer['id'] ?? 0;
+        $event->address_id        = $request->address['id'] ?? 0;
+        $event->user_id           = $request->userId;
+        $event->name              = $request->name;
+        $event->description       = $request->description;
+        $event->datedebut         = Carbon::parse($request->date)->format('Y-m-d').' '.$request->startTime['hours'].':'.$request->startTime['minutes'].':00';
+        $event->datefin           = Carbon::parse($request->date)->format('Y-m-d').' '.$request->endTime['hours'].':'.$request->endTime['minutes'].':00';
+        $event->save();
+
+        $eventHistory = new EventHistory();
+        $eventHistory->event_id = $event->id;
+        $eventHistory->event_statut_id = $event->event_status_id; // otherwise set it 1
+        $eventHistory->comment = "Nouveau event";
+        $eventHistory->user_id = $event->user_id;
+        $eventHistory->save();
+
+        return response()->json(['success'=>true, 'id'=>$event->id]);
+    }
+
+    /**
+     * update a action
+     */
+
+    public function updateAction(Request $request, Event $event){
+        $event->contact_id = $request->contact['id'];
+        $event->event_origin_id   = $request->originId;
+        $event->affiliate_id      = Auth::user()->affiliate_id;
+        $event->event_actionco_id = $request->actioncosId;
+        $event->event_type_id     = $request->typeId;
+        $event->event_status_id   = $request->statusId;
+        $event->customer_id       = $request->customer['id'] ?? 0;
+        $event->address_id        = $request->address['id'] ?? 0;
+        $event->user_id           = $request->userId;
+        $event->name              = $request->name;
+        $event->description       = $request->description;
+        $event->datedebut         = Carbon::parse($request->date)->format('Y-m-d').' '.$request->startTime['hours'].':'.$request->startTime['minutes'].':00';
+        $event->datefin           = Carbon::parse($request->date)->format('Y-m-d').' '.$request->endTime['hours'].':'.$request->endTime['minutes'].':00';
+        $event->save();
+
+        $event->eventHistory()->create([
+            'event_statut_id' => $event->event_status_id,
+            'comment'         => "(Changed date: ".Carbon::parse($request->date)->format('Y-m-d').", start hour: ".$request->startTime['hours'].':'.$request->startTime['minutes'].':00'.")",
+            'user_id'         => Auth::id(),
+        ]);        
+
+        return response()->json(true);
+    }
+
+    /**
+     * Get a action
+     */
+    public function getAction(Event $event){
+
+        return response()->json([
+            'action'    => [ 
+                'id'        => $event->id,
+                'name'      => $event->name,
+                'actioncosId'=> $event->event_actionco_id,
+                'typeId'    => $event->event_type_id,
+                'originId'  => $event->event_origin_id,
+                'statusId'  => $event->event_status_id,
+                'statusId'  => $event->event_status_id,
+                'date'      => Carbon::parse($event->datedebut)->format('m/d/Y'),
+                'startTime' => ['hours'=> Carbon::parse($event->datedebut)->format('H'), 'minutes'=> Carbon::parse($event->datedebut)->format('i')],
+                'endTime'   => ['hours'=> Carbon::parse($event->datefin)->format('H'), 'minutes'=> Carbon::parse($event->datefin)->format('i')],
+                'userId'    => $event->user_id,
+                'description'=> $event->description,
+                'created_at'=> Carbon::parse($event->created_at)->format('m/d/Y'),
+                'updated_at'=> Carbon::parse($event->updated_at)->format('m/d/Y'),
+            ],
+            'customer'  => 
+                DB::table('customers')
+                ->join('group', 'group.id', '=', 'customers.group_id')
+                ->join('taxes', 'taxes.id', '=', 'customers.taxe_id')
+                ->where('customers.id', $event->customer_id)
+                ->select('customers.id', 'customers.company', 'customers.raisonsociale', 'group.name as group',
+                    DB::raw('CONCAT(customers.firstname, " ", customers.name) as contact'), 'telephone', 'taxes.name as tax',
+                    'customers.naf', 'customers.siret'
+                )->first(),
+            'contact'  => 
+                DB::table('contacts')
+                ->join('contact_qualite', 'contact_qualite.id', '=', 'contacts.contact_qualite_id')
+                ->where('contacts.id', $event->contact_id)
+                ->select('contacts.id', 'contacts.firstname', 'contacts.name as nom',
+                    DB::raw('CONCAT(contacts.firstname, " ", contacts.name) as name'),
+                    'contacts.email', 'contacts.mobile', 'contact_qualite.name as qualite'
+                )->first(),
+            'address'  => 
+                DB::table('addresses')
+                ->where('id', $event->address_id)
+                ->select('id', 'firstname', 'lastname as nom',
+                    DB::raw('CONCAT(firstname, " ", lastname) as name'),
+                    'address1', 'address2', 'address3', 'postcode', 'city'
+                )->first(),
+            'actionStatus'  => DB::table('event_statuses')->select('id as value', 'name as display')->orderBy('id')->get(),
+            'actionCos'     => DB::table('event_actioncos')->select('id as value', 'name as display')->orderBy('id')->get(),
+            'actionType'    => DB::table('event_types')->select('id as value', 'name as display')->orderBy('id')->get(),
+            'actionOrigin'  => DB::table('event_origins')->select('id as value', 'name as display')->orderBy('id')->get(),
+            'users'         => DB::table('users')->select('id as value', 'name as display')->orderBy('id')->get(),            
+        ]);
+    }
+}   
+

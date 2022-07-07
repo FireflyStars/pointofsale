@@ -7,8 +7,8 @@
             <side-bar />
             <div class="col main-view container">
                 <h1 class="d-flex align-items-center m-0">
-                  <span class="customer-icon"></span>
-                  <span class="ms-3 font-22 almarai_extrabold_normal_normal">CREATION ACTION COMMERCIAL</span>
+                  <span class="action-icon"></span>
+                  <span class="ms-3 font-22 almarai_extrabold_normal_normal">EDITION ACTION COMMERCIAL</span>
                 </h1>
                 <ul class="m-0 p-0 breadcrumb mt-3 mb-3" v-if="breadcrumbs.length">
                     <li class="breadcrumb-item almarai-extrabold font-18 cursor-pointer" 
@@ -26,41 +26,41 @@
                     <div class="choose-address-panel mt-3">
                         <div class="col-5 p-3 bg-white rounded">
                             <div class="d-flex">
-                                <div class="col-6">
-                                <h2 class="almarai-extrabold font-22">{{ form.customer.company }}</h2>
-                                <p class="text-gray font-16 almarai-bold">{{ form.customer.raisonsocial }}</p>
+                                <div class="col-8">
+                                <h2 class="almarai-extrabold font-22">{{ action.customer.company }}</h2>
+                                <p class="text-gray font-16 almarai-bold">{{ action.customer.raisonsocial }}</p>
                                 </div>
-                                <div class="col-6 d-flex align-items-center justify-content-end">
-                                <p @click="withoutAddress" class="text-custom-success font-16 almarai-bold text-decoration-underline cursor-pointer">Pas d adresse</p>
-                                <p @click="chooseOtherCustomer" class="text-custom-success font-16 almarai-bold text-decoration-underline cursor-pointer">Autre client</p>
+                                <div class="col-4">
+                                    <p @click="withoutAddress" class="text-custom-success font-16 almarai-bold text-decoration-underline cursor-pointer">Pas d adresse</p>
+                                    <p @click="chooseOtherCustomer" class="text-custom-success font-16 almarai-bold text-decoration-underline cursor-pointer">Autre client</p>
                                 </div>
                             </div>
                             <div class="d-flex mt-3">
                                 <div class="col-4">
                                 <label for="" class="text-gray font-16 almarai-bold">GROUPE</label>
-                                <p class="font-16 almarai-bold">{{ form.customer.group }}</p>
+                                <p class="font-16 almarai-bold">{{ action.customer.group }}</p>
                                 </div>
                                 <div class="col-4">
                                 <label for="" class="text-gray font-16 almarai-bold">CONTACT</label>
-                                <p class="font-16 almarai-bold">{{ form.customer.contact }}</p>
+                                <p class="font-16 almarai-bold">{{ action.customer.contact }}</p>
                                 </div>
                                 <div class="col-4">
                                 <label for="" class="text-gray font-16 almarai-bold">TELEPHONE</label>
-                                <p class="font-16 almarai-bold">{{ form.customer.telephone }}</p>
+                                <p class="font-16 almarai-bold">{{ action.customer.telephone }}</p>
                                 </div>
                             </div>
                             <div class="d-flex mt-3">
                                 <div class="col-4">
                                 <label for="" class="text-gray font-16 almarai-bold">TVA</label>
-                                <p class="font-16 almarai-bold">{{ form.customer.tax }}</p>
+                                <p class="font-16 almarai-bold">{{ action.customer.tax }}</p>
                                 </div>
                                 <div class="col-4">
                                 <label for="" class="text-gray font-16 almarai-bold">NAF</label>
-                                <p class="font-16 almarai-bold">{{ form.customer.naf }}</p>
+                                <p class="font-16 almarai-bold">{{ action.customer.naf }}</p>
                                 </div>
                                 <div class="col-4">
                                 <label for="" class="text-gray font-16 almarai-bold">SIRET</label>
-                                <p class="font-16 almarai-bold">{{ form.customer.siret }}</p>
+                                <p class="font-16 almarai-bold">{{ action.customer.siret }}</p>
                                 </div>
                             </div>
                         </div>
@@ -129,8 +129,7 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="col-5 p-3 bg-white rounded" v-if="action.address.id !=''">
+                            <div class="col-5 ms-3 p-3 bg-white rounded" v-if="action.address.id !=''">
                                 <div class="d-flex">
                                     <div class="col-6">
                                     <h2 class="almarai-extrabold font-22">addresse</h2>
@@ -140,25 +139,25 @@
                                 <div class="d-flex mt-3">
                                     <div class="col-4">
                                     <label for="" class="text-gray font-16 almarai-bold">PRENOM/BATIEMNTS</label>
-                                    <p class="font-16 almarai-bold">{{ action.customer.group }}</p>
+                                    <p class="font-16 almarai-bold">{{ action.address.firstname }}</p>
                                     </div>
                                     <div class="col-4">
                                     <label for="" class="text-gray font-16 almarai-bold">ADRESSE</label>
-                                    <p class="font-16 almarai-bold">{{ action.customer.contact }}</p>
+                                    <p class="font-16 almarai-bold">{{ action.address.address1 }}</p>
                                     </div>
                                     <div class="col-4">
                                     <label for="" class="text-gray font-16 almarai-bold">Code Postal / Ville</label>
-                                    <p class="font-16 almarai-bold">{{ action.customer.telephone }}</p>
+                                    <p class="font-16 almarai-bold">{{ action.address.postcode }} / {{ action.address.city }}</p>
                                     </div>
                                 </div>
                                 <div class="d-flex mt-3">
                                     <div class="col-4">
                                     <label for="" class="text-gray font-16 almarai-bold">NOM</label>
-                                    <p class="font-16 almarai-bold">{{ action.customer.tax }}</p>
+                                    <p class="font-16 almarai-bold">{{ action.address.nom }}</p>
                                     </div>
                                     <div class="col-4">
-                                    <label for="" class="text-gray font-16 almarai-bold">NAF</label>
-                                    <p class="font-16 almarai-bold">{{ action.customer.naf }}</p>
+                                    <p class="font-16 almarai-bold">{{ action.address.address2 }}</p>
+                                    <p class="font-16 almarai-bold">{{ action.address.address3 }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -168,19 +167,18 @@
                             <div class="mt-3 action-contacts">
                                 <div class="px-4 py-3 bg-gray mt-2 address-item rounded cursor-pointer" 
                                 @click="chooseActionContact(contact)" v-for="(contact, index) in actionContacts" :key="index">
-                                <div class="d-flex">
-                                    <div class="col-7">
-                                    <h3 class="almarai-bold font-16">{{ contact.name }}</h3>
+                                    <div class="d-flex">
+                                        <div class="col-7">
+                                            <p class="almarai-bold font-16">{{ contact.name }}</p>
+                                            <p class="almarai-bold font-16 text-gray">{{ contact.qualite }}</p>
+                                            <p class="almarai-bold font-16 text-gray">{{ contact.comment }}</p>
+                                        </div>
+                                        <div class="col-5">
+                                            <p class="almarai-bold font-16  text-gray">{{ contact.email }}</p>
+                                            <p class="almarai-bold font-16  text-gray">&nbsp;</p>
+                                            <p class="almarai-bold font-16  text-gray">{{ contact.mobile }}</p>
+                                        </div>
                                     </div>
-                                    <div class="col-5">
-                                    <p class="almarai-bold font-16 text-gray">{{ contact.contactType }}</p>
-                                    </div>
-                                </div>
-                                <div class="d-flex">
-                                    <div class="col-4 almarai-bold text-gray">{{ contact.contact1 }}</div>
-                                    <div class="col-4 almarai-bold text-gray">{{ contact.contact2 }}</div>
-                                    <div class="col-4 almarai-bold text-gray">{{ contact.postcode }} {{ contact.city }}</div>
-                                </div>
                                 </div>
                             </div>
                         </div>
@@ -188,7 +186,108 @@
                 </transition>
                 <transition name="list" appear v-if="step =='choose_action'">
                     <div class="cust-page-content client-detail m-auto pt-5">
-                        <div class="page-section">
+                        <div class="d-flex">
+                            <div class="col-4 p-3 bg-white rounded">
+                                <div class="d-flex">
+                                    <div class="col-6">
+                                    <h2 class="almarai-extrabold font-22">{{ action.customer.company }}</h2>
+                                    <p class="text-gray font-16 almarai-bold">{{ action.customer.raisonsocial }}</p>
+                                    </div>
+                                    <div class="col-6 d-flex align-items-center justify-content-end">
+                                    <p @click="chooseOtherCustomer" class="text-custom-success font-16 almarai-bold text-decoration-underline cursor-pointer">Autre client</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex mt-3">
+                                    <div class="col-4">
+                                    <label for="" class="text-gray font-16 almarai-bold">GROUPE</label>
+                                    <p class="font-16 almarai-bold">{{ action.customer.group }}</p>
+                                    </div>
+                                    <div class="col-4">
+                                    <label for="" class="text-gray font-16 almarai-bold">CONTACT</label>
+                                    <p class="font-16 almarai-bold">{{ action.customer.contact }}</p>
+                                    </div>
+                                    <div class="col-4">
+                                    <label for="" class="text-gray font-16 almarai-bold">TELEPHONE</label>
+                                    <p class="font-16 almarai-bold">{{ action.customer.telephone }}</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex mt-3">
+                                    <div class="col-4">
+                                    <label for="" class="text-gray font-16 almarai-bold">TVA</label>
+                                    <p class="font-16 almarai-bold">{{ action.customer.tax }}</p>
+                                    </div>
+                                    <div class="col-4">
+                                    <label for="" class="text-gray font-16 almarai-bold">NAF</label>
+                                    <p class="font-16 almarai-bold">{{ action.customer.naf }}</p>
+                                    </div>
+                                    <div class="col-4">
+                                    <label for="" class="text-gray font-16 almarai-bold">SIRET</label>
+                                    <p class="font-16 almarai-bold">{{ action.customer.siret }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4 ms-3 p-3 bg-white rounded" v-if="action.address.id !=''">
+                                <div class="d-flex">
+                                    <div class="col-6">
+                                    <h2 class="almarai-extrabold font-22">Adresse de l action</h2>
+                                    <p class="text-gray font-16 almarai-bold">{{ }}</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex mt-3">
+                                    <div class="col-4">
+                                    <label for="" class="text-gray font-16 almarai-bold">PRENOM/BATIEMNTS</label>
+                                    <p class="font-16 almarai-bold">{{ action.address.firstname }}</p>
+                                    </div>
+                                    <div class="col-4">
+                                    <label for="" class="text-gray font-16 almarai-bold">ADRESSE</label>
+                                    <p class="font-16 almarai-bold">{{ action.address.address1 }}</p>
+                                    </div>
+                                    <div class="col-4">
+                                    <label for="" class="text-gray font-16 almarai-bold">Code Postal / Ville</label>
+                                    <p class="font-16 almarai-bold">{{ action.address.postcode }} / {{ action.address.city }}</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex mt-3">
+                                    <div class="col-4">
+                                    <label for="" class="text-gray font-16 almarai-bold">NOM</label>
+                                    <p class="font-16 almarai-bold">{{ action.address.nom }}</p>
+                                    </div>
+                                    <div class="col-4">
+                                    <p class="font-16 almarai-bold">{{ action.address.address2 }}</p>
+                                    <p class="font-16 almarai-bold">{{ action.address.address3 }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4 ms-3 p-3 bg-white rounded" v-if="action.contact.id !=''">
+                                <div class="d-flex">
+                                    <div class="col-6">
+                                    <h2 class="almarai-extrabold font-22">Contact</h2>
+                                    <p class="text-gray font-16 almarai-bold">{{ }}</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex mt-3">
+                                    <div class="col-4">
+                                        <label for="" class="text-gray font-16 almarai-bold">PRENOM</label>
+                                        <p class="font-16 almarai-bold">{{ action.contact.firstname }}</p>
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="" class="text-gray font-16 almarai-bold">EMAIL</label>
+                                        <p class="font-16 almarai-bold">{{ action.contact.email }}</p>
+                                    </div>
+                                    <div class="col-4">
+                                        <label for="" class="text-gray font-16 almarai-bold">Téléphone</label>
+                                        <p class="font-16 almarai-bold">{{ action.contact.mobile }}</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex mt-3">
+                                    <div class="col-4">
+                                        <label for="" class="text-gray font-16 almarai-bold">NOM</label>
+                                        <p class="font-16 almarai-bold">{{ action.contact.nom }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="page-section mt-3">
                             <h3 class="m-0 mulish-extrabold font-22">ACTION COMMERCIAL</h3>
                             <div class="d-flex mt-3">
                                 <div class="col-3">
@@ -199,122 +298,77 @@
                                     </div>
                                     <div class="col-4"></div>
                                     <div class="col-4">
-                                        <p class="m-0 mulish-light font-14 text-gray text-nowrap">Date Création :</p>
-                                        <p class="m-0 mulish-light font-14 text-gray text-nowrap">Date Modification :</p>
+                                        <p class="m-0 mulish-light font-14 text-gray text-nowrap">Date Création : {{ action.created_at }}</p>
+                                        <p class="m-0 mulish-light font-14 text-gray text-nowrap">Date Modification : {{ action.updated_at }}</p>
                                     </div>
                                 </div>
                             </div>
                             <div class="d-flex mt-3">
-                                <div class="col-7 d-flex">
-                                    <div class="col-5">
-                                        <div class="form-group">
-                                            <label class="mulish-medium font-16 text-nowrap">LIBELLE DE L ACTION *</label>
-                                            <input type="text" v-model="action.libelle" placeholder="LIBELLE DE L ACTION" class="form-control">
-                                        </div>
+                                <div class="col-5">
+                                    <div class="form-group">
+                                        <label class="mulish-medium font-16 text-nowrap">LIBELLE DE L ACTION *</label>
+                                        <input type="text" v-model="action.name" placeholder="LIBELLE DE L ACTION" class="form-control">
                                     </div>
-                                    <div class="col-2"></div>
-                                    <div class="col-5">
-                                        <select-box v-model="action.status" 
-                                            :options="[
-                                                {
-                                                    display: 'status1',
-                                                    value: 'status1',
-                                                },
-                                                {
-                                                    display: 'status2',
-                                                    value: 'status1',
-                                                },
-                                                {
-                                                    display: 'status3',
-                                                    value: 'status1',
-                                                },
-                                            ]" 
-                                            :name="'actionStatus'"
-                                            :label="'STATUS DE L ACTION'"
-                                            ></select-box>
-                                    </div>
+                                </div>
+                                <div class="col-2"></div>
+                                <div class="col-5">
+                                    <select-box v-model="action.statusId" 
+                                        :options="actionStatus" 
+                                        :name="'actionStatus'"
+                                        :label="'STATUS DE L ACTION *'"
+                                        ></select-box>
                                 </div>
                             </div>    
                             <div class="d-flex mt-3">
                                 <div class="col-5">
-                                    <select-box v-model="action.realiser" :options="[{ display: 'a', value: 'a' }]" :label="'TYPE D ACTION A REALISER'" :name="'actionRealiser'"></select-box>
+                                    <select-box v-model="action.actioncosId" :options="actionCos" :label="'TYPE D ACTION A REALISER'" :name="'actionRealiser'"></select-box>
                                 </div>
                                 <div class="col-2"></div>
                                 <div class="col-5 d-flex">
                                     <div class="col-5">
                                         <div class="form-group">
-                                            <label class="mulish-medium font-16 text-nowrap">DATE</label>
-                                            <input type="text" v-model="action.date" placeholder="DATE" class="form-control">
+                                            <label class="mulish-medium font-16 text-nowrap">DATE*</label>
+                                            <Datepicker v-model="action.date" position="left" :hideInputIcon="true" inputClassName="form-control" autoApply placeholder="DATE" :format="dateFormat"/>
                                         </div>
                                     </div>
                                     <div class="col-2"></div>
                                     <div class="col-5">
                                         <div class="form-group">
-                                            <label class="mulish-medium font-16 text-nowrap">HEURE</label>
-                                            <input type="text" v-model="action.hour" placeholder="HEURE" class="form-control">
+                                            <label class="mulish-medium font-16 text-nowrap">DEBUT *</label>
+                                            <Datepicker v-model="action.startTime" position="left" :hideInputIcon="true" inputClassName="form-control" :timePicker="true"/>
+                                        </div>
+                                        <div class="form-group mt-3">
+                                            <label class="mulish-medium font-16 text-nowrap">FIN *</label>
+                                            <Datepicker v-model="action.endTime" position="left" :hideInputIcon="true" inputClassName="form-control" :timePicker="true"/>
                                         </div>
                                     </div>
                                 </div>
                             </div>                                           
                             <div class="d-flex mt-3">
                                 <div class="col-5">
-                                    <select-box v-model="action.affecte" :options="[{ display: 'a', value: 'a' }]" :label="'AFFECTE  A'" :name="'actionAffecte'"></select-box>
+                                    <select-box v-model="action.typeId" :options="actionType" :label="'TYPE D ACTION *'" :name="'actionType'"></select-box>
+                                </div>
+                                <div class="col-2"></div>
+                                <div class="col-5">
+                                    <select-box v-model="action.userId" :options="users" :label="'AFFECTE  A *'" :name="'userId'"></select-box>
+                                </div>
+                            </div>                                           
+                            <div class="d-flex mt-3">
+                                <div class="col-5">
+                                    <select-box v-model="action.originId" :options="actionOrigin" :label="'ORIGINE ACTION *'" :name="'actionOrigin'"></select-box>
                                 </div>
                                 <div class="col-2"></div>
                                 <div class="col-5">
                                     <div class="col-9 form-group">
                                         <label class="text-nowrap">NOTES / INFORMATIONS / COMMENTAIRES</label>
-                                        <textarea rows="4" class="form-control" v-model="action.note"></textarea>
+                                        <textarea rows="4" class="form-control" v-model="action.description"></textarea>
                                     </div>
                                 </div>
                             </div>                                           
                         </div>
-                        <div class="page-section mt-3">
-                            <h3 class="m-0 mulish-extrabold font-22">ENTITE / ADRESSE / CONTACT</h3>
-                            <div class="d-flex mt-3">
-                                <div class="col-4 pe-3">
-                                    <div class="form-group">
-                                        <label class="mulish-medium font-16 text-nowrap">NOM ENTITE</label>
-                                        <input type="text" v-model="action.nomEntitie" placeholder="NOM ENTITE" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-4 pe-3">
-                                    <div class="form-group">
-                                        <label class="mulish-medium font-16 text-nowrap">PRENOM / BATIMENT</label>
-                                        <input type="text" v-model="action.prenom" placeholder="PRENOM / BATIMENT" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-4 pe-3">
-                                    <div class="form-group">
-                                        <label class="mulish-medium font-16 text-nowrap">PRENOM / BATIMENT</label>
-                                        <input type="text" v-model="action.batiment" placeholder="BATIMENT" class="form-control">
-                                    </div>                                    
-                                </div>
-                            </div>
-                            <div class="d-flex mt-3">
-                                <div class="col-4 pe-3 ">
-                                    <div class="form-group">
-                                        <label class="mulish-medium font-16 text-nowrap">NOM CLIENT COMPLEMENTAIRE</label>
-                                        <input type="text" v-model="action.nomClient" placeholder="NOM CLIENT COMPLEMENTAIRE" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-4 pe-3">
-                                    <div class="form-group">
-                                        <label class="mulish-medium font-16 text-nowrap">ADRESSE</label>
-                                        <input type="text" v-model="action.addr" placeholder="ADRESSE" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-4 pe-3">
-                                    <div class="form-group">
-                                        <label class="mulish-medium font-16 text-nowrap">NOM</label>
-                                        <input type="text" v-model="action.nom" placeholder="NOM" class="form-control">
-                                    </div>                                    
-                                </div>
-                            </div>
-                        </div>
                         <div class="btns d-flex justify-content-end mb-3">
                             <button class="custom-btn btn-cancel me-3" @click="cancel">Annuler</button>
-                            <button class="custom-btn btn-ok text-uppercase" @click="nextStep">Suivant</button>
+                            <button class="custom-btn btn-ok text-uppercase" @click="submit">ENREGISTRER</button>
                         </div>
                     </div>
                 </transition>
@@ -332,15 +386,20 @@ import SelectBox from '../../components/miscellaneous/SelectBox';
 import SearchCustomer from '../../components/miscellaneous/SearchCustomer';
 import AddressModal from '../../components/miscellaneous/AddressModal';
 import ContactModal from '../../components/miscellaneous/ContactModal';
+import Datepicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
+
 import {     
   DISPLAY_LOADER,
   HIDE_LOADER,
-  LOADER_MODULE, 
+  LOADER_MODULE,
+  TOASTER_MESSAGE,
+  TOASTER_MODULE, 
   } from '../../store/types/types';
   
 import axios from 'axios';
 import { useStore } from 'vuex';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { mask } from 'vue-the-mask';
 
 export default {
@@ -352,16 +411,24 @@ export default {
         SearchCustomer,
         AddressModal,
         ContactModal,
+        Datepicker
     },
     setup() {
         const store = useStore();
         const router = useRouter();
+        const route = useRoute();
         const actionAddresses = ref();
         const actionContacts = ref();
+        const actionStatus = ref([]);
+        const actionCos = ref([]);
+        const actionType = ref([]);
+        const actionOrigin = ref([]);
+        const users = ref([]);
         const breadcrumbs = ref(['Choix client']);
         const addressModal = ref(null);
         const contactModal = ref(null);
-        const step = ref('choose_customer');
+        const step = ref('choose_action');
+
         watchEffect(()=>{
             if(step.value == 'choose_customer'){
                 breadcrumbs.value = ['Choix client'];
@@ -376,30 +443,58 @@ export default {
             }
         })        
         const action = ref({
-            libelle: '',
-            status: '',
-            realiser: '',
+            id: '',
+            name: '',
+            actioncosId: 0,
+            typeId: 0,
+            originId: 0,
+            statusId: 0,
             date: '',
-            hour: '',
-            affecte: '',
-            note: '',
-            nomEntitie: '',
-            prenom: '',
-            batiment: '',
-            nomClient: '',
-            addr: '',
-            nom: '',
+            startTime: '',
+            endTime: '',
+            userId: 0,
+            description: '',
+            created_at: '',
+            updated_at: '',
             customer: {
-
+                id: 0,
+                company: '',
+                raisonsocial: '',
+                group: '',
+                contact: '',
+                telephone: '',
+                tax: '',
+                naf: '',
+                siret: '',
             },
             contact: {
-
+                id: 0,
+                firstname: '',
+                nom: '',
+                name: '',
+                qualite: '',
+                mobile: '',
+                email: '',
+                comment: '',
             },
             address:{
-
+                id: 0,
+                name: '',
+                address1: '',
+                address2: '',
+                address3: '',
+                postcode: '',
+                city: '',
+                firstname: '',
+                nom: '',
             }
         });
-
+        const dateFormat = (date) => {
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
+            return `${month}/${day}/${year}`;
+        }
         const cancel = ()=>{
 
         }
@@ -409,14 +504,14 @@ export default {
             })
         }        
         const addNewAddress = ()=>{
-            addressModal.value.openModal(form.value.customer.id)
+            addressModal.value.openModal(action.value.customer.id)
         }
 
         const addedNewAddress = (data)=>{
             actionAddresses.value.push(data);
         }
         const addNewContact = ()=>{
-            contactModal.value.openModal(form.value.customer.id)
+            contactModal.value.openModal(action.value.customer.id, actionAddresses.value)
         }
         const addedNewContact = (data)=>{
             actionContacts.value.push(data);
@@ -433,14 +528,81 @@ export default {
             }
         }        
         const submit = ()=>{
-            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Création d`un nouveau client ...']);
-            axios.post('/add-action', action.value).then((res)=>{
-
-            }).catch((errors)=>{
-                console.log(errors);
-            }).finally(()=>{
-                store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
-            })
+            var error = false;
+            if( action.value.name == '' ){
+                error = true;
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Veuillez saisir LIBELLE DE L ACTION',
+                    ttl: 5,
+                });    
+            }else if( action.value.actioncosId == 0 ){
+                error = true;
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Veuillez saisir TYPE D ACTION A REALISER',
+                    ttl: 5,
+                });                    
+            }else if( action.value.typeId == 0 ){
+                error = true;
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Veuillez saisir TYPE D ACTION',
+                    ttl: 5,
+                });                    
+            }else if( action.value.originId == 0 ){
+                error = true;
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Veuillez saisir ORIGINE ACTION',
+                    ttl: 5,
+                });                    
+            }else if( action.value.statusId == 0 ){
+                error = true;
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Veuillez saisir STATUS DE L ACTION',
+                    ttl: 5,
+                });                    
+            }else if( action.value.date == '' ){
+                error = true;
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Veuillez saisir DATE',
+                    ttl: 5,
+                });
+            }else if( action.value.startTime == '' ){
+                error = true;
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Veuillez saisir DEBUT',
+                    ttl: 5,
+                });
+            }else if( action.value.endTime == '' ){
+                error = true;
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Veuillez saisir FIN',
+                    ttl: 5,
+                });
+            }else if( action.value.userId == 0 ){
+                error = true;
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Veuillez saisir AFFECTE  A',
+                    ttl: 5,
+                });
+            }
+            if(!error){
+                store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'mise à jour d`une ACTION COMMERCIALE ...']);
+                axios.post('/action/edit/'+route.params.id, action.value).then((res)=>{
+                    router.push({ name: 'action-commercial-details', params: { id: route.params.id } });
+                }).catch((errors)=>{
+                    console.log(errors);
+                }).finally(()=>{
+                    store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+                })
+            }
         }
         const selectedCustomer = (data)=>{
             // move on to "addess choose step"
@@ -456,18 +618,72 @@ export default {
                 store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
             })
         }        
+        const getActionContacts = ()=>{
+            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Chargement des contacts des clients..']);
+            axios.post('/get-customer-contacts', { customerId: action.value.customer.id }).then((res)=>{
+                actionContacts.value = res.data;
+            }).catch((error)=>{
+                console.log(error);
+            }).finally(()=>{
+                store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+            });
+        }
         const withoutAddress = ()=>{
-            action.value.address = { id: '' };
+            action.value.address = { id: 0 };
             step.value = 'choose_contact';
+            getActionContacts();
         }
         const chooseActionAddress = (address)=>{
             action.value.address = address;
             step.value = 'choose_contact';
+            getActionContacts();
         }
         const chooseActionContact = (contact)=>{
             action.value.contact = contact;
             step.value = 'choose_action';
         }
+        onMounted(()=>{
+            axios.post('/get-action/' + route.params.id).then((res)=>{
+                action.value = res.data.action;
+                action.value.customer = res.data.customer;
+                if(res.data.contact){
+                    action.value.contact = res.data.contact;
+                }else{
+                    action.value.contact = {
+                        id: 0,
+                        firstname: '',
+                        nom: '',
+                        name: '',
+                        qualite: '',
+                        mobile: '',
+                        email: '',
+                        comment: '',
+                    };
+                }
+                if(res.data.address){
+                    action.value.address = res.data.address;
+                }else{
+                    action.value.address = {
+                        id: 0,
+                        name: '',
+                        address1: '',
+                        address2: '',
+                        address3: '',
+                        postcode: '',
+                        city: '',
+                        firstname: '',
+                        nom: '',
+                    };
+                }
+                actionStatus.value = res.data.actionStatus;
+                actionCos.value = res.data.actionCos;
+                actionType.value = res.data.actionType;
+                actionOrigin.value = res.data.actionOrigin;
+                users.value = res.data.users;
+            }).catch((error)=>{
+                console.log(error);
+            })
+        })
         return {
             action,
             step,
@@ -476,7 +692,14 @@ export default {
             actionContacts,
             addressModal,
             contactModal,
+            actionStatus,
+            actionCos,
+            actionType,
+            actionOrigin,
+            users,
+            dateFormat,
             addNewAddress,
+            addNewContact,
             addedNewAddress,
             addedNewContact,
             goToStep,
