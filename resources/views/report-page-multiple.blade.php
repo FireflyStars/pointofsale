@@ -192,7 +192,7 @@
     @foreach ($pages as $page)
         <?php 
             $break_rule = $loop->last ? 'avoid-page': 'page';
-            $background = $builder::get_page_background_by_id($page);
+            $background = $builder::get_page_background_by_id($page_files, $loop->index);
             $last = $loop->index == count((array) $pages) - 1;
             $first = $loop->first;
         ?>
@@ -207,7 +207,7 @@
         >
 
             <div class="template-body">
-                
+
                 @foreach ($page->elements as $element)
                     
                     @if (strtolower($element->name) == 'button')
@@ -239,8 +239,9 @@
             
                     @if (strtolower($element->name) == 'img')
                         <?php
-                            $src = $builder::convert_base64(config('app.url') . '/' . 'storage/' . $element->dataFile);
+                            $src = $builder::get_page_image_file($page_files, $element->attributes->id);
                         ?>
+    
                         <img 
                             class="{{ $element->attributes->class ?? 'draggable' }}"
                             src="{{ $src }}" 

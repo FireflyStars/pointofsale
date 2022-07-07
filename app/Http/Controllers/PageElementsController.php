@@ -34,6 +34,7 @@ class PageElementsController extends Controller
         $pdf->loadView(
             'report-page-multiple', [
                 'pages'     => json_decode($pages),
+                'page_files'=> $report->page_files,
                 'svgs'      => page_builder::get_svgs(),
                 'builder'   => (new page_builder),
                 'affiliate' => $report->affiliate

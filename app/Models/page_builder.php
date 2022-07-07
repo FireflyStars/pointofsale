@@ -10,17 +10,19 @@ class page_builder extends Model
     use HasFactory;
 
 
-    public static function get_page_background_by_id($page) 
+    public static function get_page_image_file($files, $id) 
     {
-        
-        $base_path = rtrim(config('app.url'), '/');
-        $page = (array) $page;
 
-        if(count((array) $page['background'])) 
+        $image = $files[$id];
+
+        $base_path = rtrim(config('app.url'), '/');
+
+        $src = null;
+
+        if(!is_null($image)) 
         {
-            $background = $page['background'];
             
-            $filename = $background->dataFile;
+            $filename = $image['file'];
             
             if(strpos($filename, 'report-templates') !== false) 
             {
@@ -30,9 +32,44 @@ class page_builder extends Model
             {
                 $src = $base_path . $filename;
             }
-            
-            return self::convert_base64($src);
+        
         }
+
+
+        return is_null($src) ? null : self::convert_base64($src);
+
+    }
+
+
+    public static function get_page_background_by_id($files, $index) 
+    {
+        
+        $files = array_values($files);
+
+        $background_index = array_search($index, array_column($files, 'page'), true);
+
+        $base_path = rtrim(config('app.url'), '/');
+
+        $src = null;
+
+        if(!is_null($background_index) && $background_index !== false) 
+        {
+            
+            $filename = $files[$background_index]['file'];
+            
+            if(strpos($filename, 'report-templates') !== false) 
+            {
+                $src = $base_path . '/' . 'storage/' . $filename;
+            }
+            else 
+            {
+                $src = $base_path . $filename;
+            }
+        
+        }
+
+        return is_null($src) ? null : self::convert_base64($src);
+        
     }
 
     
