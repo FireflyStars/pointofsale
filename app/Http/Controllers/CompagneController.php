@@ -41,6 +41,37 @@ class CompagneController extends Controller
 
     private $pdf;
 
+    public function generate_pdf(CampagneCategory $campagne, Request $request) 
+    {
+
+        $pdf = App::make('dompdf.wrapper');
+
+        $pdf->setOptions([
+            'enable_php'           => true,
+            'isRemoteEnabled'      => true, 
+            'isHtml5ParserEnabled' => true, 
+        ]);
+
+        $fields = $this->fields_for_marketing($campagne, $request);
+    
+        $data = array(
+            'fields'           => $fields,
+            'image2'           => $campagne->imagetemplate,
+            'image'            => $campagne->urlimageflyerpage1,
+            'campagneCategory' => $campagne
+        );
+
+        $pdf->loadView(
+            'product', [
+                'builder' => (new page_builder),
+                'data'    => $data
+            ]
+        );
+
+        return $pdf->download('Product.pdf');
+
+    }
+
     public function campagne_details(Campagne $campagne) 
     {
         return response()->json(
@@ -102,7 +133,11 @@ class CompagneController extends Controller
         })->sum();
 
         $transport = $products->sum(function($product) use($product_price, $product_poids) {
-            return ($product_price($product) + $product_poids($product)) * 1;
+            $poids = $product_poids($product);
+            $weight = $poids - 10;
+            $weight = (int) ceil($weight / 10);
+            $transportPrice = 17 + ($weight * 7);
+            return ($product_price($product) + $transportPrice) * 1;
         });
 
         $cardPrice = $products->sum(function($product) use($product_price) {
@@ -1929,11 +1964,13 @@ class CompagneController extends Controller
         if(is_null($telephone)) $telephone = $affiliate->telephone;
         if(is_null($email)) $email = $affiliate->reponseaddress;
 
-        if(is_null($campagne->fields)) 
+        if(is_null(json_decode($campagne->fields))) 
         {
             $fields = [];
             $fields['Telephone_agence']['value'] = $telephone;
+            $fields['Telephone_agence']['active'] = 1;
             $fields['Email_agence']['value'] = $email;
+            $fields['Email_agence']['active'] = 1;
             $fields['personalize'] = false;
             return $fields;
         }
