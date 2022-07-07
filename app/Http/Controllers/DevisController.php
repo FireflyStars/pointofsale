@@ -147,7 +147,8 @@ class DevisController extends Controller
         $user=Auth::user();
         $order=Order::find($order_id);
         if($order->affiliate_id!=$user->affiliate_id)
-        throw new Exception('Order is not affiliated to user.Cannot load invoices.');
+        return response('Order is not affiliated to user.Cannot load invoices.',509);
+
 
         $orderInvoices=DB::table('order_invoices')->select(['order_invoices.*','invoice_type.sign','invoice_type.name as invoice_type_name','invoice_type.color as invoice_type_color'])->leftJoin('invoices',function($join){
              $join->on('invoices.order_invoice_id','=','order_invoices.id')
@@ -155,11 +156,30 @@ class DevisController extends Controller
         })->leftJoin('invoice_type',function($join){
              $join->on('invoice_type.id','=','invoices.invoice_type_id')
              ->whereNull('invoice_type.deleted_at');  
-        })->where('order_invoices.order_id','=',$order->id)->orderBy('order_invoices.id')
-        
+        })->where('order_invoices.order_id','=',$order->id)
+        ->whereNull('order_invoices.deleted_at')
+        ->orderBy('order_invoices.id')
         ->get();
         return response()->json($orderInvoices);
 
+    }
+    public function loadOrderDocuments(Request $request){
+            $order_id=$request->post('order_id');
+            $order=Order::find($order_id);
+            
+            $user=Auth::user();
+            if($order->affiliate_id!=$user->affiliate_id)
+            return response('Order is not affiliated to user.Cannot load order documents.',509);
+
+            $reports=$order->reports->makeHidden(['pages','page_files','deleted_at','updated_at']);
+            foreach($reports as &$report){
+                $carbon=Carbon::createFromFormat('Y-m-d H:i:s',$report->created_at);
+                $report->formatted_date=$carbon->day.'/'.$carbon->month.'/'.$carbon->year.' '.$carbon->hour.':'.$carbon->minute;
+                $report->user;
+            }
+
+
+            return response()->json($reports);
     }
     public function newOrderInvoice(Request $request){
 
@@ -172,7 +192,8 @@ class DevisController extends Controller
         $user=Auth::user();
         $order=Order::find($order_id);
         if($order->affiliate_id!=$user->affiliate_id)
-        throw new Exception('Order is not affiliated to user.Cannot add invoice.');
+        return response('Order is not affiliated to user.Cannot add invoice.',509);
+    
      
 
         $oi=new OrderInvoice();
@@ -210,9 +231,64 @@ class DevisController extends Controller
 
     }
     public function removeOrderInvoice(Request $request){
+        $order_invoice_id=$request->post('id');
+        $invoice_type_name=$request->post('invoice_type_name');
         
+        $oi=OrderInvoice::find($order_invoice_id);
+        if($oi==null)
+            return response('Order invoice not found.',509);
+         
+        
+        $order=$oi->order;
+        $user=Auth::user();
+        if($order->affiliate_id!=$user->affiliate_id)
+        return response('Order is not affiliated to user.Cannot delete invoice.',509);
+
+        if($oi->invoice_id>0)
+        return response('Invoice already exists.Cannot delete',509);
+
+        $oi->delete();
+
+        return response()->json(array('message'=>'ok'));
     }
     public function validateOrderInvoice(Request $request){
+        $order_invoice_id=$request->post('id');
+        $invoice_type_name=$request->post('invoice_type_name');
+        
+        $oi=OrderInvoice::find($order_invoice_id);
+        if($oi==null)
+            return response('Order invoice not found.',509);
+         
+        
+        $order=$oi->order;
+        $user=Auth::user();
+        if($order->affiliate_id!=$user->affiliate_id)
+        return response('Order is not affiliated to user.Cannot create invoice.',509);
+ 
+         
+        if($invoice_type_name!=null||$oi->invoice_id>0)
+        return response('Invoice already exists.',509);
+
+        $oi->facturer=1;
+        $in=new Invoice();
+        $in->order_id=$order->id;
+        $in->montant=$oi->montant;
+        $in->pourcentage=$oi->pourcentage;
+        $in->lang_id=1;
+        $in->customer_id=$order->customer_id;
+        $in->order_invoice_id=$oi->id;
+        $in->responsable_id=$user->id;
+        $in->affiliate_id=$order->affiliate_id;
+        $in->invoice_type_id=1;
+        $in->dateecheance=$oi->dateinvoice;
+        $in->save();
+        $in->fresh();
+        $in->updateState(1);//creation
+        $oi->invoice_id=$in->id;
+        $oi->save();
+
+
+        return response()->json(array('message'=>'ok'));
         
     }
     public function getOrderStates(Request $request){

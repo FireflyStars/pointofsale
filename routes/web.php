@@ -137,6 +137,7 @@ Route::group([
     Route::post('/set-order-state',[DevisController::class,'setOrderState'])->middleware('auth')->name('set-order-state');
     Route::post('/get-order-detail-facturation',[DevisController::class,'loadOrderInvoices'])->middleware('auth')->name('get-order-detail-facturation');
     Route::post('/new-order-invoice',[DevisController::class,'newOrderInvoice'])->middleware('auth')->name('new-order-invoice');
+    Route::post('/load-order-documents',[DevisController::class,'loadOrderDocuments'])->middleware('auth')->name('load-order-documents');
     Route::post('/remove-order-invoice',[DevisController::class,'removeOrderInvoice'])->middleware('auth')->name('remove-order-invoice');
     Route::post('/validate-order-invoice',[DevisController::class,'validateOrderInvoice'])->middleware('auth')->name('validate-order-invoice');
     Route::post('/get-order-states',[DevisController::class,'getOrderStates'])->middleware('auth')->name('get-order-states');
