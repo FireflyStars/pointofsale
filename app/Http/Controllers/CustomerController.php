@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class CustomerController extends Controller
 {
@@ -77,7 +78,7 @@ class CustomerController extends Controller
                 'trancheeffectif'       => $request->trancheEffectif,
                 'tranchetaillecommune'  => $request->trancheCommune,
                 'num_client_gx'         => $request->numLCDT,
-                'datecreationetablissement'=> $request->dateCreated,
+                'datecreationetablissement'=> Carbon::parse($request->dateCreated)->format('m/d/Y'),
                 'signupdate'            => now()->format('Y-m-d'),
                 'created_at'            => now(),
                 'updated_at'            => now(),
@@ -247,7 +248,7 @@ class CustomerController extends Controller
             'trancheeffectif'       => $request->trancheEffectif,
             'tranchetaillecommune'  => $request->trancheCommune,
             'num_client_gx'         => $request->numLCDT,
-            'datecreationetablissement'=> $request->dateCreated,
+            'datecreationetablissement'=> Carbon::parse($request->dateCreated)->format('m/d/Y'),
         ];
         DB::table('customers')->where('id', $request->id)->update($customerData);
         foreach ($request->addresses as $address) {
