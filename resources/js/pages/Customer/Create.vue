@@ -286,7 +286,6 @@
                                     <div class="form-group">
                                         <label class="text-nowrap">ADRESSE 1 (N° et libellé de voie…)  * </label>
                                         <GoogleAddress :address="address.address1" :index="index" :placeholder="'Adresse1'" @updateAddressInfo="updateAddressInfo"></GoogleAddress>
-                                        <!-- <input type="text" placeholder="Adresse1" v-model="address.address1" class="form-control"> -->
                                     </div>
                                 </div>
                                 <div class="col-6 ps-3">
@@ -803,7 +802,7 @@ export default {
                         message: 'Veuillez sélectionner la MODE DE PAIEMENT',
                         ttl: 5,
                     });           
-                }else if(form.value.naf == '' || form.value.naf.length != 5){
+                }else if(form.value.naf == '' || form.value.naf.length != 5 || customerNafs.find((item)=>{ item.code == form.value.naf }) == undefined){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
                         message: 'Veuillez entrer NAF',
@@ -917,7 +916,7 @@ export default {
                         message: 'Veuillez sélectionner la MODE DE PAIEMENT',
                         ttl: 5,
                     });               
-                }else if(form.value.naf == '' || form.value.naf.length != 5){
+                }else if(form.value.naf == '' || form.value.naf.length != 5 || customerNafs.find((item)=>{ item.code == form.value.naf }) == undefined){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
                         message: 'merci de saisir un NAF valide',
