@@ -70,7 +70,9 @@ class CustomerController extends Controller
                 'linkedin'              => $request->linkedin,
                 'siteweb'               => $request->website,
                 'litige'                => $request->litige,
-                'active'                => 1,
+                'descision'             => $request->descision,
+                'active'                => $request->active,
+                'master_id'             => $request->masterId,
                 'zpe'                   => $request->zpe,
                 'environnement'         => $request->environment,
                 'statutetablissement'   => $request->statusEtablissement,
@@ -161,8 +163,8 @@ class CustomerController extends Controller
                         'num_client_gx as numLCDT', 'company', 'customer_origin_id as customerOrigin', 
                         'customer_categories_id as customerCat', 'customer_paiement_id as customerPaiement', 
                         'taxe_id as customerTax', 'customer_statut_id as customerStatus', 'naf', 'email', 
-                        'telephone', 'firstname as firstName', 'gender', 'name as lastName', 
-                        'libelleadresse as address1', 'libellespecifique as address2', 
+                        'telephone', 'firstname as firstName', 'gender', 'name as lastName', 'active',
+                        'libelleadresse as address1', 'libellespecifique as address2', 'descision', 'master_id as masterId',
                         'centredistributeur as address3', 'codepostal as postCode', 'linkedin', 
                         'siteweb as website', 'litige', 'zpe', 'environnement as environment', 
                         'statutetablissement as statusEtablissement', 'trancheca as trancheCA', 
@@ -241,6 +243,9 @@ class CustomerController extends Controller
             'linkedin'              => $request->linkedin,
             'siteweb'               => $request->website,
             'litige'                => $request->litige,
+            'descision'             => $request->descision,
+            'active'                => $request->active,
+            'master_id'             => $request->masterId,
             'zpe'                   => $request->zpe,
             'environnement'         => $request->environment,
             'statutetablissement'   => $request->statusEtablissement,
@@ -332,6 +337,25 @@ class CustomerController extends Controller
                         'customers.telephone', 'customers.email', 'customers.naf', 'customers.siret',
                         DB::raw('taxes.taux * 100 as tax'), 'customers.id', 'taxes.id as taxId'
                     )->where('customers.firstname', 'like', '%'.$request->search.'%')->orWhere('customers.name', 'like', '%'.$request->search.'%');
+
+        return response()->json([
+            'data'  => $request->has('showmore') ? $query->get() : $query->take(5)->get(),
+            'total' => $query->count()
+        ]);
+    }
+
+    /**
+     * search customers by raisonsocile
+     */
+    public function searchMaster(Request $request){
+        $query = DB::table('customers')
+                    ->leftJoin('group', 'customers.group_id', '=', 'group.id')
+                    ->leftJoin('taxes', 'customers.taxe_id', '=', 'taxes.id')
+                    ->select( 'customers.company', 'customers.raisonsociale', 'group.Name as group',
+                        DB::raw('CONCAT(customers.firstname, " ", customers.name) as contact'),
+                        'customers.telephone', 'customers.email', 'customers.naf', 'customers.siret',
+                        DB::raw('taxes.taux * 100 as tax'), 'customers.id', 'taxes.id as taxId'
+                    )->where('customers.raisonsociale', 'like', '%'.$request->search.'%');
 
         return response()->json([
             'data'  => $request->has('showmore') ? $query->get() : $query->take(5)->get(),

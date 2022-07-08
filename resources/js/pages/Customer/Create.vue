@@ -125,27 +125,33 @@
                         <div class="page-section mt-3">
                             <h3 class="m-0 mulish-extrabold font-22">SITUATION</h3>
                             <div class="d-flex">
-                                <div class="col-9"></div>
-                                <div class="col-3">
+                                <div class="col-6"></div>
+                                <div class="col-6 d-flex">
                                     <CheckBox v-model="form.litige" :checked="form.litige" class="ms-5" :title="'LITIGE'"></CheckBox>
-                                    <!-- <CheckBox v-model="form.actif" class="ms-5 mt-1" :title="'ACTIF'"></CheckBox> -->
+                                    <CheckBox v-model="form.active" :checked="form.active" class="ms-5" :title="'ACTIF'"></CheckBox>
+                                    <CheckBox v-model="form.descision" :checked="form.descision" class="ms-5" :title="'DECISIONNAIRE'"></CheckBox>
                                 </div>
                             </div>
-                            <div class="d-flex">
-                                <div class="col-4 ">
+                            <div class="d-flex mt-3">
+                                <div class="col-4 pe-3">
                                     <select-box v-model="form.customerOrigin" 
                                         :options="customerOrigins" 
                                         :name="'customerOrigin'"
                                         :label="'ORIGINE ENTITE'"
                                         ></select-box>
                                 </div>
-                                <div class="col-1"></div>
-                                <div class="col-4">
+                                <div class="col-4 pe-3">
                                     <select-box v-model="form.customerStatus" 
                                         :options="customerStatuses" 
                                         :name="'customerStatus'"
                                         :label="'STATUT'"
                                         ></select-box>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label>ENTITE RATTACHEE</label>
+                                        <SearchMaster v-model="form.masterId" name="search" :droppos="{top:'auto',right:'auto',bottom:'auto',left:'0',transformOrigin:'top right'}"></SearchMaster>                                        
+                                    </div>                                      
                                 </div>
                             </div>
                             <div class="d-flex mt-3">
@@ -636,6 +642,7 @@ import { ref, onMounted, watch } from 'vue';
 import SelectBox from '../../components/miscellaneous/SelectBox';
 import CheckBox from '../../components/miscellaneous/CheckBox';
 import GoogleMap from '../../components/miscellaneous/GoogleMap';
+import SearchMaster from '../../components/miscellaneous/SearchMaster';
 import GoogleAddress from '../../components/miscellaneous/GoogleAddress';
 import { phoneCountryCode as phoneCodes } from '../../static/PhoneCountryCodes';
 import Datepicker from '@vuepic/vue-datepicker';
@@ -662,7 +669,8 @@ export default {
         CheckBox,
         GoogleMap,
         GoogleAddress,
-        Datepicker
+        Datepicker,
+        SearchMaster
     },
     setup() {
         const store = useStore();
@@ -705,7 +713,9 @@ export default {
             email: '',
             customerTax: 0,
             litige: false,
-            actif: true,
+            active: true,
+            descision: true,
+            masterId: '',
             linkedin: '',
             website: '',
             note: '',

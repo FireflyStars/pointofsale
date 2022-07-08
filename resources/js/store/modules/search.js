@@ -1,5 +1,6 @@
 import {
     CUSTOMER_SEARCH_LOAD_LIST,
+    MASTER_SEARCH_LOAD_LIST,
     CUSTOMER_SET_SEARCH_LIST,
     CUSTOMER_GET_SEARCH_LIST,
     CUSTOMER_SET_SEARCH_COUNT,
@@ -36,7 +37,22 @@ export const search= {
             }).finally(()=>{
 
             });
-        }
+        },
+        [MASTER_SEARCH_LOAD_LIST]:async ({commit,state}, payload )=>{
+            return axios.post('/search-master', payload)
+            .then( (response)=>{
+                if(response.data!=null){
+                    commit(CUSTOMER_SET_SEARCH_LIST ,response.data.data);
+                    commit(CUSTOMER_SET_SEARCH_COUNT , ( response.data.total - 5 ) );
+                }
+                return Promise.resolve(response);
+            })
+            .catch((error)=>{
+                return Promise.reject(error);
+            }).finally(()=>{
+
+            });
+        },
     },
     getters: {
         [CUSTOMER_GET_SEARCH_LIST]:state=>state.listsearchcustomers,

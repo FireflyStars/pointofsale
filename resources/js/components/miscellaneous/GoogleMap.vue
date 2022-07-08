@@ -1,10 +1,10 @@
 <template>
-    <div class="h-100 w-100 googleMapToSetLatLon" ref="googleMap">
+    <div class="h-100 w-100 googleMapToSetLatLon" ref="googleMapRef">
 
     </div>
 </template>
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 
 export default {
     name: "GoogleMap",
@@ -14,23 +14,30 @@ export default {
     },
     emits: ['update:latitude', 'update:longitude'],
     setup(props, { emit }){
-        const googleMap = ref(null);
+        const googleMapRef = ref(null);
         let markers = [];
+        var googleMap;
         const initMap = ()=>{
             const myLatlng = { lat: props.latitude, lng: props.longitude }; // Paris is set as center.
-            const map = new google.maps.Map(googleMap.value, {
-                zoom: 7,
+            googleMap = new google.maps.Map(googleMapRef.value, {
+                zoom: 15,
                 center: myLatlng,
             });
-            addMarker(myLatlng, map);
-            map.addListener("click", (mapsMouseEvent) => {
+            addMarker(myLatlng, googleMap);
+            googleMap.addListener("click", (mapsMouseEvent) => {
                 removeMarkers(null);
                 var latLng = mapsMouseEvent.latLng.toJSON();
-                addMarker(latLng, map);
+                addMarker(latLng, googleMap);
                 emit('update:latitude', latLng.lat);
                 emit('update:longitude', latLng.lng);
             });            
         }
+        watch(() => props.latitude, (current_val, previous_val) => {
+            const myLatlng = { lat: props.latitude, lng: props.longitude }; // Paris is set as center.
+            removeMarkers(null);
+            googleMap.setCenter(myLatlng);
+            addMarker(myLatlng, googleMap);
+        });        
         const addMarker = (position, map)=>{
             const marker = new google.maps.Marker({
                 position,
@@ -48,7 +55,7 @@ export default {
             initMap();
         })
         return {
-            googleMap
+            googleMapRef
         }
     }
 }

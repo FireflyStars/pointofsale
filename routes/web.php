@@ -178,6 +178,7 @@ Route::group([
     Route::post('/get-customer/{id}', [ CustomerController::class, 'getCustomer' ])->middleware('auth')->name('get.customer');
     Route::post('/update-customer', [ CustomerController::class, 'updateCustomer' ])->middleware('auth')->name('update.customer');
     Route::post('/search-customer', [ CustomerController::class, 'searchCustomer' ])->middleware('auth')->name('search.customer');
+    Route::post('/search-master', [ CustomerController::class, 'searchMaster' ])->middleware('auth')->name('search.master');
     Route::post('/get-customer-addresses', [ CustomerController::class, 'getCustomerAddresses' ])->middleware('auth')->name('get.customer.addresses');
     Route::post('/get-customer-contacts', [ CustomerController::class, 'getCustomerContacts' ])->middleware('auth')->name('get.customer.contacts');
     Route::post('/add-customer-address', [ CustomerController::class, 'addCustomerAddress' ])->middleware('auth')->name('add.customer.address');
