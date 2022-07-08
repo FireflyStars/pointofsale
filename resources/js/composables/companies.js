@@ -83,7 +83,6 @@ export default function useCompanies() {
     const getTemplates = async (id, redirect = undefined) => {
 
         let response = await axios.get("/getTemplates/" + id);
-        console.log(response, " is response")
         template.value = response.data.template;
         type.value = response.data.type;
         campagnedata.value = response.data.campagnesCategory;
@@ -99,7 +98,10 @@ export default function useCompanies() {
         if (my_ids.value.length == 0) {
             console.log("empty");
         } 
+
         else {
+
+            console.log(my_ids.value, selected_id.value, my_ids.value.includes(selected_id.value))
 
             if (my_ids.value.includes(`${selected_id.value}`)) {
                 req.value = router.push({
@@ -108,8 +110,7 @@ export default function useCompanies() {
                 })
             } 
             else {
-                
-                if(redirect == true || redirect == 'true') return
+                // if(redirect == true || redirect == 'true') return
 
                 let d
                 if (response.data.campagnesCategory[0].ciblage) {
@@ -177,7 +178,7 @@ export default function useCompanies() {
             console.log("empty");
         } 
         else {
-
+            console.log("in subcategory", my_ids.value, selected_id.value, my_ids.value.includes(`${selected_id.value}`))
             if (my_ids.value.includes(`${selected_id.value}`)) {
                 myvar.value = true;
                 router.push({

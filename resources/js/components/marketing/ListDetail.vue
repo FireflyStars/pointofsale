@@ -152,7 +152,7 @@
 
 import moment from 'moment'
 import { useStore } from 'vuex'
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeMount } from 'vue'
 import ItemDetailPanel from '../miscellaneous/ItemListTable/ItemDetailPanel.vue'
 import {
         CIBLE_MODULE,
@@ -161,7 +161,8 @@ import {
         DISPLAY_LOADER,
         TOASTER_MODULE,
         TOASTER_MESSAGE,
-        HIDE_LOADER
+        HIDE_LOADER,
+        RESET_DETAILS
     }
 from '../../store/types/types'
 
@@ -207,8 +208,16 @@ const getCampagneDetails = async () => {
     }
 }
 
+const resetDetails = () => {
+    store.commit(`${CIBLE_MODULE}${RESET_DETAILS}`)
+}
+
 onMounted(() => {
     getCampagneDetails()
+})
+
+onBeforeMount(() => {
+    resetDetails()
 })
 
 

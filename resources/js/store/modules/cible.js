@@ -1,5 +1,11 @@
-import axios from 'axios';
-import { resolveDirective } from 'vue';
+
+import axios from 'axios'
+
+import useReports from '../../composables/reports/useReports'
+
+const { generatePDF } = useReports()
+
+
 import {
     TOASTER_MESSAGE,
     TOASTER_GET_ALL,
@@ -40,7 +46,9 @@ import {
     VALIDER_CARD,
     RESET_PRODUCTS,
     GET_CAMPAGNE_DETAILS,
-    SAVE_CAMPAGNE_DETAILS
+    SAVE_CAMPAGNE_DETAILS,
+    GENERATE_PRODUCT_PDF,
+    RESET_DETAILS
 
 } from '../types/types';
 
@@ -102,7 +110,6 @@ export const cible= {
             state.checkedCampagne.push(payload);  
             const campagne=state.previous_campagne.filter(obj => (obj.id=== payload.campagne_id));
             state.all_contacts.push(campagne[0]);
-          
          }
          ,
          [CIBLE_UNSET_CAMPAGNE_SELECTION]:(state,payload)=>{
@@ -168,10 +175,27 @@ export const cible= {
         },
         [SAVE_CAMPAGNE_DETAILS](state, data) {
             state.campagne = data
+        },
+        [RESET_DETAILS](state) {
+            state.campagne = {}
         }
     },
 
     actions: {
+
+        async [GENERATE_PRODUCT_PDF]({ commit }, id) {
+            try {
+                const formData = new FormData()
+                const { data } = await axios.post(`/generate-campagne-product-pdf/${id}`, formData, {
+                    responseType: 'arraybuffer'
+                })
+                console.log(data)
+                generatePDF(data, name = 'Product.pdf')
+            }
+            catch(e) {
+                throw e
+            }
+        },
 
         async [GET_CAMPAGNE_DETAILS]({ commit }, id) {
             try {

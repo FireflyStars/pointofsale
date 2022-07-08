@@ -18,7 +18,7 @@
         .container {
             width: 100% !important;
             height: 100% !important;
-            overflow: hidden;
+            overflow: auto;
         }
         .link {
             position: absolute;
@@ -29,7 +29,7 @@
             font-family: arial;
         }
         .item {
-            position: absolute;
+            position: absolute !important;
         }
     </style>
 </head>
@@ -44,7 +44,7 @@
     <div 
         class="container"
         style="
-            position: relative;
+            position: relative !important;
         "
     >
         <img 
@@ -53,26 +53,70 @@
             style="width: 100%; height: 100%; object-fit: cover; position: fixed; z-index: -1"
         >
 
-
+        
         @foreach ($data['fields'] as $key => $item)
 
-            @php $item = (array) $item; @endphp
-            @if (isset($item['active']) && $item['active'] == 1)
-                <span 
-                    class="item" 
-                    style="color: {{ $item['color'] }}; 
-                    font-size: {{ $item['size'] }}px; 
-                    font-family: {{ $item['font']}}; 
-                    top: {{ $item['y'] }}px;
-                    left: {{ $item['x'] }}px;"
-                >
+            @if (isset($item->active) && $item->active == 1)
+                <span>
 
-                    @if ((strtolower($key) != "email_egence" && strtolower($key) != "telephone_agence"))
-                        {{ $item['value'] }}
-                    @elseif (strtolower($key) == 'email_agence')
-                        {{ $item['value'] }}
-                    @elseif (strtolower($key) == 'telephone_agence')
-                        {{ $item['value'] }}    
+                    @if ($key == 'Prenom_dirigeant')
+                        <span 
+                        class="item"
+                        style="
+                            color: {{ $item->color }}; 
+                            font-size: 18px; 
+                            font-family: {{ $item->font}}; 
+                            top: {{ 874 }}px;
+                            left: {{ 274 }}px;
+                            z-index: 10;
+                        ">
+                            {{ $item->value }}
+                        </span>
+                    @endif
+
+                    @if ($key == 'Nom_dirigeant')
+                        <span 
+                        class="item"
+                        style="
+                            color: {{ $item->color }}; 
+                            font-size: 18px; 
+                            font-family: {{ $item->font}}; 
+                            top: {{ 874 }}px;
+                            left: {{ 374 }}px;
+                            z-index: 10;
+                        ">
+                            {{ $item->value }}
+                        </span>
+                    @endif
+
+                    @if ($key == 'Email_agence')
+                        <span 
+                        class="item"
+                        style="
+                            color: {{ $item->color }}; 
+                            font-size: 18px; 
+                            font-family: {{ $item->font}}; 
+                            top: {{ 900 }}px;
+                            left: {{ 274 }}px;
+                            z-index: 10;
+                        ">
+                            {{ $item->value }}
+                        </span>
+                    @endif
+
+                    @if ($key == 'Telephone_agence')
+                        <span 
+                        class="item"
+                        style="
+                            color: {{ $item->color }}; 
+                            font-size: 18px; 
+                            font-family: {{ $item->font}}; 
+                            top: {{ 926 }}px;
+                            left: {{ 274 }}px;
+                            z-index: 10;
+                        ">
+                            {{ $item->value }}
+                        </span>
                     @endif
 
                 </span>

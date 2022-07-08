@@ -17,6 +17,7 @@
                     icon="emailing" 
                     name="PLATEFORME MARKETING" 
                     class="almarai_extrabold_normal_normal"
+                    mainStyle="margin-left: 15px !important;"
                 />
 
                 <transition
@@ -75,332 +76,386 @@
 
                                     </div>
 
-                                    <div>
 
-                                        <div class="row">
+                                    <div class="row">
+                                        
+                                        <div class="col-6 left-panel py-5 ps-5 pe-2 bg-panel">
                                             
-                                            <div class="col-6 left-panel py-5 ps-5 pe-2 bg-panel">
-                                                
-                                                <div 
-                                                    class="panel-heading d-flex justify-content-between align-items-center"
-                                                >
-                                                    <h4 class="panel-title">{{ category.name }}</h4>
-                                                    <base-button
-                                                        class="btn btn-newrdv body_medium"
-                                                        kind="warning"
-                                                        title="Retour vers produit"
-                                                        classes="border-0"
-                                                        style="border-radius: 10px; font-size: 12px !important"
-                                                        @click.prevent="$router.push({
-                                                            name: 'emailingprestations',
-                                                            params: {
-                                                                id: categoryId
-                                                            },
-                                                            query: {
-                                                                redirect: true
-                                                            }
-                                                        })"
-                                                    />
+                                            <div 
+                                                class="panel-heading d-flex justify-content-between align-items-center"
+                                            >
+                                                <h4 class="panel-title">{{ category.name }}</h4>
+                                                <base-button
+                                                    class="btn btn-newrdv body_medium"
+                                                    kind="warning"
+                                                    title="Retour vers produit"
+                                                    classes="border-0"
+                                                    style="border-radius: 10px; font-size: 12px !important"
+                                                    @click.prevent="$router.push({
+                                                        name: 'emailingprestations',
+                                                        params: {
+                                                            id: 14
+                                                        },
+                                                        query: {
+                                                            redirect: true
+                                                        }
+                                                    })"
+                                                />
+                                            </div>
+    
+                                            <div class="content">
+    
+                                                <div class="panel-description">
+                                                    <p class="p-title text-uppercase text-start">
+                                                        Descriptif
+                                                    </p>
+                                                    <p class="fs-6" v-html="category.text"></p>
                                                 </div>
         
-                                                <div class="content">
+                                                <hr />
         
-                                                    <div class="panel-description">
+        
+                                                <div class="row" v-if="fields?.personalize">
+        
+                                                    <div class="col">
                                                         <p class="p-title text-uppercase text-start">
-                                                            Descriptif
+                                                            votre personnalisation
                                                         </p>
-                                                        <p class="fs-6" v-html="category.text"></p>
                                                     </div>
-            
-                                                    <hr />
-            
-            
-                                                    <div class="row" v-if="fields?.personalize">
-            
-                                                        <div class="col">
-                                                            <p class="p-title text-uppercase text-start">
-                                                                votre personnalisation
-                                                            </p>
-                                                        </div>
-            
+        
+                                                    <div class="col-lg-12 group_input">
+        
+                                                        <label 
+                                                            class="fix_width" 
+                                                            for="expediteur"
+                                                        >
+                                                            RAISON SO.:
+                                                        </label>
+        
+                                                        <input
+                                                            type="text"
+                                                            placeholder="La Compagnie des Toits"
+                                                            name="expediteur"
+                                                            :value="affiliate.raisonsociale"
+                                                            disabled
+                                                        />
+        
+                                                    </div>
+        
+                                                    <div class="col-lg-12 group_input">
+                                                        
+                                                        <label class="fix_width">coord:</label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="1 Rue Jean-Baptiste Colbert"
+                                                            name="adresse"
+                                                            v-model="phone"
+                                                        />
+        
+                                                        <label class="fix_width_tiret">-</label>
+                                                        <input
+                                                            type="text"
+                                                            id="inputPassword"
+                                                            name="adresse2"
+                                                            v-model="email"
+                                                        />
+        
+                                                    </div>
+        
+                                                    <div class="col-lg-12 group_input">
+                                                        
+                                                        <label class="fix_width">adresse:</label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="1 Rue Jean-Baptiste Colbert"
+                                                            name="adresse"
+                                                            :value="affiliate.address"
+                                                            disabled
+                                                        />
+        
+                                                        <label class="fix_width_tiret">-</label>
+                                                        <input
+                                                            type="text"
+                                                            id="inputPassword"
+                                                            name="adresse2"
+                                                            :value="affiliate.address2"
+                                                            disabled
+                                                        />
+        
+                                                    </div>
+        
+                                                    <div class="col-lg-12 group_input">
+                                                        
+                                                        <label class="fix_width">cp & ville:</label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="1 Rue Jean-Baptiste Colbert"
+                                                            name="adresse"
+                                                            :value="affiliate.postcod + ' ' + affiliate.city"
+                                                            disabled
+                                                        />
+                                                    </div>
+        
+                                                    <div class="col-lg-12 group_input">
+                                                        
+                                                        <label class="fix_width">statut:</label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="1 Rue Jean-Baptiste Colbert"
+                                                            name="adresse"
+                                                            :value="affiliate.statutagence"
+                                                            disabled
+                                                        />
+        
+                                                        <label class="fix_width_tiret">-</label>
+                                                        <input
+                                                            type="text"
+                                                            id="inputPassword"
+                                                            name="adresse2"
+                                                        />
+        
+                                                    </div>
+        
+                                                    <div class="col-lg-12 group_input">
+                                                        
+                                                        <label class="fix_width">sired & tva:</label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="1 Rue Jean-Baptiste Colbert"
+                                                            name="adresse"
+                                                            :value="affiliate.siret"
+                                                            disabled
+                                                        />
+        
+                                                        <label class="fix_width_tiret">-</label>
+                                                        <input
+                                                            type="text"
+                                                            id="inputPassword"
+                                                            name="adresse2"
+                                                            :value="affiliate.tva"
+                                                            disabled
+                                                        />
+        
+                                                    </div>
+        
+                                                    <div class="col-lg-12 group_input">
+                                                        
+                                                        <label class="fix_width">ape & rcs:</label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="1 Rue Jean-Baptiste Colbert"
+                                                            name="adresse"
+                                                            :value="affiliate.ape"
+                                                        />
+        
+                                                        <label class="fix_width_tiret">-</label>
+                                                        <input
+                                                            type="text"
+                                                            id="inputPassword"
+                                                            name="adresse2"
+                                                            :value="affiliate.secteuragence"
+                                                            disabled
+                                                        />
+        
+                                                    </div>
+        
+                                                </div>
+        
+                                                <hr />
+    
+                                                <div class="footer">
+                                                    <p class="p-title text-uppercase text-start">
+                                                        votre commande
+                                                    </p>
+    
+                                                    <div class="row">
+    
                                                         <div class="col-lg-12 group_input">
-            
+        
                                                             <label 
                                                                 class="fix_width" 
                                                                 for="expediteur"
                                                             >
-                                                                RAISON SO.:
+                                                                quantite:
                                                             </label>
             
                                                             <input
                                                                 type="text"
                                                                 placeholder="La Compagnie des Toits"
                                                                 name="expediteur"
-                                                                :value="affiliate.raisonsociale"
-                                                                disabled
+                                                                v-model="qtyOfProduct"
+                                                                max="250"
+                                                                min="1"
                                                             />
+    
+                                                            <span class="help text-lowercase">
+                                                                (Minimum {{ category.qtymini }})
+                                                            </span>
             
                                                         </div>
-            
-                                                        <div class="col-lg-12 group_input">
-                                                            
-                                                            <label class="fix_width">coord:</label>
-                                                            <input
-                                                                type="text"
-                                                                placeholder="1 Rue Jean-Baptiste Colbert"
-                                                                name="adresse"
-                                                                v-model="phone"
-                                                            />
-            
-                                                            <label class="fix_width_tiret">-</label>
-                                                            <input
-                                                                type="text"
-                                                                id="inputPassword"
-                                                                name="adresse2"
-                                                                v-model="email"
-                                                            />
-            
-                                                        </div>
-            
-                                                        <div class="col-lg-12 group_input">
-                                                            
-                                                            <label class="fix_width">adresse:</label>
-                                                            <input
-                                                                type="text"
-                                                                placeholder="1 Rue Jean-Baptiste Colbert"
-                                                                name="adresse"
-                                                                :value="affiliate.address"
-                                                                disabled
-                                                            />
-            
-                                                            <label class="fix_width_tiret">-</label>
-                                                            <input
-                                                                type="text"
-                                                                id="inputPassword"
-                                                                name="adresse2"
-                                                                :value="affiliate.address2"
-                                                                disabled
-                                                            />
-            
-                                                        </div>
-            
-                                                        <div class="col-lg-12 group_input">
-                                                            
-                                                            <label class="fix_width">cp & ville:</label>
-                                                            <input
-                                                                type="text"
-                                                                placeholder="1 Rue Jean-Baptiste Colbert"
-                                                                name="adresse"
-                                                                :value="affiliate.postcod + ' ' + affiliate.city"
-                                                                disabled
-                                                            />
-                                                        </div>
-            
-                                                        <div class="col-lg-12 group_input">
-                                                            
-                                                            <label class="fix_width">statut:</label>
-                                                            <input
-                                                                type="text"
-                                                                placeholder="1 Rue Jean-Baptiste Colbert"
-                                                                name="adresse"
-                                                                :value="affiliate.statutagence"
-                                                                disabled
-                                                            />
-            
-                                                            <label class="fix_width_tiret">-</label>
-                                                            <input
-                                                                type="text"
-                                                                id="inputPassword"
-                                                                name="adresse2"
-                                                            />
-            
-                                                        </div>
-            
-                                                        <div class="col-lg-12 group_input">
-                                                            
-                                                            <label class="fix_width">sired & tva:</label>
-                                                            <input
-                                                                type="text"
-                                                                placeholder="1 Rue Jean-Baptiste Colbert"
-                                                                name="adresse"
-                                                                :value="affiliate.siret"
-                                                                disabled
-                                                            />
-            
-                                                            <label class="fix_width_tiret">-</label>
-                                                            <input
-                                                                type="text"
-                                                                id="inputPassword"
-                                                                name="adresse2"
-                                                                :value="affiliate.tva"
-                                                                disabled
-                                                            />
-            
-                                                        </div>
-            
-                                                        <div class="col-lg-12 group_input">
-                                                            
-                                                            <label class="fix_width">ape & rcs:</label>
-                                                            <input
-                                                                type="text"
-                                                                placeholder="1 Rue Jean-Baptiste Colbert"
-                                                                name="adresse"
-                                                                :value="affiliate.ape"
-                                                            />
-            
-                                                            <label class="fix_width_tiret">-</label>
-                                                            <input
-                                                                type="text"
-                                                                id="inputPassword"
-                                                                name="adresse2"
-                                                                :value="affiliate.secteuragence"
-                                                                disabled
-                                                            />
-            
-                                                        </div>
-            
-                                                    </div>
-            
-                                                    <hr />
+    
+                                                        <div class="col-lg-12 group_input d-flex align-items-center justify-content-start">
         
-                                                    <div class="footer">
-                                                        <p class="p-title text-uppercase text-start">
-                                                            votre commande
-                                                        </p>
-        
-                                                        <div class="row">
-        
-                                                            <div class="col-lg-12 group_input">
+                                                            <label 
+                                                                class="fix_width" 
+                                                                for="expediteur"
+                                                            >
+                                                                tarif:
+                                                            </label>
             
-                                                                <label 
-                                                                    class="fix_width" 
-                                                                    for="expediteur"
-                                                                >
-                                                                    quantite:
-                                                                </label>
-                
-                                                                <input
-                                                                    type="text"
-                                                                    placeholder="La Compagnie des Toits"
-                                                                    name="expediteur"
-                                                                    v-model="qtyOfProduct"
-                                                                    max="250"
-                                                                    min="1"
-                                                                />
-        
-                                                                <span class="help text-lowercase">
-                                                                    (Minimum {{ category.qtymini }})
-                                                                </span>
-                
+                                                            <div class="price-tag">
+                                                                <strong>{{ categoryPrice  }}</strong> &euro; <i>HT</i>
                                                             </div>
-        
-                                                            <div class="col-lg-12 group_input d-flex align-items-center justify-content-start">
+    
+                                                            <span class="help">
+                                                                Soit {{ categoryPriceWithTax }} &euro; TTC
+                                                            </span>
             
-                                                                <label 
-                                                                    class="fix_width" 
-                                                                    for="expediteur"
-                                                                >
-                                                                    tarif:
-                                                                </label>
-                
-                                                                <div class="price-tag">
-                                                                    <strong>{{ categoryPrice  }}</strong> &euro; <i>HT</i>
-                                                                </div>
-        
-                                                                <span class="help">
-                                                                    Soit {{ categoryPriceWithTax }} &euro; TTC
-                                                                </span>
-                
-                                                            </div>
-        
-                                                        </div>    
-        
-                                                    </div>
-        
+                                                        </div>
+    
+                                                    </div>    
+    
                                                 </div>
-
+    
                                             </div>
-                                            
-                                            <div 
-                                                class="col-6 apercu d-table position-relative" 
-                                                style="margin: 0; padding: 0;"
-                                            >
 
-                                                <div 
-                                                    class="text-center bg-panel" 
-                                                    style="position: absolute; left: 1.5rem; transform: scale(0.75) !important; transform-origin: top left;"
+                                        </div>
+                                        
+                                        <div 
+                                            class="col-6 apercu d-table position-relative" 
+                                            style="margin: 0; padding: 0;"
+                                        >
+
+                                            <div 
+                                                class="text-center bg-panel" 
+                                                style="
+                                                position: absolute; 
+                                                left: 1.5rem; 
+                                                transform: scale(0.75) !important; 
+                                                transform-origin: top left;
+                                                min-width: 600px;
+                                                min-height: 800px;
+                                                "
+                                            >
+                                                
+                                                <img 
+                                                    :src="category.imageTemplateUrl" 
+                                                    alt="Lcdt Logo" 
+                                                    style="width: 210mm; height: 297mm;"
                                                 >
-                                                    
-                                                    <img 
-                                                        :src="category.imageTemplateUrl" 
-                                                        alt="Lcdt Logo" 
-                                                        style="width: 210mm; height: 297mm;"
+
+                                                <template v-for="(item, index) in fields" :key="index">
+
+                                                    <span 
+                                                        v-if="item.active == 1" 
                                                     >
 
-                                                    <template v-for="(item, index) in fields" :key="index">
-                                            
-                                                        <span 
-                                                            v-if="item.active == 1" 
+                                                        <template v-if="index == 'Prenom_dirigeant'">
+                                                            <span 
                                                             :style="{
                                                                 color: item.color,
-                                                                fontSize: `${item.size}px`,
+                                                                fontSize: `18px`,
                                                                 fontFamily: item.font,
-                                                                top: `${item.y}px`,
-                                                                left: `${item.x}px`,
-                                                            }"
-                                                        >
-
-                                                            <template v-if="!['Telephone_agence', 'Email_agence'].includes(index)">
+                                                                top: `874px`,
+                                                                left: `274px`,
+                                                                position: 'absolute'
+                                                            }">
                                                                 {{ item.value }}
-                                                            </template>
-
-                                                            <template v-else-if="'Email_agence' == index">
-                                                                {{ email }}
-                                                            </template>
-
-                                                            <template v-else-if="'Telephone_agence' == index">
-                                                                {{ phone }}
-                                                            </template>
+                                                            </span>
                                                             
-                                                        </span>
+                                                        </template>
 
-                                                    </template>
+                                                        <template v-if="index == 'Nom_dirigeant'">
+                                                            <span 
+                                                            :style="{
+                                                                color: item.color,
+                                                                fontSize: `18px`,
+                                                                fontFamily: item.font,
+                                                                top: `874px`,
+                                                                left: `366px`,
+                                                                position: 'absolute'
+                                                            }">
+                                                                {{ item.value }}
+                                                            </span>
+                                                            
+                                                        </template>
 
-                                                    <div class="d-flex align-items-center justify-content-center gap-2 my-4">
+                                                        <template v-if="'Email_agence' == index">
+
+                                                            <span 
+                                                            :style="{
+                                                                color: item.color,
+                                                                fontSize: `18px`,
+                                                                fontFamily: item.font,
+                                                                top: `900px`,
+                                                                left: `274px`,
+                                                                position: 'absolute'
+                                                            }">
+                                                                {{ email }}
+                                                            </span>
+                                                            
+                                                        </template>
+
+                                                        <template v-if="'Telephone_agence' == index">
+                                                            
+                                                            <span 
+                                                            :style="{
+                                                                color: item.color,
+                                                                fontSize: `18px`,
+                                                                fontFamily: item.font,
+                                                                top: `924px`,
+                                                                left: `274px`,
+                                                                position: 'absolute'
+                                                            }">
+                                                                {{ phone }}
+                                                            </span>
+
+                                                        </template>
                                                         
-                                                        <base-button
-                                                            class="btn btn-newrdv body_medium"
-                                                            kind="warning"
-                                                            title="Télécharger fichier"
-                                                            classes="border-0"
-                                                            style="border-radius: 10px; font-size: 12px !important; background: #000;"
-                                                        />
+                                                    </span>
 
-                                                        <base-button
-                                                            prepend
-                                                            class="btn btn-newrdv body_medium"
-                                                            kind="warning"
-                                                            title="Ajouter au panier"
-                                                            classes="border-0"
-                                                            style="border-radius: 10px; font-size: 12px !important;"
-                                                            @click.prevent="storeProduct"
-                                                        >
-                                                            <Icon name="clipboard" width="18" height="18" />
-                                                        </base-button>
-
-                                                    </div>
-                                                    
-                                                </div>
+                                                </template>
+                                                
+                                            </div>
 
 
+
+                                        </div>
+
+                                    </div><!-- inner row-->
+
+                                    <div class="row">
+                                        <div class="col-6">
+                                            
+                                            <div class="d-flex align-items-center justify-content-end gap-2 my-4">
+
+                                                <base-button
+                                                    v-if="canGeneratePdf"
+                                                    class="btn btn-newrdv body_medium"
+                                                    kind="warning"
+                                                    title="Télécharger fichier"
+                                                    classes="border-0"
+                                                    style="border-radius: 10px; font-size: 12px !important; background: #000;"
+                                                    @click.prevent="generatePDF"
+                                                />
+
+                                                <base-button
+                                                    v-if="canAddToCart"
+                                                    prepend
+                                                    class="btn btn-newrdv body_medium"
+                                                    kind="warning"
+                                                    title="Ajouter au panier"
+                                                    classes="border-0"
+                                                    style="border-radius: 10px; font-size: 12px !important;"
+                                                    @click.prevent="storeProduct"
+                                                >
+                                                    <Icon name="clipboard" width="18" height="18" />
+                                                </base-button>
 
                                             </div>
 
-                                        </div><!-- inner row-->
-
-
-
-                                    </div> <!-- bg-panel -->
+                                        </div>
+                                    </div>            
 
 
                                 </div> <!-- col-lg-12 -->
@@ -431,6 +486,7 @@
         CIBLE_MODULE,
         GET_CAMPAGNE_CATEGORY,
         GET_CAMPAGNE_FIELDS,
+        GENERATE_PRODUCT_PDF,
         STORE_PRODUCT,
         LOADER_MODULE,
         DISPLAY_LOADER,
@@ -452,9 +508,23 @@
     const phone = ref('')
     const email = ref('')
 
+
     const category = computed(() => store.getters[`${CIBLE_MODULE}campagneCategory`]?.campagne || {})
     const affiliate = computed(() => store.getters[`${CIBLE_MODULE}campagneCategory`]?.affiliate || {})
     const fields = computed(() => store.getters[`${CIBLE_MODULE}fields`])
+
+    const canGeneratePdf = computed(() => {
+        return (category.value.typeofproduct?.toLowerCase() == 'download'
+        || (category.value.typeofproduct?.toLowerCase() == 'product perso'))
+        && category.value.type == 'Produit' 
+    })
+
+    const canAddToCart = computed(() => {
+        return (category.value.typeofproduct?.toLowerCase() == 'product' 
+        || (category.value.typeofproduct?.toLowerCase() == 'product perso'))
+        && category.value.type == 'Produit'
+
+    })
 
     const cardQuantity = computed(() => category.value?.card_detail?.qty || 0)
     const qtyOfProduct = ref(1)     
@@ -465,7 +535,6 @@
     })
 
     const categoryPriceWithTax = computed(() => { 
-        // const tax = affiliate?.value?.tax?.taux * categoryPrice.value
         const tax = 0.20 * categoryPrice.value //making it to fix 20%
         const percentage = +categoryPrice.value + +tax
         return percentage?.toFixed(2) || 0
@@ -527,6 +596,28 @@
 
     }
 
+    const generatePDF = async () => {
+        
+        try {
+            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Veuillez patienter. Génération du PDF en cours...'])
+            await store.dispatch(`${CIBLE_MODULE}${GENERATE_PRODUCT_PDF}`, category.value.id)
+        }
+        
+        catch(e) {
+            store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                type: 'danger',
+                message: e || 'Something went wrong',
+                ttl: 5,
+            })
+            throw e
+        }
+
+        finally {
+            store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`)
+        }
+
+    }
+
     watch(fields, (value) => {
         if(value) {
             email.value = value.Email_agence.value
@@ -542,6 +633,10 @@
 </script>
 
 <style lang="scss" scoped>
+
+.main-view {
+    margin: 64px 20px 0 20px !important;
+}
 
 .apercu {
     height: 600px;

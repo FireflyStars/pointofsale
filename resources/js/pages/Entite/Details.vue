@@ -12,7 +12,7 @@
             </h1>
 
             <div class="text-editer cursor-pointer" @click.prevent="$router.push({
-                    path: `/customer/edit/${details.id}`
+                    path: `/entite/edit/${details.id}`
                 })"
             >
                 Editer
@@ -355,7 +355,7 @@
             <base-button 
                 title="Editer" 
                 kind="green" 
-                @click.prevent="$router.push({ path: `/customer/edit/${details.id}` })" 
+                @click.prevent="$router.push({ path: `/entite/edit/${details.id}` })" 
             />
 
         </div>

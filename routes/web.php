@@ -71,6 +71,9 @@ Route::get('/get-card-products', [CompagneController::class, 'get_card_products'
 Route::put('/card-product/{card}', [CompagneController::class, 'update_card_product'])->middleware('auth');
 Route::delete('/card-product/{card}', [CompagneController::class, 'delete_card_product'])->middleware('auth');
 Route::post('/valider-card', [CompagneController::class, 'valider_card'])->middleware('auth');
+Route::post('/generate-campagne-product-pdf/{campagne}', [CompagneController::class, 'generate_pdf']);
+Route::get('/generate-campagne-product-pdf/{campagne}', [CompagneController::class, 'generate_pdf']);
+
 
 Route::get('/get-entite-list', [EntiteController::class, 'index']);
 Route::post('/get-entite-list', [EntiteController::class, 'index']);
