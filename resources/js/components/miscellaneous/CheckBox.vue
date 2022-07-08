@@ -20,6 +20,10 @@ export default {
 
     props: {
         id: [String, Number],
+        modelValue: { 
+            type: Boolean, 
+            default: false 
+        },
         checked: {
             type:Boolean,
             default:false
@@ -33,7 +37,7 @@ export default {
         }
     },
 
-    emits: ['change'],
+    emits: ['change', 'update:modelValue'],
 
     setup(props, { emit, attrs }) { 
         const check = ref(false);
@@ -41,6 +45,8 @@ export default {
         const togglechkbox = () => {
             check.value=!check.value;
             emit('change', { value: check.value, id: props.id, name: props.name })
+            emit('update:modelValue', check.value);
+
         }
 
         const styles = computed(() => {
