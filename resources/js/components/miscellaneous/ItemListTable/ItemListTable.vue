@@ -645,6 +645,9 @@ export default {
     margin-bottom: 3px;
      box-shadow: inset 0px -1px 0px rgba(168, 168, 168, 0.5);
      min-width:1600px;
+     position: sticky;
+     top:64px;
+     z-index: 1;
 }
 .list-footer{
     background: #FFF;
