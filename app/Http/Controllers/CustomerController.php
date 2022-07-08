@@ -422,35 +422,6 @@ class CustomerController extends Controller
             'addressType' => DB::table('address_type')->find($request->addressType)->name,
         ]);
     }
-    /**
-     * Add customer contact
-     */
-    public function addCustomerContact(Request $request){
-        $contactData = [
-            'contact_type_id'       => $request->type == '' ? 1 : $request->type,
-            'contact_qualite_id'    => $request->qualite == '' ? 1 : $request->qualite,
-            'customer_id'           => $request->customerID,
-            'actif'                 => $request->actif,
-            'num_contact_gx'        => $request->numGx,
-            'name'                  => $request->name,
-            'firstname'             => $request->firstName,
-            'address_id'            => $request->address == '' ? 0 : $request->address,
-            'profillinedin'         => $request->profilLinedin,
-            'gender'                => $request->gender,
-            'email'                 => $request->email,
-            'mobile'                => $request->phoneCountryCode1.'|'.$request->phoneNumber1,
-            'telephone'             => $request->phoneCountryCode2.'|'.$request->phoneNumber2,
-            'type'                  => DB::table('contact_type')->find($request->type)->name,
-            'comment'               => $request->note,
-            'acceptsms'             => $request->acceptSMS,
-            'acceptmarketing'       => $request->acceptmarketing,
-            'acceptcourrier'        => $request->acceptcourrier,
-        ];        
-        $contactId = DB::table('contacts')->insertGetId($contactData);
-        return response()->json([
-            'id' => $contactId
-        ]);
-    }
 
     /**
      * Check if email exists or not

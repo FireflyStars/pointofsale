@@ -173,6 +173,22 @@ const router = createRouter({
                 authenticated: true
             }
         },
+        {
+            path:'/contact/create',
+            name:'CreateContact',
+            component: () => import('../pages/Contact/Create'),
+            meta: {
+                authenticated: true
+            }
+        },        
+        {
+            path:'/Contact/edit/:id',
+            name:'EditContact',
+            component: () => import('../pages/Contact/Edit'),
+            meta: {
+                authenticated: true
+            }
+        },
 
         {
             path:'/auth/',

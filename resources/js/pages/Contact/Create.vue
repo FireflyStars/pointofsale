@@ -1,22 +1,70 @@
 <template>
-    <Teleport to="body">
-        <div class="search-layer d-flex align-items-center justify-content-center position-fixed" v-if="showModal">
-            <transition name="list" appear>
-                <div class="search-panel m-auto bg-white">
-                    <div class="search-header d-flex align-items-center justify-content-center position-relative almarai-extrabold font-22">
-                        <svg @click="closeModal" class="close-icon cursor-pointer" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M6.78812 5.2973C6.3976 4.90481 5.76444 4.90481 5.37392 5.2973C4.98339 5.6898 4.98339 6.32616 5.37392 6.71865L10.5883 11.9594L5.29289 17.2816C4.90237 17.6741 4.90237 18.3105 5.29289 18.703C5.68341 19.0955 6.31657 19.0955 6.7071 18.703L12.0025 13.3808L17.293 18.6979C17.6835 19.0904 18.3166 19.0904 18.7072 18.6979C19.0977 18.3054 19.0977 17.6691 18.7072 17.2766L13.4167 11.9594L18.6261 6.7237C19.0167 6.33121 19.0167 5.69485 18.6261 5.30235C18.2356 4.90986 17.6025 4.90986 17.2119 5.30235L12.0025 10.5381L6.78812 5.2973Z" fill="black"/>
-                        </svg>
+  <router-view>
+    <transition enter-active-class="animate__animated animate__fadeIn">
+      <div class="container-fluid h-100 bg-color" id="container">
+        <main-header />
+        <div class="row d-flex align-content-stretch align-items-stretch flex-row hmax main-view-wrap reports-page" style="z-index:100" >
+            <side-bar />
+            <div class="col main-view container">
+                <h1 class="d-flex align-items-center m-0">
+                  <span class="action-icon"></span>
+                  <span class="ms-3 font-22 almarai_extrabold_normal_normal">CREATION CONTACT</span>
+                </h1>
+                <ul class="m-0 p-0 breadcrumb mt-3 mb-3" v-if="breadcrumbs.length">
+                    <li class="breadcrumb-item almarai-extrabold font-18 cursor-pointer" 
+                    v-for="(breadcrumb, index) in breadcrumbs" 
+                    @click="goToStep(index)"
+                    :key="index">{{ breadcrumb }}</li>
+                </ul>    
+                <transition name="list" appear v-if="step =='choose_customer'">
+                    <div class="col-5 bg-white p-3 rounded">
+                        <h2 class="almarai-extrabold font-22">Détail ENTITE <span @click="addNewCustomer" class="ms-3 almarai-bold font-16 cursor-pointer text-decoration-underline text-custom-success">Nouveau</span></h2>
+                        <SearchCustomer name="search" @selected="selectedCustomer" :droppos="{top:'auto',right:'auto',bottom:'auto',left:'0',transformOrigin:'top right'}" label="Rechercher ENTITE" ></SearchCustomer>
                     </div>
-                    <div class="search-body rounded">
-                        <div class="page-section">
-                            <h3 class="m-0 mulish-extrabold font-22">CONTACT</h3>
-                            <div class="d-flex mt-3">
-                                <div class="col-9"></div>
-                                <div class="col-3">
-                                    <CheckBox v-model="contact.actif" :checked="true" :title="'ACTIF'"></CheckBox>
+                </transition>
+                <transition name="list" appear  v-if="step == 'create_contact'">
+                    <div class="cust-page-content client-detail m-auto">
+                        <div class="col-5 p-3 bg-white rounded">
+                            <div class="d-flex">
+                                <div class="col-8">
+                                <h2 class="almarai-extrabold font-22">{{ contact.customer.company }}</h2>
+                                <p class="text-gray font-16 almarai-bold">{{ contact.customer.raisonsocial }}</p>
+                                </div>
+                                <div class="col-4">
+                                    <p @click="chooseOtherCustomer" class="text-custom-success font-16 almarai-bold text-decoration-underline cursor-pointer">Autre client</p>
                                 </div>
                             </div>
+                            <div class="d-flex mt-3">
+                                <div class="col-4">
+                                <label for="" class="text-gray font-16 almarai-bold">GROUPE</label>
+                                <p class="font-16 almarai-bold">{{ contact.customer.group }}</p>
+                                </div>
+                                <div class="col-4">
+                                <label for="" class="text-gray font-16 almarai-bold">CONTACT</label>
+                                <p class="font-16 almarai-bold">{{ contact.customer.contact }}</p>
+                                </div>
+                                <div class="col-4">
+                                <label for="" class="text-gray font-16 almarai-bold">TELEPHONE</label>
+                                <p class="font-16 almarai-bold">{{ contact.customer.telephone }}</p>
+                                </div>
+                            </div>
+                            <div class="d-flex mt-3">
+                                <div class="col-4">
+                                <label for="" class="text-gray font-16 almarai-bold">TVA</label>
+                                <p class="font-16 almarai-bold">{{ contact.customer.tax }}</p>
+                                </div>
+                                <div class="col-4">
+                                <label for="" class="text-gray font-16 almarai-bold">NAF</label>
+                                <p class="font-16 almarai-bold">{{ contact.customer.naf }}</p>
+                                </div>
+                                <div class="col-4">
+                                <label for="" class="text-gray font-16 almarai-bold">SIRET</label>
+                                <p class="font-16 almarai-bold">{{ contact.customer.siret }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="page-section bg-white rounded mt-3">
+                            <h3 class="m-0 mulish-extrabold font-22">CONTACT</h3>
                             <div class="d-flex mt-3">
                                 <div class="col-4">
                                     <select-box v-model="contact.type" :options="contactTypes" :name="'contactType'" :label="'TYPE CONTACT *'"></select-box>
@@ -52,7 +100,7 @@
                                         ></select-box>                                    
                                 </div>
                                 <div class="col-5 ps-4">
-                                    <div class="d-flex justify-content-between">
+                                    <div class="d-flex">
                                         <div class="phone-country-code">
                                             <select-box 
                                                 v-model="contact.phoneCountryCode1" 
@@ -62,9 +110,9 @@
                                                 :name="'phoneCountryCode'">
                                             </select-box>
                                         </div>
-                                        <div class="form-group ms-2">
+                                        <div class="form-group w-100 ms-2">
                                             <label class="text-uppercase">TELEPHONE FIXE</label>
-                                            <input type="text" placeholder="telephone" v-model="contact.phoneNumber1" class="form-control custom-input">
+                                            <input type="text" placeholder="Telephone" v-model="contact.phoneNumber1" class="form-control custom-input">
                                         </div>
                                     </div>
                                 </div>
@@ -78,7 +126,7 @@
                                         ></select-box>                                    
                                 </div>                                
                                 <div class="col-5 ps-4">
-                                    <div class="d-flex justify-content-between">
+                                    <div class="d-flex">
                                         <div class="phone-country-code">
                                             <select-box 
                                                 v-model="contact.phoneCountryCode2" 
@@ -88,9 +136,9 @@
                                                 :name="'phoneCountryCode'">
                                             </select-box>
                                         </div>
-                                        <div class="form-group ms-2">
+                                        <div class="form-group w-100 ms-2">
                                             <label class="text-uppercase">TELEPHONE MOBILE</label>
-                                            <input type="text" placeholder="mobile" v-model="contact.phoneNumber2" class="form-control custom-input">
+                                            <input type="text" placeholder="Mobile" v-model="contact.phoneNumber2" class="form-control custom-input">
                                         </div>
                                     </div>
                                 </div>
@@ -99,13 +147,13 @@
                                 <div class="col-7">
                                     <div class="form-group">
                                         <label class="mulish-medium font-16">EMAIL*</label>
-                                        <input type="text" v-model="contact.email" @change="validationUniqueEmail($event, 'contacts')" placeholder="email" class="form-control">
+                                        <input type="text" v-model="contact.email" @change="validationUniqueEmail($event, 'contacts')" placeholder="Email" class="form-control">
                                     </div>
                                 </div>                               
                                 <div class="col-5 ps-4">
                                     <div class="form-group">
                                         <label class="mulish-medium font-16">PROFIL LINKEDIN</label>
-                                        <input type="text" v-model="contact.profilLinedin" placeholder="profillinedin" class="form-control">
+                                        <input type="text" v-model="contact.profilLinedin" placeholder="Profillinedin" class="form-control">
                                     </div>
                                 </div>
                             </div>
@@ -130,80 +178,90 @@
                                             <CheckBox v-model="contact.acceptSMS" :checked="contact.acceptSMS" :title="'SMS Marketing'"></CheckBox>
                                         </div>
                                         <div class="col-4">
-                                            <CheckBox v-model="contact.acceptmarketing" :checked="contact.acceptSMS" :title="'Email Marketing'"></CheckBox>
+                                            <CheckBox v-model="contact.acceptmarketing" :checked="contact.acceptmarketing" :title="'Email Marketing'"></CheckBox>
                                         </div>
                                         <div class="col-4">
-                                            <CheckBox v-model="contact.acceptcourrier" :checked="contact.acceptSMS" :title="'Courrier Marketing'"></CheckBox>
+                                            <CheckBox v-model="contact.acceptcourrier" :checked="contact.acceptcourrier" :title="'Courrier Marketing'"></CheckBox>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="btns mt-4 d-flex justify-content-between">
-                            <button class="custom-btn btn-cancel" @click="closeModal">Annuler</button>
-                            <button class="custom-btn btn-ok" @click="addNewContact">AJOUTER CONTACT</button>
+                        <div class="btns d-flex justify-content-end mt-3 mb-3">
+                            <button class="custom-btn btn-cancel me-3" @click="goToStep(0)">Annuler</button>
+                            <button class="custom-btn btn-ok text-uppercase" @click="submit">AJOUTER CONTACT</button>
                         </div>
-                    </div>
-                </div>
-            </transition>
+                    </div>                    
+                </transition>
+            </div>
         </div>
-    </Teleport>
+      </div>
+    </transition>
+  </router-view>
 </template>
 <script>
-
-import { onMounted, ref } from 'vue';
-import axios from 'axios';
+import { ref, onMounted, watchEffect } from 'vue';
 import SelectBox from '../../components/miscellaneous/SelectBox';
-import CheckBox from '../../components/miscellaneous/CheckBox';
+import SearchCustomer from '../../components/miscellaneous/SearchCustomer';
 import { phoneCountryCode as phoneCodes } from '../../static/PhoneCountryCodes';
+
 import {     
   DISPLAY_LOADER,
   HIDE_LOADER,
   LOADER_MODULE,
+  TOASTER_MESSAGE,
   TOASTER_MODULE, 
-  TOASTER_MESSAGE
   } from '../../store/types/types';
-import { useStore } from 'vuex';
   
+import axios from 'axios';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+
 export default {
-    name: 'ContactModal',
-    props: {
-        // modelValue: Object
-    },
-    emits: ['addedNewContact'],
     components:{
         SelectBox,
-        CheckBox
+        SearchCustomer,
     },
-    setup(props, { emit }){
+    setup() {
         const store = useStore();
+        const router = useRouter();
+        const breadcrumbs = ref(['Choix ENTITE']);
+        const step = ref('choose_customer');
         const contactTypes = ref([]);
         const contactQualites = ref([]);
         const uniqueEmail = ref({ status: true, msg: '' });
-        const customerAddresses = ref([]);
-        const contact = ref(
-            {
-                customerID: '',
-                type: '',
-                actif: true,
-                qualite: '',
-                gender: 'M',
-                firstName: '',
-                address: '',
-                profilLinedin: '',
-                name: '',
-                email: '',
-                note: '',
-                numGx: '',
-                phoneCountryCode1: '+33',
-                phoneNumber1: '',
-                phoneCountryCode2: '+33',
-                phoneNumber2: '',
-                acceptSMS: true,
-                acceptmarketing: true,
-                acceptcourrier: true,
-            }
-        );
+        const customerAddresses = ref([]);    
+        const contact = ref({
+            type: '',
+            active: true,
+            qualite: '',
+            gender: 'M',
+            firstName: '',
+            address: '',
+            profilLinedin: '',
+            name: '',
+            email: '',
+            note: '',
+            numGx: '',
+            phoneCountryCode1: '+33',
+            phoneNumber1: '',
+            phoneCountryCode2: '+33',
+            phoneNumber2: '',
+            acceptSMS: true,
+            acceptmarketing: true,
+            acceptcourrier: true,
+            customer: {
+                id: 0,
+                company: '',
+                raisonsocial: '',
+                group: '',
+                contact: '',
+                telephone: '',
+                tax: '',
+                naf: '',
+                siret: '',
+            },                
+        });
         onMounted(()=>{
             axios.post('/get-list-info-for-customer').then((res)=>{
                 contactTypes.value    = res.data.contactTypes;
@@ -212,64 +270,32 @@ export default {
                 console.log(errors);
             }).finally(()=>{
 
-            })            
-        })
-        const closeModal = ()=>{
-            showModal.value = !showModal.value;
+            })
+        })    
+
+        watchEffect(()=>{
+            if(step.value == 'choose_customer'){
+                breadcrumbs.value = ['Choix ENTITE'];
+            }else{
+                breadcrumbs.value = ['Choix ENTITE', 'Créer Contact'];
+            }
+        })            
+        const cancel = ()=>{
+
         }
-        const showModal = ref(false);
-        const openModal = (id, addresses)=>{
-            contact.value =             {
-                customerID: id,
-                type: '',
-                actif: true,
-                qualite: '',
-                gender: 'M',
-                firstName: '',
-                address: '',
-                profilLinedin: '',
-                name: '',
-                email: '',
-                note: '',
-                numGx: '',
-                phoneCountryCode1: '+33',
-                phoneNumber1: '',
-                phoneCountryCode2: '+33',
-                phoneNumber2: '',
-                acceptSMS: true,
-                acceptmarketing: true,
-                acceptcourrier: true,
-            };            
-            showModal.value = !showModal.value;
-            addresses.forEach(element => {
-                customerAddresses.value.push({
-                    display: element.address1 + ', ' + element.postcode + ', ' + element.city,
-                    value: element.id
-                });
-            });
-        }  
-        const validationUniqueEmail = (event, tableName)=>{
-            axios.post('/check-email-exists', { table: tableName, email:  event.target.value })
-            .then((res)=>{
-                if( !res.data.success ){
-                    uniqueEmail.value.status = false;
-                    Object.values(res.data.errors).forEach(item => {
-                        uniqueEmail.value.msg = item[0];
-                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                            type: 'danger',
-                            message: item[0],
-                            ttl: 5,
-                        });
-                    });                    
-                }else{
-                    uniqueEmail.value.status = true;
-                    uniqueEmail.value.msg = '';
-                }
-            }).catch((error)=>{
-                console.log(error);
+        const addNewCustomer = ()=>{
+            router.push({
+                name: "CreateCustomer"
             })
         }        
-        const addNewContact = ()=>{
+        const goToStep = (index)=>{
+            if(index == 0){
+                step.value = 'choose_customer';
+            }else{
+                step.value = 'create_contact';
+            }
+        }        
+        const submit = ()=>{
             var error = false;
             if(contact.value.type == ''){
                 error = true;
@@ -331,98 +357,121 @@ export default {
                 }
             }
         }
-
+        const selectedCustomer = (data)=>{
+            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Chargement de l`adresse du client.']);
+            axios.post('/get-customer-addresses', { customer_id: data.id }).then((res)=>{
+                res.data.forEach(element => {
+                    customerAddresses.value.push({
+                        display: element.address1 + ', ' + element.postcode + ', ' + element.city,
+                        value: element.id
+                    });
+                });
+                // move on to "addess choose step"
+                step.value = 'create_contact';
+                contact.value.customer = data;                
+            }).catch((error)=>{
+                console.log(error);
+            }).finally(()=>{
+                store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+            })            
+        }        
+        const validationUniqueEmail = (event, tableName)=>{
+            axios.post('/check-email-exists', { table: tableName, email:  event.target.value })
+            .then((res)=>{
+                if( !res.data.success ){
+                    uniqueEmail.value.status = false;
+                    Object.values(res.data.errors).forEach(item => {
+                        uniqueEmail.value.msg = item[0];
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: item[0],
+                            ttl: 5,
+                        });
+                    });                    
+                }else{
+                    uniqueEmail.value.status = true;
+                    uniqueEmail.value.msg = '';
+                }
+            }).catch((error)=>{
+                console.log(error);
+            })
+        }            
         const phoneCodesSorted = [...new Map(phoneCodes.map(item =>
             [item.value, item])).values()].sort((a, b)=>{
             return parseInt(a.value.replace(/\D/g, '')) - parseInt(b.value.replace(/\D/g, ''));
-        }); 
-                
+        });         
         return {
-            showModal,
             contact,
+            step,
+            breadcrumbs,
             contactTypes,
             contactQualites,
-            phoneCodesSorted,
             customerAddresses,
+            phoneCodesSorted,
+            goToStep,
             validationUniqueEmail,
-            closeModal,
-            openModal,
-            addNewContact,
+            addNewCustomer,
+            selectedCustomer,
+            cancel,
+            submit
         }
-    }
-
+  },
 }
 </script>
+<style>
+.dp__active_date{
+    background: var(--lcdtOrange) !important;
+}
+.dp__today{
+    border: solid 1px var(--lcdtOrange) !important;
+}
+</style>
 <style lang="scss" scoped>
-.list-enter-from{
-    opacity: 0;
-    transform: scale(0.6);
-}
-.list-enter-to{
-    opacity: 1;
-    transform: scale(1);
-}
-.list-enter-active{
-    transition: all 1s ease;
-}
-
-.list-leave-from{
-    opacity: 1;
-    transform: scale(1);
-}
-.list-leave-to{
-    opacity: 0;
-    transform: scale(0.6);
-}
-.list-leave-active{
-    transition: all 1s ease;
-    position: absolute;
-    width: 100%;
-}
-.list-move{
-    transition:all 0.9s ease;
-}
-.address-map{
-    min-width: 270px;
-    min-height: 170px;
-}
-.search-layer{
-    width: 100%;
-    height: 100%;
-    top: 0;
-    z-index: 11;
-    background: rgba(0, 0, 0, 0.3);
-    .search-panel{
-        width: 1020px;
-        padding: 15px;
-        .search-header{
-            .close-icon{
-                position: absolute;
-                top: 0;
-                right: 0;
-            }
-        }
-        .btns{
-            .custom-btn{
-                height: 40px;
-                font-family: 'Almarai Bold';
-                font-style: normal;
-                font-weight: 700;
-                font-size: 16px;
-                line-height: 140%;
-                border-radius: 4px;
-                text-align: center;
-                border: 1px solid #47454B;
-                cursor: pointer;
-            }
-            .btn-cancel{
-                color: rgba(0, 0, 0, 0.2);
-            }
-            .btn-ok{
-                background: #A1FA9F;
-                color: #3E9A4D;
-            }
-        }
+.main-view{
+    padding: 0;
+    h1{
+        padding: 60px 10px 0 0;
     }
+}
+.cust-page-content{
+  margin-top: 3.125rem;
+  .page-section{
+    padding: 1.875rem 5rem 1.875rem;
+    background: #FFFFFF;
+    box-shadow: 0px 0px 4px rgba(80, 80, 80, 0.2);
+    border-radius: 4px;
+    margin-bottom: 30px;
+    input[type="text"]:focus,
+    input[type="tel"]:focus,
+    input[type="email"]:focus{
+        outline: 2px #000000 solid;
+        border-color: #000000;
+        box-shadow: none;
+    }
+  }
+}
+.custom-btn{
+    padding: 0 1rem;
+    height: 40px;
+    font-family: 'Almarai Bold';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 140%;
+    border-radius: 4px;
+    text-align: center;
+    border: 1px solid #47454B;
+    cursor: pointer;
+}
+.btn-cancel{
+    color: rgba(0, 0, 0, 0.2);
+}
+.btn-ok{
+    background: #A1FA9F;
+    color: #3E9A4D;
+}
+.btn-danger{
+    background: rgba(255, 0, 0, 0.1);
+    color: #E8581B;
 }
 </style>

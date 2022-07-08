@@ -182,9 +182,11 @@ Route::group([
     Route::post('/get-customer-addresses', [ CustomerController::class, 'getCustomerAddresses' ])->middleware('auth')->name('get.customer.addresses');
     Route::post('/get-customer-contacts', [ CustomerController::class, 'getCustomerContacts' ])->middleware('auth')->name('get.customer.contacts');
     Route::post('/add-customer-address', [ CustomerController::class, 'addCustomerAddress' ])->middleware('auth')->name('add.customer.address');
-    Route::post('/add-customer-contact', [ CustomerController::class, 'addCustomerContact' ])->middleware('auth')->name('add.customer.contact');
     Route::post('/check-email-exists', [ CustomerController::class, 'checkEmailExists' ])->middleware('auth')->name('check.email.exists');
     // End Customer
+
+    // contact
+    Route::post('/add-customer-contact', [ ContactController::class, 'create' ])->middleware('auth')->name('add.contact');
     
     Route::put('deleteCompagneCible/', [CompagneController::class, 'deleteCompagneCible'])->middleware('auth')->name('deleteCompagneCible');
     Route::put('insertCompagneCible/', [CompagneController::class, 'insertCompagneCible'])->middleware('auth')->name('insertCompagneCible');

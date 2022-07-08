@@ -627,7 +627,7 @@
                         </div>
                         <div class="btns d-flex justify-content-end mb-3">
                             <button class="custom-btn btn-cancel me-3" @click="cancel">Annuler</button>
-                            <button class="custom-btn btn-ok text-uppercase" @click="submit">VALIDATUON</button>
+                            <button class="custom-btn btn-ok text-uppercase" @click="submit">VALIDATION</button>
                         </div>
                     </div>
                 </transition>
