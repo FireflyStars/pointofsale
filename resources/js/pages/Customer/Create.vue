@@ -127,8 +127,8 @@
                             <div class="d-flex">
                                 <div class="col-9"></div>
                                 <div class="col-3">
-                                    <CheckBox v-model="form.litige" class="ms-5" :title="'LITIGE'"></CheckBox>
-                                    <CheckBox v-model="form.actif" :checked="true" class="ms-5 mt-1" :title="'ACTIF'"></CheckBox>
+                                    <CheckBox v-model="form.litige" :checked="form.litige" class="ms-5" :title="'LITIGE'"></CheckBox>
+                                    <!-- <CheckBox v-model="form.actif" class="ms-5 mt-1" :title="'ACTIF'"></CheckBox> -->
                                 </div>
                             </div>
                             <div class="d-flex">
@@ -491,7 +491,7 @@
                             <div class="d-flex mt-3">
                                 <div class="col-9"></div>
                                 <div class="col-3">
-                                    <CheckBox v-model="contact.actif" :checked="true" :title="'ACTIF'"></CheckBox>
+                                    <CheckBox v-model="contact.actif" :checked="contact.actif" :title="'ACTIF'"></CheckBox>
                                 </div>
                             </div>
                             <div class="d-flex mt-3">
@@ -604,13 +604,13 @@
                                     </div>
                                     <div class="d-flex mt-3">
                                         <div class="col-4">
-                                            <CheckBox v-model="contact.acceptSMS" :checked="true" :title="'SMS Marketing'"></CheckBox>
+                                            <CheckBox v-model="contact.acceptSMS" :checked="contact.acceptSMS" :title="'SMS Marketing'"></CheckBox>
                                         </div>
                                         <div class="col-4">
-                                            <CheckBox v-model="contact.acceptmarketing" :checked="true" :title="'Email Marketing'"></CheckBox>
+                                            <CheckBox v-model="contact.acceptmarketing" :checked="contact.acceptmarketing" :title="'Email Marketing'"></CheckBox>
                                         </div>
                                         <div class="col-4">
-                                            <CheckBox v-model="contact.acceptcourrier" :checked="true" :title="'Courrier Marketing'"></CheckBox>
+                                            <CheckBox v-model="contact.acceptcourrier" :checked="contact.acceptmarketing"  :title="'Courrier Marketing'"></CheckBox>
                                         </div>
                                     </div>
                                 </div>

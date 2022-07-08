@@ -127,8 +127,8 @@
                             <div class="d-flex">
                                 <div class="col-9"></div>
                                 <div class="col-3">
-                                    <CheckBox v-model="form.litige" class="ms-5" :title="'LITIGE'"></CheckBox>
-                                    <CheckBox v-model="form.actif" :checked="true" class="ms-5 mt-1" :title="'ACTIF'"></CheckBox>
+                                    <CheckBox v-model="form.litige" :checked="form.litige ? true : false" class="ms-5" :title="'LITIGE'"></CheckBox>
+                                    <!-- <CheckBox v-model="form.actif" class="ms-5 mt-1" :title="'ACTIF'"></CheckBox> -->
                                 </div>
                             </div>
                             <div class="d-flex">
@@ -492,7 +492,7 @@
                             <div class="d-flex mt-3">
                                 <div class="col-9"></div>
                                 <div class="col-3">
-                                    <CheckBox v-model="contact.actif" :checked="true" :title="'ACTIF'"></CheckBox>
+                                    <CheckBox v-model="contact.actif" :checked="contact.actif ? true : false" :title="'ACTIF'"></CheckBox>
                                 </div>
                             </div>
                             <div class="d-flex mt-3">
@@ -605,13 +605,13 @@
                                     </div>
                                     <div class="d-flex mt-3">
                                         <div class="col-4">
-                                            <CheckBox v-model="contact.acceptSMS" :checked="true" :title="'SMS Marketing'"></CheckBox>
+                                            <CheckBox v-model="contact.acceptSMS" :checked="contact.acceptSMS" :title="'SMS Marketing'"></CheckBox>
                                         </div>
                                         <div class="col-4">
-                                            <CheckBox v-model="contact.acceptmarketing" :checked="true" :title="'Email Marketing'"></CheckBox>
+                                            <CheckBox v-model="contact.acceptmarketing" :checked="contact.acceptmarketing" :title="'Email Marketing'"></CheckBox>
                                         </div>
                                         <div class="col-4">
-                                            <CheckBox v-model="contact.acceptcourrier" :checked="true" :title="'Courrier Marketing'"></CheckBox>
+                                            <CheckBox v-model="contact.acceptcourrier" :checked="contact.acceptmarketing"  :title="'Courrier Marketing'"></CheckBox>
                                         </div>
                                     </div>
                                 </div>
@@ -639,6 +639,8 @@ import CheckBox from '../../components/miscellaneous/CheckBox';
 import GoogleMap from '../../components/miscellaneous/GoogleMap';
 import GoogleAddress from '../../components/miscellaneous/GoogleAddress';
 import { phoneCountryCode as phoneCodes } from '../../static/PhoneCountryCodes';
+import Datepicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
 import {     
   DISPLAY_LOADER,
   HIDE_LOADER,
@@ -660,7 +662,8 @@ export default {
         SelectBox,
         CheckBox,
         GoogleMap,
-        GoogleAddress
+        GoogleAddress,
+        Datepicker
     },
     setup() {
         const store = useStore();
@@ -770,6 +773,12 @@ export default {
                 acceptcourrier: true,
             }],            
         });
+        const dateFormat = (date) => {
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
+            return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
+        }                
         const updateAddressInfo = (data)=>{
             form.value.addresses[data.index].address1 = data.street;
             form.value.addresses[data.index].latitude = data.lat;
@@ -1143,6 +1152,10 @@ export default {
                     customer.contacts[index].phoneCountryCode2 = phone[0];
                     customer.contacts[index].phoneNumber2 = phone[1];
                 }
+                if(customer.litige == 1)
+                    customer.litige = true
+                else 
+                    customer.litige = false
                 form.value = customer;
                 if(form.value.addresses.length == 0)
                     addAddress();
@@ -1171,6 +1184,7 @@ export default {
             customerPaiements,
             phoneCodesSorted,
             customerAddresses,
+            dateFormat,
             addAddress,
             addContact,
             removeAddress,

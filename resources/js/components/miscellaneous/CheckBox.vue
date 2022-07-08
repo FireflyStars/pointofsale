@@ -22,12 +22,13 @@ export default {
         id: [String, Number],
         modelValue: { 
             type: Boolean, 
-            default: false 
+            default: false,
+            required: false,
         },
         checked: {
             type:Boolean,
             default:false
-            },
+        },
         name: String,
         title: String,
         classes: {
@@ -46,7 +47,6 @@ export default {
             check.value=!check.value;
             emit('change', { value: check.value, id: props.id, name: props.name })
             emit('update:modelValue', check.value);
-
         }
 
         const styles = computed(() => {
