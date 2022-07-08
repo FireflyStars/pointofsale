@@ -153,6 +153,7 @@ export default {
 .documentline {
     padding-left: 48px;
     position: relative;
+    word-break: break-word;
 }
 .documentline::before{
     content: "";

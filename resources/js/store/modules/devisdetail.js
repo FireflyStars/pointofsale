@@ -74,6 +74,7 @@ export const devisdetail= {
           return axios.post(`/validate-order-invoice`,facture).then((response)=>{
               commit(`${DEVIS_DETAIL_UPDATE_FACTURATION}`,{id:'id',idValue:facture.id,fieldName:'facturer',newValue:1});
               commit(`${DEVIS_DETAIL_UPDATE_FACTURATION}`,{id:'id',idValue:facture.id,fieldName:'invoice_type_name',newValue:'FACTURE'});
+              commit(`${DEVIS_DETAIL_UPDATE_FACTURATION}`,{id:'id',idValue:facture.id,fieldName:'invoice_id',newValue:response.data.invoice.id});
               return  Promise.resolve(response);
                     
             }).catch((error)=>{
