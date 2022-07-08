@@ -86,7 +86,7 @@
                 <transition-group tag="div" class="list"  name="list" appear>
             <template v-for="facture,index in facturations" :key="index">
                         <div class="row mb-3" :class="{avoir:facture.invoice_type_name=='AVOIR',remise:facture.invoice_type_name=='REMISE',facturer:(facture.invoice_type_name=='FACTURE'&&facture.facturer==1||facture.invoice_type_name==null&&facture.facturer==1),avenant:facture.invoice_type_name=='AVENANT',reste_a_facturer:facture.facturer==0}" >
-                            <div class="col-4 almarai_bold_normal font-14 invoiceline d-flex align-items-center" >{{facture.description}}</div>
+                            <div class="col-4 almarai_bold_normal font-14 invoiceline d-flex align-items-center" >{{`${facture.description}${facture.invoice_id>0?` (N°${facture.invoice_type_name=='REMISE'?'R':facture.invoice_type_name=='AVOIR'?'A':'F'}${(facture.invoice_id+'').padStart(5, '0')})`:''}`}}</div>
                             <div class="col-2 almarai-light  d-flex font-14 align-items-center" :class="{dangerred:facture.sign==-1}">{{isFloat(facture.pourcentage)?facture.pourcentage.toFixed(2):facture.pourcentage}}%</div>
                             <div class="col-2 almarai-light   d-flex font-14 align-items-center justify-content-center">{{formatDate(facture.dateinvoice)}}</div>
                             <div class="col-2 almarai-light   d-flex font-14 align-items-center justify-content-end" :class="{dangerred:facture.sign==-1}">{{formatPrice(facture.sign!=null?facture.sign*facture.montant:facture.montant)}}</div>
@@ -265,7 +265,7 @@ import MiniPanel from './MiniPanel.vue'
                 for(const i in current_val){
                     if(current_val[i].sign==-1){
                         total-=current_val[i].montant;
-                        percentage-=current_val[i].pourcentage;
+                       // percentage-=current_val[i].pourcentage;
                     }else{
                         total+=current_val[i].montant;  
                         percentage+=current_val[i].pourcentage; 
@@ -498,9 +498,9 @@ import MiniPanel from './MiniPanel.vue'
 
             }
             const addper=()=>{
-                  if(facture.value.invoice_type_id==1){
+                  //if(facture.value.invoice_type_id==1){
                     facture.value.taux=`${Math.abs(parseFloat(facture.value.taux))}%`;
-                  }
+                  //}
             }
             const setEcheanceDate=(datepicker)=>{
                     facture.value.date=datepicker.date;

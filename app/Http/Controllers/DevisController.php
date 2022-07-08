@@ -176,18 +176,17 @@ class DevisController extends Controller
             $reports=$order->reports->makeHidden(['pages','page_files','deleted_at','updated_at','affiliate_id','user_id']);
             foreach($reports as $report){
                 $carbon=Carbon::createFromFormat('Y-m-d H:i:s',$report->created_at);
-                $report->formatted_date=$carbon->day.'/'.$carbon->month.'/'.$carbon->year.' '.$carbon->hour.':'.$carbon->minute;
+                $report->formatted_date=$carbon->format('d/m/Y H:i');
                 $report->user;
                 $report->strtotime=strtotime($report->created_at);
                 $order_documents[]=$report;
             }
             $geds=$order->geds;
-           // $documents=$order->orderDocuments;
            foreach($geds as $ged){
                 $documents=$ged->orderDocuments;
                 foreach($documents as $document){
                     $carbon=Carbon::createFromFormat('Y-m-d H:i:s',$document->created_at);
-                    $document->formatted_date=$carbon->day.'/'.$carbon->month.'/'.$carbon->year.' '.$carbon->hour.':'.$carbon->minute;
+                    $document->formatted_date=$carbon->format('d/m/Y H:i');
                     $document->user=$ged->user;
                     $document->name=$document->human_readable_filename;
                     $document->strtotime=strtotime($document->created_at);
@@ -360,7 +359,7 @@ class DevisController extends Controller
         $oi->save();
 
 
-        return response()->json(array('message'=>'ok'));
+        return response()->json(array('message'=>'ok','invoice'=>$in));
         
     }
     public function getOrderStates(Request $request){
