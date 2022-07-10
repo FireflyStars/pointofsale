@@ -12,31 +12,10 @@
             </h1>
 
             <div class="text-editer cursor-pointer" @click.prevent="$router.push({
-                    path: `/entite/edit/${details.id}`
+                    path: `/contact/edit/${details.id}`
                 })"
             >
                 Editer
-            </div>
-        
-        </div>
-    
-
-        <div class="d-flex align-items-center justify-content-between gap-2" v-if="show">
-
-            <div 
-                class="status-tag"
-            >
-                <span>Actif:</span> 
-                <Icon name="check" v-if="details.active == 1" width="22.2" height="16.2" />        
-                <Icon name="times-circle" v-else width="22" height="22" />        
-            </div>
-
-            <div 
-                class="status-tag"
-            >
-                <span>Litige:</span>
-                <Icon name="check" v-if="details.litige == 0" width="22.2" height="16.2" />        
-                <Icon name="times-circle" v-else width="22" height="22" />        
             </div>
         
         </div>
@@ -47,24 +26,20 @@
     <div class="responsable-section d-flex justify-content-between align-items-center">
     
         <div class="d-flex flex-column gap-1">
-            <span class="title-label">Date créaction :</span>
+            <span class="title-label">Prénom Nom Contact :</span>
             <span class="detail">
-                {{ 
-                    details.created_at != null 
-                    ? moment(details.created_at).format('Y/MM/DD H:m')
-                    : '--/--' 
-                }}
+                {{ details.firstname }} {{ details.name }}
             </span>
         </div>
 
         <div class="d-flex flex-column gap-1">
-            <span class="title-label">Type action</span>
-            <span class="detail">{{ details?.status?.name || '--/--' }}</span>
+            <span class="title-label">Qualité</span>
+            <span class="detail">{{ details?.contact_qualite?.name || '--/--' }}</span>
         </div>
 
         <div class="d-flex flex-column gap-1">
-            <span class="title-label">Origine</span>
-            <span class="detail">{{ details.origin?.name || '--/--' }}</span>
+            <span class="title-label">Type</span>
+            <span class="detail">{{ details?.contact_type?.name || '--/--' }}</span>
         </div>
 
     </div>
@@ -75,9 +50,9 @@
 
         <div class="d-flex align-items-center justify-content-between">
 
-            <h2 class="heading-label">{{ details?.raisonsociale || '--/--' }}</h2>
-            <h2 class="heading-label">{{ details?.company || '--/--' }}</h2>
-            <h2 class="heading-label">{{ details?.raisonsociale2 || '--/--' }}</h2>
+            <h2 class="heading-label">{{ details.customer?.raisonsociale || '--/--' }}</h2>
+            <h2 class="heading-label">{{ details.customer?.company || '--/--' }}</h2>
+            <h2 class="heading-label">{{ details.customer?.raisonsociale2 || '--/--' }}</h2>
         
         </div>
     
@@ -100,7 +75,7 @@
             </div>
             <div class="col">
                 <span class="title-label">Mode de paiement</span>
-                <span class="detail">{{ details?.paiement?.name || '--/--'  }}</span>
+                <span class="detail">{{ details?.customer?.paiement?.name || '--/--'  }}</span>
             </div>
         </div>
 
@@ -109,7 +84,7 @@
     <hr />
 
 
-    <div class="history-section position-relative" v-if="show && details.event_history.length">
+    <div class="history-section position-relative" v-if="show && details?.event_history?.length">
 
         <a 
             href="#" 
@@ -126,19 +101,17 @@
             />
         </a>
 
-        <h4 class="heading-label-fade">Historique Action commerciale</h4>
+        <h4 class="heading-label-fade">Action commerciale</h4>
 
         <div class="title-rows text-center">
             <div class="title-label">Date</div>
-            <div class="title-label">Num</div>
-            <div class="title-label">Action</div>
             <div class="title-label">Status</div>
             <div class="title-label">Responsable</div>
             <div class="title-label">Commentaire</div>
         </div>
 
         <div 
-            v-for="history in details.event_history"
+            v-for="history in details?.event_history"
             :key="history.id"
             class="detail-rows" 
             style="margin-top: 1rem"
@@ -148,23 +121,6 @@
                 <div class="radio-button" style="width: 15px;"></div>
                 <div>{{ history.created_at ? moment(history.created_at).format('DD/MM/Y HH:mm') : '' }}</div>
             </div>
-
-            <div>
-                <router-link 
-                    class="routerLink"
-                    :to="{ 
-                        name: 'action-commercial',
-                        params: {
-                            id: history.id
-                        } 
-                    }"
-
-                >
-                    {{ history.id }}
-                </router-link>
-            </div>
-
-            <div>{{ history?.event?.name }}</div>
 
             <div 
                 :title="history?.status?.name"
@@ -182,7 +138,7 @@
     </div>
 
 
-    <div class="devis-section position-relative" v-if="show && details.orders.length">
+    <div class="devis-section position-relative" v-if="show && details.orders?.length">
 
         <a 
             href="#" 
@@ -259,97 +215,6 @@
     </div>
 
 
-    <div 
-        class="invoice-section position-relative" 
-        v-if="show && details.event_invoices.length"
-    >
-
-        <a 
-            href="#" 
-            class="link d-flex align-items-center" 
-            @click.prevent="appendResults('event_invoices')"
-            style="gap: .4rem"
-            v-if="!!fetched.event_invoices === false"
-        >
-            Voir tout
-            <Icon 
-                class="icon"
-                name="spinner"
-                v-show="loading?.status == true && loading?.id == 'event_invoices'"
-            />
-        </a>
-
-        <h4 class="heading-label-fade">Historique Facture</h4>
-
-        <div class="title-rows">
-            <div class="title-label">Date</div>
-            <div class="title-label">Fact</div>
-            <div class="title-label">Commande</div>
-            <div class="title-label">Status</div>
-            <div class="title-label total">Montant</div>
-        </div>
-
-        <div 
-            v-for="invoice in details.event_invoices"
-            :key="invoice.id"
-            class="detail-rows" 
-            style="margin-top: 1.5rem;"
-        >
-
-            <div class="d-flex align-items-center gap-3">
-                <div class="radio-button" style="width: 14px; background: rgba(255, 0, 0, 0.7);"></div>
-                <div>{{ invoice?.created_at ? moment(invoice?.created_at).format('DD/MM/Y HH:mm') : '' }}</div>
-            </div>
-
-
-            <div>
-                <router-link 
-                    class="routerLink"
-                    :to="{ 
-                        name: 'DevisDetail',
-                        params: {
-                            id: invoice?.id
-                        } 
-                    }"
-
-                >
-                    {{ invoice?.id }}
-                </router-link>
-            </div>
-
-            <div>
-                <router-link 
-                    class="routerLink"
-                    :to="{ 
-                        name: 'DevisDetail',
-                        params: {
-                            id: invoice?.id
-                        } 
-                    }"
-
-                >
-                    {{ invoice?.id }}
-                </router-link>
-            </div>
-
-            <div 
-                :title="invoice?.state?.name"
-                class="tag" 
-                :style="{ 
-                    background: invoice?.state?.color, 
-                    color: invoice?.state?.fontcolor 
-                }"
-            >
-                {{ invoice?.state?.name }}
-            </div>
-
-            <div class="">{{ invoice?.montant?.toFixed(2) }} &euro;</div>
-
-        </div>
-
-    </div>
-
-
     <div class="footer-section d-flex align-items-center gap-4" v-if="show">
 
         <div style="flex: 1">
@@ -357,7 +222,7 @@
             <base-button 
                 title="Editer" 
                 kind="green" 
-                @click.prevent="$router.push({ path: `/entite/edit/${details.id}` })" 
+                @click.prevent="$router.push({ path: `/contact/edit/${details.id}` })" 
             />
 
         </div>
@@ -366,16 +231,9 @@
             title="effacer" 
             kind="danger"
             class="text-uppercase"
-            @click.prevent="changeActif" 
+            @click.prevent="changeStatus" 
         />
         
-        <base-button 
-            title="Litige"
-            kind="danger" 
-            class="text-uppercase" 
-            @click.prevent="changeLitige"
-        />
-
     </div>
 
 
@@ -385,18 +243,25 @@
     v-model="modal.show" 
     :title="modal.title" 
     confirmButtonTitle="Change" 
-    @modalconfirm="confirmChangeLitige"
+    @modalconfirm="confirmChangeStatus"
 >
     
     <div class="container-fluid">
         
         <div class="row mb-3">
 
-            <div class="col-4">COMMENTAIRE</div>
+            <div class="col-4">Status</div>
             
             <div class="col-8 d-flex align-items-center gap-2">
 
-                <textarea v-model="comment"></textarea>
+                 <select-box
+                    v-model="status" 
+                    placeholder="Choose Status" 
+                    :options="[]" 
+                    name="user_list" 
+                    label="User List"
+                    :disabled="true" 
+                />
 
             </div>
 
@@ -423,14 +288,13 @@ import { useRouter } from 'vue-router'
 import {
     TOASTER_MODULE,
     TOASTER_MESSAGE,
-    ENTITE_LIST_MODULE,
-    GET_ENTITE_DETAILS,
+    CONTACT_LIST_MODULE,
+    GET_CONTACT_DETAILS,
     RESET_DETAILS,
-    CHANGE_LITIGE,
     ITEM_LIST_MODULE,
     ITEM_LIST_REMOVE_ROW,
-    CHANGE_ACTIF,
-    GET_ENTITE_RESULTS
+    GET_CONTACT_RESULTS,
+    CHANGE_EVENT_STATUS
 }
 from '../../store/types/types'
 
@@ -457,8 +321,8 @@ const fetched = reactive({
     event_invoices: false,
 })
 
-const details = computed(() => store.getters[`${ENTITE_LIST_MODULE}details`])
-const loading = computed(() => store.getters[`${ENTITE_LIST_MODULE}loading`])
+const details = computed(() => store.getters[`${CONTACT_LIST_MODULE}details`])
+const loading = computed(() => store.getters[`${CONTACT_LIST_MODULE}loading`])
 
 const actifBackground = computed(() => {
     return details.value?.active == 1 ? 'rgba(66, 167, 30, 0.2)' : '#ff000045'
@@ -502,12 +366,12 @@ const contact = computed(() => {
 })
 
 
-const getEntiteDetails = async () => {
+const getContactDetails = async () => {
 
     try {
         showloader.value = true
         show.value = false
-        await store.dispatch(`${ENTITE_LIST_MODULE}${GET_ENTITE_DETAILS}`, props.id)
+        await store.dispatch(`${CONTACT_LIST_MODULE}${GET_CONTACT_DETAILS}`, props.id)
     }
 
     catch(e) {
@@ -527,54 +391,11 @@ const getEntiteDetails = async () => {
 }
 
 const resetDetails = () => {
-    store.commit(`${ENTITE_LIST_MODULE}${RESET_DETAILS}`)
+    store.commit(`${CONTACT_LIST_MODULE}${RESET_DETAILS}`)
 }
 
-const changeActif = async () => {
 
-    const result = await Swal.fire({
-        title: 'Veuillez confirmer!',
-        text: `Voulez-vous changer le statut en ?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#42A71E',
-        cancelButtonColor: 'var(--lcdtOrange)',
-        cancelButtonText: 'Annuler',
-        confirmButtonText: `Oui, s'il vous plaît.`
-    })
-
-    if (result.isConfirmed) {
-        
-        try {
-
-            showloader.value = true
-            await store.dispatch(`${ENTITE_LIST_MODULE}${CHANGE_ACTIF}`, details.value.id)
-            store.commit(`${ITEM_LIST_MODULE}${ITEM_LIST_REMOVE_ROW}`, { id: 'id', idValue: details.value?.id })
-
-            router.replace({
-                name: 'entite'
-            })
-
-        }
-
-        catch(e) {
-            store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                type: 'danger',
-                message: 'Something went wrong',
-                ttl: 5,
-            })
-            throw e
-        }
-        
-        finally {
-            showloader.value = false
-        }    
-
-    }
-
-}
-
-const changeLitige = async () => {
+const changeStatus = async () => {
 
     const result = await Swal.fire({
         title: 'Veuillez confirmer!',
@@ -593,13 +414,13 @@ const changeLitige = async () => {
 
 }
 
-const confirmChangeLitige = async () => {
+const confirmChangeStatus = async () => {
     
     try {
 
         showloader.value = true
         modal.show = false
-        await store.dispatch(`${ENTITE_LIST_MODULE}${CHANGE_LITIGE}`, { 
+        await store.dispatch(`${CONTACT_LIST_MODULE}${CHANGE_EVENT_STATUS}`, { 
             id: details.value.id, 
             comment: comment.value 
         })
@@ -628,7 +449,7 @@ const appendResults = async (type) => {
     
     try {
         showloader.value = true
-        await store.dispatch(`${ENTITE_LIST_MODULE}${GET_ENTITE_RESULTS}`, { type, id: details.value.id })
+        await store.dispatch(`${CONTACT_LIST_MODULE}${GET_CONTACT_RESULTS}`, { type, id: details.value.id })
         fetched[type] = true
     }
 
@@ -645,7 +466,7 @@ const appendResults = async (type) => {
 
 
 onMounted(() => {
-    getEntiteDetails()
+    getContactDetails()
 })
 
 onBeforeMount(() => {
@@ -826,7 +647,7 @@ textarea {
 
 .title-rows, .detail-rows {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     align-items: center;
     justify-items: center;
 }
@@ -842,7 +663,7 @@ textarea {
 
 .devis-section {
     .title-rows, .detail-rows {
-        grid-template-columns: repeat(6, 1fr);
+        grid-template-columns: repeat(4, 1fr);
     }
 }
 

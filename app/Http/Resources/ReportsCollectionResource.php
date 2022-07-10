@@ -14,6 +14,7 @@ class ReportsCollectionResource extends JsonResource
     {
         return [
             'id'            => $this->id,
+            'name'          => $this->name,
             'template_name' => optional($this->template)->name,
             'affiliate'     => optional($this->affiliate)->name,
             'pages'         => count($this->pages) ? $this->pages : [],

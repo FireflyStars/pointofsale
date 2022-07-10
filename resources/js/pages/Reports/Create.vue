@@ -95,6 +95,7 @@
 <script>
 
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import { onMounted, ref, nextTick, computed, watch, provide } from 'vue'
 
 import { 
@@ -147,6 +148,8 @@ export default {
     setup(props) {
 
         const store = useStore()
+        const router = useRouter()
+
         const showRightContainer = ref(false)
         const { toggleModal, isOpenModal } = useModal()
         const { 
@@ -202,6 +205,13 @@ export default {
                         type: 'success',
                         message: 'Report Saved',
                         ttl: 5,
+                    })
+
+                    router.push({
+                        name: 'DevisDetail',
+                        params: {
+                            id: props.id
+                        }
                     })
 
                 }   

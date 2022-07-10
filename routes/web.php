@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ActionCommercialListController;
 use App\Models\User;
 use App\Models\Campagne;
 use App\Models\page_builder;
@@ -10,17 +9,19 @@ use App\Http\Controllers\ApiController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\CibleController;
 use App\Http\Controllers\DevisController;
+use App\Http\Controllers\EntiteController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\CompagneController;
+use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\LcdtAdminController;
 use App\Http\Controllers\LcdtFrontController;
 use App\Http\Controllers\TemplatesController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CampagneListController;
-use App\Http\Controllers\EntiteController;
 use App\Http\Controllers\PageElementsController;
+use App\Http\Controllers\ActionCommercialListController;
 
 
 Route::group(['prefix' => 'admin'], function () {
@@ -96,6 +97,12 @@ Route::get('/get-action-commercial-event-users/{event}', [ActionCommercialListCo
 Route::get('/get-event-history/{event}', [ActionCommercialListController::class, 'get_event_history']);
 Route::get('/get-event-statuses-all', [ActionCommercialListController::class, 'get_event_statuses']);
 Route::post('/change-event-status/{event}', [ActionCommercialListController::class, 'change_event_status']);
+
+Route::post('/get-contact-list', [ContactsController::class, 'index']);
+Route::get('/get-contact-details/{contact}', [ContactsController::class, 'show']);
+Route::get('/get-contact-results/{contact}', [ContactsController::class, 'contact_results']);
+
+
 // create action
 Route::post('/get-action-info', [ActionCommercialListController::class, 'getActionInfo'])->name('get.action.info');
 Route::post('/action/create', [ActionCommercialListController::class, 'createAction'])->name('create.action');

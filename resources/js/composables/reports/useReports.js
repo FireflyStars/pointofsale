@@ -169,9 +169,12 @@ export default function useReports() {
         store.commit(`${BUILDER_MODULE}/${SAVE_PAGE_ORDER}`, [])
     }
 
-    const generatePagePdf = async (orderId = null) => {
+    const report = computed(() => store.getters[`${BUILDER_MODULE}/report`])
+
+    const generatePagePdf = async (orderId = null, id = null) => {
 
         try {
+
             store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Veuillez patienter. Génération du PDF en cours...'])
 
             const data = await store.dispatch(`${[BUILDER_MODULE]}/${[GENERATE_PDF]}`, { 
@@ -179,7 +182,9 @@ export default function useReports() {
                 orderId 
             })
 
-            if(data) generatePDF(data)
+            const name = id && orderId ? `${report.value.name} - ${ orderId } ${ id }` : 'Report.pdf'
+
+            if(data) generatePDF(data, name)
 
         }
 

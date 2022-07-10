@@ -65,7 +65,7 @@
                         style="
                             color: {{ $item->color }}; 
                             font-size: 18px; 
-                            font-family: {{ $item->font}}; 
+                            font-family: {{ $item->font }}; 
                             top: {{ 874 }}px;
                             left: {{ 274 }}px;
                             z-index: 10;
