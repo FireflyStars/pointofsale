@@ -361,7 +361,7 @@ export default {
                 axios.post('/contact/update/'+route.params.id, contact.value).then((res)=>{
                     if(res.data.success){
                         router.push({
-                            name: 'EditContact',
+                            name: 'contact-details',
                             params: { id: route.params.id }
                         })
                     }else{

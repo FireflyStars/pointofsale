@@ -332,7 +332,7 @@ export default {
                 axios.post('/contact/add', contact.value).then((res)=>{
                     if(res.data.success){
                         router.push({
-                            name: 'EditContact',
+                            name: 'contact-details',
                             params: { id: res.data.id }
                         })
                     }else{
