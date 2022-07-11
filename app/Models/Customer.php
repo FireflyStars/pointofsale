@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Models\Event;
+use App\Models\Group;
+use App\Models\Tax;
 use App\Models\Invoice;
 use App\Models\CustomerOrigin;
 use App\Models\CustomerStatut;
@@ -37,6 +39,16 @@ class Customer extends Model
     public function status() 
     {
         return $this->belongsTo(CustomerStatut::class, 'customer_statut_id');
+    }
+
+    public function group() 
+    {
+        return $this->belongsTo(Group::class, 'group_id');
+    }
+
+    public function tax() 
+    {
+        return $this->belongsTo(Tax::class, 'taxe_id');
     }
 
     public function paiement() 

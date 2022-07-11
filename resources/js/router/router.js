@@ -182,7 +182,7 @@ const router = createRouter({
             }
         },        
         {
-            path:'/Contact/edit/:id',
+            path:'/contact/edit/:id',
             name:'EditContact',
             component: () => import('../pages/Contact/Edit'),
             meta: {

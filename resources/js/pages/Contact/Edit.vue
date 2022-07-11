@@ -8,7 +8,7 @@
             <div class="col main-view container">
                 <h1 class="d-flex align-items-center m-0">
                   <span class="action-icon"></span>
-                  <span class="ms-3 font-22 almarai_extrabold_normal_normal">CREATION CONTACT</span>
+                  <span class="ms-3 font-22 almarai_extrabold_normal_normal">EDITION CONTACT</span>
                 </h1>
                 <ul class="m-0 p-0 breadcrumb mt-3 mb-3" v-if="breadcrumbs.length">
                     <li class="breadcrumb-item almarai-extrabold font-18 cursor-pointer" 
@@ -65,6 +65,12 @@
                         </div>
                         <div class="page-section bg-white rounded mt-3">
                             <h3 class="m-0 mulish-extrabold font-22">CONTACT</h3>
+                            <div class="d-flex mt-3">
+                                <div class="col-9"></div>
+                                <div class="col-3">
+                                    <CheckBox v-model="contact.active" :checked="contact.active" :title="'ACTIF'"></CheckBox>
+                                </div>
+                            </div>                            
                             <div class="d-flex mt-3">
                                 <div class="col-4">
                                     <select-box v-model="contact.type" :options="contactTypes" :name="'contactType'" :label="'TYPE CONTACT *'"></select-box>
@@ -189,7 +195,7 @@
                         </div>
                         <div class="btns d-flex justify-content-end mt-3 mb-3">
                             <button class="custom-btn btn-cancel me-3" @click="goToStep(0)">Annuler</button>
-                            <button class="custom-btn btn-ok text-uppercase" @click="submit">MISE À JOUR</button>
+                            <button class="custom-btn btn-ok text-uppercase" @click="submit">mettre à jour CONTACT</button>
                         </div>
                     </div>                    
                 </transition>
@@ -227,10 +233,9 @@ export default {
         const router = useRouter();
         const route = useRoute();
         const breadcrumbs = ref(['Choix ENTITE']);
-        const step = ref('choose_customer');
+        const step = ref('create_contact');
         const contactTypes = ref([]);
         const contactQualites = ref([]);
-        const uniqueEmail = ref({ status: true, msg: '' });
         const customerAddresses = ref([]);    
         const contact = ref({
             type: '',
@@ -264,10 +269,32 @@ export default {
             },                
         });
         onMounted(()=>{
-            axios.post('/get-contact/' + route.params.id).then((res)=>{
-                contact.value    = res.data.contact;
-                contactQualites.value    = res.data.contactQualites;
-                contactTypes.value    = res.data.contactTypes;
+            axios.post('/contact/edit/'+route.params.id).then((res)=>{
+                var contactTmp = res.data.contact;
+                if(contactTmp.active){
+                    contactTmp.active = true;
+                }else{
+                    contactTmp.active = false;
+                }
+                if(contactTmp.acceptSMS){
+                    contactTmp.acceptSMS = true;
+                }else{
+                    contactTmp.acceptSMS = false;
+                }
+                if(contactTmp.acceptmarketing){
+                    contactTmp.acceptmarketing = true;
+                }else{
+                    contactTmp.acceptmarketing = false;
+                }
+                if(contactTmp.acceptcourrier){
+                    contactTmp.acceptcourrier = true;
+                }else{
+                    contactTmp.acceptcourrier = false;
+                }
+                contact.value           = contactTmp;
+                contactTypes.value      = res.data.contactTypes;
+                contactQualites.value   = res.data.contactQualites;
+                customerAddresses.value = res.data.customerAddresses;
             }).catch((errors)=>{
                 console.log(errors);
             }).finally(()=>{
@@ -330,36 +357,31 @@ export default {
             }            
             // loading customer addresses
             if(!error){
-                if(uniqueEmail.value.status){
-                    store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'créer un contact..']);
-                    axios.post('/add-customer-contact', contact.value).then((res)=>{
-                        const qualite = contactQualites.value.find((item) => { 
-                                return item.value == contact.value.qualite
-                            }); 
-                        emit('addedNewContact', {
-                            id: res.data.id,
-                            name: contact.value.firstName + " " + contact.value.name,
-                            qualite: qualite ? qualite.display : '',
-                            comment: contact.value.note,
-                            email: contact.value.email,
-                            mobile: contact.value.phoneCountryCode1 + ' ' + contact.value.phoneNumber1,
+                store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'mise à jour d`un contact...']);
+                axios.post('/contact/update/'+route.params.id, contact.value).then((res)=>{
+                    if(res.data.success){
+                        router.push({
+                            name: 'EditContact',
+                            params: { id: route.params.id }
+                        })
+                    }else{
+                        Object.values(res.data.errors).forEach(item => {
+                            store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                                type: 'danger',
+                                message: item[0],
+                                ttl: 5,
+                            });
                         });
-                        showModal.value = false;                
-                    }).catch((error)=>{
-                        console.log(error);
-                    }).finally(()=>{
-                        store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
-                    })            
-                }else{
-                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                        type: 'danger',
-                        message: uniqueEmail.value.msg,
-                        ttl: 5,
-                    });
-                }
+                    }
+                }).catch((error)=>{
+                    console.log(error);
+                }).finally(()=>{
+                    store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+                })            
             }
         }
         const selectedCustomer = (data)=>{
+            contact.value.customer = data;
             store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Chargement de l`adresse du client.']);
             axios.post('/get-customer-addresses', { customer_id: data.id }).then((res)=>{
                 res.data.forEach(element => {
@@ -370,7 +392,6 @@ export default {
                 });
                 // move on to "addess choose step"
                 step.value = 'create_contact';
-                contact.value.customer = data;                
             }).catch((error)=>{
                 console.log(error);
             }).finally(()=>{
@@ -381,23 +402,18 @@ export default {
             axios.post('/check-email-exists', { table: tableName, email:  event.target.value })
             .then((res)=>{
                 if( !res.data.success ){
-                    uniqueEmail.value.status = false;
                     Object.values(res.data.errors).forEach(item => {
-                        uniqueEmail.value.msg = item[0];
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
                             message: item[0],
                             ttl: 5,
                         });
                     });                    
-                }else{
-                    uniqueEmail.value.status = true;
-                    uniqueEmail.value.msg = '';
                 }
             }).catch((error)=>{
                 console.log(error);
             })
-        }            
+        }
         const phoneCodesSorted = [...new Map(phoneCodes.map(item =>
             [item.value, item])).values()].sort((a, b)=>{
             return parseInt(a.value.replace(/\D/g, '')) - parseInt(b.value.replace(/\D/g, ''));

@@ -21,6 +21,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CampagneListController;
 use App\Http\Controllers\EntiteController;
 use App\Http\Controllers\PageElementsController;
+use App\Http\Controllers\ContactController;
 
 
 Route::group(['prefix' => 'admin'], function () {
@@ -186,7 +187,10 @@ Route::group([
     // End Customer
 
     // contact
-    Route::post('/add-customer-contact', [ ContactController::class, 'create' ])->middleware('auth')->name('add.contact');
+    Route::post('/contact/add', [ ContactController::class, 'create' ])->middleware('auth')->name('add.contact');
+    Route::post('/contact/edit/{contact}', [ ContactController::class, 'edit' ])->middleware('auth')->name('edit.contact');
+    Route::post('/contact/update/{contact}', [ ContactController::class, 'update' ])->middleware('auth')->name('update.contact');
+    Route::post('/contact/delete/{contact}', [ ContactController::class, 'destroy' ])->middleware('auth')->name('delete.contact');
     
     Route::put('deleteCompagneCible/', [CompagneController::class, 'deleteCompagneCible'])->middleware('auth')->name('deleteCompagneCible');
     Route::put('insertCompagneCible/', [CompagneController::class, 'insertCompagneCible'])->middleware('auth')->name('insertCompagneCible');

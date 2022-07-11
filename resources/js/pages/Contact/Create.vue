@@ -226,14 +226,14 @@ export default {
         const store = useStore();
         const router = useRouter();
         const breadcrumbs = ref(['Choix ENTITE']);
-        const step = ref('choose_customer');
+        // const step = ref('choose_customer');
+        const step = ref('create_contact');
         const contactTypes = ref([]);
         const contactQualites = ref([]);
         const uniqueEmail = ref({ status: true, msg: '' });
         const customerAddresses = ref([]);    
         const contact = ref({
             type: '',
-            active: true,
             qualite: '',
             gender: 'M',
             firstName: '',
@@ -328,36 +328,31 @@ export default {
             }            
             // loading customer addresses
             if(!error){
-                if(uniqueEmail.value.status){
-                    store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'créer un contact..']);
-                    axios.post('/add-customer-contact', contact.value).then((res)=>{
-                        const qualite = contactQualites.value.find((item) => { 
-                                return item.value == contact.value.qualite
-                            }); 
-                        emit('addedNewContact', {
-                            id: res.data.id,
-                            name: contact.value.firstName + " " + contact.value.name,
-                            qualite: qualite ? qualite.display : '',
-                            comment: contact.value.note,
-                            email: contact.value.email,
-                            mobile: contact.value.phoneCountryCode1 + ' ' + contact.value.phoneNumber1,
+                store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'créer un contact..']);
+                axios.post('/contact/add', contact.value).then((res)=>{
+                    if(res.data.success){
+                        router.push({
+                            name: 'EditContact',
+                            params: { id: res.data.id }
+                        })
+                    }else{
+                        Object.values(res.data.errors).forEach(item => {
+                            store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                                type: 'danger',
+                                message: item[0],
+                                ttl: 5,
+                            });
                         });
-                        showModal.value = false;                
-                    }).catch((error)=>{
-                        console.log(error);
-                    }).finally(()=>{
-                        store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
-                    })            
-                }else{
-                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                        type: 'danger',
-                        message: uniqueEmail.value.msg,
-                        ttl: 5,
-                    });
-                }
+                    }
+                }).catch((error)=>{
+                    console.log(error);
+                }).finally(()=>{
+                    store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+                })            
             }
         }
         const selectedCustomer = (data)=>{
+            contact.value.customer = data;
             store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Chargement de l`adresse du client.']);
             axios.post('/get-customer-addresses', { customer_id: data.id }).then((res)=>{
                 res.data.forEach(element => {
@@ -368,7 +363,6 @@ export default {
                 });
                 // move on to "addess choose step"
                 step.value = 'create_contact';
-                contact.value.customer = data;                
             }).catch((error)=>{
                 console.log(error);
             }).finally(()=>{
@@ -381,16 +375,12 @@ export default {
                 if( !res.data.success ){
                     uniqueEmail.value.status = false;
                     Object.values(res.data.errors).forEach(item => {
-                        uniqueEmail.value.msg = item[0];
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
                             message: item[0],
                             ttl: 5,
                         });
                     });                    
-                }else{
-                    uniqueEmail.value.status = true;
-                    uniqueEmail.value.msg = '';
                 }
             }).catch((error)=>{
                 console.log(error);

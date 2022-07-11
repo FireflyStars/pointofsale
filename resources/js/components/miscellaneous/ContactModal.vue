@@ -304,7 +304,7 @@ export default {
             if(!error){
                 if(uniqueEmail.value.status){
                     store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'créer un contact..']);
-                    axios.post('/add-customer-contact', contact.value).then((res)=>{
+                    axios.post('/contact/add', contact.value).then((res)=>{
                         const qualite = contactQualites.value.find((item) => { 
                                 return item.value == contact.value.qualite
                             }); 
