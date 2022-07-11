@@ -28,6 +28,25 @@ const router = createRouter({
 
         },
         {
+            path:'/facture',
+            name:'FacturePage',
+            component:()=> import('../pages/facture/Facture.vue'),//import('../Pages/Index'),
+            children:[
+                {
+                    path:'/facture/detail/:id',
+                    name:'FactureDetail',
+                    component:()=> import('../pages/facture/FactureDetail.vue'),
+                    meta:{
+                        authenticated:false
+                    }
+                },
+            ],
+            meta:{
+                authenticated:true
+            },
+
+        },
+        {
             path:'/devis/create',
             name:'CreateDevis',
             component: () => import('../pages/devis/Create'),

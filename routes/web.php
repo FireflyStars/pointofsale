@@ -20,6 +20,7 @@ use App\Http\Controllers\LcdtFrontController;
 use App\Http\Controllers\TemplatesController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CampagneListController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PageElementsController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ActionCommercialListController;
@@ -152,6 +153,11 @@ Route::group([
     Route::get('/cible/load/{campagne_category_id}',[CibleController::class,'initialload'])->middleware('auth')->name('initialload');
     Route::get('/cible/loadcible/{naf_selection}/{customer_statut_id}/{type}',[CibleController::class,'loadcible'])->middleware('auth')->name('loadcible');
     Route::post('/cible/createcampagne',[CibleController::class,'createcampagne'])->middleware('auth')->name('createcampagne');
+    //Facture
+    Route::post('/get-invoice-list',[InvoiceController::class,'loadInvoiceList'])->middleware('auth')->name('get-invoice-list');
+    Route::post('/get-invoice-states-formatted',[InvoiceController::class,'getInvoiceStatesFormatted'])->middleware('auth')->name('get-invoice-states-formatted');
+    Route::post('/get-invoice-states',[InvoiceController::class,'getInvoiceStates'])->middleware('auth')->name('get-invoice-states');
+    
 
     // Devis
     Route::post('/get-devis-list',[DevisController::class,'loadList'])->middleware('auth')->name('get-devis-list');

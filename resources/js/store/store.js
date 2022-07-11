@@ -28,6 +28,9 @@ import { orderstatetag as ORDERSTATETAG_MODULE } from "./modules/component_store
 
 import { devislist as DEVIS_LIST_MODULE } from "./modules/devislist";
 
+import { facturelist as FACTURE_LIST_MODULE } from "./modules/facturelist";
+import { invoicestatetag as INVOICESTATETAG_MODULE } from "./modules/component_store/invoicestatetag";
+
 import { toggler as TOGGLER_MODULE } from "./modules/toggler"
 
 import { PageBuilder as BUILDER_MODULE } from "./modules/PageBuilder"
@@ -57,6 +60,8 @@ export default createStore({
         ITEM_LIST_MODULE,
         ORDERSTATETAG_MODULE,
         DEVIS_LIST_MODULE,
+        FACTURE_LIST_MODULE,
+        INVOICESTATETAG_MODULE,
         SIDEBAR_MODULE,
         SELECT_MODULE,
         FILTER_MODULE,

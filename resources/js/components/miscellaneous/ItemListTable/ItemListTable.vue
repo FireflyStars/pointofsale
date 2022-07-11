@@ -8,7 +8,7 @@
             dropdownClasses=""
             :dropdownStyles="{}"
             classes=""
-            styles="z-index:1;top:-62px;right:0;"
+            styles="z-index:2;top:-62px;right:0;"
             @onChange="onTableFilerChange"
         ></table-filter>  
 <div :id="table_def.identifier">
