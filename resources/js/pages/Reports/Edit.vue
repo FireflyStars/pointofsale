@@ -26,7 +26,7 @@
                             <div class="left-page-container">
 
                                 <header-section 
-                                    @submitPage="generatePagePdf(id)"
+                                    @submitPage="generatePagePdf(orderId, id)"
                                     @save="saveReport" 
                                 />
                                 
@@ -95,6 +95,7 @@
 <script>
 
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import { onMounted, ref, nextTick, computed, watch, provide } from 'vue'
 
 import { 
@@ -140,25 +141,34 @@ export default {
             required: true,
             type: [Number, String]
         },
+        orderId: {
+            required: true,
+            type: [Number, String]
+        }
     },
 
     setup(props) {
 
         const store = useStore()
+        const router = useRouter()
+
         const showRightContainer = ref(false)
+
         const { toggleModal, isOpenModal } = useModal()
+
         const { 
             promptImage,
             generateElement,
             generatePrefetchedImage,
         } = useElementsGenerator()
+
         const { resetPages, generatePagePdf, resetOrder } = useReports()
 
         const activeItem = ref(null)
         const showcontainer = ref(false)
         const formattedReportTemplates = ref([])
         const activeReportTemplate = ref(0)
-        
+
         const pages = computed(() => store.getters[`${BUILDER_MODULE}/pages`])
 
         const reportTemplates = computed(() => store.getters[`${BUILDER_MODULE}/reportTemplates`])
@@ -169,7 +179,7 @@ export default {
         })
 
         const getOrderDetails = () => {
-            return store.dispatch(`${BUILDER_MODULE}/${GET_ORDER_DETAILS}`, props.id)
+            return store.dispatch(`${BUILDER_MODULE}/${GET_ORDER_DETAILS}`, props.orderId)
         }
 
         const saveReport = async () => {
@@ -180,15 +190,23 @@ export default {
                 
                 await store.dispatch(`${[BUILDER_MODULE]}/${[SAVE_REPORT]}`, {
                     pages,
-                    orderId: props.id,
+                    orderId: props.orderId,
+                    reportId: props.id,
                     templateId: activeReportTemplate.value
                 })
 
                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                        type: 'success',
-                        message: 'Report Saved',
-                        ttl: 5,
-                    })
+                    type: 'success',
+                    message: 'Report Saved',
+                    ttl: 5,
+                })
+
+                router.push({
+                    name: 'DevisDetail',
+                    params: {
+                        id: props.orderId
+                    }
+                })
 
             }
 

@@ -24,7 +24,6 @@
                 class="text-uppercase heading-buttons heading-buttons-pdf justify-content-center"
                 :class="{ 'not-allowed': fetching }" 
                 :disabled="fetching || loading"
-                :textClass="loading ? 'd-none' : ''"
                 @click.prevent="submitPage"
             />
         </div>

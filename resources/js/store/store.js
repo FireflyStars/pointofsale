@@ -46,6 +46,8 @@ import { entite as ENTITE_LIST_MODULE } from './modules/entite.js'
 import { actionCommercial as ACTION_COMMERCIAL_MODULE } from './modules/actionCommercial.js'
 import { actionCoStatusTag as ACTION_COMMERCIAL_STATUS_MODULE } from './modules/component_store/actionCoStatusTag'
 
+import { contactList as CONTACT_LIST_MODULE } from './modules/contact'
+
 
 export default createStore({
     modules: {
@@ -68,6 +70,7 @@ export default createStore({
         DEVIS_DETAIL_MODULE,
         ENTITE_LIST_MODULE,
         ACTION_COMMERCIAL_MODULE,
-        ACTION_COMMERCIAL_STATUS_MODULE
+        ACTION_COMMERCIAL_STATUS_MODULE,
+        CONTACT_LIST_MODULE
     }
 });

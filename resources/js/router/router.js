@@ -88,7 +88,7 @@ const router = createRouter({
             },
         },
         {
-            path: '/report/edit/:id',
+            path: '/order/:orderId/report/edit/:id',
             name: 'edit-report-page',
             component: () => import('../pages/Reports/Edit'),
             props: true,
@@ -120,6 +120,24 @@ const router = createRouter({
             meta: {
                 authenticated: true
             },
+        },
+
+        {
+            path: '/contact',
+            name: 'contact',
+            component: () => import('../pages/contact/Index'),
+            meta: {
+                authenticated: true
+            },
+            children: [{
+                path: '/contact/details/:id',
+                name: 'contact-details',
+                component: () => import('../pages/contact/Details'),
+                props: true,
+                meta: {
+                    authenticated: true
+                }
+            }]
         },
 
         {

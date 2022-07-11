@@ -58,7 +58,8 @@ export const PageBuilder = {
         reports: [],
         report: {
             id: null,
-            status: 'store'
+            status: 'store',
+            name: ''
         },
         reportTemplates: [],
         activeTemplate: -1,
@@ -348,7 +349,8 @@ export const PageBuilder = {
                 saveReportPages(data)
                 data.id != null ? commit(SAVE_REPORT, {
                     id: data.id, 
-                    status: 'update' 
+                    status: 'update',
+                    name: data.name 
                 }) : {}
             }
             catch(e) {
@@ -356,10 +358,10 @@ export const PageBuilder = {
             }
         },
 
-        async [SAVE_REPORT]({ commit, state }, { pages, orderId, templateId, name }) {
+        async [SAVE_REPORT]({ commit, state }, { pages, orderId, templateId, name, reportId }) {
             
             let path = '/page-report'
-            if(state.report.status == 'update') path += `/${orderId}`
+            if(state.report.status == 'update') path += `/${reportId}`
 
             try {
                 

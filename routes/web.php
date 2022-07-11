@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ActionCommercialListController;
 use App\Models\User;
 use App\Models\Campagne;
 use App\Models\page_builder;
@@ -10,18 +9,20 @@ use App\Http\Controllers\ApiController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\CibleController;
 use App\Http\Controllers\DevisController;
+use App\Http\Controllers\EntiteController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\CompagneController;
+use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\LcdtAdminController;
 use App\Http\Controllers\LcdtFrontController;
 use App\Http\Controllers\TemplatesController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CampagneListController;
-use App\Http\Controllers\EntiteController;
 use App\Http\Controllers\PageElementsController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ActionCommercialListController;
 
 
 Route::group(['prefix' => 'admin'], function () {
@@ -97,6 +98,17 @@ Route::get('/get-action-commercial-event-users/{event}', [ActionCommercialListCo
 Route::get('/get-event-history/{event}', [ActionCommercialListController::class, 'get_event_history']);
 Route::get('/get-event-statuses-all', [ActionCommercialListController::class, 'get_event_statuses']);
 Route::post('/change-event-status/{event}', [ActionCommercialListController::class, 'change_event_status']);
+
+Route::post('/get-contact-list', [ContactsController::class, 'index']);
+Route::get('/get-contact-details/{contact}', [ContactsController::class, 'show']);
+Route::get('/get-contact-results/{contact}', [ContactsController::class, 'contact_results']);
+// contact
+Route::post('/contact/add', [ ContactController::class, 'create' ])->middleware('auth')->name('add.contact');
+Route::post('/contact/edit/{contact}', [ ContactController::class, 'edit' ])->middleware('auth')->name('edit.contact');
+Route::post('/contact/update/{contact}', [ ContactController::class, 'update' ])->middleware('auth')->name('update.contact');
+Route::post('/contact/delete/{contact}', [ ContactController::class, 'destroy' ])->middleware('auth')->name('delete.contact');
+    
+
 // create action
 Route::post('/get-action-info', [ActionCommercialListController::class, 'getActionInfo'])->name('get.action.info');
 Route::post('/action/create', [ActionCommercialListController::class, 'createAction'])->name('create.action');
@@ -185,13 +197,6 @@ Route::group([
     Route::post('/add-customer-address', [ CustomerController::class, 'addCustomerAddress' ])->middleware('auth')->name('add.customer.address');
     Route::post('/check-email-exists', [ CustomerController::class, 'checkEmailExists' ])->middleware('auth')->name('check.email.exists');
     // End Customer
-
-    // contact
-    Route::post('/contact/add', [ ContactController::class, 'create' ])->middleware('auth')->name('add.contact');
-    Route::post('/contact/edit/{contact}', [ ContactController::class, 'edit' ])->middleware('auth')->name('edit.contact');
-    Route::post('/contact/update/{contact}', [ ContactController::class, 'update' ])->middleware('auth')->name('update.contact');
-    Route::post('/contact/delete/{contact}', [ ContactController::class, 'destroy' ])->middleware('auth')->name('delete.contact');
-    
     Route::put('deleteCompagneCible/', [CompagneController::class, 'deleteCompagneCible'])->middleware('auth')->name('deleteCompagneCible');
     Route::put('insertCompagneCible/', [CompagneController::class, 'insertCompagneCible'])->middleware('auth')->name('insertCompagneCible');
     Route::get('/getCourrier',[CompagneController::class, 'getCourrier'])->middleware('auth')->name('getCourrier');
