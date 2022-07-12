@@ -24,7 +24,6 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PageElementsController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ActionCommercialListController;
-use App\Http\Controllers\ContactController;
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();

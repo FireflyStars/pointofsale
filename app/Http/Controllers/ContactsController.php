@@ -36,13 +36,14 @@ class ContactsController extends Controller
             'contact_qualite.color as contact_qualite_color',
             'address_type.name as address_type',
             'customers.raisonsociale as customer_name',
-            DB::raw('DATE_FORMAT(contacts.created_at, "%Y-%m-%d") as created_at')
+            'customers.id as customer_id',
         );
 
         $contacts = (new TableFiltersController)->sorts($request, $contacts, 'contacts.id');
         $contacts = (new TableFiltersController)->filters($request, $contacts);
 
         $contacts = $contacts
+        ->where('customers.affiliate_id', $request->user()->affiliate_id)
         ->take($request->take ?? 15)
         ->skip($request->skip ?? 0)
         ->groupBy('contacts.id')
