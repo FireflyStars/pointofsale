@@ -24,7 +24,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PageElementsController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ActionCommercialListController;
-
+use App\Http\Controllers\ContactController;
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
@@ -103,12 +103,16 @@ Route::post('/change-event-status/{event}', [ActionCommercialListController::cla
 Route::post('/get-contact-list', [ContactsController::class, 'index']);
 Route::get('/get-contact-details/{contact}', [ContactsController::class, 'show']);
 Route::get('/get-contact-results/{contact}', [ContactsController::class, 'contact_results']);
+
 // contact
 Route::post('/contact/add', [ ContactController::class, 'create' ])->middleware('auth')->name('add.contact');
 Route::post('/contact/edit/{contact}', [ ContactController::class, 'edit' ])->middleware('auth')->name('edit.contact');
 Route::post('/contact/update/{contact}', [ ContactController::class, 'update' ])->middleware('auth')->name('update.contact');
 Route::post('/contact/delete/{contact}', [ ContactController::class, 'destroy' ])->middleware('auth')->name('delete.contact');
     
+Route::get('/get-contact-statuses-all', [ContactsController::class, 'get_contact_statuses']);
+Route::post('/change-contact-status/{contact}', [ContactsController::class, 'change_contact_status']);
+
 
 // create action
 Route::post('/get-action-info', [ActionCommercialListController::class, 'getActionInfo'])->name('get.action.info');
