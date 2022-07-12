@@ -37,8 +37,8 @@
                 </div>
                 <div  class="list-col almarai_700_normal" :style="col.css" :class="colRowClasses(col,row)" v-else-if="col.visible==true||indexcol==1">
                     <span v-if="indexcol==1">{{countGroupItem(grouped_by,row[grouped_by])}}</span>
-                    <span v-else-if="col.group_total===true&&col.type=='price'">{{`${col.prefix} ${formatPrice(colTotal(row[grouped_by],col.id))} ${col.suffix}`}}</span>
-                    <span v-else-if="col.group_total===true">{{`${col.prefix} ${colTotal(row[grouped_by],col.id)} ${col.suffix}`}}</span>
+                    <span v-else-if="col.group_total===true&&col.type=='price'">{{`${col.prefix} ${formatPrice(colTotal(row[grouped_by],col))} ${col.suffix}`}}</span>
+                    <span v-else-if="col.group_total===true">{{`${col.prefix} ${colTotal(row[grouped_by],col)} ${col.suffix}`}}</span>
                     <span v-else>&nbsp;</span>
                    
                 </div>
@@ -65,8 +65,8 @@
                    <template v-for="col,indexcol in table_def.columns_def" :key="indexcol">
                         <div class="list-col  almarai_700_normal" :style="col.css" :class="colClasses(col)" v-if="col.visible==true">
                                   <span v-if="indexcol==1"> {{`${lists.length} ${lists.length!=1?table_def.translations.footer_items:table_def.translations.footer_item}`}}</span>
-                                        <span v-else-if="col.footer_total===true&&col.type=='price'">{{`${col.prefix} ${formatPrice(colTotalAll(col.id))} ${col.suffix}`}}</span>
-                                        <span v-else-if="col.footer_total===true">{{`${col.prefix} ${colTotalAll(col.id)} ${col.suffix}`}}</span>
+                                        <span v-else-if="col.footer_total===true&&col.type=='price'">{{`${col.prefix} ${formatPrice(colTotalAll(col))} ${col.suffix}`}}</span>
+                                        <span v-else-if="col.footer_total===true">{{`${col.prefix} ${colTotalAll(col)} ${col.suffix}`}}</span>
                                       <span v-else>&nbsp;</span>
                         </div>
                    </template>
@@ -552,6 +552,7 @@ export default {
             return false;
         }
         const toggleGroupVisible=(group)=>{
+            groupval='';
             if(isGroupVisible(group)){
                 openedGroup.value=openedGroup.value.filter(g=>g!=group);
             }else{
@@ -564,18 +565,23 @@ export default {
 
                 for(const i in lists.value){
                     if(lists.value[i][grouped_by.value]==val){
-                        total+=lists.value[i][col];
+                        total+=lists.value[i][col.id];
                     }
                 }
-
+            if(typeof col.tofixed!='undefined')
+            return total.toFixed(col.tofixed);
+            
             return total;
         }
         const colTotalAll=(col)=>{
+
                let total=0;
 
                 for(const i in lists.value){
-                        total+=lists.value[i][col];
+                        total+=lists.value[i][col.id];
                 }
+            if(typeof col.tofixed!='undefined')
+            return total.toFixed(col.tofixed);
 
             return total;
         }

@@ -132,7 +132,7 @@ export const facturelist= {
        
               {
                 id:"invoice_state_id",
-                display_name:"Status",
+                display_name:"Statut",
                 type:"component",
                 class:"",
                 header_class:"",
@@ -166,6 +166,7 @@ export const facturelist= {
                 footer_total:true,
                 prefix:"",
                 suffix:"%",  
+                tofixed:2,
  
               },
               {

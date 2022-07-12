@@ -346,6 +346,7 @@
     }
         .side-icons.stroke-able.active path,  .side-icons.stroke-able.active circle {
         fill: #A23E13 !important;
+        stroke: #A23E13 !important;
     }
     .side-icons rect{
         fill:#FBFBFB !important;

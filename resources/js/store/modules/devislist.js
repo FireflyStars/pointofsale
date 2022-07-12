@@ -118,7 +118,7 @@ export const devislist= {
               },
               {
                 id:"updated_at",
-                display_name:"MIS A JOUR",
+                display_name:"Mis à jour",
                 type:"date",
                 format:"DD/MM/YY",
                 class:"",
@@ -130,7 +130,7 @@ export const devislist= {
               },
               {
                 id:"responsable",
-                display_name:"RESPONSABLE",
+                display_name:"Responsable",
                 type:"string",
                 class:"",
                 header_class:"",
@@ -148,7 +148,7 @@ export const devislist= {
               },
               {
                 id:"order_state_id",
-                display_name:"STATUS",
+                display_name:"Statut",
                 type:"component",
                 class:"",
                 header_class:"",

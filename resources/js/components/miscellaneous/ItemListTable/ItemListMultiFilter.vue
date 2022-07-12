@@ -53,7 +53,7 @@ export default {
         const options = ref([]);
         const store=useStore();
         onMounted(()=>{
-            console.log(typeof  props.filteroptions);
+
             if(typeof props.filteroptions==='object')
             store.commit(`${ITEM_LIST_MODULE}${ITEM_LIST_SET_FILTER_OPTIONS}`,{data:props.filteroptions,id:props.id});
             // for (const i in props.filteroptions){
