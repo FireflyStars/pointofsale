@@ -29,7 +29,9 @@
                         />
 
                         <div class="row m-0 ml-5 mr-5">
-                            
+                            <div class="col-12">
+                                <a class="btn btn-primary" href="/outlook/sync">Sync Outlook</a>
+                            </div>
                             <div class="col-12">
 
                                     
