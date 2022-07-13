@@ -21,6 +21,11 @@ class Event extends Model
 
     protected $guarded = ['id'];
 
+    /**
+     * The event map for the model.
+     *
+     * @var array
+     */   
 
     public function customer(){
         return $this->belongsTo(Customer::class);

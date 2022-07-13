@@ -223,8 +223,11 @@ Route::group([
     Route::post('/get-campagne-details',[LcdtFrontController::class, 'getCampagneCategory'])->middleware('auth')->name('get-campagne-details');
     Route::post('/get-cible-emails',[LcdtFrontController::class,'getCibleEmails'])->middleware('auth')->name('get-cible-emails');
 });
+// Outlook Agenda
 Route::get('/outlook/sync', [ ActionCommercialListController::class, 'syncOutlook' ])->middleware('auth')->name('outlook.sync');
 Route::get('/callback', [ ActionCommercialListController::class, 'outlookSyncCallback' ])->middleware('auth')->name('outlook.sync.callback');
+
+// 
 Route::get('{any}', function () {
     return view('welcome'); 
 })->where('any', '.*');

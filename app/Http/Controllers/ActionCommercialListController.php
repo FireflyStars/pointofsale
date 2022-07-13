@@ -6,23 +6,30 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Event;
 use App\Models\EventStatus;
+use App\Models\EventHistory;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\TableFiltersController;
 use App\Http\Resources\ActionCommercialListResource;
-use App\Models\EventHistory;
+
 use Illuminate\Support\Facades\Auth;
 
 use League\OAuth2\Client\Provider\GenericProvider;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
-
 use App\TokenStore\TokenCache;
 use Microsoft\Graph\Graph;
 use Microsoft\Graph\Model;
 
+use App\Events\ActionCreated;
+use App\Events\ActionUpdated;
+
 class ActionCommercialListController extends Controller
 {
 
+    /**
+     * Start OAuth
+     */
     public function syncOutlook()
     {
       // Initialize the OAuth client
@@ -223,6 +230,7 @@ class ActionCommercialListController extends Controller
             'datefin'   => $datefin . ' ' . $request->datefinTime . ':00'
         ]);
 
+        ActionUpdated::dispatch($event);
         $status = EventStatus::where('name', 'Replanification')->first();
 
         $newDateDebut = Carbon::parse($event->datedebut)->format('Y-m-d');
@@ -349,6 +357,9 @@ class ActionCommercialListController extends Controller
         $eventHistory->user_id = $event->user_id;
         $eventHistory->save();
 
+        // dispatch created event to outlook
+        ActionCreated::dispatch($event);
+        
         return response()->json(['success'=>true, 'id'=>$event->id]);
     }
 
@@ -377,6 +388,9 @@ class ActionCommercialListController extends Controller
             'comment'         => "(Changed date: ".Carbon::parse($request->date)->format('Y-m-d').", start hour: ".$request->startTime['hours'].':'.$request->startTime['minutes'].':00'.")",
             'user_id'         => Auth::id(),
         ]);        
+
+        // dispatch created event to outlook
+        ActionUpdated::dispatch($event);
 
         return response()->json(true);
     }
