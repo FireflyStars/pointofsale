@@ -29,12 +29,10 @@
                         />
 
                         <div class="row m-0 ml-5 mr-5">
-                            <div class="col-12">
+                            <div class="col-12 mb-3" v-if="synced">
                                 <a class="btn btn-primary" href="/outlook/sync">Sync Outlook</a>
                             </div>
                             <div class="col-12">
-
-                                    
                                 <tab-pane :tabs="tabs" current='tout' class="almarai_700_normal px-5">
 
                                     <template v-slot:tout>
@@ -92,23 +90,41 @@
 
     import lodash from 'lodash'
     import { useStore } from 'vuex'
-    import { ref, computed } from 'vue'
+    import { ref, computed, onMounted } from 'vue'
     import ItemListTable from '../../components/miscellaneous/ItemListTable/ItemListTable.vue'
     import StatusTag from '../../components/ActionCo/StatusTag.vue'
-    
+    import Swal from 'sweetalert2';
     import {
         ACTION_COMMERCIAL_MODULE
     }
     from '../../store/types/types'
 
-
+    
     const store = useStore()
 
     const tabs = ref({
         tout: 'Tout',
         mes_actions_co: 'Mes Actions Co',
     })
-
+    const synced = ref(false);
+    onMounted(()=>{
+        if(window.outlookSynced != undefined && window.outlookSynced == true){
+            synced.value = true;
+            Swal.fire(
+              'Congratualtion',
+              "Successfully synced outlook events",
+              'success'
+            )
+        }
+        if(window.outlookSynced != undefined && window.outlookSynced == false){
+            synced.value = false;
+            Swal.fire(
+              window.outlookSyncedError,
+              window.outlookSyncedErrorDetail,
+              'error'
+            )
+        }
+    })
     const actionCommercialList = computed(() => store.getters[`${ACTION_COMMERCIAL_MODULE}actionCommercialList`])
     const actionCommercialListUser = computed(() => store.getters[`${ACTION_COMMERCIAL_MODULE}actionCommercialListUser`])
 

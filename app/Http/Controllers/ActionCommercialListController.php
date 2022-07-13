@@ -14,6 +14,8 @@ use App\Models\EventHistory;
 use Illuminate\Support\Facades\Auth;
 
 use League\OAuth2\Client\Provider\GenericProvider;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+
 use App\TokenStore\TokenCache;
 use Microsoft\Graph\Graph;
 use Microsoft\Graph\Model;
@@ -53,20 +55,23 @@ class ActionCommercialListController extends Controller
       if (!isset($expectedState)) {
         // If there is no expected state in the session,
         // do nothing and redirect to the home page.
-        return redirect('/');
+        return redirect('/action-commercial')
+                ->with('outlookSyncResult', false)
+                ->with('outlookSyncError', 'There is no expected state in the session');
       }
   
       if (!isset($providedState) || $expectedState != $providedState) {
-        return redirect('/')
-          ->with('error', 'Invalid auth state')
-          ->with('errorDetail', 'The provided auth state did not match the expected value');
+        return redirect('/invalid-auth-state')
+            ->with('outlookSyncResult', false)
+            ->with('error', 'Invalid auth state')
+            ->with('errorDetail', 'The provided auth state did not match the expected value');
       }
   
       // Authorization code should be in the "code" query param
       $authCode = $request->query('code');
       if (isset($authCode)) {
         // Initialize the OAuth client
-        $oauthClient = new \League\OAuth2\Client\Provider\GenericProvider([
+        $oauthClient = new GenericProvider([
           'clientId'                => config('azure.appId'),
           'clientSecret'            => config('azure.appSecret'),
           'redirectUri'             => config('azure.redirectUri'),
@@ -93,19 +98,22 @@ class ActionCommercialListController extends Controller
           $tokenCache = new TokenCache();
           $tokenCache->storeTokens($accessToken, $user);
   
-          return redirect('/');
+          return redirect('/action-commercial')
+                ->with('outlookSyncResult', true);
         }
         // </StoreTokensSnippet>
-        catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
-          return redirect('/')
-            ->with('error', 'Error requesting access token')
-            ->with('errorDetail', json_encode($e->getResponseBody()));
+        catch (IdentityProviderException $e) {
+          return redirect('/access-token-error')
+            ->with('outlookSyncResult', false)
+            ->with('outlookSyncError', 'Error requesting access token')
+            ->with('outlookSyncErrorDetail', json_encode($e->getResponseBody()));
         }
       }
   
-      return redirect('/')
-        ->with('error', $request->query('error'))
-        ->with('errorDetail', $request->query('error_description'));
+      return redirect('/action-commercial')
+        ->with('outlookSyncResult', false)
+        ->with('outlookSyncError', $request->query('error'))
+        ->with('outlookSyncErrorDetail', $request->query('error_description'));
     }
 
     public function index(Request $request) 
