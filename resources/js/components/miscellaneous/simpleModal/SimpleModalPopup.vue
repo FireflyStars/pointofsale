@@ -7,7 +7,8 @@
             <div v-if="showmodalpopup" class="simple-modal-popup" :style="style">
                 <div class="container-fluid">
                   <div class="row">
-                    <div class="col">
+                    <div class="col d-flex align-items-center gap-2">
+                      <icon :name="icon" v-show="!!icon" :style="iconStyles" />
                       <h2 class="simple-modal-title" v-if="title!=''">{{title}}</h2>
                     </div>
                   </div>
@@ -54,9 +55,21 @@ export default {
           required: false,
           default: 'Enregistrer',
           type: String,
-        }
+        },
+        icon: {
+          required: false,
+          default: null,
+          type: String,
+        },
+        iconStyles: {
+          required: false,
+          default: null,
+          type: String,
+        },
     },
-      emits: ['update:modelValue','modalconfirm','modalclose'],
+    
+    emits: ['update:modelValue','modalconfirm','modalclose'],
+    
     setup(props,context){
         const showmodalpopup=ref(false);
         const showmodalpopupoverlay=ref(false);

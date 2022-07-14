@@ -176,7 +176,7 @@ const deleteUser = async () => {
 
     const result = await Swal.fire({
         title: 'Veuillez confirmer!',
-        text: `Voulez-vous changer le user en ?`,
+        text: `Voulez vous archiver ce personnel?`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#42A71E',

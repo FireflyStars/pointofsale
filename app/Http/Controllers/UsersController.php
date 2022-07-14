@@ -67,17 +67,6 @@ class UsersController extends Controller
 
         $user_documents = array();
 
-        // $reports = $user->reports->makeHidden(['pages', 'page_files', 'deleted_at', 'updated_at', 'affiliate_id', 'user_id']);
-        
-        // foreach($reports as $report)
-        // {
-        //     $carbon = Carbon::createFromFormat('Y-m-d H:i:s', $report->created_at);
-        //     $report->formatted_date = $carbon->format('d/m/Y H:i');
-        //     $report->user;
-        //     $report->strtotime = strtotime($report->created_at);
-        //     $user_documents[] = $report;
-        // }
-
         $documents = $user->documents()
                     ->latest('created_at')
                     ->when($request->has('take') && $request->take != null, function($query) use ($request) {
@@ -105,7 +94,7 @@ class UsersController extends Controller
         $user = $request->user();
 
         if($user->id != $document->user_id) {
-            return response('Cannot save user document.', 509);
+            return response('Cannot delete user document.', 509);
         }
 
         $document->delete();
@@ -130,6 +119,13 @@ class UsersController extends Controller
 
     public function upload_user_document(Request $request)
     {
+
+        $request->validate([
+            'files'        => 'required|mimetypes:application/pdf',
+            'name'         => 'required',
+            'dateExpired'  => 'required',
+            'dateDocument' => 'required'
+        ]);
 
         $file = $request->file('files');
 

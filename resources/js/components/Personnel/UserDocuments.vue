@@ -54,12 +54,12 @@
                     </span>
                 </div>
                 <div class="col-1 d-flex align-items-center justify-content-center">
-                    <span @click="document.template_id > 0 ? generatePdfById(document.id) : downloadDoc(document.id)"> 
+                    <span @click="downloadDoc(document.id)"> 
                         <icon name="download" width="16px" height="16px" class="cursor-pointer" />
                     </span>
                 </div>
                 <div class="col-1 d-flex align-items-center justify-content-center" >
-                    <span @click="document.template_id > 0 ? removeReport(document) : removeDoc(document)">
+                    <span @click="removeDoc(document)">
                         <icon  name="trash-x" width="20px" height="20px" class="cursor-pointer" />
                     </span>
                 </div>
@@ -70,24 +70,22 @@
 
         <div class="d-flex justify-content-evenly mt-4">
 
-            <!-- <span class="font-14 mulish_600_normal document_action noselect" @click="createReport" >
-                <icon name="plus-circle" width="16px" height="16px" /> AJOUTER RAPPORT
-            </span> -->
             <span class="font-14 mulish_600_normal document_action noselect" @click.prevent="addDocument">
-                <icon name="plus-circle" width="16px" height="16px" /> AJOUTER DOCUMENT
+                <icon name="plus-circle" width="16px" height="16px" /> 
+                AJOUTER PERMIS/CERTIFICATION
             </span>
 
         </div>  
         
-        <input type="file" id="fileuploadEl" class="d-none" ref="fileUploadEl" accept="image/*" />
+        <input type="file" id="fileuploadEl" class="d-none" ref="fileUploadEl" accept="application/pdf" />
 
   </mini-panel>
 
   <simple-modal-popup 
-    v-model="modal.show" 
-    :title="modal.title" 
-    confirmButtonTitle="Validé" 
-    @modalconfirm="fileElUpdated"
+        v-model="modal.show" 
+        :title="modal.title" 
+        confirmButtonTitle="Validé" 
+        @modalconfirm="fileElUpdated"
     >
         
         <div class="container-fluid">
@@ -95,17 +93,23 @@
             <div class="row mb-3">
 
                 <div class="col">
-                    <input type="text" placeholder="Nom" v-model="document.name">
+                    <div class="form-group">
+                        <label for="nom" class="text-gray font-16 almarai-bold">Nom</label>
+                        <input type="text" id="nom" class="form-control" v-model="document.name">
+                    </div>
                 </div>
                 
                 <div class="col d-flex align-items-center gap-2">
 
-                    <date-picker 
-                        :disabledToDate="disabledToDate" 
-                        name="dateExpiry" 
-                        :droppos="{ top: '40px', right: 'auto', bottom: 'auto', left: '0', transformOrigin: 'top center'}" 
-                        @changed="document.dateExpired = $event.date"
-                    />
+                    <div class="form-group">
+                        <label for="dateExpiry" class="text-gray font-16 almarai-bold">Date de validité</label>
+                        <date-picker 
+                            :disabledToDate="disabledToDate" 
+                            name="dateExpiry" 
+                            :droppos="{ top: '40px', right: 'auto', bottom: 'auto', left: '0', transformOrigin: 'top center'}" 
+                            @changed="document.dateExpired = $event.date"
+                        />
+                    </div>
 
                 </div>
 
@@ -114,16 +118,22 @@
             <div class="row mb-3">
 
                 <div class="col">
-                    <base-button title="Upload File" @click.prevent="addfile" />         
+                    <div class="form-group">
+                        <a href="#" class="link-upload text-gray font-16 almarai-bold" @click.prevent="addfile">Téléchargement le document en pdf</a>
+                    </div>
                 </div>
 
                 <div class="col">
-                    <date-picker 
-                        :disabledToDate="disabledToDate" 
-                        name="dateDocument" 
-                        :droppos="{ top: '40px', right: 'auto', bottom: 'auto', left: '0', transformOrigin: 'top center' }" 
-                        @changed="document.dateDocument = $event.date"
-                    />
+
+                    <div class="form-group">
+                        <label for="dateDocument" class="text-gray font-16 almarai-bold">Date du document</label>
+                        <date-picker 
+                            name="dateDocument" 
+                            :droppos="{ top: '40px', right: 'auto', bottom: 'auto', left: '0', transformOrigin: 'top center' }" 
+                            @changed="document.dateDocument = $event.date"
+                        />
+                    </div>
+
                 </div>
 
             </div>
@@ -142,6 +152,8 @@ import { useStore } from 'vuex'
 import Swal from 'sweetalert2'
 
 import { 
+    TOASTER_MODULE,
+    TOASTER_MESSAGE,
     PERSONNEL_UPLOAD_DOCUMENT, 
     DISPLAY_LOADER, 
     HIDE_LOADER, 
@@ -198,23 +210,8 @@ const editReport = (document) => {
 
 const addDocument = async () => {
 
-    const result = await Swal.fire({
-        title: 'Veuillez confirmer!',
-        text: `Confirm adding a document?`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#42A71E',
-        cancelButtonColor: 'var(--lcdtOrange)',
-        cancelButtonText: 'Annuler',
-        confirmButtonText: `Oui, s'il vous plaît.`
-    })
-
-    if(result.isConfirmed) {
-
-       modal.show = true
-       modal.title = 'Ajout permis / Certification'
-
-    }
+    modal.show = true
+    modal.title = 'Ajout permis / Certification'
 
 }
 
@@ -222,7 +219,7 @@ const removeReport = async (document) => {
 
     const result = await Swal.fire({
         title: 'Veuillez confirmer!',
-        text: `Are you sure you want to delete?`,
+        text: `Voulez vous archiver ce permis?`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#42A71E',
@@ -250,7 +247,7 @@ const removeDoc = async (document) => {
 
     const result = await Swal.fire({
         title: 'Veuillez confirmer!',
-        text: `Are you sure you want to delete?`,
+        text: `Voulez vous archiver ce permis?`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#42A71E',
@@ -263,7 +260,7 @@ const removeDoc = async (document) => {
 
         store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [
             true,
-            "Suppression document en cours..",
+            "Suppression permis en cours..",
         ])
     
         store.dispatch(`${PERSONNEL_LIST_MODULE}${PERSONNEL_REMOVE_DOCUMENT}`,document.id)
@@ -304,9 +301,60 @@ const fileElUpdated = () => {
         data.append('files', file, file.name)
     }
 
+    if(input.files[0]?.name == null || typeof input.files[0]?.name == 'undefined' || input.files[0]?.name == '') {
+        
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            type: 'danger',
+            message: 'Please upload document',
+            ttl: 5,
+        })
+        return
+    }
+
+    if(input.files[0]?.type != 'application/pdf') {
+        
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            type: 'danger',
+            message: 'Only pdf files are allowed',
+            ttl: 5,
+        })
+        return
+    }
+
+    if(document.name == null || typeof document.name == 'undefined' || document.name == '') {
+        
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            type: 'danger',
+            message: 'Nom is empty',
+            ttl: 5,
+        })
+        return
+    }
+
+    if(document.dateExpired == null || typeof document.dateExpired == 'undefined' || document.dateExpired == '') {
+        
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            type: 'danger',
+            message: 'Expiry date is empty',
+            ttl: 5,
+        })
+        return
+    }
+
+    if(document.dateDocument == null || typeof document.dateDocument == 'undefined' || document.dateDocument == '') {
+        
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            type: 'danger',
+            message: 'Document date is empty',
+            ttl: 5,
+        })
+        return
+    }
+
     data.append('name', document.name)
     data.append('dateExpired', document.dateExpired)
     data.append('dateDocument', document.dateDocument)
+
 
     store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [
         true,
@@ -324,8 +372,15 @@ const fileElUpdated = () => {
             document.name = null
             document.dateExpired = null
             document.dateDocument = null
+            fileUploadEl.value = null
 
         })
+        .catch(e => {
+            store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`)
+        })
+    })
+    .catch(e => {
+        store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`)
     })
     
 }
@@ -363,6 +418,7 @@ onMounted(() => {
            
 </script>
 
+
 <style lang="scss" scoped>
 
 .link {
@@ -377,6 +433,16 @@ onMounted(() => {
     display: flex;
     align-items: flex-end;
     color: #3E9A4D;
+}
+
+.link-upload {
+    top: .7rem;
+    right: 1rem;
+    font-style: normal;
+    font-size: 14px;
+    line-height: 140%;
+    display: flex;
+    align-items: flex-end;
 }
 
 .documentline {
