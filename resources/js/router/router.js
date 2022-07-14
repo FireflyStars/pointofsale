@@ -142,6 +142,24 @@ const router = createRouter({
         },
 
         {
+            path: '/personnel',
+            name: 'personnel',
+            component: () => import('../pages/Personnel/Index'),
+            meta: {
+                authenticated: true
+            },
+            children: [{
+                path: '/personnel/details/:id',
+                name: 'personnel-details',
+                component: () => import('../pages/Personnel/Details'),
+                props: true,
+                meta: {
+                    authenticated: true
+                }
+            }]
+        },
+
+        {
             path: '/contact',
             name: 'contact',
             component: () => import('../pages/contact/Index'),

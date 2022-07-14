@@ -11,6 +11,11 @@ use App\Models\ContactType;
 
 class ContactsController extends Controller
 {
+
+    public function __construct() 
+    {
+        return $this->middleware(['auth']);
+    }
     
     public function index(Request $request)
     {

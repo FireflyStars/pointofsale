@@ -50,6 +50,7 @@ import { actionCommercial as ACTION_COMMERCIAL_MODULE } from './modules/actionCo
 import { actionCoStatusTag as ACTION_COMMERCIAL_STATUS_MODULE } from './modules/component_store/actionCoStatusTag'
 
 import { contactList as CONTACT_LIST_MODULE } from './modules/contact'
+import { personnel as PERSONNEL_LIST_MODULE } from './modules/personnel'
 
 
 export default createStore({
@@ -76,6 +77,7 @@ export default createStore({
         ENTITE_LIST_MODULE,
         ACTION_COMMERCIAL_MODULE,
         ACTION_COMMERCIAL_STATUS_MODULE,
-        CONTACT_LIST_MODULE
+        CONTACT_LIST_MODULE,
+        PERSONNEL_LIST_MODULE
     }
 });

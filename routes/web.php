@@ -24,6 +24,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PageElementsController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ActionCommercialListController;
+use App\Http\Controllers\UsersController;
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
@@ -111,6 +112,16 @@ Route::post('/contact/delete/{contact}', [ ContactController::class, 'destroy' ]
     
 Route::get('/get-contact-statuses-all', [ContactsController::class, 'get_contact_statuses']);
 Route::post('/change-contact-status/{contact}', [ContactsController::class, 'change_contact_status']);
+
+Route::post('/get-user-list', [UsersController::class, 'index']);
+Route::get('/get-user-details/{user}', [UsersController::class, 'get_details']);
+
+Route::get('/load-user-documents/{user}', [UsersController::class, 'load_user_documents']);
+Route::post('/load-user-documents/{user}', [UsersController::class, 'load_user_documents']);
+Route::post('/remove-user-document/{document}', [UsersController::class, 'remove_user_document']);
+Route::post('/get-user-document-url/{document}', [UsersController::class, 'get_document_url']);
+Route::post('/upload-user-document', [UsersController::class, 'upload_user_document']);
+Route::post('/delete-user/{user}', [UsersController::class, 'delete_user']);
 
 
 // create action

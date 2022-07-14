@@ -65,6 +65,8 @@ class EntiteResource extends JsonResource
             ->first();
         }
 
+        if(is_null($address)) return [];
+
         return $address->only([
             'firstname',
             'lastname',
