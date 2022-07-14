@@ -28,6 +28,9 @@ import { orderstatetag as ORDERSTATETAG_MODULE } from "./modules/component_store
 
 import { devislist as DEVIS_LIST_MODULE } from "./modules/devislist";
 
+import { facturelist as FACTURE_LIST_MODULE } from "./modules/facturelist";
+import { invoicestatetag as INVOICESTATETAG_MODULE } from "./modules/component_store/invoicestatetag";
+
 import { toggler as TOGGLER_MODULE } from "./modules/toggler"
 
 import { PageBuilder as BUILDER_MODULE } from "./modules/PageBuilder"
@@ -47,6 +50,7 @@ import { actionCommercial as ACTION_COMMERCIAL_MODULE } from './modules/actionCo
 import { actionCoStatusTag as ACTION_COMMERCIAL_STATUS_MODULE } from './modules/component_store/actionCoStatusTag'
 
 import { contactList as CONTACT_LIST_MODULE } from './modules/contact'
+import { personnel as PERSONNEL_LIST_MODULE } from './modules/personnel'
 
 
 export default createStore({
@@ -57,6 +61,8 @@ export default createStore({
         ITEM_LIST_MODULE,
         ORDERSTATETAG_MODULE,
         DEVIS_LIST_MODULE,
+        FACTURE_LIST_MODULE,
+        INVOICESTATETAG_MODULE,
         SIDEBAR_MODULE,
         SELECT_MODULE,
         FILTER_MODULE,
@@ -71,6 +77,7 @@ export default createStore({
         ENTITE_LIST_MODULE,
         ACTION_COMMERCIAL_MODULE,
         ACTION_COMMERCIAL_STATUS_MODULE,
-        CONTACT_LIST_MODULE
+        CONTACT_LIST_MODULE,
+        PERSONNEL_LIST_MODULE
     }
 });

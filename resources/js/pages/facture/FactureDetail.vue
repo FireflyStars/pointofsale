@@ -71,7 +71,7 @@
                 <div class="col-4 almarai_700_normal font-14 lcdtgrey d-flex align-items-center">Facturation</div>
                 <div class="col-2 almarai_700_normal font-14 d-flex align-items-center">{{facturation_total_taux.toFixed(2)}}%</div>
                 <div class="col-2"></div>
-                <div class="col-2  almarai_700_normal font-14 d-flex align-items-center justify-content-end">{{formatPrice(order.total)}}</div>
+                <div class="col-2  almarai_700_normal font-14 d-flex align-items-center justify-content-end">{{formatPrice(facturation_total)}}</div>
                 <div class="col-1"></div>
                 <div class="col-1"></div>
             </div>
@@ -86,36 +86,28 @@
                 <transition-group tag="div" class="list"  name="list" appear>
             <template v-for="facture,index in facturations" :key="index">
                         <div class="row mb-3" :class="{avoir:facture.invoice_type_name=='AVOIR',remise:facture.invoice_type_name=='REMISE',facturer:(facture.invoice_type_name=='FACTURE'&&facture.facturer==1||facture.invoice_type_name==null&&facture.facturer==1),avenant:facture.invoice_type_name=='AVENANT',reste_a_facturer:facture.facturer==0}" >
-                            <div class="col-4 almarai_bold_normal font-14 invoiceline d-flex align-items-center" >{{`${facture.description}${facture.invoice_id>0?facture.invoice_type_name=='REMISE'?'':` (N°${facture.ref})`:''}`}}</div>
+                            <div class="col-4 almarai_bold_normal font-14 invoiceline d-flex align-items-center" >{{`${facture.description}${facture.invoice_id>0?` (N°${facture.invoice_type_name=='REMISE'?'R':facture.invoice_type_name=='AVOIR'?'A':'F'}${(facture.invoice_id+'').padStart(5, '0')})`:''}`}}</div>
                             <div class="col-2 almarai-light  d-flex font-14 align-items-center" :class="{dangerred:facture.sign==-1}">{{isFloat(facture.pourcentage)?facture.pourcentage.toFixed(2):facture.pourcentage}}%</div>
                             <div class="col-2 almarai-light   d-flex font-14 align-items-center justify-content-center">{{formatDate(facture.dateinvoice)}}</div>
                             <div class="col-2 almarai-light   d-flex font-14 align-items-center justify-content-end" :class="{dangerred:facture.sign==-1}">{{formatPrice(facture.sign!=null?facture.sign*facture.montant:facture.montant)}}</div>
                             <div class="col-1 d-flex align-items-center justify-content-center"> <transition
                         enter-active-class="animate__animated animate__fadeIn"
                         leave-active-class="animate__animated animate__fadeOut"
-                ><icon v-if="(facture.invoice_type_name=='FACTURE'&&facture.facturer==0||facture.invoice_type_name==null&&facture.facturer==0)" name="plus-circle" width="16px" height="16px" class="cursor-pointer" @click="createInvoice(facture)"></icon></transition></div>
+                ><icon v-if="(facture.invoice_type_name=='FACTURE'&&facture.facturer==0||facture.invoice_type_name==null&&facture.facturer==0)" name="plus-circle" width="16px" height="16px" class="cursor-pointer" @click.once="createInvoice(facture)"></icon></transition></div>
                             <div class="col-1 d-flex align-items-center justify-content-center"> <transition
                         enter-active-class="animate__animated animate__fadeIn"
                         leave-active-class="animate__animated animate__fadeOut"
-                ><icon v-if="((facture.invoice_type_name=='FACTURE')&&facture.facturer==0||facture.invoice_type_name==null&&facture.facturer==0||facture.invoice_type_name=='REMISE')" name="trash-x" width="20px" height="20px" class="cursor-pointer" @click="removeInvoice(facture)"></icon></transition></div>  
+                ><icon v-if="(facture.invoice_type_name=='FACTURE'&&facture.facturer==0||facture.invoice_type_name==null&&facture.facturer==0)" name="trash-x" width="20px" height="20px" class="cursor-pointer" @click.once="removeInvoice(facture)"></icon></transition></div>  
                         </div>
                         </template>
                             </transition-group>
-  <transition
-                        enter-active-class="animate__animated animate__fadeIn"
-                        leave-active-class="animate__animated animate__fadeOut"
-                >
-                            <div v-if="showresteafacturer" class="d-flex justify-content-center align-items-center lcdtgrey font-12">
-                                <div>Reste à facturer: {{formatPrice(reste_a_facturer)}}</div>
-                            </div>
-  </transition>
             <transition
                         enter-active-class="animate__animated animate__fadeIn"
                         leave-active-class="animate__animated animate__fadeOut"
                 >
                         <div class="d-flex justify-content-evenly mt-4" v-if="showFactureBtn">
                             <span v-if="order.total>0&&facturation_total_taux<100" class="font-14 mulish_600_normal facture_action noselect" @click="new_echeance"><icon name="plus-circle" width="16px" height="16px" /> AJOUTER ÉCHEANCE</span>
-                            <span v-if="reste_a_facturer>0" class="font-14 mulish_600_normal facture_action  noselect" @click="new_remise" ><icon name="plus-circle" width="16px" height="16px"/> AJOUTER REMISE</span>
+                            <span class="font-14 mulish_600_normal facture_action  noselect" @click="new_remise" ><icon name="plus-circle" width="16px" height="16px"/> AJOUTER REMISE</span>
                         <span class="font-14 mulish_600_normal facture_action  noselect" @click="new_avoir" ><icon name="plus-circle" width="16px" height="16px"/> AJOUTER AVOIR</span>
                         </div>    
                 </transition>
@@ -123,7 +115,6 @@
      
      </template>
          </transition>
-       
  <transition
                         enter-active-class="animate__animated animate__fadeIn"
                         leave-active-class="animate__animated animate__fadeOut"
@@ -218,31 +209,7 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                             taux:'',
                             date:'',
                             montant:0
-                        })    
-            const showresteafacturer=ref(false);            
-            const orderObj=ref({});                 
-            const reste_a_facturer=ref(0);
-            const total_remise=ref(0);
-            const total_facture=ref(0);
-            const total_taux_facture=ref(0);
-            const order_total=ref(0);
-
-            watch(()=>orderObj.value,(current_val,previous_val)=>{
-                order_total.value=current_val.value.total;
-                 reste_a_facturer.value=current_val.value.total-total_remise.value-total_facture.value;
-            },{
-                deep:true
-            })
-
-            watch(()=>total_remise.value,(current_val,previous_val)=>{
-                reste_a_facturer.value=order_total.value-current_val-total_facture.value;
-            });
-            watch(()=>total_facture.value,(current_val,previous_val)=>{
-                reste_a_facturer.value=order_total.value-total_remise.value-current_val;
-               
-            });
-
-
+                        })         
 
             onMounted(()=>{
                 store.commit(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_SET_FACTURATION}`,[]);
@@ -256,7 +223,6 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                     if(response.data.state.order_type=='COMMANDE'){
                         store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_LOAD_FACTURATION}`).then((response)=>{
                             showloader.value=false;
-                            showresteafacturer.value=true;
                             showFactureBtn.value=true;
                         });
                     }else{
@@ -267,7 +233,6 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                 
             })
             const order=computed(()=>store.getters[`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_GET}`]);
-            orderObj.value=computed(()=>store.getters[`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_GET}`]);
             const facturations=computed(()=>store.getters[`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_GET_FACTURATION}`]);
 
              const order_states=computed(()=>store.getters[`${ORDERSTATETAG_MODULE}${ORDERSTATETAG_GET_ORDER_STATES}`]);
@@ -295,25 +260,9 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                 });      
             }
               watch(() =>facturations.value, (current_val, previous_val) => {
-
-                //
-                    total_facture.value=0;
-                    total_taux_facture.value=0;
-                    total_remise.value=0;
-                //    
-
                 let percentage=0;
                 let total=0
                 for(const i in current_val){
-                    if(current_val[i].invoice_type_name=='FACTURE'&&current_val[i].facturer==1){
-                    total_facture.value+=current_val[i].montant;
-                    total_taux_facture.value+=current_val[i].pourcentage;
-                    }
-                    if(current_val[i].invoice_type_name=='REMISE'){
-                    total_remise.value+=current_val[i].montant;
-                    }
-                    
-
                     if(current_val[i].sign==-1){
                         total-=current_val[i].montant;
                        // percentage-=current_val[i].pourcentage;
@@ -367,9 +316,8 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                 facture.value.invoice_type_id=1;
        
                 let taux=(100-facturation_total_taux.value);
-                let montant=reste_a_facturer.value/(100-total_taux_facture.value)*taux;
                 facture.value.taux=`${Math.abs(taux)}%`;
-                facture.value.montant=Math.abs(montant);
+                facture.value.montant=Math.abs((order.value.total/100)*taux);
                 
       
                         }
@@ -456,7 +404,17 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                             
                             });
                       }else   if(facture.value.invoice_type_id==2){
-                            showmodal_facturation.value=false;
+                        Swal.fire({
+                                title: 'Veuillez confirmer!',
+                                text: `Voulez-vous rajouter un remises? Cette action est irréversible.`,
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#42A71E',
+                                cancelButtonColor: 'var(--lcdtOrange)',
+                                cancelButtonText: 'Annuler',
+                                confirmButtonText: `Oui, s'il vous plaît.`
+                            }).then((result) => {
+                                showmodal_facturation.value=false;
                                 showloader.value=true;
                                 store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_NEW_FACTURATION}`,facture.value).then(response=>{
                                     store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_LOAD_FACTURATION}`).then(response=>{
@@ -464,6 +422,8 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                                     });
                                 
                                 });
+                                
+                            });
                       }else   if(facture.value.invoice_type_id==3){
                         Swal.fire({
                                 title: 'Veuillez confirmer!',
@@ -489,7 +449,7 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                 }
             }   
             const checktaux=(event)=>{
-   
+              console.log(facture.value);
                 let allowedkey=['0','1','2','3','4','5','6','7','8','9','.','Enter','Backspace','Delete'].filter(key=>key==event.key);
                 if(allowedkey.length>0){
                     if(facture.value.invoice_type_id==1){
@@ -499,28 +459,15 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                         if(taux>(100-facturation_total_taux.value))
                         taux=100-facturation_total_taux.value;
                      
-                        let montant=reste_a_facturer.value/(100-total_taux_facture.value)*taux;
 
                         facture.value.taux=isNaN(taux)?'':`${Math.abs(taux)}`;
-                        facture.value.montant=isNaN(taux)?'':Math.abs(montant);
+                        facture.value.montant=isNaN(taux)?'':Math.abs((order.value.total/100)*taux);
                     }
-                     if(facture.value.invoice_type_id==2){
+                     if(facture.value.invoice_type_id==2||facture.value.invoice_type_id==3){
                         let taux=parseFloat(facture.value.taux);
-                 
-                        if(taux>(100-total_taux_facture.value))
-                        taux=100-total_taux_facture.value;
-                        if(taux==0)
-                        taux=parseFloat(facture.value.taux);
-                              let montant=reste_a_facturer.value/(100-total_taux_facture.value)*taux;
-
-                        facture.value.taux=isNaN(taux)?'':`${Math.abs(taux)}`;
-                        facture.value.montant=isNaN(taux)?'':Math.abs(montant);
-                    }
-
-                    if(facture.value.invoice_type_id==3){
-                        let taux=parseFloat(facture.value.taux);
-                        if(taux>total_taux_facture.value)
-                        taux=total_taux_facture.value;
+                     
+                        if(taux>(100-facturation_total_taux.value))
+                        taux=100-facturation_total_taux.value;
                         if(taux==0)
                         taux=parseFloat(facture.value.taux);
                            
@@ -528,48 +475,25 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                         facture.value.taux=isNaN(taux)?'':`${Math.abs(taux)}`;
                         facture.value.montant=isNaN(taux)?'':Math.abs((order.value.total/100)*taux);
                     }
-
-                    
                 }
             } 
           
             const checkmontant=()=>{
                 if(facture.value.invoice_type_id==1||((facture.value.invoice_type_id==2||facture.value.invoice_type_id==3))&&order.value.total>0){
         
-                    let montant=parseFloat(facture.value.montant);
-                    let taux=0;
+                    let montant=facture.value.montant;
                     
-                    if(facture.value.invoice_type_id==1){
-                    if(montant>reste_a_facturer.value.toFixed(2)){
-                          montant=reste_a_facturer.value.toFixed(2);  
+                    if(montant>(order.value.total-facturation_total.value.toFixed(2))){
+                          montant=order.value.total-facturation_total.value.toFixed(2);  
+                            
                     }
-                        reste_a_facturer.value/(100-total_taux_facture.value)*taux;
-                        taux=(montant*(100-total_taux_facture.value))/reste_a_facturer.value;
-                    }
-
-                    if(facture.value.invoice_type_id==2){//Regle 1 : La somme des remises ne doit jamais est superieur a la somme A FACTURER 
-                        if(montant>reste_a_facturer.value.toFixed(2)){
-                            montant=reste_a_facturer.value.toFixed(2);  
-                        }
-                        taux=(montant/order.value.total)*100;
-                    }
-                    if(facture.value.invoice_type_id==3){
-                        if(montant>total_facture.value.toFixed(2)){//Regle2 : La somme des avoirs ne doit pas depasser la somme des FACTURES
-                            montant=total_facture.value.toFixed(2);  
-                        }
-                       taux=(montant/order.value.total)*100;
-                    }
-
-
-      
-          
                     if(montant==0&&(facture.value.invoice_type_id==2||facture.value.invoice_type_id==3)){
                         montant=facture.value.montant;
                     }
-
+             
                     facture.value.montant=Math.abs(montant);
-                   
-                    facture.value.taux=`${Math.abs(taux).toFixed(2)}%`;
+                    let taux=(montant/order.value.total)*100;
+                    facture.value.taux=`${Math.abs(taux)}%`;
                 }
 
             }
@@ -596,11 +520,10 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
             const removeInvoice=(facture)=>{
                                     showloader.value=true;
                 store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_REMOVE_FACTURATION}`,facture).then(()=>{
-
-                     store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_LOAD_FACTURATION}`).then(response=>{
-                                        showloader.value=false;
-                                    });
-                });
+                    showloader.value=false;
+                }).finally(()=>{
+                       showloader.value=false;
+                })
             }
              return {
                  show,
@@ -625,9 +548,7 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                  modal_facturation_title,
                  disabledToDate,
                  facturation_total_taux,
-                 showresteafacturer,
-               //  facturation_total,
-                 reste_a_facturer,
+                 facturation_total,
                  checktaux,
                  checkmontant,
                  addper,

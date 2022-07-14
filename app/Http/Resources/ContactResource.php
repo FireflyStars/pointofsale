@@ -22,8 +22,18 @@ class ContactResource extends JsonResource
             'contact_type'    => $this->contact_type,
             'customer'        => $this->get_customer($this),
             'address'         => $this->get_address($this), 
-            'event_history'   => $this->get_event_history($this)  
+            'event_history'   => $this->get_event_history($this),
+            'orders'          => $this->get_orders($this)    
         ];
+    }
+
+    private function get_orders($contact) 
+    {
+        return $contact->customer->orders()
+        ->take(3)
+        ->latest('created_at')
+        ->get()
+        ->load('user', 'state');
     }
     
     private function get_customer($contact) 

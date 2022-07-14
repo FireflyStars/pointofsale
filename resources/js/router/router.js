@@ -28,6 +28,25 @@ const router = createRouter({
 
         },
         {
+            path:'/facture',
+            name:'FacturePage',
+            component:()=> import('../pages/facture/Facture.vue'),//import('../Pages/Index'),
+            children:[
+                {
+                    path:'/facture/detail/:id',
+                    name:'FactureDetail',
+                    component:()=> import('../pages/facture/FactureDetail.vue'),
+                    meta:{
+                        authenticated:false
+                    }
+                },
+            ],
+            meta:{
+                authenticated:true
+            },
+
+        },
+        {
             path:'/devis/create',
             name:'CreateDevis',
             component: () => import('../pages/devis/Create'),
@@ -120,6 +139,24 @@ const router = createRouter({
             meta: {
                 authenticated: true
             },
+        },
+
+        {
+            path: '/personnel',
+            name: 'personnel',
+            component: () => import('../pages/Personnel/Index'),
+            meta: {
+                authenticated: true
+            },
+            children: [{
+                path: '/personnel/details/:id',
+                name: 'personnel-details',
+                component: () => import('../pages/Personnel/Details'),
+                props: true,
+                meta: {
+                    authenticated: true
+                }
+            }]
         },
 
         {

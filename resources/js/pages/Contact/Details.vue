@@ -70,10 +70,6 @@
 
         <div class="row" style="margin-top: 1.875rem;">
             <div class="col">
-                <span class="title-label">Contact</span>
-                <span class="detail" v-html="contact"></span>
-            </div>
-            <div class="col">
                 <span class="title-label">Mode de paiement</span>
                 <span class="detail">{{ details?.customer?.paiement?.name || '--/--'  }}</span>
             </div>
@@ -118,7 +114,7 @@
         >
 
             <div class="d-flex align-items-center gap-3">
-                <div class="radio-button" style="width: 15px;"></div>
+                <div class="radio-button" style="width: 13px;"></div>
                 <div>{{ history.created_at ? moment(history.created_at).format('DD/MM/Y HH:mm') : '' }}</div>
             </div>
 
@@ -138,7 +134,10 @@
     </div>
 
 
-    <div class="devis-section position-relative" v-if="show && details.orders?.length">
+    <div 
+        v-if="show && details.orders?.length"
+        class="devis-section position-relative"
+    >
 
         <a 
             href="#" 
@@ -254,13 +253,12 @@
             
             <div class="col-8 d-flex align-items-center gap-2">
 
-                 <select-box
+                <select-box
                     v-model="status" 
                     placeholder="Choose Status" 
-                    :options="[]" 
-                    name="user_list" 
-                    label="User List"
-                    :disabled="true" 
+                    :options="statuses" 
+                    name="contact_status_list" 
+                    :disabled="!statuses.length" 
                 />
 
             </div>
@@ -294,7 +292,8 @@ import {
     ITEM_LIST_MODULE,
     ITEM_LIST_REMOVE_ROW,
     GET_CONTACT_RESULTS,
-    CHANGE_EVENT_STATUS
+    CHANGE_CONTACT_STATUS,
+    GET_CONTACT_STATUSES
 }
 from '../../store/types/types'
 
@@ -310,27 +309,19 @@ const router = useRouter()
 const showloader = ref(false)
 const show = ref(true)
 const comment = ref(null)
+const status = ref(null)
 const modal = reactive({
     show: false,
-    title: 'Change Litige'
+    title: 'Change Status'
 })
 
 const fetched = reactive({
     event_history: false,
     orders: false,
-    event_invoices: false,
 })
 
 const details = computed(() => store.getters[`${CONTACT_LIST_MODULE}details`])
 const loading = computed(() => store.getters[`${CONTACT_LIST_MODULE}loading`])
-
-const actifBackground = computed(() => {
-    return details.value?.active == 1 ? 'rgba(66, 167, 30, 0.2)' : '#ff000045'
-})
-
-const litigeBackground = computed(() => {
-    return details.value?.litige == 1 ? 'rgba(66, 167, 30, 0.2)' : '#ff000045'
-})
 
 
 const formattedAddress = computed(() => {
@@ -351,18 +342,13 @@ const formattedAddress = computed(() => {
     `
 })
 
-const contact = computed(() => {
-    
-    if(typeof details.value?.contact == 'undefined') return '--/--'
-    if(!Object.entries(details.value?.contact).length) return '--/--'
-
-    const { name = '', email = '', mobile = '' } = details.value?.contact
-
-    return `
-        ${name ? name + '<br>' : ''}
-        ${email ? email + '<br>' : ''}
-        ${mobile || ''}
-    `
+const statuses = computed(() => {
+    return store.getters[`${CONTACT_LIST_MODULE}statuses`].map(status => {
+        return {
+            display: status.name,
+            value: status.id
+        }
+    })
 })
 
 
@@ -410,6 +396,7 @@ const changeStatus = async () => {
 
     if (result.isConfirmed) {
         modal.show = true
+        store.dispatch(`${CONTACT_LIST_MODULE}${GET_CONTACT_STATUSES}`)
     }
 
 }
@@ -418,11 +405,26 @@ const confirmChangeStatus = async () => {
     
     try {
 
+        if(!status.value) {
+             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                type: 'danger',
+                message: 'Please enter a status',
+                ttl: 5,
+            })
+            return
+        }
+
         showloader.value = true
         modal.show = false
-        await store.dispatch(`${CONTACT_LIST_MODULE}${CHANGE_EVENT_STATUS}`, { 
+        await store.dispatch(`${CONTACT_LIST_MODULE}${CHANGE_CONTACT_STATUS}`, { 
             id: details.value.id, 
-            comment: comment.value 
+            statusId: status.value 
+        })
+
+        store.commit(`${ITEM_LIST_MODULE}${ITEM_LIST_REMOVE_ROW}`, { id: 'id', idValue: details.value?.id })
+
+        router.replace({
+            name: 'contact'
         })
 
     }
@@ -663,7 +665,7 @@ textarea {
 
 .devis-section {
     .title-rows, .detail-rows {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(6, 1fr) !important;
     }
 }
 

@@ -2,19 +2,24 @@
 
 namespace App\Models;
 
+use App\Models\Report;
 use App\Models\Campagne;
+use App\Models\UserType;
 use App\Models\Affiliate;
+use App\Models\UserStatus;
+use App\Models\UserDocument;
 use App\Models\campagne_card;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends \TCG\Voyager\Models\User
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -75,6 +80,26 @@ class User extends \TCG\Voyager\Models\User
     public function campagnes() 
     {
         return $this->hasMany(Campagne::class);
+    }
+
+    public function type() 
+    {
+        return $this->belongsTo(UserType::class, 'user_type_id');
+    }
+
+    public function status() 
+    {
+        return $this->belongsTo(UserStatus::class, 'user_status_id');
+    }
+
+    public function reports() 
+    {
+        return $this->hasMany(Report::class);
+    }
+
+    public function documents() 
+    {
+        return $this->hasMany(UserDocument::class);
     }
 
 }

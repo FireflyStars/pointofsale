@@ -151,7 +151,7 @@ class DevisController extends Controller
         return response('Order is not affiliated to user.Cannot load invoices.',509);
 
 
-        $orderInvoices=DB::table('order_invoices')->select(['order_invoices.*','invoice_type.sign','invoice_type.name as invoice_type_name','invoice_type.color as invoice_type_color'])->leftJoin('invoices',function($join){
+        $orderInvoices=DB::table('order_invoices')->select(['order_invoices.*','invoice_type.sign','invoice_type.name as invoice_type_name','invoice_type.color as invoice_type_color','invoices.reference as ref'])->leftJoin('invoices',function($join){
              $join->on('invoices.order_invoice_id','=','order_invoices.id')
              ->whereNull('invoices.deleted_at');  
         })->leftJoin('invoice_type',function($join){
@@ -265,12 +265,15 @@ class DevisController extends Controller
         if($order->affiliate_id!=$user->affiliate_id)
         return response('Order is not affiliated to user.Cannot add invoice.',509);
     
+
+       
      
+  
 
         $oi=new OrderInvoice();
         $oi->description=$description;
         $oi->dateinvoice=$date;
-        $oi->pourcentage=str_replace('%','',$taux);
+        $oi->pourcentage=$taux;
         $oi->montant=$montant;
         $oi->order_id=$order_id;
         $oi->save();
@@ -280,8 +283,8 @@ class DevisController extends Controller
             $oi->facturer=1;
             $in=new Invoice();
             $in->order_id=$order_id;
-            $in->montant=$montant;
-            $in->pourcentage=str_replace('%','',$taux);
+            $in->montant=$oi->montant;
+            $in->pourcentage=str_replace('%','',$oi->pourcentage);
             $in->lang_id=1;
             $in->customer_id=$order->customer_id;
             $in->order_invoice_id=$oi->id;
@@ -291,11 +294,50 @@ class DevisController extends Controller
             $in->dateecheance=$date;
             $in->save();
             $in->fresh();
+            $in->reference='PROV'.$in->id;
             $in->updateState(1);//creation
             $oi->invoice_id=$in->id;
             $oi->save();
          
 
+        }
+
+        $orderInvoices=DB::table('order_invoices')->select(['order_invoices.*','invoice_type.sign','invoice_type.name as invoice_type_name','invoice_type.color as invoice_type_color'])->leftJoin('invoices',function($join){
+            $join->on('invoices.order_invoice_id','=','order_invoices.id')
+            ->whereNull('invoices.deleted_at');  
+       })->leftJoin('invoice_type',function($join){
+            $join->on('invoice_type.id','=','invoices.invoice_type_id')
+            ->whereNull('invoice_type.deleted_at');  
+       })->where('order_invoices.order_id','=',$order->id)
+       ->whereNull('order_invoices.deleted_at')->get();
+     
+       $reste_a_facturer=0;
+       $total_facture=0;
+       $total_taux_facture=0;
+       $total_remise=0;
+ 
+
+       foreach($orderInvoices as $orderInvoice){
+         if($orderInvoice->invoice_type_name=='FACTURE'&&$orderInvoice->facturer==1){
+            $total_facture+=$orderInvoice->montant;
+            $total_taux_facture+=$orderInvoice->pourcentage;
+         }
+         if($orderInvoice->invoice_type_name=='REMISE'){
+            $total_remise+=$orderInvoice->montant;
+         }
+       }
+     
+       $reste_a_facturer=$order->total-$total_remise-$total_facture;
+
+        if($invoice_type_id==2){// mettre a jour les echeance qui ne sont pas encore facturer
+            foreach($orderInvoices as $orderInvoice){
+                if($orderInvoice->invoice_type_name==''&&$orderInvoice->facturer==0){
+                    $montant=($reste_a_facturer/(100-$total_taux_facture)*$orderInvoice->pourcentage);
+                    $oi=OrderInvoice::find($orderInvoice->id);
+                    $oi->montant=$montant;
+                    $oi->save();
+                }
+            }
         }
 
 
@@ -315,10 +357,62 @@ class DevisController extends Controller
         if($order->affiliate_id!=$user->affiliate_id)
         return response('Order is not affiliated to user.Cannot delete invoice.',509);
 
-        if($oi->invoice_id>0)
-        return response('Invoice already exists.Cannot delete',509);
+        if($oi->invoice_id>0){
+            $invoice=Invoice::find($oi->invoice_id);
+            if($invoice->invoice_type_id!=2)
+                return response('Invoice already exists.Cannot delete',509);
+
+   
+         
+            if($invoice->invoice_type_id==2&&$invoice->invoice_state_id==1){//if remise and still in creation we can delete remise
+                $invoice->delete();   
+        }
 
         $oi->delete();
+
+
+        if($invoice_type_name=='REMISE'){
+             // mettre a jour les echeance qui ne sont pas encore facturer
+             $orderInvoices=DB::table('order_invoices')->select(['order_invoices.*','invoice_type.sign','invoice_type.name as invoice_type_name','invoice_type.color as invoice_type_color'])->leftJoin('invoices',function($join){
+                $join->on('invoices.order_invoice_id','=','order_invoices.id')
+                ->whereNull('invoices.deleted_at');  
+           })->leftJoin('invoice_type',function($join){
+                $join->on('invoice_type.id','=','invoices.invoice_type_id')
+                ->whereNull('invoice_type.deleted_at');  
+           })->where('order_invoices.order_id','=',$order->id)
+           ->whereNull('order_invoices.deleted_at')->get();
+         
+           $reste_a_facturer=0;
+           $total_facture=0;
+           $total_taux_facture=0;
+           $total_remise=0;
+     
+  
+           foreach($orderInvoices as $orderInvoice){
+             if($orderInvoice->invoice_type_name=='FACTURE'&&$orderInvoice->facturer==1){
+                $total_facture+=$orderInvoice->montant;
+                $total_taux_facture+=$orderInvoice->pourcentage;
+             }
+             if($orderInvoice->invoice_type_name=='REMISE'){
+                $total_remise+=$orderInvoice->montant;
+             }
+           }
+         
+           $reste_a_facturer=$order->total-$total_remise-$total_facture;
+    
+
+                foreach($orderInvoices as $orderInvoice){
+                    if($orderInvoice->invoice_type_name==null&&$orderInvoice->facturer==0){
+                       
+                        $montant=($reste_a_facturer/(100-$total_taux_facture)*$orderInvoice->pourcentage);
+                        $oi=OrderInvoice::find($orderInvoice->id);
+                        $oi->montant=$montant;
+                        $oi->update();
+                    }
+                }
+               
+            }
+        }
 
         return response()->json(array('message'=>'ok'));
     }
@@ -354,9 +448,11 @@ class DevisController extends Controller
         $in->dateecheance=$oi->dateinvoice;
         $in->save();
         $in->fresh();
+        $in->reference='PROV'.$in->id;
         $in->updateState(1);//creation
         $oi->invoice_id=$in->id;
         $oi->save();
+        $in->ref=$in->reference;
 
 
         return response()->json(array('message'=>'ok','invoice'=>$in));

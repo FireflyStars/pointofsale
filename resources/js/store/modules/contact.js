@@ -9,8 +9,9 @@ import {
     SAVE_CONTACT_DETAILS,
     GET_CONTACT_RESULTS,
     UPDATE_CONTACT_RESULTS,
-    GET_EVENT_STATUSES,
-    CHANGE_EVENT_STATUS,
+    GET_CONTACT_STATUSES,
+    SAVE_CONTACT_STATUSES,
+    CHANGE_CONTACT_STATUS,
 }
 from '../types/types'
 
@@ -107,33 +108,20 @@ const table = {
             ]
         },
         {
-            id: "created_at",
+            id: "customer_name",
             display_name: "Entité",
-            type: "date",
-            format: "DD/MM/YY",
+            type: "string",
             class: "justify-content-start",
             header_class: "",
             sort: true,
             filter: true,   
-            having: false,
-            prefix: "",
-            suffix: "",
-            allow_groupby: true,
-            table: "contacts"
-        },
-        {
-            id: "nb",
-            display_name: "TYPE ACTION",
-            type: "string",
-            class: "justify-content-start",
-            header_class: "",
-            sort: false,
-            filter: false,   
             having: true,
             prefix: "",
             suffix: "",
+            allow_groupby: true,
+            table: "customers"
         }
-    
+
     ],
     
     batch_actions: {
@@ -215,7 +203,9 @@ export const contactList = {
         loading: {
             id: 0,
             status: false
-        }
+        },
+
+        statuses: []
 
     },
 
@@ -223,7 +213,8 @@ export const contactList = {
         contactList: state => state.table_def,
         contactUserList: state => state.campagnes_user_table_def,
         loading: state => state.loading,
-        details: state => state.details
+        details: state => state.details,
+        statuses: state => state.statuses,
     },
 
     mutations: {
@@ -238,7 +229,10 @@ export const contactList = {
             state.details = data
         },
         [UPDATE_CONTACT_RESULTS](state, { data, type }) {
-            state.details.event_history = data
+            state.details[type] = data
+        },
+        [SAVE_CONTACT_STATUSES](state, data) {
+            state.statuses = data
         }
     },
 
@@ -301,13 +295,13 @@ export const contactList = {
         },
 
 
-        async [GET_EVENT_STATUSES]({ commit, state }) {
+        async [GET_CONTACT_STATUSES]({ commit, state }) {
 
-            if(state.eventStatuses.length) return 
+            if(state.statuses.length > 0) return 
 
             try {
-                const { data } = await axios.get('/get-event-statuses-all')
-                commit(SAVE_EVENT_STATUSES, data)
+                const { data } = await axios.get('/get-contact-statuses-all')
+                commit(SAVE_CONTACT_STATUSES, data)
             }
 
             catch(e) {
@@ -316,14 +310,12 @@ export const contactList = {
 
         },
 
-        async [CHANGE_EVENT_STATUS](_, data) {
+        async [CHANGE_CONTACT_STATUS](_, data) {
 
-            const { id, statusId, annuler = false } = data
+            const { id, statusId } = data
 
-            await axios.post(`/change-event-status/${id}`, {
-                id,
+            await axios.post(`/change-contact-status/${id}`, {
                 statusId,
-                annuler
             })
 
         }

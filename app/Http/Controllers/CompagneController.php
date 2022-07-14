@@ -2070,6 +2070,6 @@ class CompagneController extends Controller
     {
         $path=$request->get('path');
         $filename=$request->get('filename');
-        return response()->download(Storage::path('public/'.$path), $filename);
+        return response()->download(Storage::path('public/' . $path), $filename);
     }
 }

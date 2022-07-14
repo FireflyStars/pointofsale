@@ -1,13 +1,13 @@
-import {  DEVISLIST_LOAD_TAB, DEVISLIST_SET_LIST, DEVIS_LIST_MODULE, GET_DEVIS_LIST_DEF } from "../types/types";
+import {  FACTURELIST_LOAD_TAB, FACTURELIST_SET_LIST, FACTURE_LIST_MODULE, GET_FACTURE_LIST_DEF } from "../types/types";
 
-export const devislist= {
+export const facturelist= {
     namespaced:true,
     state: {
       
         table_def: {
             store:{
-              MODULE:DEVIS_LIST_MODULE,//required
-              INIT:DEVISLIST_LOAD_TAB,//required
+              MODULE:FACTURE_LIST_MODULE,//required
+              INIT:FACTURELIST_LOAD_TAB,//required
             },
             // batch_actions:{
             //     delete:{
@@ -21,8 +21,8 @@ export const devislist= {
 
             // },
             translations:{
-              group_item:'devis',
-              group_items:'devis',
+              group_item:'facture',
+              group_items:'factures',
               footer_item:'ITEM',
               footer_items:'ITEMS',
               no_batch_action:"Aucune action par lot n'est disponible.",
@@ -36,9 +36,9 @@ export const devislist= {
                   color:'#fd3b35'
                 }
             ,
-            item_route_name:"DevisDetail",// the route to trigger when a line is click 
+            item_route_name:"FactureDetail",// the route to trigger when a line is click 
             max_per_page:10,//required          
-            identifier:"devislist_all",//required
+            identifier:"facturelist_all",//required
             filter:true,// required boolean
             rearrange_columns:true,// required boolean
             columns_def:[
@@ -56,17 +56,29 @@ export const devislist= {
                   } , 
                {
                  id:"id",
-                 display_name:"No DEVIS",
+                 display_name:"N° FACTURE",
                  type:"string",
                  class:"",
                  header_class:"",
                  sort:true,
                  filter:true,
-                 table:'orders',
+                 table:'invoices',
                  prefix:"",
                  suffix:"",
                },     
-               
+               {
+                id:"order_id",
+                display_name:"N° Commande",
+                type:"string",
+                class:"",
+                header_class:"",
+                sort:true,
+                filter:true,
+                table:'invoices',
+                prefix:"",
+                suffix:"",
+                allow_groupby:true,
+              },  
               {
                 id:"customer",
                 display_name:"CLIENT",
@@ -81,7 +93,7 @@ export const devislist= {
               },
               {
                 id:"contact",
-                display_name:"CONTACT",
+                display_name:"Contact",
                 type:"html",
                 class:"",
                 header_class:"",
@@ -105,56 +117,28 @@ export const devislist= {
                 suffix:"",
               },
               {
-                id:"created_at",
-                display_name:"DATE CREATION",
+                id:"dateecheance",
+                display_name:"Date échéance",
                 type:"date",
                 format:"DD/MM/YY",
                 class:"",
                 header_class:"",
                 sort:true,
                 filter:true,   
-                table:'orders',
+                table:'invoices',
                 allow_groupby:true,
               },
+             
+       
               {
-                id:"updated_at",
-                display_name:"Mis à jour",
-                type:"date",
-                format:"DD/MM/YY",
-                class:"",
-                header_class:"",
-                sort:true,
-                filter:true,   
-                table:'orders',
-                allow_groupby:true,
-              },
-              {
-                id:"responsable",
-                display_name:"Responsable",
-                type:"string",
-                class:"",
-                header_class:"",
-                sort:true,
-                filter:true,   
-                having:true,
-                filter_options:[
-                  { id: 'John Doe', value: 'John Doe'},
-                 
-      
-              ],
-                prefix:"",
-                suffix:"",
-                allow_groupby:true,
-              },
-              {
-                id:"order_state_id",
+                id:"invoice_state_id",
                 display_name:"Statut",
                 type:"component",
                 class:"",
                 header_class:"",
                 sort:true,
                 filter:true,   
-                filter_options:'/get-order-states-formatted',
+                filter_options:'/get-invoice-states-formatted',
                 allow_groupby:true,
               },
               {
@@ -171,22 +155,23 @@ export const devislist= {
 
               },
               {
-                id:"nbheure",
-                display_name:"MO",
+                id:"pourcentage",
+                display_name:"Pourcentage",
                 type:"number",
                 class:"justify-content-center",
                 header_class:"",
                 sort:true,
-                filter:true, 
-                having:true,
+                filter:true,   
+                group_total:true,
+                footer_total:true,
                 prefix:"",
-                suffix:" hr",
-                group_total:true,  
-                footer_total:true
+                suffix:"%",  
+                tofixed:2,
+ 
               },
               {
-                id:"total",
-                display_name:"MONTANT",
+                id:"montant",
+                display_name:"Facturer",
                 type:"price",
                 class:"justify-content-center",
                 header_class:"",
@@ -198,6 +183,21 @@ export const devislist= {
                 suffix:"",  
  
               },
+              {
+                id:"payer",
+                display_name:"Payer",
+                type:"price",
+                class:"justify-content-center",
+                header_class:"",
+                sort:true,
+                filter:true,   
+                group_total:true,
+                footer_total:true,
+                prefix:"",
+                suffix:"",  
+                having:true,
+ 
+              },
             ]
 
             
@@ -206,15 +206,15 @@ export const devislist= {
         
     },
     mutations: {
-      [DEVISLIST_SET_LIST]:(state,list)=>{
+      [FACTURELIST_SET_LIST]:(state,list)=>{
         state.list=list;
       }
     },
     actions: {
-      [DEVISLIST_LOAD_TAB]:async({commit,state,dispatch},params)=>{
+      [FACTURELIST_LOAD_TAB]:async({commit,state,dispatch},params)=>{
  
         params.myparam=1
-        return axios.post(`/get-devis-list`,params).then((response)=>{
+        return axios.post(`/get-invoice-list`,params).then((response)=>{
           return  Promise.resolve(response);
                 
         }).catch((error)=>{
@@ -223,6 +223,6 @@ export const devislist= {
     },
     },
     getters: {
-        [GET_DEVIS_LIST_DEF]: state => state.table_def,
+        [GET_FACTURE_LIST_DEF]: state => state.table_def,
     }
 }

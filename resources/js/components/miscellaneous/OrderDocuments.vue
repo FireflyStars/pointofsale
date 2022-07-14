@@ -55,7 +55,8 @@ export default {
             }
         },
         setup(props){
-              const { generatePdfById,deleteReport } = useReports();
+            
+            const { generatePdfById,deleteReport } = useReports();
             const store=useStore();
             const router=useRouter();
             
@@ -67,7 +68,7 @@ export default {
             const documents=computed(()=>store.getters[`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_GET_ORDER_DOCUMENTS}`]);
             const editReport=(document)=>{
               
-                router.push({ name: 'edit-report-page', params: { id: document.id } });
+                router.push({ name: 'edit-report-page', params: { id: document.id, orderId: props.order_id } });
             }
             const  removeReport=async (document)=>{
                   store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [

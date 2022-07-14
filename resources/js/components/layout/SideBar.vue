@@ -83,6 +83,8 @@
         <path transform="translate(5,7)"  d="M2 2.5V0.993C2.00183 0.730378 2.1069 0.479017 2.29251 0.293218C2.47813 0.107418 2.72938 0.00209465 2.992 0H21.008C21.556 0 22 0.445 22 0.993V17.007C21.9982 17.2696 21.8931 17.521 21.7075 17.7068C21.5219 17.8926 21.2706 17.9979 21.008 18H2.992C2.72881 17.9997 2.4765 17.895 2.29049 17.7088C2.10448 17.5226 2 17.2702 2 17.007V16H20V4.3L12 11.5L2 2.5ZM0 7H5V9H0V7ZM0 12H8V14H0V12Z" fill="black"/>
         </svg>
 
+<svg     @click="router.push({ name: 'FacturePage' })" :class="route_name =='FacturePage' ? 'active' :''" width="32" height="32"  class="side-icons stroke-able" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect x="0.40404" y="-0.36317" width="32" height="32" rx="8" ry="8" fill="none"/><path d="M24.70872,9.10041,20.3642,5.05353a.532.532,0,0,0-.36323-.143H8.46315a.53364.53364,0,0,0-.53385.53341V25.8294a.534.534,0,0,0,.53385.53376H24.34482a.53373.53373,0,0,0,.534-.53351V9.4909A.53441.53441,0,0,0,24.70872,9.10041Zm-4.69-2.9105,3.49765,3.25784H20.01876ZM9.7483,19.56593h-.752V18.21464h.75144c-.00564.16207-.00816.3796-.00816.658C9.73959,19.16563,9.74205,19.3947,9.7483,19.56593Zm-.752,1.24248h.8463c.30322,2.46606,1.2409,3.96627,2.78928,4.48759H8.99631Zm14.81547,4.48784H15.43222c1.5588-.497,2.45428-1.88364,2.66179-4.14885l.01627-.17809H16.12261l-.01376.14777c-.1804,1.882-.87517,2.797-2.12279,2.797-1.187,0-1.89-1.01668-2.14545-3.10561h2.5378l.34837-1.24218H11.74414c-.00645-.16846-.00942-.40089-.00942-.69325,0-.27874.00292-.49935.00881-.65809H14.4328l.34837-1.24217H11.83975c.25351-2.10677.97537-3.17474,2.14594-3.17474a1.77446,1.77446,0,0,1,1.43683.66061,3.41419,3.41419,0,0,1,.686,1.9049l.01376.14776h1.994l-.023-.18333a5.13892,5.13892,0,0,0-1.2991-3.0385,3.77154,3.77154,0,0,0-2.8085-1.0849c-2.38455,0-3.77835,1.604-4.14457,4.7682H8.996V5.97762H18.9523V9.98118a.53316.53316,0,0,0,.533.53325h4.32643Z" transform="translate(-0.40404 0.36317)" stroke="#000" stroke-miterlimit="10" stroke-width="0.70866"/></svg>
+
         <!-- -            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="side-icons" :class="{active:route_name=='LandingPage'||route_name=='OrderDetails'}" @click="router.push({name:'LandingPage'})">
         -            <rect width="32" height="32" rx="8" fill="#42A71E"/>
         -            <path fill-rule="evenodd" clip-rule="evenodd" d="M8.71045 11H23.1138C23.731 11 24.2009 11.5537 24.1005 12.1627L23.0843 18.3254C22.9251 19.2913 22.09 20 21.111 20H11.8917C10.9127 20 10.0776 19.2913 9.9183 18.3254L8.71045 11Z" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
@@ -337,6 +339,14 @@
 
     .side-icons:not(.active):hover path, .side-icons:not(.active):hover circle {
         fill: #fff !important;
+    }
+
+     .side-icons.stroke-able:not(.active):hover path {
+        stroke: #fff !important;
+    }
+        .side-icons.stroke-able.active path,  .side-icons.stroke-able.active circle {
+        fill: #A23E13 !important;
+        stroke: #A23E13 !important;
     }
     .side-icons rect{
         fill:#FBFBFB !important;

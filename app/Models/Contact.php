@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Event;
+use App\Models\Order;
 use App\Models\Address;
 use App\Models\Customer;
 use App\Models\ContactType;
@@ -10,10 +11,12 @@ use App\Models\EventHistory;
 use App\Models\ContactQualite;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Contact extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
+
     protected $guarded = ['id'];
 
     public function contact_qualite() 

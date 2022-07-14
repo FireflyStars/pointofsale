@@ -20,10 +20,11 @@ use App\Http\Controllers\LcdtFrontController;
 use App\Http\Controllers\TemplatesController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CampagneListController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PageElementsController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ActionCommercialListController;
-
+use App\Http\Controllers\UsersController;
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
@@ -102,12 +103,26 @@ Route::post('/change-event-status/{event}', [ActionCommercialListController::cla
 Route::post('/get-contact-list', [ContactsController::class, 'index']);
 Route::get('/get-contact-details/{contact}', [ContactsController::class, 'show']);
 Route::get('/get-contact-results/{contact}', [ContactsController::class, 'contact_results']);
+
 // contact
 Route::post('/contact/add', [ ContactController::class, 'create' ])->middleware('auth')->name('add.contact');
 Route::post('/contact/edit/{contact}', [ ContactController::class, 'edit' ])->middleware('auth')->name('edit.contact');
 Route::post('/contact/update/{contact}', [ ContactController::class, 'update' ])->middleware('auth')->name('update.contact');
 Route::post('/contact/delete/{contact}', [ ContactController::class, 'destroy' ])->middleware('auth')->name('delete.contact');
     
+Route::get('/get-contact-statuses-all', [ContactsController::class, 'get_contact_statuses']);
+Route::post('/change-contact-status/{contact}', [ContactsController::class, 'change_contact_status']);
+
+Route::post('/get-user-list', [UsersController::class, 'index']);
+Route::get('/get-user-details/{user}', [UsersController::class, 'get_details']);
+
+Route::get('/load-user-documents/{user}', [UsersController::class, 'load_user_documents']);
+Route::post('/load-user-documents/{user}', [UsersController::class, 'load_user_documents']);
+Route::post('/remove-user-document/{document}', [UsersController::class, 'remove_user_document']);
+Route::post('/get-user-document-url/{document}', [UsersController::class, 'get_document_url']);
+Route::post('/upload-user-document', [UsersController::class, 'upload_user_document']);
+Route::post('/delete-user/{user}', [UsersController::class, 'delete_user']);
+
 
 // create action
 Route::post('/get-action-info', [ActionCommercialListController::class, 'getActionInfo'])->name('get.action.info');
@@ -153,6 +168,11 @@ Route::group([
     Route::get('/cible/load/{campagne_category_id}',[CibleController::class,'initialload'])->middleware('auth')->name('initialload');
     Route::get('/cible/loadcible/{naf_selection}/{customer_statut_id}/{type}',[CibleController::class,'loadcible'])->middleware('auth')->name('loadcible');
     Route::post('/cible/createcampagne',[CibleController::class,'createcampagne'])->middleware('auth')->name('createcampagne');
+    //Facture
+    Route::post('/get-invoice-list',[InvoiceController::class,'loadInvoiceList'])->middleware('auth')->name('get-invoice-list');
+    Route::post('/get-invoice-states-formatted',[InvoiceController::class,'getInvoiceStatesFormatted'])->middleware('auth')->name('get-invoice-states-formatted');
+    Route::post('/get-invoice-states',[InvoiceController::class,'getInvoiceStates'])->middleware('auth')->name('get-invoice-states');
+    
 
     // Devis
     Route::post('/get-devis-list',[DevisController::class,'loadList'])->middleware('auth')->name('get-devis-list');
