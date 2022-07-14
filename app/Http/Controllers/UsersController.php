@@ -87,10 +87,9 @@ class UsersController extends Controller
 
         foreach($documents as $document)
         {
-            $document->date_expired = Carbon::parse($document->date_expired)->format('d/m/Y');
-            $document->date_document = Carbon::parse($document->date_document)->format('d/m/Y');
+            $document->date_expired = Carbon::parse($document->expires)->format('d/m/Y');
+            $document->date_document = Carbon::parse($document->dateofdocument)->format('d/m/Y');
             $document->user = $document->user;
-            $document->name = $document->human_readable_filename;
             $document->strtotime = strtotime($document->created_at);
             $user_documents[] = $document;
         }

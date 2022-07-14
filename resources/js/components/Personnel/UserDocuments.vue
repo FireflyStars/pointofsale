@@ -151,6 +151,7 @@ import {
     PERSONNEL_SET_USER_DOCUMENTS,
     PERSONNEL_UNSET_ORDER_DOCUMENT,
     PERSONNEL_REMOVE_DOCUMENT,
+    PERSONNEL_GET_DOCUMENT_URL
 } 
 from '../../store/types/types'
 
@@ -274,6 +275,7 @@ const removeDoc = async (document) => {
     }
     
 }
+
 const downloadDoc = async (document_id) => {
 
     store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [
