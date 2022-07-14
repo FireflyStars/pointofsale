@@ -114,6 +114,7 @@ Route::post('/get-action-info', [ActionCommercialListController::class, 'getActi
 Route::post('/action/create', [ActionCommercialListController::class, 'createAction'])->name('create.action');
 Route::post('/action/edit/{event}', [ActionCommercialListController::class, 'updateAction'])->name('update.action');
 Route::post('/get-action/{event}', [ActionCommercialListController::class, 'getAction'])->name('get.action');
+Route::post('/get-actions-for-calendar', [ActionCommercialListController::class, 'getActionsForCalendar'])->name('get.actions.for.calendar');
 
 
 Route::post('/api',[ApiController::class,'index'])->middleware('cors')->name('api');

@@ -192,6 +192,14 @@ const router = createRouter({
             }
         },
         {
+            path:'/action-commercial/calendar',
+            name:'ActionCalendarView',
+            component: () => import('../pages/ActionCommercial/Calendar'),
+            meta: {
+                authenticated: true
+            }
+        },
+        {
             path:'/contact/create',
             name:'CreateContact',
             component: () => import('../pages/Contact/Create'),

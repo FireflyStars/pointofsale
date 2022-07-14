@@ -82,7 +82,7 @@ class ActionEventSubscriber
                 'content' => $event->action->description,
                 'contentType' => 'text'
             ],
-        ];        
+        ];
         // POST /me/events
         $graph->createRequest('PATCH', '/me/events/'.$event->action->outlook_event_id)
             ->attachBody($editEvent)
