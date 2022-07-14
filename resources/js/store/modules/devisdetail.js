@@ -75,6 +75,7 @@ export const devisdetail= {
               commit(`${DEVIS_DETAIL_UPDATE_FACTURATION}`,{id:'id',idValue:facture.id,fieldName:'facturer',newValue:1});
               commit(`${DEVIS_DETAIL_UPDATE_FACTURATION}`,{id:'id',idValue:facture.id,fieldName:'invoice_type_name',newValue:'FACTURE'});
               commit(`${DEVIS_DETAIL_UPDATE_FACTURATION}`,{id:'id',idValue:facture.id,fieldName:'invoice_id',newValue:response.data.invoice.id});
+              commit(`${DEVIS_DETAIL_UPDATE_FACTURATION}`,{id:'id',idValue:facture.id,fieldName:'ref',newValue:response.data.invoice.ref});
               return  Promise.resolve(response);
                     
             }).catch((error)=>{

@@ -61,7 +61,7 @@ export default {
         const showmodalpopup=ref(false);
         const showmodalpopupoverlay=ref(false);
         watch(() => props.modelValue, (current_val, previous_val) => {
-            console.log(props.modelValue)
+        
             showmodalpopupoverlay.value=current_val;
             nextTick(()=>{
                 showmodalpopup.value=current_val;
