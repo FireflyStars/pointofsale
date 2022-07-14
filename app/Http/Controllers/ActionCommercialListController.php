@@ -454,7 +454,7 @@ class ActionCommercialListController extends Controller
      */
     public function getActionsForCalendar(Request $request){
         $events = Event::where('affiliate_id', Auth::user()->affiliate_id)->select(
-            'datedebut as start', 'datefin as end', 'name as title'
+            'datedebut as start', 'datefin as end', 'name as title', 'id as dbId'
         )->whereBetween('datedebut', [Carbon::parse($request->start)->toDateTimeString(), Carbon::parse($request->end)->toDateTimeString()])->get();
         return response()->json( $events );
     }

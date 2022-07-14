@@ -59,10 +59,12 @@ export default {
             initialView: 'dayGridMonth',
             views: {
                 dayGridMonth: { // name of view
-                    titleFormat: { year: 'numeric', month: 'long' }
+                    titleFormat: { year: 'numeric', month: 'long' },
+                    dayMaxEventRows: 6
                 },
                 timeGridWeek: { // name of view
                     titleFormat: { year: 'numeric', month: 'short', day: 'numeric' },
+                    dayMaxEventRows: 6,
                 }
             },            
             allDaySlot: false,
@@ -94,10 +96,26 @@ export default {
                 }else{
                     store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
                 }
-            },            
-        })
-        onMounted(()=>{
-
+            }, 
+            eventClick: (eventClickInfo)=>{
+                /**
+                 * eventClickInfo is a plain object with the following properties:
+                 * 
+                 * event(The associated Event Object.)
+                 * 
+                 * el(The HTML element for this event.)
+                 * 
+                 * jsEvent(The native JavaScript event with low-level information such as click coordinates.)
+                 * 
+                 * view (The current View Object.)
+                 *  */ 
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Event Id is '+ eventClickInfo.event.extendedProps.dbId +' in LCDT DB',
+                    ttl: 5,
+                });  
+            }
+                       
         })
         return {
             calendarOptions
@@ -141,6 +159,9 @@ export default {
         border-color: rgba(232, 88, 27, 1);
         box-shadow: none;
     }
+}
+.fc-daygrid-dot-event:hover{
+    cursor: pointer;
 }
 // .fc .fc-daygrid-day.fc-day-today,
 // .fc-timegrid-col.fc-day-today .fc-timegrid-col-frame {
