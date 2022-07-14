@@ -29,9 +29,9 @@
                         />
 
                         <div class="row m-0 ml-5 mr-5">
-                            <div class="col-12 mb-3" v-if="synced">
+                            <!-- <div class="col-12 mb-3" v-if="synced">
                                 <a class="btn btn-primary" href="/outlook/sync">Sync Outlook</a>
-                            </div>
+                            </div> -->
                             <div class="col-12">
                                 <tab-pane :tabs="tabs" current='tout' class="almarai_700_normal px-5">
 
