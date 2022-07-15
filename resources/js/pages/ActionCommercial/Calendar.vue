@@ -8,7 +8,7 @@
             <div class="col main-view container">
                 <h1 class="d-flex align-items-center m-0">
                   <span class="action-icon"></span>
-                  <span class="ms-3 font-22 almarai_extrabold_normal_normal">ACTION COMMERCIAL CALENDAR VIEW</span>
+                  <span class="ms-3 font-22 almarai_extrabold_normal_normal">ACTION COMMERCIAL AGENDA</span>
                 </h1>
                 <div class="col-12 bg-white mt-3 rounded p-3">
                     <full-calendar :options="calendarOptions"></full-calendar>
@@ -52,19 +52,19 @@ export default {
         const calendarOptions = ref({
             themeSystem: 'bootstrap5',
             headerToolbar: {
-                start: 'today prevYear,prev,next,nextYear', // will normally be on the left. if RTL, will be on the right
+                start: 'today prevYear,prev,next,nextYear',
                 center: 'title',
-                end: 'dayGridMonth,timeGridWeek,timeGridDay' // will normally be on the right. if RTL, will be on the left
+                end: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
             plugins: [ dayGridPlugin, timeGridPlugin, bootstrap5Plugin ],
-            locale: frLocale, // the initial locale. of not specified, uses the first one
+            locale: frLocale, // Franch
             initialView: 'dayGridMonth',
             views: {
-                dayGridMonth: { // name of view
+                dayGridMonth: {
                     titleFormat: { year: 'numeric', month: 'long' },
                     dayMaxEventRows: 6
                 },
-                timeGridWeek: { // name of view
+                timeGridWeek: {
                     titleFormat: { year: 'numeric', month: 'short', day: 'numeric' },
                     dayMaxEventRows: 6,
                 }
@@ -99,23 +99,57 @@ export default {
                     store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
                 }
             }, 
+            eventContent: function(info) {
+              let italicEl = document.createElement('div')
+              if(info.view.type == 'dayGridMonth'){
+                italicEl.classList.add('w-100');
+                var eventContent = '<div class="d-flex w-100">';
+                    eventContent  +='<div class="d-flex align-items-center">';
+                        eventContent  +=('<div class="fc-daygrid-event-dot" style="border-color: ' + info.event.backgroundColor +';">');
+                        eventContent  +='</div>';
+                    eventContent  +='</div>';
+                    eventContent  +='<div class="w-100">';
+                      eventContent  +='<div class="d-flex">';
+                        eventContent  +='<div class="fc-event-time">';
+                            eventContent  += info.timeText;
+                        eventContent  +='</div>';
+                        eventContent  +='<div class="fc-event-title">';
+                            eventContent  += info.event.title;
+                        eventContent  +='</div>';
+                      eventContent  +='</div>';
+                      eventContent  +='<div class="d-flex"><b>';
+                          eventContent  += info.event.extendedProps.assignedUserName;
+                      eventContent  +='</b></div>';
+                    eventContent  +='</div>';
+                  eventContent  +='</div>';
+                italicEl.innerHTML = eventContent;
+              }else{
+                italicEl.classList.add('fc-event-main-frame');
+                let eventContent = '<div class="fc-event-time fc-sticky">'+ info.timeText +'</div>';
+                eventContent += '<div class="fc-event-title-container"><div class="fc-event-title fc-sticky">'+ info.event.title +'</div>';
+                eventContent += '<div class="fc-event-title fc-sticky fw-bold">'+ info.event.extendedProps.assignedUserName +'</div></div>';
+                italicEl.innerHTML = eventContent;
+              }
+              let arrayOfDomNodes = [ italicEl ]
+              return { domNodes: arrayOfDomNodes }              
+            },            
             eventClick: (eventClickInfo)=>{
-                /**
-                 * eventClickInfo is a plain object with the following properties:
-                 * 
-                 * event(The associated Event Object.)
-                 * 
-                 * el(The HTML element for this event.)
-                 * 
-                 * jsEvent(The native JavaScript event with low-level information such as click coordinates.)
-                 * 
-                 * view (The current View Object.)
-                 *  */ 
-                // store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                //     type: 'danger',
-                //     message: 'Event Id is '+ eventClickInfo.event.extendedProps.dbId +' in LCDT DB',
-                //     ttl: 5,
-                // });  
+              /**
+               * eventClickInfo is a plain object with the following properties:
+               * 
+               * event(The associated Event Object.)
+               * 
+               * el(The HTML element for this event.)
+               * 
+               * jsEvent(The native JavaScript event with low-level information such as click coordinates.)
+               * 
+               * view (The current View Object.)
+               *  */ 
+              // store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+              //     type: 'danger',
+              //     message: 'Event Id is '+ eventClickInfo.event.extendedProps.dbId +' in LCDT DB',
+              //     ttl: 5,
+              // });  
             },
             eventDidMount: (info)=>{
               tippy(info.el, {
@@ -126,6 +160,7 @@ export default {
                 trigger: 'mouseenter',
                 duration: [250, 0]
               });
+              info.el
             },            
                        
         })
