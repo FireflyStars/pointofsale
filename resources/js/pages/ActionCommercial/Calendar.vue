@@ -111,11 +111,11 @@ export default {
                  * 
                  * view (The current View Object.)
                  *  */ 
-                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                    type: 'danger',
-                    message: 'Event Id is '+ eventClickInfo.event.extendedProps.dbId +' in LCDT DB',
-                    ttl: 5,
-                });  
+                // store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                //     type: 'danger',
+                //     message: 'Event Id is '+ eventClickInfo.event.extendedProps.dbId +' in LCDT DB',
+                //     ttl: 5,
+                // });  
             },
             eventDidMount: (info)=>{
               tippy(info.el, {
