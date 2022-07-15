@@ -56,8 +56,17 @@ html{
 .cursor-pointer{
   cursor: pointer;
 }
-
-
+.nogap{
+  gap: unset!important;
+}
+button.quicklink{
+  font-family: "Open Sans"!important;
+  border-radius: 10px!important;
+  font-size: 12px!important;
+  font-weight: 700!important;
+  height: 48px!important;
+  border: none!important;
+}
   /*list transitions*/
   .list-enter-from{
     opacity: 0;

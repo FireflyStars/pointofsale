@@ -2,6 +2,7 @@
     <button 
         :class="classList"
         :title="$attrs.htmlTitle"
+        :style="btnStyle"
     >
         <div 
             class="text" 
@@ -47,6 +48,10 @@
             textStyle: {
                 type: Object,
                 default: () => {}
+            },
+            btnStyle: {
+                type: String,
+                default: ''
             },
             iconStyle: {
                 type: Object,

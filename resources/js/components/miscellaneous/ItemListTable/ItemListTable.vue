@@ -1,4 +1,5 @@
 <template>
+    <item-list-quick-links/>
     <table-filter v-if="table_def.filter==true"
             :checkboxOptions="columnSelection"
             :selectOptions="listGroup"
@@ -89,6 +90,7 @@ import { useRouter } from 'vue-router';
 import ItemListDateFilter from './ItemListDateFilter.vue';
 import TableFilter from "../TableFilter.vue";
 import ItemListMultiFilter from "./ItemListMultiFilter.vue";
+import ItemListQuickLinks from "./ItemListQuickLinks.vue";
 
 export default {
 
@@ -97,7 +99,8 @@ export default {
     components:{
         ItemListDateFilter,
         TableFilter,
-        ItemListMultiFilter
+        ItemListMultiFilter,
+        ItemListQuickLinks
     },
     props: { 
         table_def: {

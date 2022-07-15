@@ -695,9 +695,7 @@ hr{
     display: flex;
     justify-content: space-between;
 }
-.od_actions button{
 
-}
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */

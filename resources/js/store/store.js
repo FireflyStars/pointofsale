@@ -24,6 +24,8 @@ import {search as CUSTOMERLIST_MODULE } from "./modules/search";
 
 import { itemlist as ITEM_LIST_MODULE } from "./modules/component_store/itemlist";
 
+import { itemlistquicklink as ITEMLISTQUICKLINK_MODULE } from "./modules/component_store/itemlistquicklink";
+
 import { orderstatetag as ORDERSTATETAG_MODULE } from "./modules/component_store/orderstatetag";
 
 import { devislist as DEVIS_LIST_MODULE } from "./modules/devislist";
@@ -59,6 +61,7 @@ export default createStore({
         TOASTER_MODULE,
         CIBLE_MODULE,
         ITEM_LIST_MODULE,
+        ITEMLISTQUICKLINK_MODULE,
         ORDERSTATETAG_MODULE,
         DEVIS_LIST_MODULE,
         FACTURE_LIST_MODULE,

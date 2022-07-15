@@ -24,6 +24,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PageElementsController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ActionCommercialListController;
+use App\Http\Controllers\QuickLinkController;
 use App\Http\Controllers\UsersController;
 
 Route::group(['prefix' => 'admin'], function () {
@@ -172,6 +173,13 @@ Route::group([
     Route::post('/get-invoice-list',[InvoiceController::class,'loadInvoiceList'])->middleware('auth')->name('get-invoice-list');
     Route::post('/get-invoice-states-formatted',[InvoiceController::class,'getInvoiceStatesFormatted'])->middleware('auth')->name('get-invoice-states-formatted');
     Route::post('/get-invoice-states',[InvoiceController::class,'getInvoiceStates'])->middleware('auth')->name('get-invoice-states');
+    
+    //quicklink
+    Route::post('/add-quick-link',[QuickLinkController::class,'addLink'])->middleware('auth')->name('add-quick-link');
+    Route::post('/get-quick-links',[QuickLinkController::class,'getLinks'])->middleware('auth')->name('get-quick-links');
+    Route::post('/remove-quick-link',[QuickLinkController::class,'removeLink'])->middleware('auth')->name('remove-quick-link');
+    
+    
     
 
     // Devis
