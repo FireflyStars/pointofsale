@@ -207,8 +207,12 @@ export default {
         box-shadow: none;
     }
 }
+.fc-daygrid-dot-event{
+    background: rgba(0, 0, 0, 0.1);
+}
 .fc-daygrid-dot-event:hover{
     cursor: pointer;
+    background: rgba(0, 0, 0, 0.2);
 }
 .tippy-box[data-theme~='tomato'] {
   background-color: #e86f29;
