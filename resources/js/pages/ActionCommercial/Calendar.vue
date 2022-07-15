@@ -208,7 +208,7 @@ export default {
     }
 }
 .fc-daygrid-dot-event{
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.04);
 }
 .fc-daygrid-dot-event:hover{
     cursor: pointer;
