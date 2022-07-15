@@ -8,7 +8,7 @@
                 <div class="container-fluid">
                   <div class="row mt-4">
                     <div class="col d-flex align-items-center gap-2 justify-content-center">
-                      <icon :name="icon" v-show="!!icon" :style="iconStyles" />
+                      <icon :name="icon" v-if="icon!=''&&icon!=null" :style="iconStyles" />
                       <h2 class="simple-modal-title" v-if="title!=''">{{title}}</h2>
                     </div>
                   </div>

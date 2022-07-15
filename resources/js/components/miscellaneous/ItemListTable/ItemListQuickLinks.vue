@@ -123,7 +123,7 @@ export default {
                         }
                  }
                  const showdelete=(e,link)=>{
-                    console.log(e,link);
+                    if(is_admin){
                         Swal.fire({
                                 title: 'Veuillez confirmer!',
                                 text: `Voulez-vous le bouton "${link.name}". Cette action est irréversible.`,
@@ -134,11 +134,14 @@ export default {
                                 cancelButtonText: 'Annuler',
                                 confirmButtonText: `Oui, s'il vous plaît.`
                             }).then((result) => {
+                                
+                                if(result.isConfirmed)
                                   store.dispatch(`${ITEMLISTQUICKLINK_MODULE}${ITEMLISTQUICKLINK_REMOVE_LINK}`,link.id);
                                 
                             });
 
                     e.preventDefault();
+                    }
                     
                  }
              return {
