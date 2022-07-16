@@ -25,7 +25,7 @@
 
                         <div class="row m-0 ml-5 mr-5">
                             
-                            <div class="col-12">
+                            <div class="col-12 p-0 position-relative">
 
                                 <item-list-table 
                                     :table_def="reports" 
