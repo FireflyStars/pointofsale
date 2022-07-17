@@ -16,11 +16,11 @@
                     <div class="col main-view container">
 
                         <page-title 
-                            icon="report" 
-                            name="Reports" 
+                            icon="rapport" 
+                            name="Rapports" 
                             class="almarai_extrabold_normal_normal"
-                            width="44" 
-                            height="46"
+                            width="45" 
+                            height="45"
                         />
 
                         <div class="row m-0 ml-5 mr-5">

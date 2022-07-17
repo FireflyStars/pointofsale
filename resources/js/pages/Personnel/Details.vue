@@ -7,7 +7,7 @@
         <div class="d-flex gap-4 align-items-center">
 
             <h1 class="heading">
-                <Icon name="user-multiple" />
+                <Icon name="user-multiple" style="width: 45px; height: 45px;" />
                 <span style="vertical-align: bottom; margin-left: 2rem;">N°{{ details.id || '--/--' }}</span>
             </h1>
 
@@ -209,56 +209,6 @@ const deleteUser = async () => {
             showloader.value = false
         }
     }
-
-}
-
-const confirmChangeLitige = async () => {
-    
-    try {
-
-        showloader.value = true
-        modal.show = false
-        await store.dispatch(`${ENTITE_LIST_MODULE}${CHANGE_LITIGE}`, { 
-            id: details.value.id, 
-            comment: comment.value 
-        })
-
-    }
-
-    catch(e) {
-        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-            type: 'danger',
-            message: 'Something went wrong',
-            ttl: 5,
-        })
-        throw e
-    }
-    
-    finally {
-        showloader.value = false
-    }
-
-}
-
-
-const appendResults = async (type) => {
-
-    if(loading.value.status) return
-    
-    try {
-        showloader.value = true
-        // await store.dispatch(`${PERSONNEL_LIST_MODULE}${GET_ENTITE_RESULTS}`, { type, id: details.value.id })
-        fetched[type] = true
-    }
-
-    catch(e) {
-        throw e
-    }
-
-    finally {
-        showloader.value = false
-    }
-
 
 }
 

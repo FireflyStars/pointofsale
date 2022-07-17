@@ -354,6 +354,7 @@ const fileElUpdated = () => {
     data.append('name', document.name)
     data.append('dateExpired', document.dateExpired)
     data.append('dateDocument', document.dateDocument)
+    data.append('userId', props.id)
 
 
     store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [

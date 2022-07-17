@@ -5,7 +5,7 @@
     <div class="panel-heading-section d-flex align-items-center gap-4">
     
         <h1 class="heading">
-            <Icon name="user-star" />
+            <Icon name="action-commercial" style="width: 45px; height: 45px" />
             <span style="vertical-align: bottom;">N°{{ details.id || '--/--' }}</span>
         </h1>
 

@@ -20,10 +20,10 @@
                     <div class="col main-view container">
                         
                         <page-title 
-                            icon="action-commercial" 
+                            icon="user-star" 
                             name="CONTACT" 
                             class="almarai_extrabold_normal_normal"
-                            style="height: 46px; width: 44px;"
+                            style="height: 45px; width: 45px;"
                         />
 
                         <div class="row m-0 ml-5 mr-5">
