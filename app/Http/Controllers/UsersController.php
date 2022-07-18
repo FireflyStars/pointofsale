@@ -116,7 +116,21 @@ class UsersController extends Controller
      */
     public function edit($user){
         return response()->json([
-            'user'  => $user,
+            'user'  => [
+                'id'        => $user->id,
+                'name'      => $user->name,
+                'firstName' => $user->firstname,
+                'email'     => $user->email,
+                'coordpersonnelles' => $user->coordpersonnelles,
+                'contacturgence'    => $user->contacturgence,
+                'comment'           => $user->comment,
+                'portable'          => $user->portable,
+                'datesorti'         => $user->datesorti,
+                'dateentree'        => $user->dateentree,
+                'statusId'          => $user->user_status_id,
+                'typeId'            => $user->user_type_id,
+                'roleId'            => $user->role_id,
+            ],
             'userStatus'    =>  DB::table('user_status')->select('id as value', 'name as display')->get(),
             'userRole'      =>  DB::table('roles')->select('id as value', 'name as display')->get(),
             'userType'      =>  DB::table('user_type')->select('id as value', 'name as display')->get(),
