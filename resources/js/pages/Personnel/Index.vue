@@ -23,7 +23,7 @@
                             icon="user-multiple" 
                             name="PERSONNEL" 
                             class="almarai_extrabold_normal_normal"
-                            style="height: 46px; width: 44px;"
+                            style="height: 45px; width: 45px;"
                         />
 
                         <div class="row m-0 ml-5 mr-5">

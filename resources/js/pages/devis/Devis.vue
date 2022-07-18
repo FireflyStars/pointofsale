@@ -10,7 +10,7 @@
                     <side-bar />
             <transition enter-active-class="animate__animated animate__fadeIn" >
                     <div class="col main-view container" v-if="showcontainer">
-                            <page-title icon="edit" name="DEVIS" class="almarai_extrabold_normal_normal"/>
+                            <page-title icon="star" name="DEVIS" class="almarai_extrabold_normal_normal" style="width: 45px; height: 45px; " />
 
             <div class="row m-0 ml-5 mr-5">
                         <div class="col">

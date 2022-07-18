@@ -7,7 +7,7 @@
         <div class="d-flex gap-4 align-items-center">
 
             <h1 class="heading">
-                <Icon name="entite" />
+                <Icon name="user-star" style="width: 45px; height: 45px" />
                 <span style="vertical-align: bottom;">N°{{ details.id || '--/--' }}</span>
             </h1>
 

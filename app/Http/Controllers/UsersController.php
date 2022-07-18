@@ -88,28 +88,15 @@ class UsersController extends Controller
     }
 
 
-    public function remove_user_document(Request $request, UserDocument $document)
+    public function remove_user_document(UserDocument $document)
     {
-
-        $user = $request->user();
-
-        if($user->id != $document->user_id) {
-            return response('Cannot delete user document.', 509);
-        }
 
         $document->delete();
 
     }
 
-    public function get_document_url(Request $request, UserDocument $document)
+    public function get_document_url(UserDocument $document)
     {
-
-        $user = $request->user();
-
-        if($document->user_id != $user->id) 
-        {
-            return response('Document is not affiliated to user.Cannot download.', 509);
-        }
 
         return response()->json(
             array('document_url' => route('downloadPdfFile') . '?path=' . $document->file_path . '&filename=' . $document->human_readable_filename)
@@ -129,7 +116,7 @@ class UsersController extends Controller
 
         $file = $request->file('files');
 
-        $user= $request->user();
+        $user = User::find($request->userId);
 
         $document = new UserDocument;
         

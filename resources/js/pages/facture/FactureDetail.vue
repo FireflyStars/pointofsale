@@ -2,7 +2,7 @@
 <item-detail-panel :showloader="showloader">
     <div class="row" v-if="show">
         <div class="col-4">
-            <page-title icon="pdf" :name="`N° ${order_id}`" class="almarai_extrabold_normal_normal"/>
+            <page-title icon="facture" :name="`N° ${order_id}`" class="almarai_extrabold_normal_normal" style="width: 45px; height: 45px;" />
         </div>
         <div class="col-8" style="padding-top:33px">
             <order-state-tag :order_state_id="order.order_state_id" classes="almarai_700_normal" width="auto"></order-state-tag>

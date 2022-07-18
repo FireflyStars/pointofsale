@@ -6,16 +6,16 @@
             leave-active-class="sm-hide">
             <div v-if="showmodalpopup" class="simple-modal-popup" :style="style">
                 <div class="container-fluid">
-                  <div class="row">
-                    <div class="col d-flex align-items-center gap-2">
-                      <icon :name="icon" v-show="!!icon" :style="iconStyles" />
+                  <div class="row mt-4">
+                    <div class="col d-flex align-items-center gap-2 justify-content-center">
+                      <icon :name="icon" v-if="icon!=''&&icon!=null" :style="iconStyles" />
                       <h2 class="simple-modal-title" v-if="title!=''">{{title}}</h2>
                     </div>
                   </div>
                 </div>
                 <slot></slot>
                    <div class="container-fluid">
-                      <div class="d-flex justify-content-center">
+                      <div class="d-flex justify-content-center gap-4">
                          
                             <button type="button" @click="confirm" class="swal2-confirm swal2-styled swal2-default-outline" aria-label="" style="display: inline-block; background-color: rgb(66, 167, 30);">{{ confirmButtonTitle }}</button>
                           
@@ -74,11 +74,14 @@ export default {
         const showmodalpopup=ref(false);
         const showmodalpopupoverlay=ref(false);
         watch(() => props.modelValue, (current_val, previous_val) => {
-        
+            if(current_val==false){
+              closeSimpleModal();
+            }else{
             showmodalpopupoverlay.value=current_val;
             nextTick(()=>{
                 showmodalpopup.value=current_val;
-            })   
+            })  
+            } 
         });
 
         const closeSimpleModal=()=>{
@@ -116,7 +119,7 @@ export default {
     position: relative;
     max-width: 100%;
     margin: 0;
-    padding: 0.8em 1em 0;
+  
     color: inherit;
     font-size: 1.875em;
     font-weight: 600;

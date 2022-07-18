@@ -476,6 +476,7 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                                 confirmButtonText: `Oui, s'il vous plaît.`
                             }).then((result) => {
                                 showmodal_facturation.value=false;
+                                 if (result.isConfirmed) {
                                 showloader.value=true;
                                 store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_NEW_FACTURATION}`,facture.value).then(response=>{
                                     store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_LOAD_FACTURATION}`).then(response=>{
@@ -483,6 +484,7 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                                     });
                                 
                                 });
+                                 }
                                 
                             });
                       }
@@ -695,9 +697,7 @@ hr{
     display: flex;
     justify-content: space-between;
 }
-.od_actions button{
 
-}
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
