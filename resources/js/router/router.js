@@ -27,6 +27,79 @@ const router = createRouter({
             },
 
         },
+
+        {
+            path: '/parameters',
+            name: 'parameters',
+            component: () => import('../pages/Parameters/Index.vue'),
+            meta:{
+                authenticated: true
+            },
+        },
+
+        {
+            path: '/ouvrage',
+            name: 'ouvrage',
+            component: () => import('../pages/Ouvrage/Index.vue'),
+            meta:{
+                authenticated: true
+            },
+        },
+
+        {
+            path: '/articles',
+            name: 'articles',
+            component: () => import('../pages/Articles/Index.vue'),
+            meta:{
+                authenticated: true
+            },
+        },
+
+        {
+            path: '/ged',
+            name: 'ged',
+            component: () => import('../pages/Ged/Index.vue'),
+            meta:{
+                authenticated: true
+            },
+        },
+
+        {
+            path: '/statistique',
+            name: 'statistique',
+            component: () => import('../pages/Statistique/Index.vue'),
+            meta:{
+                authenticated: true
+            },
+        },
+
+        {
+            path: '/intervention',
+            name: 'intervention',
+            component: () => import('../pages/Intervention/Index.vue'),
+            meta:{
+                authenticated: true
+            },
+        },
+
+        {
+            path: '/paiement',
+            name: 'paiement',
+            component: () => import('../pages/Paiement/Index.vue'),
+            meta:{
+                authenticated: true
+            },
+        },
+
+        {
+            path: '/commande',
+            name: 'commande',
+            component: () => import('../pages/Commande/Index.vue'),
+            meta:{
+                authenticated: true
+            },
+        },
+
         {
             path:'/facture',
             name:'FacturePage',
