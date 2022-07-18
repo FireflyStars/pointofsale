@@ -114,7 +114,7 @@ class UsersController extends Controller
     /**
      * edit a user
      */
-    public function edit($user){
+    public function edit(User $user){
         return response()->json([
             'user'  => [
                 'id'        => $user->id,
@@ -130,6 +130,8 @@ class UsersController extends Controller
                 'statusId'          => $user->user_status_id,
                 'typeId'            => $user->user_type_id,
                 'roleId'            => $user->role_id,
+                'createdAt'         => $user->created_at->format('Y-m-d'),
+                'updatedAt'         => $user->updated_at->format('Y-m-d'),
             ],
             'userStatus'    =>  DB::table('user_status')->select('id as value', 'name as display')->get(),
             'userRole'      =>  DB::table('roles')->select('id as value', 'name as display')->get(),
