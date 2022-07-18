@@ -417,7 +417,7 @@
 
 }
 .side-icons{
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     cursor: pointer !important
 
 }
