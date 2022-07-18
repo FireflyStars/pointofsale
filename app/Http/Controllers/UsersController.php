@@ -132,6 +132,8 @@ class UsersController extends Controller
                 'roleId'            => $user->role_id,
                 'createdAt'         => $user->created_at->format('Y-m-d'),
                 'updatedAt'         => $user->updated_at->format('Y-m-d'),
+                'affiliateId'       => $user->affiliate_id,
+                'userAffiliateId'   => auth()->user()->affiliate_id,
             ],
             'userStatus'    =>  DB::table('user_status')->select('id as value', 'name as display')->get(),
             'userRole'      =>  DB::table('roles')->select('id as value', 'name as display')->get(),

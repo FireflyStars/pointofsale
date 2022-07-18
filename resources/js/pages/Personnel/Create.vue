@@ -69,7 +69,7 @@
                                     </div>
                                 </div>
                                 <div class="col-4 px-2">
-                                    <select-box v-model="user.userId" :options="userType" :label="'TYPE CONTRAT'" :name="'userType'"></select-box>
+                                    <select-box v-model="user.typeId" :options="userType" :label="'TYPE CONTRAT'" :name="'userType'"></select-box>
                                 </div>
                             </div>                                           
                             <div class="d-flex mt-3">
@@ -100,7 +100,7 @@
                             <div class="d-flex mt-3">
                                 <div class="col-4 form-group">
                                     <label class="text-uppercase">Personne à contacter en cas d'urgence</label>
-                                    <input type="text" placeholder="Telephone" v-model="user.contacturgence" class="form-control custom-input">
+                                    <input type="text" placeholder="" v-model="user.contacturgence" class="form-control custom-input">
                                 </div>
                             </div>
                             <div class="d-flex mt-3">
@@ -207,7 +207,17 @@ export default {
             }
             store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Création d`un Personnel ...']);
             axios.post('/user/create', user.value).then((res)=>{
-                router.push({ name: 'personnel-details', params: { id: res.data.id } });
+                if(res.data.success){
+                    router.push({ name: 'personnel-details', params: { id: res.data.id } });
+                }else{
+                    Object.values(res.data.errors).forEach(item => {
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: item[0],
+                            ttl: 5,
+                        });
+                    })
+                }
             }).catch((errors)=>{
                 console.log(errors);
             }).finally(()=>{

@@ -83,7 +83,7 @@
                                     </div>
                                 </div>
                                 <div class="col-4 px-2">
-                                    <select-box v-model="user.userId" :options="userType" :label="'TYPE CONTRAT'" :name="'userType'"></select-box>
+                                    <select-box v-model="user.typeId" :options="userType" :label="'TYPE CONTRAT'" :name="'userType'"></select-box>
                                 </div>
                             </div>                                           
                             <div class="d-flex mt-3">
@@ -114,7 +114,7 @@
                             <div class="d-flex mt-3">
                                 <div class="col-4 form-group">
                                     <label class="text-uppercase">Personne à contacter en cas d'urgence</label>
-                                    <input type="text" placeholder="Telephone" v-model="user.contacturgence" class="form-control custom-input">
+                                    <input type="text" placeholder="" v-model="user.contacturgence" class="form-control custom-input">
                                 </div>
                             </div>
                             <div class="d-flex mt-3">
@@ -191,6 +191,8 @@ export default {
             comment: '',
             createdAt: '',
             updatedAt: '',
+            affiliateId: 0,
+            userAffiliateId: 0,
         });
         const dateFormat = (date) => {
             const day = date.getDate();
@@ -203,33 +205,57 @@ export default {
 
         }
         const submit = ()=>{
+            let error = false;
+            if(user.value.affiliateId != user.value.userAffiliateId){
+                error = true;
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Vous ne pouvez pas terminer',
+                    ttl: 5,
+                });                    
+            }
             if( user.value.name == '' ){
+                error = true;
                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                     type: 'danger',
                     message: 'Veuillez saisir LIBELLE DE L ACTION',
                     ttl: 5,
                 });    
             }else if( user.value.firstName == '' ){
+                error = true;
                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                     type: 'danger',
                     message: 'Veuillez saisir TYPE D ACTION A REALISER',
                     ttl: 5,
                 });                    
             }else if( user.value.email == '' ){
+                error = true;
                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                     type: 'danger',
                     message: 'Veuillez saisir TYPE D ACTION',
                     ttl: 5,
                 });                    
             }
-            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Création d`un Personnel ...']);
-            axios.post('/user/update/'+ route.params.id, user.value).then((res)=>{
-                router.push({ name: 'personnel-details', params: { id: route.params.id } });
-            }).catch((errors)=>{
-                console.log(errors);
-            }).finally(()=>{
-                store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
-            })
+            if(!error){
+                store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Création d`un Personnel ...']);
+                axios.post('/user/update/'+ route.params.id, user.value).then((res)=>{
+                    if(res.data.success){
+                        router.push({ name: 'personnel-details', params: { id: route.params.id } });
+                    }else{
+                        Object.values(res.data.errors).forEach(item => {
+                            store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                                type: 'danger',
+                                message: item[0],
+                                ttl: 5,
+                            });
+                        })
+                    }
+                }).catch((errors)=>{
+                    console.log(errors);
+                }).finally(()=>{
+                    store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+                })
+            }
         }
         onMounted(()=>{
             axios.post('/get-user-info/'+ route.params.id).then((res)=>{
