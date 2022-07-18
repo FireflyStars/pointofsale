@@ -145,11 +145,10 @@ export default {
                * 
                * view (The current View Object.)
                *  */ 
-              // store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-              //     type: 'danger',
-              //     message: 'Event Id is '+ eventClickInfo.event.extendedProps.dbId +' in LCDT DB',
-              //     ttl: 5,
-              // });  
+              router.push({
+                name: 'action-commercial-details',
+                params: { id: eventClickInfo.event.extendedProps.dbId },
+              })
             },
             eventDidMount: (info)=>{
               tippy(info.el, {
