@@ -116,6 +116,10 @@ Route::post('/change-contact-status/{contact}', [ContactsController::class, 'cha
 
 Route::post('/get-user-list', [UsersController::class, 'index']);
 Route::get('/get-user-details/{user}', [UsersController::class, 'get_details']);
+Route::post('/get-user-info', [UsersController::class, 'getUserInfo']);
+Route::post('/user/create', [UsersController::class, 'store']);
+Route::post('/get-user-info/{user}', [UsersController::class, 'edit']);
+Route::post('/user/update/{user}', [UsersController::class, 'update']);
 
 Route::get('/load-user-documents/{user}', [UsersController::class, 'load_user_documents']);
 Route::post('/load-user-documents/{user}', [UsersController::class, 'load_user_documents']);

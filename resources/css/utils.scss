@@ -143,7 +143,8 @@
     background-color: white;
 }
 .customer-icon,
-.action-icon{
+.action-icon,
+.user-icon{
     display: block;
     cursor: pointer;
     width: 47px;
@@ -155,6 +156,9 @@
 }
 .action-icon{
     background-image: url(../js/images/action-icon.svg);
+}
+.action-icon{
+    background-image: url(../js/images/user-icon.svg);
 }
 .installation-icon,
 .securite-icon,

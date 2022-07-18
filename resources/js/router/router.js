@@ -231,6 +231,22 @@ const router = createRouter({
                 }
             }]
         },
+        {
+            path: '/personnel/create',
+            name: 'create-personnel',
+            component: () => import('../pages/Personnel/Create'),
+            meta: {
+                authenticated: true
+            },
+        },
+        {
+            path: '/personnel/edit/:id',
+            name: 'edit-personnel',
+            component: () => import('../pages/Personnel/Edit'),
+            meta: {
+                authenticated: true
+            },
+        },
 
         {
             path: '/contact',

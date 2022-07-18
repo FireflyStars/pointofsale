@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Resources\UsersResource;
 use App\Http\Controllers\TableFiltersController;
 use App\Models\UserDocument;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UsersController extends Controller
 {
@@ -18,8 +20,7 @@ class UsersController extends Controller
         $this->middleware(['auth']);
     }
 
-    public function index(Request $request) 
-    {
+    public function index(Request $request) {
         
         $users = User::query();
 
@@ -55,6 +56,113 @@ class UsersController extends Controller
 
     }
 
+    /**
+     * Get user's status, role and type to create it
+     * 
+     */
+    public function getUserInfo(){
+        return response()->json([
+            'userStatus'    =>  DB::table('user_status')->select('id as value', 'name as display')->get(),
+            'userRole'      =>  DB::table('roles')->select('id as value', 'name as display')->get(),
+            'userType'      =>  DB::table('user_type')->select('id as value', 'name as display')->get(),
+        ]);
+    }
+    /**
+     * create a user
+     */
+    public function store(Request $request){
+        $validator = Validator::make($request->all(), [
+            'firstName'         => 'required',
+            'name'              => 'required',
+            'email'             => 'required|unique:users,email',
+        ], [
+            'firstName.required' => 'Please enter prenom!',
+            'name.required' => 'Please enter nom!',
+            'email.required' => 'Please enter email!',
+            'email.email' => 'It\'s not valid email address!',
+            'email.unique' => 'It has already been taken!',
+        ]);
+        if($validator->fails()){
+            return response()->json([
+                'success'   => false,
+                'errors'    => $validator->errors()
+            ]);
+        }else{
+            $user = new User();
+            $user->role_id = $request->roleId;
+            $user->user_status_id = $request->statusId;
+            $user->user_type_id = $request->typeId;
+            $user->name = $request->name;
+            $user->firstname = $request->firstName;
+            $user->email = $request->email;
+            $user->password = Hash::make('123456789');
+            $user->coordpersonnelles = $request->coordpersonnelles;
+            $user->contacturgence = $request->contacturgence;
+            $user->comment = $request->comment;
+            $user->portable = $request->portableCode.' '.$request->portable;
+            $user->dateentree = $request->dateentree;
+            $user->datesorti = $request->datesorti;
+            $user->affiliate_id = auth()->user()->affiliate_id;
+            $user->save();
+
+            return response()->json([
+                'success'   => true,
+                'id'        => $user->id
+            ]);        
+        }
+    }
+    /**
+     * edit a user
+     */
+    public function edit($user){
+        return response()->json([
+            'user'  => $user,
+            'userStatus'    =>  DB::table('user_status')->select('id as value', 'name as display')->get(),
+            'userRole'      =>  DB::table('roles')->select('id as value', 'name as display')->get(),
+            'userType'      =>  DB::table('user_type')->select('id as value', 'name as display')->get(),
+        ]);
+    }
+    /**
+     * edit a user
+     */
+    public function update(Request $request, User $user){
+        $validator = Validator::make($request->all(), [
+            'firstName'         => 'required',
+            'name'              => 'required',
+            'email'             => 'required|email|unique:users,email,'.$user->id,
+        ], [
+            'firstName.required' => 'Please enter prenom!',
+            'name.required' => 'Please enter nom!',
+            'email.required' => 'Please enter email!',
+            'email.email' => 'It\'s not valid email address!',
+            'email.unique' => 'It has already been taken!',
+        ]);
+        if($validator->fails()){
+            return response()->json([
+                'success'   => false,
+                'errors'    => $validator->errors()
+            ]);
+        }else{
+            $user->role_id = $request->roleId;
+            $user->user_status_id = $request->statusId;
+            $user->user_type_id = $request->typeId;
+            $user->name = $request->name;
+            $user->firstname = $request->firstName;
+            $user->email = $request->email;
+            $user->coordpersonnelles = $request->coordpersonnelles;
+            $user->contacturgence = $request->contacturgence;
+            $user->comment = $request->comment;
+            $user->portable = $request->portableCode.' '.$request->portable;
+            $user->dateentree = $request->dateentree;
+            $user->datesorti = $request->datesorti;
+            $user->affiliate_id = auth()->user()->affiliate_id;
+            $user->save();
+            return response()->json([
+                'success'   => true,
+                'id'        => $user->id
+            ]);        
+        }
+    }
     public function get_details(User $user) 
     {
         return response()->json(
