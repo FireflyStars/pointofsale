@@ -46,9 +46,9 @@
                             </div>
                             <div class="d-flex mt-3">
                                 <div class="col-4 pe-2">
-                                    <div class="form-group w-100 ms-2">
+                                    <div class="form-group w-100">
                                         <label class="text-uppercase">Coordonnées personnelles</label>
-                                        <input type="text" placeholder="Telephone" v-model="user.coordpersonnelles" class="form-control custom-input">
+                                        <input type="text" placeholder="" v-model="user.coordpersonnelles" class="form-control custom-input">
                                     </div>                                    
                                 </div>                                
                                 <div class="col-4 px-2">
@@ -216,6 +216,7 @@ export default {
         }
         onMounted(()=>{
             axios.post('/get-user-info').then((res)=>{
+                user.value = res.data.user;
                 userStatus.value = res.data.userStatus;
                 userRole.value = res.data.userRole;
                 userType.value = res.data.userType;
