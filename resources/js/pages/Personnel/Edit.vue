@@ -259,6 +259,7 @@ export default {
         }
         onMounted(()=>{
             axios.post('/get-user-info/'+ route.params.id).then((res)=>{
+                user.value = res.data.user;
                 userStatus.value = res.data.userStatus;
                 userRole.value = res.data.userRole;
                 userType.value = res.data.userType;
