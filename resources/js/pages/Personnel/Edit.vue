@@ -139,7 +139,7 @@
   </router-view>
 </template>
 <script>
-import { ref, onMounted, watchEffect } from 'vue';
+import { ref, onMounted } from 'vue';
 import SelectBox from '../../components/miscellaneous/SelectBox';
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
@@ -237,7 +237,7 @@ export default {
                 });                    
             }
             if(!error){
-                store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Création d`un Personnel ...']);
+                store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'mise à jour du personnel...']);
                 axios.post('/user/update/'+ route.params.id, user.value).then((res)=>{
                     if(res.data.success){
                         router.push({ name: 'personnel-details', params: { id: route.params.id } });
