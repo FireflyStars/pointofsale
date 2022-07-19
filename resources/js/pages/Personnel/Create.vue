@@ -153,14 +153,14 @@ export default {
         Datepicker
     },
     setup() {
-        const store = useStore();
-        const router = useRouter();
-        const userRole = ref([]);
-        const userStatus = ref([]);
-        const userType = ref([]);
+        const store     = useStore();
+        const router    = useRouter();
+        const userRole  = ref([]);
+        const userStatus= ref([]);
+        const userType  = ref([]);
         const user = ref({
             id: '',
-            gender: 'M',
+            gender: 'MONSIEUR',
             firstName: '',
             name: '',
             email: '',
@@ -173,7 +173,7 @@ export default {
             dateentree: '',
             datesorti: '',
             contacturgence: '',
-            comment: '',
+            comment: ''
         });
         const dateFormat = (date) => {
             const day = date.getDate();
@@ -186,47 +186,52 @@ export default {
 
         }
         const submit = ()=>{
+            let error = false;
             if( user.value.name == '' ){
+                error = true;
                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                     type: 'danger',
-                    message: 'Veuillez saisir LIBELLE DE L ACTION',
+                    message: 'You have to enter a nom',
                     ttl: 5,
                 });    
             }else if( user.value.firstName == '' ){
+                error = true;
                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                     type: 'danger',
-                    message: 'Veuillez saisir TYPE D ACTION A REALISER',
+                    message: 'You have to enter a pre nom',
                     ttl: 5,
                 });                    
             }else if( user.value.email == '' ){
+                error = true;
                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                     type: 'danger',
-                    message: 'Veuillez saisir TYPE D ACTION',
+                    message: 'You have to enter a email',
                     ttl: 5,
                 });                    
             }
-            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Création d`un Personnel ...']);
-            axios.post('/user/create', user.value).then((res)=>{
-                if(res.data.success){
-                    router.push({ name: 'personnel-details', params: { id: res.data.id } });
-                }else{
-                    Object.values(res.data.errors).forEach(item => {
-                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                            type: 'danger',
-                            message: item[0],
-                            ttl: 5,
-                        });
-                    })
-                }
-            }).catch((errors)=>{
-                console.log(errors);
-            }).finally(()=>{
-                store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
-            })
+            if(!error){
+                store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Création d`un Personnel ...']);
+                axios.post('/user/create', user.value).then((res)=>{
+                    if(res.data.success){
+                        router.push({ name: 'personnel-details', params: { id: res.data.id } });
+                    }else{
+                        Object.values(res.data.errors).forEach(item => {
+                            store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                                type: 'danger',
+                                message: item[0],
+                                ttl: 5,
+                            });
+                        })
+                    }
+                }).catch((errors)=>{
+                    console.log(errors);
+                }).finally(()=>{
+                    store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+                })
+            }
         }
         onMounted(()=>{
             axios.post('/get-user-info').then((res)=>{
-                user.value = res.data.user;
                 userStatus.value = res.data.userStatus;
                 userRole.value = res.data.userRole;
                 userType.value = res.data.userType;

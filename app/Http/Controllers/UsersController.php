@@ -99,9 +99,10 @@ class UsersController extends Controller
             $user->coordpersonnelles = $request->coordpersonnelles;
             $user->contacturgence = $request->contacturgence;
             $user->comment = $request->comment;
-            $user->portable = $request->portableCode.' '.$request->portable;
+            $user->portable = $request->portableCode.'|'.$request->portable;
             $user->dateentree = $request->dateentree;
             $user->datesorti = $request->datesorti;
+            // $user->settings = '{"locale":"fr"}';
             $user->affiliate_id = auth()->user()->affiliate_id;
             $user->save();
 
@@ -124,7 +125,8 @@ class UsersController extends Controller
                 'coordpersonnelles' => $user->coordpersonnelles,
                 'contacturgence'    => $user->contacturgence,
                 'comment'           => $user->comment,
-                'portable'          => $user->portable,
+                'portable'          => $user->portable ? explode('|', $user->portable)[1] : '',
+                'portableCode'      => $user->portable ? explode('|', $user->portable)[0] : '+33',
                 'datesorti'         => $user->datesorti,
                 'dateentree'        => $user->dateentree,
                 'statusId'          => $user->user_status_id,
@@ -170,14 +172,13 @@ class UsersController extends Controller
             $user->coordpersonnelles = $request->coordpersonnelles;
             $user->contacturgence = $request->contacturgence;
             $user->comment = $request->comment;
-            $user->portable = $request->portableCode.' '.$request->portable;
+            $user->portable = $request->portableCode.'|'.$request->portable;
             $user->dateentree = $request->dateentree;
             $user->datesorti = $request->datesorti;
             $user->affiliate_id = auth()->user()->affiliate_id;
             $user->save();
             return response()->json([
                 'success'   => true,
-                'id'        => $user->id
             ]);        
         }
     }

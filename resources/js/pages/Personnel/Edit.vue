@@ -8,7 +8,7 @@
             <div class="col main-view container">
                 <h1 class="d-flex align-items-center m-0">
                   <span class="user-icon"></span>
-                  <span class="ms-3 font-22 almarai_extrabold_normal_normal">CREATION PERSONNEL</span>
+                  <span class="ms-3 font-22 almarai_extrabold_normal_normal">EDITION PERSONNEL</span>
                 </h1>
                 <transition name="list" appear>
                     <div class="cust-page-content client-detail m-auto pt-5">
@@ -218,21 +218,21 @@ export default {
                 error = true;
                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                     type: 'danger',
-                    message: 'Veuillez saisir LIBELLE DE L ACTION',
+                    message: 'You have to enter a nom',
                     ttl: 5,
                 });    
             }else if( user.value.firstName == '' ){
                 error = true;
                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                     type: 'danger',
-                    message: 'Veuillez saisir TYPE D ACTION A REALISER',
+                    message: 'You have to enter a pre nom',
                     ttl: 5,
                 });                    
             }else if( user.value.email == '' ){
                 error = true;
                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                     type: 'danger',
-                    message: 'Veuillez saisir TYPE D ACTION',
+                    message: 'You have to enter a email',
                     ttl: 5,
                 });                    
             }
