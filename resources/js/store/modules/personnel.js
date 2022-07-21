@@ -207,7 +207,6 @@ export const personnel = {
         },
 
         [PERSONNEL_UNSET_ORDER_DOCUMENT](state, id) {
-            console.log(id)
             state.userDocuments = state.userDocuments.filter(obj => obj.id != id)
         },
 

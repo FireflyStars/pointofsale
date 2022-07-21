@@ -24,6 +24,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PageElementsController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ActionCommercialListController;
+use App\Http\Controllers\ArticlesController;
 use App\Http\Controllers\QuickLinkController;
 use App\Http\Controllers\UsersController;
 
@@ -104,6 +105,16 @@ Route::post('/change-event-status/{event}', [ActionCommercialListController::cla
 Route::post('/get-contact-list', [ContactsController::class, 'index']);
 Route::get('/get-contact-details/{contact}', [ContactsController::class, 'show']);
 Route::get('/get-contact-results/{contact}', [ContactsController::class, 'contact_results']);
+
+Route::get('/get-articles-list', [ArticlesController::class, 'index']);
+Route::post('/get-articles-list', [ArticlesController::class, 'index']);
+Route::get('/get-articles-details/{product}', [ArticlesController::class, 'show']);
+Route::post('/validate-articles-product/{product}', [ArticlesController::class, 'valider']);
+Route::post('/load-product-documents/{product}', [ArticlesController::class, 'load_product_documents']);
+Route::post('/remove-product-document/{document}', [ArticlesController::class, 'remove_product_document']);
+Route::post('/get-product-document-url/{document}', [ArticlesController::class, 'get_document_url']);
+Route::post('/upload-product-document', [ArticlesController::class, 'upload_product_document']);
+Route::get('/get-product-document-types', [ArticlesController::class, 'product_document_types']);
 
 // contact
 Route::post('/contact/add', [ ContactController::class, 'create' ])->middleware('auth')->name('add.contact');

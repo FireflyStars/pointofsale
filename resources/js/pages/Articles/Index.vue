@@ -30,6 +30,17 @@
                             
                             <div class="col">
 
+                                <tab-pane :tabs="tabs" current='tout' class="almarai_700_normal">
+
+                                    <template v-slot:tout>
+                                        
+                                        <item-list-table :table_def="list">
+                                            
+                                        </item-list-table>
+                                            
+                                    </template>
+                                    
+                                </tab-pane>    
                             
                             </div>
                             
@@ -57,16 +68,26 @@
     import ItemListTable from '../../components/miscellaneous/ItemListTable/ItemListTable.vue';
 
     import {
+        ARTICLES_MODULE
     }
     from '../../store/types/types'
 
 
     const store = useStore()
 
+    const tabs = ref({
+        tout: 'Tout',
+    })
+
+    const list = computed(() => store.getters[`${ARTICLES_MODULE}list`])
+
 
 </script>
 
 <style lang="scss" scoped>
 
+.page-title {
+    margin-left: 1rem;
+}
 
 </style>

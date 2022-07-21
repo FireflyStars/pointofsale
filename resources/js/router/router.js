@@ -50,7 +50,18 @@ const router = createRouter({
             path: '/articles',
             name: 'articles',
             component: () => import('../pages/Articles/Index.vue'),
-            meta:{
+            children: [
+                {
+                    path:'/articles/detail/:id',
+                    name: 'articles-details',
+                    props: true,
+                    component: () => import('../pages/Articles/Details.vue'),
+                    meta: {
+                        authenticated:false
+                    }
+                },
+            ],
+            meta: {
                 authenticated: true
             },
         },
