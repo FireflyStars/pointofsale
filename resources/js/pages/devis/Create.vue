@@ -7,10 +7,7 @@
         <div class="col main-view container">
           <div class="d-flex">
             <div class="col-6">
-              <h1 class="d-flex align-items-center m-0">
-                <span class="devis-icon"></span>
-                <span class="ms-3 font-22 almarai_extrabold_normal_normal">Nouveau Devis</span>
-              </h1>
+              <page-title icon="star" name="Nouveau Devis" class="almarai_extrabold_normal_normal" style="height: 45px !important;"/>
             </div>
             <div class="col-6 d-flex" v-if="devisCreateStep == 'create_devis'">
               <button class="btn btn-save me-3 text-white" @click="storeDevis">Sauvegarder</button>
@@ -256,7 +253,7 @@
                               {{ (ouvrage.total / ouvrage.qty).toFixed(2) }}€
                             </div>
                             <div class="col-2 d-flex align-items-center justify-content-center border border-1">
-                              {{ ouvrage.total }}€
+                              {{ ouvrage.total.toFixed(2) }}€
                             </div>
                             <div class="col-2 d-flex align-items-center justify-content-center">
                               <svg class="cursor-pointer" @click="removeOuvrage(zoneIndex, 1, ouvrageIndex)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -275,11 +272,13 @@
                               </li>
                             </ul>
                             <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
-                            <ul class="ps-3" v-if="ouvrage.customerText !=''">
-                              <li class="mulish-regular font-10 custom-text-danger">{{ ouvrage.customerText }}</li>
+                            <ul class="ps-3">
+                              <li class="mulish-regular font-10 custom-text-danger">
+                                <input type="text" v-model="ouvrage.customerText" class="w-100 form-control form-control-sm custom-text-danger">
+                              </li>
                             </ul>
                             <!-- Ouvrage Task -->
-                            <div class="ouvrage-task mt-3" v-for="(task, taskIndex) in ouvrage.tasks" :key="taskIndex">
+                            <div class="ouvrage-task" v-for="(task, taskIndex) in ouvrage.tasks" :key="taskIndex">
                               <div class="task-header d-flex align-items-center custom-option cursor-pointer" :class="{ 'active': taskIndex == 0}" :data-id="'zone-'+ zoneIndex +'-installation-ouvrage-'+ouvrageIndex+'-task-'+taskIndex" @click="activeOuvrageTask">
                                 <span class="option-icon me-2"><span class="option-icon-dot"></span></span> {{ task.name }}
                               </div>
@@ -292,8 +291,10 @@
                                   </li>
                                 </ul>
                                 <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
-                                <ul class="ps-3" v-if="task.customerText !=''">
-                                  <li class="mulish-regular font-10 custom-text-danger">{{ task.customerText }}</li>
+                                <ul class="ps-3">
+                                  <li class="mulish-regular font-10 custom-text-danger">
+                                    <input type="text" v-model="task.customerText" class="w-100 form-control form-control-sm custom-text-danger">
+                                  </li>
                                 </ul>
                                 <div class="w-100 ps-3">
                                   <table class="table w-100 details-table m-0">
@@ -330,7 +331,7 @@
                                         <td valign="middle" text="text-center">{{ detail.unit }}</td>
                                         <td valign="middle" v-if="detail.type == 'MO' || detail.type == 'Labor'">
                                           <div class="d-flex align-items-center">
-                                            <input @keyup="updateAllValues" type="text" v-model.number="detail.numberH" style="min-width: 50px" class="w-100 form-control form-control-sm custom-text-danger">hr
+                                            <input @keyup="updateAllValues" type="text" v-model.number="detail.numberH" class="w-100 form-control form-control-sm custom-text-danger">hr
                                           </div>
                                         </td>                                      
                                         <td valign="middle" class="text-center supplier" v-else-if="detail.type == 'COMMANDE FOURNISSEUR'">
@@ -459,7 +460,7 @@
                               {{ (ouvrage.total / ouvrage.qty).toFixed(2) }}€
                             </div>
                             <div class="col-2 d-flex align-items-center justify-content-center border border-1">
-                              {{ ouvrage.total }}€
+                              {{ ouvrage.total.toFixed(2) }}€
                             </div>
                             <div class="col-2 d-flex align-items-center justify-content-center">
                               <svg class="cursor-pointer" @click="removeOuvrage(zoneIndex, 2, ouvrageIndex)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -478,11 +479,13 @@
                               </li>
                             </ul>
                             <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
-                            <ul class="ps-3" v-if="ouvrage.customerText !=''">
-                              <li class="mulish-regular font-10 custom-text-danger">{{ ouvrage.customerText }}</li>
+                            <ul class="ps-3">
+                              <li class="mulish-regular font-10 custom-text-danger">
+                                <input type="text" v-model="ouvrage.customerText" class="w-100 form-control form-control-sm custom-text-danger">
+                              </li>
                             </ul>
                             <!-- Ouvrage Task -->
-                            <div class="ouvrage-task mt-3" v-for="(task, taskIndex) in ouvrage.tasks" :key="taskIndex">
+                            <div class="ouvrage-task" v-for="(task, taskIndex) in ouvrage.tasks" :key="taskIndex">
                               <div class="task-header d-flex align-items-center custom-option cursor-pointer" :class="{ 'active': taskIndex == 0}" :data-id="'zone-'+ zoneIndex +'-security-ouvrage-'+ouvrageIndex+'-task-'+taskIndex" @click="activeOuvrageTask">
                                 <span class="option-icon me-2"><span class="option-icon-dot"></span></span> {{ task.name }}
                               </div>
@@ -495,8 +498,10 @@
                                   </li>
                                 </ul>
                                 <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
-                                <ul class="ps-3" v-if="task.customerText !=''">
-                                  <li class="mulish-regular font-10 custom-text-danger">{{ task.customerText }}</li>
+                                <ul class="ps-3">
+                                  <li class="mulish-regular font-10 custom-text-danger">
+                                    <input type="text" v-model="task.customerText" class="w-100 form-control form-control-sm custom-text-danger">
+                                  </li>
                                 </ul>
                                 <div class="w-100 ps-3">
                                   <table class="table w-100 details-table m-0">
@@ -533,7 +538,7 @@
                                         <td valign="middle" text="text-center">{{ detail.unit }}</td>
                                         <td valign="middle" v-if="detail.type == 'MO' || detail.type == 'Labor'">
                                           <div class="d-flex align-items-center">
-                                            <input @keyup="updateAllValues" type="text" v-model.number="detail.numberH" style="min-width: 50px" class="w-100 form-control form-control-sm custom-text-danger">hr
+                                            <input @keyup="updateAllValues" type="text" v-model.number="detail.numberH" class="w-100 form-control form-control-sm custom-text-danger">hr
                                           </div>
                                         </td>                                      
                                         <td valign="middle" class="text-center supplier" v-else-if="detail.type == 'COMMANDE FOURNISSEUR'">
@@ -662,7 +667,7 @@
                               {{ (ouvrage.total / ouvrage.qty).toFixed(2) }}€
                             </div>
                             <div class="col-2 d-flex align-items-center justify-content-center border border-1">
-                              {{ ouvrage.total }}€
+                              {{ ouvrage.total.toFixed(2) }}€
                             </div>
                             <div class="col-2 d-flex align-items-center justify-content-center">
                               <svg class="cursor-pointer" @click="removeOuvrage(zoneIndex, 3, ouvrageIndex)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -681,11 +686,13 @@
                               </li>
                             </ul>
                             <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
-                            <ul class="ps-3" v-if="ouvrage.customerText !=''">
-                              <li class="mulish-regular font-10 custom-text-danger">{{ ouvrage.customerText }}</li>
+                            <ul class="ps-3">
+                              <li class="mulish-regular font-10 custom-text-danger">
+                                <input type="text" v-model="ouvrage.customerText" class="w-100 form-control form-control-sm custom-text-danger">
+                              </li>
                             </ul>
                             <!-- Ouvrage Task -->
-                            <div class="ouvrage-task mt-3" v-for="(task, taskIndex) in ouvrage.tasks" :key="taskIndex">
+                            <div class="ouvrage-task" v-for="(task, taskIndex) in ouvrage.tasks" :key="taskIndex">
                               <div class="task-header d-flex align-items-center custom-option cursor-pointer" :class="{ 'active': taskIndex == 0}" :data-id="'zone-'+ zoneIndex +'-prestation-ouvrage-'+ouvrageIndex+'-task-'+taskIndex" @click="activeOuvrageTask">
                                 <span class="option-icon me-2"><span class="option-icon-dot"></span></span> {{ task.name }}
                               </div>
@@ -698,8 +705,10 @@
                                   </li>
                                 </ul>
                                 <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
-                                <ul class="ps-3" v-if="task.customerText !=''">
-                                  <li class="mulish-regular font-10 custom-text-danger">{{ task.customerText }}</li>
+                                <ul class="ps-3">
+                                  <li class="mulish-regular font-10 custom-text-danger">
+                                    <input type="text" v-model="task.customerText" class="w-100 form-control form-control-sm custom-text-danger">
+                                  </li>
                                 </ul>
                                 <div class="w-100 ps-3">
                                   <table class="table w-100 details-table m-0">
@@ -736,7 +745,7 @@
                                         <td valign="middle" text="text-center">{{ detail.unit }}</td>
                                         <td valign="middle" v-if="detail.type == 'MO' || detail.type == 'Labor'">
                                           <div class="d-flex align-items-center">
-                                            <input @keyup="updateAllValues" type="text" v-model="detail.numberH" style="min-width: 50px" class="w-100 form-control form-control-sm custom-text-danger">hr
+                                            <input @keyup="updateAllValues" type="text" v-model="detail.numberH" class="w-100 form-control form-control-sm custom-text-danger">hr
                                           </div>
                                         </td>                                      
                                         <td valign="middle" class="text-center supplier" v-else-if="detail.type == 'COMMANDE FOURNISSEUR'">
@@ -818,8 +827,8 @@
                     </p>
                   </div>
                   <div class="col-2 d-flex align-items-center">
-                    <p class="w-100 text-center font-16 mulish-extrabold">
-                      0 jours
+                    <p class="w-100 text-center font-16 mulish-extrabold d-flex align-items-center">
+                      <input type="text" class="form-control form-control-sm me-2" v-model="form.totalDays" @change="adjustHours"> jours
                     </p>
                   </div>
                 </div>
@@ -833,8 +842,8 @@
                     </p>
                   </div>
                   <div class="col-2 d-flex align-items-center">
-                    <p class="w-100 text-center font-16 mulish-extrabold">
-                      0 €
+                    <p class="w-100 text-center font-16 mulish-extrabold d-flex align-items-center">
+                      <input type="text" class="form-control form-control-sm me-2" v-model="form.discount"> € 
                     </p>
                   </div>
                 </div>
@@ -850,10 +859,10 @@
                     </p>
                   </div>
                   <div class="col-2 d-flex align-items-center justify-content-center fw-bold mulish-extra-bold font-16 text-black  text-nowrap">
-                    {{ form.totalHoursForInstall + form.totalHoursForSecurity + form.totalHoursForPrestation }} hr
+                    {{ ((form.totalHoursForInstall + form.totalHoursForSecurity + form.totalHoursForPrestation)/8).toFixed(2) }} hr
                   </div>
                   <div class="col-2 d-flex align-items-center justify-content-center fw-bold mulish-extra-bold font-16 text-black  text-nowrap">
-                    {{ (form.totalPriceForInstall + form.totalPriceForSecurity + form.totalPriceForPrestation).toFixed(2) }} €
+                    {{ (form.totalPriceForInstall + form.totalPriceForSecurity + form.totalPriceForPrestation - form.discount).toFixed(2) }} €
                   </div>
                 </div>
                 <div class="d-flex mt-4">
@@ -1023,6 +1032,8 @@ export default {
       totalHoursForInterim: 0,
       totalPriceWithoutMarge: 0,
       totalUnitPrice: 0,
+      discount: 0,
+      totalDays: 0,
       zones: [
         {
           edit: false,
@@ -1227,8 +1238,39 @@ export default {
         form.value.totalUnitPrice += zone.prestationOuvrage.sumUnitPrice;
         form.value.totalHoursForPrestation += zone.prestationOuvrage.totalHour;
         form.value.totalPriceForPrestation += zone.prestationOuvrage.totalPrice;    
+        form.value.totalDays = (form.value.totalHoursForPrestation + form.value.totalHoursForSecurity +  form.value.totalHoursForInstall)/8
       })
     };
+    const adjustHours = ()=>{
+      let currentTotalHours = form.value.totalDays*8;
+      let previousTotalHours = form.value.totalHoursForPrestation + form.value.totalHoursForSecurity +  form.value.totalHoursForInstall;
+      if(parseFloat(currentTotalHours) != parseFloat(previousTotalHours)){
+        let MOCount = 0;
+        let deltaHours = currentTotalHours - previousTotalHours;
+        // get MO Product count
+        zone.prestationOuvrage.ouvrages.forEach(ouvrage=>{
+          ouvrage.tasks.forEach(task=>{
+            task.details.forEach(detail=>{
+              if(detail.type == 'MO'){
+                MOCount++;
+              }
+            })
+          })
+        })
+        // adjusting hours
+        zone.prestationOuvrage.ouvrages.forEach(ouvrage=>{
+          ouvrage.tasks.forEach(task=>{
+            task.details.forEach(detail=>{
+              if(detail.type == 'MO'){
+                detail.numberH = parseFloat(detail.numberH) - (deltaHours/MOCount);
+              }
+            })
+          })
+        })
+        updateAllValues();
+      }
+
+    }
     onMounted(()=>{
       axios.post('/get-ged-categories').then((res)=>{
         gedCats.value = res.data.gedCats;
@@ -1352,7 +1394,7 @@ export default {
     // get details for a ouvrage selected
     const selectedOuvrage = (data)=>{
       store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Ajout de l`Ouvrage sélectionné..']);
-      axios.post('/get-ouvrage', { id: data.ouvrageId, qtyOuvrage: data.qtyOuvrage }).then((res)=>{
+      axios.post('/get-ouvrage', { id: data.ouvrageId, qtyOuvrage: data.qtyOuvrage, customerId: form.value.customer.id }).then((res)=>{
         if( data.type == 'installation' ){
           form.value.zones[data.zoneIndex].installOuvrage.ouvrages.push(res.data);
           document.querySelector('.installation-ouvrages').classList.add('open');
@@ -1378,7 +1420,7 @@ export default {
       if(product.ouvrageType == 1){
         form.value.zones[product.zoneIndex].installOuvrage.ouvrages[product.ouvrageId].tasks[product.taskId].details.push({
           qty: 1,
-          tax: product.tax,
+          tax: form.value.customer.taxId,
           unitPrice: parseFloat(product.unitPrice).toFixed(2),
           marge: 8,
           type: product.type,
@@ -1394,7 +1436,7 @@ export default {
       if(product.ouvrageType == 2){
         form.value.zones[product.zoneIndex].securityOuvrage.ouvrages[product.ouvrageId].tasks[product.taskId].details.push({
           qty: 1,
-          tax: product.tax,
+          tax: form.value.customer.taxId,
           unitPrice: parseFloat(product.unitPrice).toFixed(2),
           marge: 8,
           type: product.type,
@@ -1410,7 +1452,7 @@ export default {
       if(product.ouvrageType == 3){
         form.value.zones[product.zoneIndex].prestationOuvrage.ouvrages[product.ouvrageId].tasks[product.taskId].details.push({
           qty: 1,
-          tax: product.tax,
+          tax: form.value.customer.taxId,
           unitPrice: parseFloat(product.unitPrice).toFixed(2),
           marge: 8,
           type: product.type,
@@ -1912,7 +1954,7 @@ export default {
       openProductModal,
       openTaskModal,
       openPdfModal,
-
+      adjustHours,
       goToStep,
       addNewCustomer,
       selectedCustomer,

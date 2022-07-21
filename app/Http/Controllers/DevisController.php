@@ -543,10 +543,20 @@ class DevisController extends Controller
             $details = DB::table('ouvrage_detail')
                             ->join('products', 'products.id', '=', 'ouvrage_detail.product_id')
                             ->join('units', 'units.id', '=', 'products.unit_id')
+                            ->leftJoin('product_affiliate', function ($join) {
+                                $join->on('products.id', '=', 'product_affiliate.product_id')
+                                     ->where('product_affiliate.affilie_id', '=', Auth::user()->affiliate_id);
+                            })                            
+                            ->leftJoin('ouvrage_detail_affiliate', function ($join) {
+                                $join->on('ouvrage_detail.id', '=', 'ouvrage_detail_affiliate.ouvrage_detail_id')
+                                     ->where('ouvrage_detail_affiliate.affiliate_id', '=', Auth::user()->affiliate_id);
+                            })                            
                             ->where('ouvrage_task_id', $task->taskId)
                             ->select(
-                                'ouvrage_detail.numberh as numberH', 'ouvrage_detail.qty', 'units.id as unit_id',
-                                'products.type', 'units.code as unit', 'products.id as productId', 'products.name', 'products.taxe_id as tax', 'products.wholesale_price as unitPrice'
+                                'ouvrage_detail.qty', 'units.id as unit_id','products.type', 'units.code as unit', 
+                                'products.id as productId', 'products.name', 'products.taxe_id as tax',
+                                DB::raw('IF(ouvrage_detail_affiliate.numberh = 0, ouvrage_detail.numberh, ouvrage_detail_affiliate.numberh) as numberH'),
+                                DB::raw('IF(ISNULL(product_affiliate.wholesale_price), products.wholesale_price, product_affiliate.wholesale_price) as unitPrice')
                             )->get();
             foreach ($details as $detail) {
                 $detail->numberH = intval($request->qtyOuvrage) * floatval($detail->numberH);
@@ -554,6 +564,7 @@ class DevisController extends Controller
                 $detail->originalDetailQty = intval($detail->qty == 0 ? 1 : $detail->qty);
                 $detail->qty = intval($detail->qty == 0 ? 1 : $detail->qty)*intval($request->qtyOuvrage);
                 $detail->marge = 8;
+                $detail->tax = Customer::find($request->customerId)->tax->id;
                 $detail->original = true;
                 $detail->unitPrice = number_format($detail->unitPrice, 2);
                 $detail->qtyOuvrage = (int)$detail->qty;
@@ -600,7 +611,11 @@ class DevisController extends Controller
     public function searchProduct(Request $request){
         $query = DB::table('products')
                 ->join('taxes', 'taxes.id', '=', 'products.taxe_id')
-                ->join('units', 'units.id', '=', 'products.unit_id');
+                ->join('units', 'units.id', '=', 'products.unit_id')
+                ->leftJoin('product_affiliate', function ($join) {
+                    $join->on('products.id', '=', 'product_affiliate.product_id')
+                         ->where('product_affiliate.affilie_id', '=', Auth::user()->affiliate_id);
+                });
         if($request->search != ''){
             $query =    $query->where('products.name', 'like', '%'.$request->search.'%')
                         ->orWhere('products.reference', 'like', '%'.$request->search.'%')
@@ -611,7 +626,8 @@ class DevisController extends Controller
             $query->select(
                 'products.id', 'products.name',
                 'products.description', 'products.type', 'products.unit_id', /* DB::raw('CEIL(taxes.taux * 100) as tax'), */
-                'products.reference', 'products.wholesale_price', 'products.type', 'units.code as unit', 'products.taxe_id as tax'
+                'products.reference', 'products.type', 'units.code as unit', 'products.taxe_id as tax',
+                DB::raw('IF(ISNULL(product_affiliate.wholesale_price), products.wholesale_price, product_affiliate.wholesale_price) as wholesale_price')
             )->get()
         );
     }
@@ -644,7 +660,16 @@ class DevisController extends Controller
     public function getInterimData(){
         return response()->json([
             'societes'  => DB::table('interim_societe')->select('id as value', 'name as display')->get(),
-            'interim'    => DB::table('products')->where('type', 'INTERIM')->select('wholesale_price as price', 'taxe_id as tax', 'id as productId', 'unit_id as unitId')->first()
+            'interim'    => 
+                DB::table('products')
+                ->leftJoin('product_affiliate', function ($join) {
+                    $join->on('products.id', '=', 'product_affiliate.product_id')
+                         ->where('product_affiliate.affilie_id', '=', Auth::user()->affiliate_id);
+                })                
+                ->where('products.type', 'INTERIM')->select(
+                    DB::raw('IF(ISNULL(product_affiliate.wholesale_price), products.wholesale_price, product_affiliate.wholesale_price) as price'),
+                    'products.taxe_id as tax', 'products.id as productId', 'products.unit_id as unitId'
+                )->first()
         ]);
     }
     /**
@@ -652,7 +677,17 @@ class DevisController extends Controller
      * 
      */
     public function getLaborData(){
-        return response()->json(DB::table('products')->where('type', 'MO')->select('wholesale_price as price', 'id as productId', 'unit_id as unitId')->first());
+        return response()->json(
+            DB::table('products')
+            ->leftJoin('product_affiliate', function ($join) {
+                $join->on('products.id', '=', 'product_affiliate.product_id')
+                     ->where('product_affiliate.affilie_id', '=', Auth::user()->affiliate_id);
+            })                
+            ->where('products.type', 'MO')->select(
+                DB::raw('IF(ISNULL(product_affiliate.wholesale_price), products.wholesale_price, product_affiliate.wholesale_price) as price'),
+                'products.taxe_id as tax', 'products.id as productId', 'products.unit_id as unitId'
+            )->first()            
+        );
     }
     /**
      * Get units
@@ -675,6 +710,7 @@ class DevisController extends Controller
             'nbheure'           => ($request->totalHoursForInstall + $request->totalHoursForSecurity + $request->totalHoursForPrestation),
             'address_id'        => $request->address['id'],
             'customer_id'       => $request->customer['id'],
+            'remise'            => $request->discount,
             'datecommande'      => Carbon::now(),
             'signed_by_customer'=> 0,
             'reference'         => $this->passwdGen(10,'NO_NUMERIC'),
@@ -1046,17 +1082,16 @@ class DevisController extends Controller
      * Get Devis details
      * 
      */
-    public function getDevis($devisId){
-        $order = Order::find($devisId);
+    public function getDevis(Order $order){
         $zones = DB::table('order_zones')
-                    ->where('order_id', $devisId)
+                    ->where('order_id', $order->id)
                     ->where(function($query){
                             $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
                         })
                     ->select('id', 'latitude as lat', 'longitude as lon', 'order_id', 'name', 'hauteur as height', 'moyenacces_id as roofAccess')
                     ->get();
         $devis = [];
-        $devis['orderStatus'] = DB::table('orders')->join('order_states', 'orders.order_state_id', '=', 'order_states.id')->select('order_states.order_type as type', 'name', 'fontcolor', 'color')->first();
+        $devis['orderStatus'] = DB::table('orders')->join('order_states', 'orders.order_state_id', '=', 'order_states.id')->where('orders.id', $order->id)->select('order_states.order_type as type', 'name', 'fontcolor', 'color')->first();
         $devis['totalHoursForInstall'] = 0;
         $devis['totalPriceForInstall'] = 0;
         $devis['totalHoursForSecurity'] = 0;
@@ -1066,6 +1101,7 @@ class DevisController extends Controller
         $devis['totalHoursForInterim'] = 0;
         $devis['totalPriceWithoutMarge'] = 0;
         $devis['totalUnitPrice'] = 0;
+        $devis['discount'] = $order->remise;
         $devis['customer'] = DB::table('customers')
                                 ->join('group', 'group.id', '=', 'customers.group_id')
                                 ->join('taxes', 'taxes.id', '=', 'customers.taxe_id')
@@ -1128,7 +1164,7 @@ class DevisController extends Controller
             if($orderCat){
                 $devis['zones'][$zoneIndex]['installOuvrage']['name'] = $orderCat->name;
                 $ouvrages = DB::table('order_ouvrages')
-                    ->where('order_id', $devisId)
+                    ->where('order_id', $order->id)
                     ->where('order_zone_id', $zone->id)
                     ->where('order_cat_id', $orderCat->id)
                     ->where(function($query){
@@ -1196,7 +1232,7 @@ class DevisController extends Controller
             if($orderCat){
                 $devis['zones'][$zoneIndex]['securityOuvrage']['name'] = $orderCat->name;
                 $ouvrages = DB::table('order_ouvrages')
-                    ->where('order_id', $devisId)
+                    ->where('order_id', $order->id)
                     ->where('order_zone_id', $zone->id)
                     ->where('order_cat_id', $orderCat->id)
                     ->where(function($query){
@@ -1261,7 +1297,7 @@ class DevisController extends Controller
             if($orderCat){
                 $devis['zones'][$zoneIndex]['prestationOuvrage']['name'] = $orderCat->name;
                 $ouvrages = DB::table('order_ouvrages')
-                    ->where('order_id', $devisId)
+                    ->where('order_id', $order->id)
                     ->where('order_zone_id', $zone->id)
                     ->where('order_cat_id', $orderCat->id)
                     ->where(function($query){
@@ -1338,6 +1374,7 @@ class DevisController extends Controller
             'affiliate_id'      => Auth::user()->affiliate->id,
             'responsable_id'    => Auth::id(),
             'total'             => ($request->totalPriceForInstall + $request->totalPriceForSecurity + $request->totalPriceForPrestation),
+            'remise'            => $request->discount,
             'address_id'        => $request->address['id'],
             'customer_id'       => $request->customer['id'],
             'updated_at'        => Carbon::now(),

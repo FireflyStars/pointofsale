@@ -214,7 +214,7 @@ Route::group([
     Route::post('/get-units', [DevisController::class,'getUnits'])->middleware('auth')->name('get.unit');
     Route::post('/get-interim-data', [DevisController::class,'getInterimData'])->middleware('auth')->name('get.interim.data');
     Route::post('/get-labor-data', [DevisController::class,'getLaborData'])->middleware('auth')->name('get.labor.data');
-    Route::post('/get-devis/{id}', [DevisController::class, 'getDevis'])->middleware('auth')->name('get.devis');
+    Route::post('/get-devis/{order}', [DevisController::class, 'getDevis'])->middleware('auth')->name('get.devis');
     Route::post('/update-devis/{id}', [DevisController::class,'updateDevis'])->middleware('auth')->name('update.devis');
     // End Devis
 

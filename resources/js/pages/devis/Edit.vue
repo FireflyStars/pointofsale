@@ -6,12 +6,9 @@
         <side-bar />
         <div class="col main-view container">
           <div class="d-flex">
-            <div class="col-6">
-              <h1 class="d-flex align-items-center m-0">
-                <span class="devis-icon"></span>
-                <span class="ms-3 font-22 almarai_extrabold_normal_normal me-5">{{ form.orderStatus.type }} : {{ route.params.id }}</span>
-                <span class="font-14 text-center almarai-bold p-1 rounded-pill" :style="'width: 120px; background-color: ' + form.orderStatus.color + ';' + 'color: ' + form.orderStatus.fontcolor">{{ form.orderStatus.name }}</span>
-              </h1>
+            <div class="col-6 d-flex align-items-center">
+              <page-title icon="star" name="Devis" class="almarai_extrabold_normal_normal" style="height: 45px !important;"/>
+              <span class="font-14 text-center almarai-bold p-1 rounded-pill ms-4" :style="'width: 120px; background-color: ' + form.orderStatus.color + ';' + 'color: ' + form.orderStatus.fontcolor">{{ form.orderStatus.name }}</span>
             </div>
             <div class="col-6 d-flex" v-if="devisCreateStep == 'create_devis'">
               <button class="btn btn-save me-3 text-white" v-if="form.orderStatus.type != 'COMMANDE'" @click="updateDevis">Mise à jour</button>
@@ -277,8 +274,10 @@
                               </li>
                             </ul>
                             <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
-                            <ul class="ps-3" v-if="ouvrage.customerText !=''">
-                              <li class="mulish-regular font-10 custom-text-danger">{{ ouvrage.customerText }}</li>
+                            <ul class="ps-3">
+                              <li class="mulish-regular font-10 custom-text-danger">
+                                <input type="text" v-model="ouvrage.customerText" class="w-100 form-control form-control-sm custom-text-danger">
+                              </li>
                             </ul>
                             <!-- Ouvrage Task -->
                             <div class="ouvrage-task" v-for="(task, taskIndex) in ouvrage.tasks" :key="taskIndex">
@@ -294,8 +293,10 @@
                                   </li>
                                 </ul>
                                 <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
-                                <ul class="ps-3" v-if="task.customerText !=''">
-                                  <li class="mulish-regular font-10 custom-text-danger">{{ task.customerText }}</li>
+                                <ul class="ps-3">
+                                  <li class="mulish-regular font-10 custom-text-danger">
+                                    <input type="text" v-model="task.customerText" class="w-100 form-control form-control-sm custom-text-danger">
+                                  </li>
                                 </ul>
                                 <div class="w-100 ps-3">
                                   <table class="table w-100 details-table m-0">
@@ -480,8 +481,10 @@
                               </li>
                             </ul>
                             <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
-                            <ul class="ps-3" v-if="ouvrage.customerText !=''">
-                              <li class="mulish-regular font-10 custom-text-danger">{{ ouvrage.customerText }}</li>
+                            <ul class="ps-3">
+                              <li class="mulish-regular font-10 custom-text-danger">
+                                <input type="text" v-model="ouvrage.customerText" class="w-100 form-control form-control-sm custom-text-danger">
+                              </li>
                             </ul>
                             <!-- Ouvrage Task -->
                             <div class="ouvrage-task" v-for="(task, taskIndex) in ouvrage.tasks" :key="taskIndex">
@@ -497,8 +500,10 @@
                                   </li>
                                 </ul>
                                 <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
-                                <ul class="ps-3" v-if="task.customerText !=''">
-                                  <li class="mulish-regular font-10 custom-text-danger">{{ task.customerText }}</li>
+                                <ul class="ps-3">
+                                  <li class="mulish-regular font-10 custom-text-danger">
+                                    <input type="text" v-model="task.customerText" class="w-100 form-control form-control-sm custom-text-danger">
+                                  </li>
                                 </ul>
                                 <div class="w-100 ps-3">
                                   <table class="table w-100 details-table m-0">
@@ -683,8 +688,10 @@
                               </li>
                             </ul>
                             <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
-                            <ul class="ps-3" v-if="ouvrage.customerText !=''">
-                              <li class="mulish-regular font-10 custom-text-danger">{{ ouvrage.customerText }}</li>
+                            <ul class="ps-3">
+                              <li class="mulish-regular font-10 custom-text-danger">
+                                <input type="text" v-model="ouvrage.customerText" class="w-100 form-control form-control-sm custom-text-danger">
+                              </li>
                             </ul>
                             <!-- Ouvrage Task -->
                             <div class="ouvrage-task" v-for="(task, taskIndex) in ouvrage.tasks" :key="taskIndex">
@@ -700,8 +707,10 @@
                                   </li>
                                 </ul>
                                 <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
-                                <ul class="ps-3" v-if="task.customerText !=''">
-                                  <li class="mulish-regular font-10 custom-text-danger">{{ task.customerText }}</li>
+                                <ul class="ps-3">
+                                  <li class="mulish-regular font-10 custom-text-danger">
+                                    <input type="text" v-model="task.customerText" class="w-100 form-control form-control-sm custom-text-danger">
+                                  </li>
                                 </ul>
                                 <div class="w-100 ps-3">
                                   <table class="table w-100 details-table m-0">
@@ -820,9 +829,9 @@
                     </p>
                   </div>
                   <div class="col-2 d-flex align-items-center">
-                    <p class="w-100 text-center font-16 mulish-extrabold">
-                      0 jours
-                    </p>
+                    <p class="w-100 text-center font-16 mulish-extrabold d-flex align-items-center">
+                      <input type="text" class="form-control form-control-sm me-2" v-model="form.totalDays" @change="adjustHours"> jours 
+                    </p>                    
                   </div>
                 </div>
                 <div class="d-flex mt-2">
@@ -835,8 +844,8 @@
                     </p>
                   </div>
                   <div class="col-2 d-flex align-items-center">
-                    <p class="w-100 text-center font-16 mulish-extrabold">
-                      0 €
+                    <p class="w-100 text-center font-16 mulish-extrabold d-flex align-items-center">
+                      <input type="text" class="form-control form-control-sm me-2" v-model="form.discount"> € 
                     </p>
                   </div>
                 </div>
@@ -852,10 +861,10 @@
                     </p>
                   </div>
                   <div class="col-2 d-flex align-items-center justify-content-center fw-bold mulish-extra-bold font-16 text-black  text-nowrap">
-                    {{ form.totalHoursForInstall + form.totalHoursForSecurity + form.totalHoursForPrestation }} hr
+                    {{ ((form.totalHoursForInstall + form.totalHoursForSecurity + form.totalHoursForPrestation)/8).toFixed(2) }} hr
                   </div>
                   <div class="col-2 d-flex align-items-center justify-content-center fw-bold mulish-extra-bold font-16 text-black  text-nowrap">
-                    {{ (form.totalPriceForInstall + form.totalPriceForSecurity + form.totalPriceForPrestation).toFixed(2) }} €
+                    {{ (form.totalPriceForInstall + form.totalPriceForSecurity + form.totalPriceForPrestation - form.discount).toFixed(2) }} €
                   </div>
                 </div>
                 <div class="d-flex mt-4">
@@ -1034,6 +1043,8 @@ export default {
       totalHoursForInterim: 0,
       totalPriceWithoutMarge: 0,
       totalUnitPrice: 0,
+      discount: 0,
+      totalDays: 0,
       zones: [
         {
           edit: false,
@@ -1238,8 +1249,39 @@ export default {
         form.value.totalUnitPrice += zone.prestationOuvrage.sumUnitPrice;
         form.value.totalHoursForPrestation += zone.prestationOuvrage.totalHour;
         form.value.totalPriceForPrestation += zone.prestationOuvrage.totalPrice;    
+        form.value.totalDays = (form.value.totalHoursForPrestation + form.value.totalHoursForSecurity +  form.value.totalHoursForInstall)/8;
       })
     };
+    const adjustHours = ()=>{
+      let currentTotalHours = form.value.totalDays*8;
+      let previousTotalHours = form.value.totalHoursForPrestation + form.value.totalHoursForSecurity +  form.value.totalHoursForInstall;
+      if(parseFloat(currentTotalHours) != parseFloat(previousTotalHours)){
+        let MOCount = 0;
+        let deltaHours = currentTotalHours - previousTotalHours;
+        // get MO Product count
+        zone.prestationOuvrage.ouvrages.forEach(ouvrage=>{
+          ouvrage.tasks.forEach(task=>{
+            task.details.forEach(detail=>{
+              if(detail.type == 'MO'){
+                MOCount++;
+              }
+            })
+          })
+        })
+        // adjusting hours
+        zone.prestationOuvrage.ouvrages.forEach(ouvrage=>{
+          ouvrage.tasks.forEach(task=>{
+            task.details.forEach(detail=>{
+              if(detail.type == 'MO'){
+                detail.numberH = parseFloat(detail.numberH) - (deltaHours/MOCount);
+              }
+            })
+          })
+        })
+        updateAllValues();
+      }
+
+    }    
     onMounted(()=>{
       axios.post('/get-devis/'+route.params.id).then((res)=>{
         taxes.value = res.data.taxes;
@@ -1463,7 +1505,7 @@ export default {
       if(product.ouvrageType == 1){
         form.value.zones[product.zoneIndex].installOuvrage.ouvrages[product.ouvrageId].tasks[product.taskId].details.push({
           qty: 1,
-          tax: product.tax,
+          tax: form.value.customer.taxId,
           unitPrice: parseFloat(product.unitPrice).toFixed(2),
           marge: 8,
           type: product.type,
@@ -1479,7 +1521,7 @@ export default {
       if(product.ouvrageType == 2){
         form.value.zones[product.zoneIndex].securityOuvrage.ouvrages[product.ouvrageId].tasks[product.taskId].details.push({
           qty: 1,
-          tax: product.tax,
+          tax: form.value.customer.taxId,
           unitPrice: parseFloat(product.unitPrice).toFixed(2),
           marge: 8,
           type: product.type,
@@ -1495,7 +1537,7 @@ export default {
       if(product.ouvrageType == 3){
         form.value.zones[product.zoneIndex].prestationOuvrage.ouvrages[product.ouvrageId].tasks[product.taskId].details.push({
           qty: 1,
-          tax: product.tax,
+          tax: form.value.customer.taxId,
           unitPrice: parseFloat(product.unitPrice).toFixed(2),
           marge: 8,
           type: product.type,
@@ -2036,7 +2078,7 @@ export default {
       openProductModal,
       openTaskModal,
       openPdfModal,
-
+      adjustHours,
       goToStep,
       addNewCustomer,
       selectedCustomer,
@@ -2105,12 +2147,6 @@ export default {
     font-size: 10px;
     color: rgba(0, 24, 51, 0.22);
     line-height: 12.55px;    
-  }
-  .breadcrumb{
-    .breadcrumb-item + .breadcrumb-item::before{
-      content: '>';
-      color: black;
-    }
   }
   .customer-addresses{
     height: 400px;
