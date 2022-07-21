@@ -1258,30 +1258,34 @@ export default {
       if(parseFloat(currentTotalHours) != parseFloat(previousTotalHours)){
         let MOCount = 0;
         let deltaHours = currentTotalHours - previousTotalHours;
+        console.log(deltaHours);
         // get MO Product count
-        zone.prestationOuvrage.ouvrages.forEach(ouvrage=>{
-          ouvrage.tasks.forEach(task=>{
-            task.details.forEach(detail=>{
-              if(detail.type == 'MO'){
-                MOCount++;
-              }
+        form.value.zones.forEach(zone=>{
+          zone.prestationOuvrage.ouvrages.forEach(ouvrage=>{
+            ouvrage.tasks.forEach(task=>{
+              task.details.forEach(detail=>{
+                if(detail.type == 'MO'){
+                  MOCount++;
+                }
+              })
             })
           })
         })
         // adjusting hours
-        zone.prestationOuvrage.ouvrages.forEach(ouvrage=>{
-          ouvrage.tasks.forEach(task=>{
-            task.details.forEach(detail=>{
-              if(detail.type == 'MO'){
-                detail.numberH = parseFloat(detail.numberH) - (deltaHours/MOCount);
-              }
+        form.value.zones.forEach(zone=>{
+          zone.prestationOuvrage.ouvrages.forEach(ouvrage=>{
+            ouvrage.tasks.forEach(task=>{
+              task.details.forEach(detail=>{
+                if(detail.type == 'MO'){
+                  detail.numberH = parseFloat(detail.numberH) + (deltaHours/MOCount);
+                }
+              })
             })
           })
         })
         updateAllValues();
       }
-
-    }    
+    }
     onMounted(()=>{
       axios.post('/get-devis/'+route.params.id).then((res)=>{
         taxes.value = res.data.taxes;
