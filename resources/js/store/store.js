@@ -54,6 +54,8 @@ import { actionCoStatusTag as ACTION_COMMERCIAL_STATUS_MODULE } from './modules/
 import { contactList as CONTACT_LIST_MODULE } from './modules/contact'
 import { personnel as PERSONNEL_LIST_MODULE } from './modules/personnel'
 
+import { articles as ARTICLES_MODULE } from './modules/articles'
+
 
 export default createStore({
     modules: {
@@ -81,6 +83,7 @@ export default createStore({
         ACTION_COMMERCIAL_MODULE,
         ACTION_COMMERCIAL_STATUS_MODULE,
         CONTACT_LIST_MODULE,
-        PERSONNEL_LIST_MODULE
+        PERSONNEL_LIST_MODULE,
+        ARTICLES_MODULE
     }
 });
