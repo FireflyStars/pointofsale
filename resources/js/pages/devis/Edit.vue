@@ -7,7 +7,7 @@
         <div class="col main-view container">
           <div class="d-flex">
             <div class="col-6 d-flex align-items-center">
-              <page-title icon="star" name="Devis" class="almarai_extrabold_normal_normal" style="height: 45px !important;"/>
+              <page-title icon="star" name="Devis" class="almarai_extrabold_normal_normal"/>
               <span class="font-14 text-center almarai-bold p-1 rounded-pill ms-4" :style="'width: 120px; background-color: ' + form.orderStatus.color + ';' + 'color: ' + form.orderStatus.fontcolor">{{ form.orderStatus.name }}</span>
             </div>
             <div class="col-6 d-flex" v-if="devisCreateStep == 'create_devis'">
@@ -820,7 +820,7 @@
             <div class="ms-2 right-panel">
               <div class="section bg-white">
                 <div class="d-flex">
-                  <div class="col-10 d-flex flex-wrap">
+                  <div class="col-9 d-flex flex-wrap">
                     <p class="w-100 m-0 title">
                       Arrondir les heures
                     </p>
@@ -828,14 +828,14 @@
                       Les jours du Chantiers
                     </p>
                   </div>
-                  <div class="col-2 d-flex align-items-center">
+                  <div class="col-3 d-flex align-items-center">
                     <p class="w-100 text-center font-16 mulish-extrabold d-flex align-items-center">
                       <input type="text" class="form-control form-control-sm me-2" v-model="form.totalDays" @change="adjustHours"> jours 
                     </p>                    
                   </div>
                 </div>
                 <div class="d-flex mt-2">
-                  <div class="col-10 d-flex flex-wrap">
+                  <div class="col-9 d-flex flex-wrap">
                     <p class="w-100 m-0 title">
                       Remise Euros :  
                     </p>
@@ -843,7 +843,7 @@
                       A convertir en heure et a soustraire au total d’heures
                     </p>
                   </div>
-                  <div class="col-2 d-flex align-items-center">
+                  <div class="col-3 d-flex align-items-center">
                     <p class="w-100 text-center font-16 mulish-extrabold d-flex align-items-center">
                       <input type="text" class="form-control form-control-sm me-2" v-model="form.discount"> € 
                     </p>
@@ -2109,6 +2109,13 @@ export default {
   },
 }
 </script>
+<style>
+h1{
+    vertical-align: middle;
+    line-height: 45px !important;
+    margin-left: 0 !important;
+}
+</style>
 <style lang="scss" scoped>
   /* width */
   ::-webkit-scrollbar {
