@@ -88,8 +88,7 @@ const showcontainer = ref(false)
 const templatesList = computed(() => store.getters[`${BUILDER_MODULE_LIST}templateListDefinition`])
 
 const navigatePage = (id) => {
-    console.log("working", document.getElementsByTagName( 'body' )[0].className)
-    document.getElementsByTagName( 'body' )[0].className=''
+
 
     router.push({
         name: 'templates-edit',

@@ -153,8 +153,8 @@ export default {
             resetOrder()
             nextTick(async () => {
 
-                document.getElementsByTagName( 'body' )[0].className=''
-                console.log(document.getElementsByTagName('body')[0].className)
+
+         
 
                 await getPageTemplate()
                 showcontainer.value = true

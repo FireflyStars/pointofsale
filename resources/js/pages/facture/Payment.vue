@@ -15,6 +15,7 @@
         <div class="col-2 font-12 lcdtgrey">Montant</div>
         <div class="col-1"></div>
       </div>
+          <transition-group tag="div" class="list"  name="list" appear>
       <template v-for="payment,index in payments" :key="index">
         <div class="row mb-2">
         <div class="col-2 font-14 paymentid almarai_700_normal d-flex align-items-center" :class="{valide:payment.paiement_state_id==2}">{{payment.id}}</div>
@@ -23,13 +24,15 @@
         <div class="col-2  d-flex align-items-center"><state-tag width="100%" classes="almarai_700_normal" :id="payment.paiement_state_id" :states="payment_states"/></div>
         <div class="col-2 d-flex align-items-center"><state-tag width="100%" classes="almarai_700_normal" :id="payment.paiement_type_id" :states="payment_types"/></div>
         <div class="col-2 font-14 d-flex align-items-center">{{formatPrice(payment.montantpaiement)}}</div>
-        <div class="col-1 d-flex align-items-center"><icon v-if="payment.paiement_state_id==1" name="trash-x" width="20px" height="20px" class="cursor-pointer" @click="removePaiement(paiement)"></icon></div>
+        <div class="col-1 d-flex align-items-center"><icon v-if="payment.paiement_state_id==1" name="trash-x" width="20px" height="20px" class="cursor-pointer" @click="removePaiement(payment)"></icon></div>
         </div>
       </template>
-        
+          </transition-group>
+           <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
        <div class="row mt-1" v-if="reste_a_payer()!=0">
           <div class="col d-flex justify-content-center"><span @click="showpaymentform" class="factions lcdtOrange font-14 d-flex align-items-center gap-1"><icon name="plus-circle"/><span class=" noselect">AJOUTER PAIEMENT</span></span></div>
         </div> 
+           </transition>
     </mini-panel>  
 
       <simple-modal-popup v-model="showmodal_payment" title="Ajouter un paiement" @modalconfirm="newpaiement" @modalclose="closemodal" icon="paiement" iconStyles="width:32px;height:32px;">
@@ -62,7 +65,7 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
 import Icon from '../../components/miscellaneous/Icon.vue';
 import { formatPrice,formatDate,br,isFloat } from '../../components/helpers/helpers';
 import { computed, onMounted, ref, watch } from '@vue/runtime-core';
-import { FACTURE_DETAIL_GET, FACTURE_DETAIL_GET_PAYMENTS, FACTURE_DETAIL_GET_PAYMENT_STATES, FACTURE_DETAIL_GET_PAYMENT_TYPES, FACTURE_DETAIL_LOAD_PAYMENTS, FACTURE_DETAIL_MODULE, FACTURE_DETAIL_SET_PAYMENTS } from '../../store/types/types';
+import { FACTURE_DETAIL_GET, FACTURE_DETAIL_GET_PAYMENTS, FACTURE_DETAIL_GET_PAYMENT_STATES, FACTURE_DETAIL_GET_PAYMENT_TYPES, FACTURE_DETAIL_LOAD_PAYMENTS, FACTURE_DETAIL_MODULE, FACTURE_DETAIL_REMOVE_PAYMENT, FACTURE_DETAIL_SET_PAYMENTS } from '../../store/types/types';
 import StateTag from '../../components/miscellaneous/StateTag.vue';
  import { Money3Component } from 'v-money3';
 import { useStore } from 'vuex';
@@ -75,7 +78,8 @@ export default {
             }
         },
         components:{MiniPanel,Icon,StateTag,money3:Money3Component},
-        setup(props){
+         emits: ['showloader','hideloader'],
+        setup(props,context){
 
                      const moneyconfig=ref({
                             masked: false,
@@ -192,7 +196,9 @@ export default {
 
           }
           const removePaiement=(paiement)=>{
-
+         
+              context.emit('showloader')
+              store.dispatch(`${FACTURE_DETAIL_MODULE}${FACTURE_DETAIL_REMOVE_PAYMENT}`,paiement.id).then(()=> context.emit('hideloader')).finally(()=> context.emit('hideloader'));
           }
           return {
             formatPrice,
@@ -258,4 +264,36 @@ h3{
     cursor:pointer;
 }
 
+ .list-enter-from{
+        opacity: 0;
+        transform: scale(0.6);
+    }
+    .list-enter-to{
+        opacity: 1;
+        transform: scale(1);
+    }
+    .list-enter-active{
+        transition: all 1s ease;
+    }
+
+    .list-leave-from{
+        transform-origin: right center;
+        opacity: 1;
+        transform: scale(1);
+   
+    }
+    .list-leave-to{
+        transform-origin: right center;
+        opacity: 0;
+        transform: scale(0.6);
+    }
+    .list-leave-active{
+               transition: all 1s ease;
+         transform-origin: right center;
+        position:absolute;     
+        width: 100%;
+    }
+    .list-move{
+        transition:all 0.3s ease;
+    }
 </style>

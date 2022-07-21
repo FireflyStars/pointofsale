@@ -170,4 +170,21 @@ class InvoiceController extends Controller
         return response()->json(['paiements'=>$paiements,'paiement_states'=>PaiementState::all(),'paiement_types'=>PaiementType::all()]);
 
     }
+
+    public function removeInvoicePayment(Request $request){
+        $paiement_id=$request->post('paiement_id');
+
+        $paiement=Paiement::find($paiement_id);
+        if($paiement==null)
+        return response('Cannot find payment',509);
+
+        $user=Auth::user();
+        if($paiement->affiliate_id!=$user->affiliate_id)
+        return response('Impossible de supprimer le paiement. Le paiement n\'est pas lié au même affilié que l\'utilisateur',509);
+        if($paiement->paiement_state_id!=1)
+        return response('Impossible de supprimer le paiement. Le paiement n\'est pas en statut nouveau.',509);
+
+        $paiement->delete();
+        return response()->json(['delete'=>'ok']);
+    }
 }

@@ -51,6 +51,7 @@ import { ITEM_LIST_GET_CURRENT, ITEM_LIST_GET_IDENTIFIER, ITEM_LIST_MODULE, ITEM
             const show=ref(false);
             const showclose=ref(false);
             onMounted(()=>{
+                document.getElementsByTagName( 'body' )[0].className='hide-overflowY';
                 show.value=true;
                  setTimeout(()=>{
                 showclose.value=true;

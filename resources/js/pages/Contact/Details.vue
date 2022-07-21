@@ -342,7 +342,7 @@ const formattedAddress = computed(() => {
     `
 })
 onMounted(()=>{
-         document.getElementsByTagName( 'body' )[0].className='hide-overflowY';
+        
 })
 const statuses = computed(() => {
     return store.getters[`${CONTACT_LIST_MODULE}statuses`].map(status => {

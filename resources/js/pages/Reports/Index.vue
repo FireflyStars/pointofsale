@@ -81,7 +81,7 @@ const reports = computed(() => store.getters[`${REPORTS_BUILDER_MODULE}reportLis
 
 const navigatePage = (id) => {
     
-    document.getElementsByTagName( 'body' )[0].className=''
+ 
 
     router.push({
         name: 'create-report-page',
