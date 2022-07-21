@@ -46,6 +46,8 @@ import { mainSearch as SEARCH_MODULE } from './modules/mainSearch'
 import { campagneList as CAMPAGNE_LIST_MODULE } from './modules/campagneList'
 
 import {devisdetail as DEVIS_DETAIL_MODULE } from './modules/devisdetail'
+
+import {facturedetail as FACTURE_DETAIL_MODULE } from './modules/facturedetail'
 import { entite as ENTITE_LIST_MODULE } from './modules/entite.js'
 
 import { actionCommercial as ACTION_COMMERCIAL_MODULE } from './modules/actionCommercial.js'
@@ -67,6 +69,7 @@ export default createStore({
         ORDERSTATETAG_MODULE,
         DEVIS_LIST_MODULE,
         FACTURE_LIST_MODULE,
+        FACTURE_DETAIL_MODULE,
         INVOICESTATETAG_MODULE,
         SIDEBAR_MODULE,
         SELECT_MODULE,

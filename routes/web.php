@@ -188,6 +188,9 @@ Route::group([
     Route::post('/get-invoice-list',[InvoiceController::class,'loadInvoiceList'])->middleware('auth')->name('get-invoice-list');
     Route::post('/get-invoice-states-formatted',[InvoiceController::class,'getInvoiceStatesFormatted'])->middleware('auth')->name('get-invoice-states-formatted');
     Route::post('/get-invoice-states',[InvoiceController::class,'getInvoiceStates'])->middleware('auth')->name('get-invoice-states');
+    Route::post('/get-invoice-detail',[InvoiceController::class,'getInvoiceDetail'])->middleware('auth')->name('get-invoice-detail');
+    Route::post('/get-invoice-payments',[InvoiceController::class,'getInvoicePayments'])->middleware('auth')->name(' get-invoice-payments');
+   
     
     //quicklink
     Route::post('/add-quick-link',[QuickLinkController::class,'addLink'])->middleware('auth')->name('add-quick-link');

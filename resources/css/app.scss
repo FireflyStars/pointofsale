@@ -42,7 +42,7 @@ html{
       }
 
   }
-  .btn-link{
+  .btn-link,.lcdtOrange{
     color: var(--lcdtOrange);
   }
 
@@ -58,6 +58,9 @@ html{
 }
 .nogap{
   gap: unset!important;
+}
+.od h1{
+  margin-left: 0 !important;;
 }
 button.quicklink{
   font-family: "Open Sans"!important;
@@ -194,7 +197,7 @@ P {
   }
 }
 
-.DevisDetail .od h1.page-title{
+.DevisDetail .od h1.page-title,.FactureDetail .od h1.page-title{
   margin-left:10px;
   line-height: 40px;
   margin-top: 24px;

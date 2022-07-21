@@ -645,6 +645,7 @@ const appendResults = async (type) => {
 
 
 onMounted(() => {
+         document.getElementsByTagName( 'body' )[0].className='hide-overflowY';
     getEntiteDetails()
 })
 

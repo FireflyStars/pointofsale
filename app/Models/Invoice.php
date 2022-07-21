@@ -49,6 +49,9 @@ class Invoice extends Model
         }
     }
 
+    public function orderInvoice(){
+        return $this->belongsTo(OrderInvoice::class);
+    }
 
 
 }

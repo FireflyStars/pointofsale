@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Address;
 use App\Models\Customer;
 use App\Traits\Tools;
 use App\Traits\GedFileProcessor;
@@ -57,6 +58,7 @@ class DevisController extends Controller
             $join->on('users.id','=','orders.responsable_id');
         });
         $orderList=$orderList->where('orders.affiliate_id','=',$user->affiliate->id);
+        $orderList=$orderList->whereNull('orders.deleted_at');
         //column filters
         if($column_filters!=null)
         foreach($column_filters as $column_filter){
@@ -111,13 +113,13 @@ class DevisController extends Controller
         $order_id=$request->post('order_id');
         $order=Order::find($order_id);
         $lastevent=$order->events()->orderBy('id','desc')->first();
-        $order->contact='--/--';
+        $order->contact=null;
         $chantier_address=null;
         if($lastevent!=null){
         $order->contact=$lastevent->contact;
         $chantier_address=$lastevent->address()->where('address_type_id','=',2)->first();
         }
-        $order->formatted_chantier_address=$chantier_address==null?'--/--':$chantier_address->getformattedAddress();
+        $order->formatted_chantier_address=$chantier_address==null?'Pas d\'adresse de chantier':$chantier_address->getformattedAddress();
         $order->customer;
         $order->orderZones;
     
@@ -131,8 +133,8 @@ class DevisController extends Controller
             }
             $orderzone->groupedOrderOuvrage=$groupOrderOuvrage;
         }
-        $facturation_address=$order->customer->addresses()->where('address_type_id','=',1)->first();
-        $order->formatted_facturation_address=$facturation_address==null?'--/--':$facturation_address->getformattedAddress();
+        $facturation_address=Address::getFacturationAddress($order->customer->id);
+        $order->formatted_facturation_address=$facturation_address==null?'Pas d\'adresse de facturation':$facturation_address->getformattedAddress();
         $order->state=OrderState::find($order->order_state_id);
         return response()->json($order);
     }

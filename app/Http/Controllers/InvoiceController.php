@@ -2,8 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Address;
 use App\Models\Invoice;
 use App\Models\InvoiceState;
+use App\Models\Order;
+use App\Models\OrderInvoice;
+use App\Models\OrderState;
+use App\Models\Paiement;
+use App\Models\PaiementState;
+use App\Models\PaiementType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -45,6 +52,7 @@ class InvoiceController extends Controller
             $join->on('users.id','=','orders.responsable_id');
         });
         $list=$list->where('invoices.affiliate_id','=',$user->affiliate->id);
+        $list=$list->whereNull('invoices.deleted_at');
         //column filters
         if($column_filters!=null)
         foreach($column_filters as $column_filter){
@@ -111,5 +119,55 @@ class InvoiceController extends Controller
 
     public function getInvoiceStates(Request $request){
         return response()->json(InvoiceState::all());
+    }
+
+    public function getInvoiceDetail(Request $request){
+        $invoice_id=$request->post('invoice_id');
+        $invoice=Invoice::find($invoice_id);
+        $order_invoice=OrderInvoice::find($invoice->order_invoice_id);
+        $invoice->order=null;
+        if($invoice->order_invoice_id>0&&$order_invoice!=null){
+        $invoice->orderInvoice;
+        $order=Order::find($order_invoice->order_id);
+        $lastevent=$order->events()->orderBy('id','desc')->first();
+        $order->contact=null;
+        $chantier_address=null;
+        if($lastevent!=null){
+        $order->contact=$lastevent->contact;
+        $chantier_address=$lastevent->address()->where('address_type_id','=',2)->first();
+        }
+        $order->formatted_chantier_address=$chantier_address==null?'Pas d\'adresse de chantier':$chantier_address->getformattedAddress();
+        $order->customer;
+     
+        $facturation_address=Address::getFacturationAddress($order->customer->id);
+        $order->formatted_facturation_address=$facturation_address==null?'Pas d\'adresse de facturation':$facturation_address->getformattedAddress();
+        $invoice->order=$order;
+        }else{
+           $invoice->order=new \stdClass;
+           $invoice->order->formatted_chantier_address ='Pas d\'adresse de chantier';
+           $invoice->contact=null;
+           $facturation_address=Address::getFacturationAddress($invoice->customer_id);
+           $invoice->order->formatted_facturation_address=$facturation_address==null?'Pas d\'adresse de facturation':$facturation_address->getformattedAddress();
+
+        }
+      
+        return response()->json($invoice);
+    }
+
+    public function getInvoicePayments(Request $request){
+        $invoice_id=$request->post('invoice_id');
+        $invoice=Invoice::find($invoice_id);
+        $user=Auth::user();
+        if($invoice==null){
+            return response('Cannot load payments.Invoice not found',509);
+        }
+
+        if($user->affiliate_id!=$invoice->affiliate_id)
+        return response('Cannot load payments. Invoice is not linked to the same affiliate as the user',509);
+
+        $paiements=Paiement::where('invoice_id','=',$invoice_id)->where('affiliate_id','=',$user->affiliate_id)->whereNull('deleted_at')->get();
+
+        return response()->json(['paiements'=>$paiements,'paiement_states'=>PaiementState::all(),'paiement_types'=>PaiementType::all()]);
+
     }
 }
