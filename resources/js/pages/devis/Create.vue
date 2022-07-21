@@ -293,7 +293,7 @@
                                 <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
                                 <ul class="ps-3">
                                   <li class="mulish-regular font-10 custom-text-danger">
-                                    <input style="text-align: left !important" type="text" v-model="task.customerText" class="w-100 form-control form-control-sm custom-text-danger">
+                                    <textarea style="text-align: left !important" v-model="task.customerText" class="w-100 form-control custom-text-danger" rows="2"></textarea>
                                   </li>
                                 </ul>
                                 <div class="w-100 ps-3">
@@ -500,7 +500,7 @@
                                 <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
                                 <ul class="ps-3">
                                   <li class="mulish-regular font-10 custom-text-danger">
-                                    <input style="text-align: left !important" type="text" v-model="task.customerText" class="w-100 form-control form-control-sm custom-text-danger">
+                                    <textarea style="text-align: left !important" v-model="task.customerText" class="w-100 form-control custom-text-danger" rows="2"></textarea>
                                   </li>
                                 </ul>
                                 <div class="w-100 ps-3">
@@ -707,7 +707,7 @@
                                 <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
                                 <ul class="ps-3">
                                   <li class="mulish-regular font-10 custom-text-danger">
-                                    <input style="text-align: left !important" type="text" v-model="task.customerText" class="w-100 form-control form-control-sm custom-text-danger">
+                                    <textarea style="text-align: left !important" v-model="task.customerText" class="w-100 form-control custom-text-danger" rows="2"></textarea>
                                   </li>
                                 </ul>
                                 <div class="w-100 ps-3">
