@@ -26,4 +26,21 @@ class Address extends Model
         return $this->belongsTo(AddressType::class, 'address_type_id');
     }
 
+    public static function getFacturationAddress($customer_id){
+
+
+//         addresses_type=1 or
+//  if there arent type1 >> type=3
+// if  there arent type1  and 3>> the adresse
+// if there arent address >> ‘Pas d adresse cliente’
+
+$address=Address::where('customer_id','=',$customer_id)->where('address_type_id','=',1)->whereNull('deleted_at')->first();
+if($address==null)
+$address=Address::where('customer_id','=',$customer_id)->where('address_type_id','=',3)->whereNull('deleted_at')->first();
+if($address==null)
+$address=Address::where('customer_id','=',$customer_id)->whereNull('deleted_at')->first();
+
+return $address;
+    }
+
 }

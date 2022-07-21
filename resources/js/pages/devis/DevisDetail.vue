@@ -22,7 +22,7 @@
         <div class="col"><span class="subtitle almarai_700_normal">Adresse facturation</span><br><span v-html="order.formatted_facturation_address"></span></div>
     </div>
     <div class="row" v-if="show">
-        <div class="col"><span class="subtitle almarai_700_normal">Contact</span><br><span v-if="typeof order.contact!='undefined'" v-html="`${typeof order.contact.firstname !='undefined'? order.contact.firstname:''} ${typeof order.contact.name !='undefined'?order.contact.name:''}${br(order.contact.mobile)}${br(order.contact.telephone)}`"></span></div>
+        <div class="col"><span class="subtitle almarai_700_normal">Contact</span><br><span v-if="order.contact!=null" v-html="`${typeof order.contact.firstname !='undefined'? order.contact.firstname:''} ${typeof order.contact.name !='undefined'?order.contact.name:''}${br(order.contact.mobile)}${br(order.contact.telephone)}`"></span><span v-else>Pas de contact</span></div>
         <div class="col"><span class="subtitle almarai_700_normal">Mode de paiement</span><br><span>--/--</span></div>
     </div>
      <hr v-if="show"/>
@@ -511,8 +511,8 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                  
                         if(taux>(100-total_taux_facture.value))
                         taux=100-total_taux_facture.value;
-                        if(taux==0)
-                        taux=parseFloat(facture.value.taux);
+                       // if(taux==0)
+                       // taux=parseFloat(facture.value.taux);
                               let montant=reste_a_facturer.value/(100-total_taux_facture.value)*taux;
 
                         facture.value.taux=isNaN(taux)?'':`${Math.abs(taux)}`;
@@ -523,8 +523,7 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                         let taux=parseFloat(facture.value.taux);
                         if(taux>total_taux_facture.value)
                         taux=total_taux_facture.value;
-                        if(taux==0)
-                        taux=parseFloat(facture.value.taux);
+                     
                            
 
                         facture.value.taux=isNaN(taux)?'':`${Math.abs(taux)}`;
@@ -555,9 +554,12 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                         }
                         taux=(montant/order.value.total)*100;
                     }
+                     console.log(total_facture.value,facture.value);
                     if(facture.value.invoice_type_id==3){
-                        if(montant>total_facture.value.toFixed(2)){//Regle2 : La somme des avoirs ne doit pas depasser la somme des FACTURES
+                       console.log('x');
+                        if(montant.toFixed(2)>total_facture.value.toFixed(2)){//Regle2 : La somme des avoirs ne doit pas depasser la somme des FACTURES
                             montant=total_facture.value.toFixed(2);  
+                                 console.log('y');
                         }
                        taux=(montant/order.value.total)*100;
                     }
@@ -565,9 +567,9 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
 
       
           
-                    if(montant==0&&(facture.value.invoice_type_id==2||facture.value.invoice_type_id==3)){
+                    /*if(montant==0&&(facture.value.invoice_type_id==2||facture.value.invoice_type_id==3)){
                         montant=facture.value.montant;
-                    }
+                    }*/
 
                     facture.value.montant=Math.abs(montant);
                    

@@ -214,6 +214,7 @@ const deleteUser = async () => {
 
 
 onMounted(() => {
+         document.getElementsByTagName( 'body' )[0].className='hide-overflowY';
     getUserDetails()
 })
 
