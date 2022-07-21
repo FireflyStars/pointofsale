@@ -7,7 +7,7 @@
         <div class="col main-view container">
           <div class="d-flex">
             <div class="col-6 d-flex align-items-center">
-              <page-title icon="star" name="Devis" class="almarai_extrabold_normal_normal"/>
+              <page-title icon="star" :name="'Devis :' + route.params.id" class="almarai_extrabold_normal_normal"/>
               <span class="font-14 text-center almarai-bold p-1 rounded-pill ms-4" :style="'width: 120px; background-color: ' + form.orderStatus.color + ';' + 'color: ' + form.orderStatus.fontcolor">{{ form.orderStatus.name }}</span>
             </div>
             <div class="col-6 d-flex" v-if="devisCreateStep == 'create_devis'">
