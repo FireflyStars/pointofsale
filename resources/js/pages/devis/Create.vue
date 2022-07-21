@@ -859,7 +859,7 @@
                     </p>
                   </div>
                   <div class="col-2 d-flex align-items-center justify-content-center fw-bold mulish-extra-bold font-16 text-black  text-nowrap">
-                    {{ ((form.totalHoursForInstall + form.totalHoursForSecurity + form.totalHoursForPrestation)/8).toFixed(2) }} hr
+                    {{ (form.totalHoursForInstall + form.totalHoursForSecurity + form.totalHoursForPrestation).toFixed(2) }} hr
                   </div>
                   <div class="col-2 d-flex align-items-center justify-content-center fw-bold mulish-extra-bold font-16 text-black  text-nowrap">
                     {{ (form.totalPriceForInstall + form.totalPriceForSecurity + form.totalPriceForPrestation - form.discount).toFixed(2) }} €
