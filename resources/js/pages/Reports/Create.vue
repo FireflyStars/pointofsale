@@ -42,20 +42,19 @@
                                     style="z-index: 999999"
                                 >
                                     <div>
-                                        <h4>Templates List</h4>
+                                        <h4>Liste des templates de report</h4>
                                         <div class="mt-3">
-                                            <label>Please choose a template from saved templates</label>
                                             <select-box
                                                 v-model="activeReportTemplate" 
-                                                placeholder="Choose a template" 
+                                                placeholder="Choisir template" 
                                                 :options="formattedReportTemplates" 
                                                 name="page"
                                                 :selectStyles="{ maxHeight: '12rem', overflow: 'auto' }"
                                             />          
                                         </div>
                                         <BaseButton 
-                                            kind="default" 
-                                            title="Add New" 
+                                            kind="green" 
+                                            title="Valider" 
                                             class="mb-2 mt-4"
                                             size="sm"
                                             @click="$router.push({

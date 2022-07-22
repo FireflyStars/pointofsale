@@ -106,6 +106,7 @@ class ArticlesController extends Controller
                     ->when($request->has('take') && $request->take != null, function($query) use ($request) {
                         $query->take($request->take ?? 3);
                     })
+                    ->whereIn('affiliate_id', [$request->user()->affiliate_id, 0])
                     ->get();
 
         foreach($documents as $document)

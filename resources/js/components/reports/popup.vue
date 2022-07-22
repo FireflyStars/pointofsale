@@ -68,7 +68,6 @@
                             :class="[item.attributes?.class, { 'editable': isTextarea }]"
                             :contenteditable="isTextarea || isTable"
                             dom="input"
-                            v-html="textValue"
                             spellcheck="false"
                             autocomplete="false"
                             @keyup="updateTextValue($event.target)"
@@ -289,9 +288,6 @@ export default {
         const hasVariables = ref(false)
 
         const reportVariables = ref([
-            // 'customer-name',
-            // 'customer-address',
-            // 'customer-contact',
             'société',
             'raisonsocial',
             'raisonsocial2',
@@ -317,7 +313,9 @@ export default {
         ])
 
         const insertVariable = (variable) => {
-            textValue.value += `[${variable}]`
+            console.log(textValue.value, " is the text value")
+            // textValue.value += `[${variable}]`
+            document.querySelector('.editable').innerHTML = document.querySelector('.editable').innerHTML + ` [${variable}]`
             hasVariables.value = true
         }
 
@@ -362,7 +360,10 @@ export default {
         }
 
         const updateTextValue = (target) => {
-            const value = target.innerHTML
+            // const value = target.innerHTML
+            const value = document.querySelector('.editable')?.innerHTML
+            console.log(value, " is value")
+            // textValue.value = value
             if(isEmpty(value)) {
                 textValue.value = ''
                 hasVariables.value = false
@@ -378,6 +379,7 @@ export default {
 
         const loadDefaultValue = () => {
             if(isTextarea.value && props.item.content != '') {
+                document.querySelector('.editable').innerHTML = props.item.content
                 textValue.value = props.item.content 
             }
             if(isTable.value) {

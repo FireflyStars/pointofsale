@@ -51,7 +51,7 @@
                     </div>
                     <div 
                     @click="generateElement('textarea', {
-                        content: 'Some Text'
+                        content: 'Votre TEXTE'
                     })" 
                     class="pointer" style="margin-top: 1rem">
                         <img src="/images/notepad.svg" />
