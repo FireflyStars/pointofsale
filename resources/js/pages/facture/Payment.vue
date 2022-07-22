@@ -1,4 +1,5 @@
 <template>
+<div>
      <mini-panel title="Paiement">
        <div class="row mb-3">
         <div class="col-6"></div>
@@ -23,13 +24,13 @@
         <div class="col-1 font-14 d-flex align-items-center justify-content-right">{{payment.pourcentage}}%</div>
         <div class="col-2  d-flex align-items-center"><state-tag width="100%" classes="almarai_700_normal" :id="payment.paiement_state_id" :states="payment_states"/></div>
         <div class="col-2 d-flex align-items-center"><state-tag width="100%" classes="almarai_700_normal" :id="payment.paiement_type_id" :states="payment_types"/></div>
-        <div class="col-2 font-14 d-flex align-items-center">{{formatPrice(payment.montantpaiement)}}</div>
+        <div class="col-2 font-14 d-flex align-items-center">{{formatPrice(parseFloat(payment.montantpaiement))}}</div>
         <div class="col-1 d-flex align-items-center"><icon v-if="payment.paiement_state_id==1" name="trash-x" width="20px" height="20px" class="cursor-pointer" @click="removePaiement(payment)"></icon></div>
         </div>
       </template>
           </transition-group>
            <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
-       <div class="row mt-1" v-if="reste_a_payer()!=0">
+       <div class="row mt-4" v-if="reste_a_payer()!=0">
           <div class="col d-flex justify-content-center"><span @click="showpaymentform" class="factions lcdtOrange font-14 d-flex align-items-center gap-1"><icon name="plus-circle"/><span class=" noselect">AJOUTER PAIEMENT</span></span></div>
         </div> 
            </transition>
@@ -44,6 +45,11 @@
                                         :options="typeOptions" 
                                         name="paiementtype" /></div>
          </div>
+          <div class="row mb-3">
+                <div class="col-6">Date de paiement</div><div class="col-6">
+         <date-picker @changed="setPaiementDate"  name="paiement_date" :droppos="{top:'40px',right:'auto',bottom:'auto',left:'0',transformOrigin:'top center'}"></date-picker>
+            </div>
+          </div>
             <div class="row mb-3">
                 <div class="col-6">Montant</div><div class="col-6"><money3 v-model="paiement.montantpaiement" v-bind="moneyconfig" @keyup="checkmontant"></money3></div>
             </div>
@@ -58,6 +64,7 @@
     </div>
      
 </simple-modal-popup>
+</div>
 </template>
 
 <script>
@@ -65,10 +72,11 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
 import Icon from '../../components/miscellaneous/Icon.vue';
 import { formatPrice,formatDate,br,isFloat } from '../../components/helpers/helpers';
 import { computed, onMounted, ref, watch } from '@vue/runtime-core';
-import { FACTURE_DETAIL_GET, FACTURE_DETAIL_GET_PAYMENTS, FACTURE_DETAIL_GET_PAYMENT_STATES, FACTURE_DETAIL_GET_PAYMENT_TYPES, FACTURE_DETAIL_LOAD_PAYMENTS, FACTURE_DETAIL_MODULE, FACTURE_DETAIL_REMOVE_PAYMENT, FACTURE_DETAIL_SET_PAYMENTS } from '../../store/types/types';
+import { FACTURE_DETAIL_ADD_PAYMENT, FACTURE_DETAIL_GET, FACTURE_DETAIL_GET_PAYMENTS, FACTURE_DETAIL_GET_PAYMENT_STATES, FACTURE_DETAIL_GET_PAYMENT_TYPES, FACTURE_DETAIL_LOAD_PAYMENTS, FACTURE_DETAIL_MODULE, FACTURE_DETAIL_REMOVE_PAYMENT, FACTURE_DETAIL_SET_PAYMENTS, TOASTER_CLEAR_TOASTS, TOASTER_MESSAGE, TOASTER_MODULE } from '../../store/types/types';
 import StateTag from '../../components/miscellaneous/StateTag.vue';
  import { Money3Component } from 'v-money3';
 import { useStore } from 'vuex';
+import DatePicker from '../../components/miscellaneous/DatePicker.vue';
 export default {
         name: "Payment",
         props:{
@@ -77,7 +85,7 @@ export default {
               required:true
             }
         },
-        components:{MiniPanel,Icon,StateTag,money3:Money3Component},
+        components:{MiniPanel,Icon,StateTag,money3:Money3Component,DatePicker},
          emits: ['showloader','hideloader'],
         setup(props,context){
 
@@ -106,10 +114,7 @@ export default {
               montantpaiement:0,
               datepaiement:''
           });
-          //  const typeOptions = ref([
-          //   { value:'0', display:'Lien interne' },
-          //   { value:'1', display:'Lien externe' }
-          //   ])
+
           const typeOptions=ref([]);
 
           onMounted(()=>{
@@ -142,7 +147,7 @@ export default {
           const reste_a_payer=()=>{
             let total_paid=payments.value.reduce((acc, payment) => {
                 //if(payment.paiement_state_id==2)
-                  return acc + payment.montantpaiement;
+                  return acc + parseFloat(payment.montantpaiement);
                   // return acc;
                 }, 0);
           
@@ -152,7 +157,7 @@ export default {
           const reste_a_payer_pourcentage=()=>{
             let total_paid=payments.value.reduce((acc, payment) => {
                 //if(payment.paiement_state_id==2)
-                  return acc + payment.montantpaiement;
+                  return acc + parseFloat(payment.montantpaiement);
                  //  return acc;
                 }, 0);
             let v=((invoice.value.montant-total_paid)/invoice.value.montant)*100;
@@ -190,7 +195,58 @@ export default {
 
           }
           const newpaiement=()=>{
+              
 
+                 let valide=true;
+            store.commit(`${TOASTER_MODULE}${TOASTER_CLEAR_TOASTS}`);
+           if(paiement.value.type==0){
+             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez choisir un type de paiement.',
+                            ttl: 8,
+                        });
+                        valide=false;
+           }
+
+               if(paiement.value.datepaiement.trim()==''){
+             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez saisir la date de paiement.',
+                            ttl: 8,
+                        });
+                        valide=false;
+           }
+                   if(parseFloat(paiement.value.montantpaiement)<=0){
+             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Montant paiement invalide.',
+                            ttl: 8,
+                        });
+                        valide=false;
+           }
+          
+
+             if(parseFloat(paiement.value.pourcentage)<=0){
+             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Taux invalide.',
+                            ttl: 8,
+                        });
+                        valide=false;
+           }
+          if(paiement.value.reference.trim()==''){
+             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez saisir une référence afin de pouvoir identifier ce paiement.',
+                            ttl: 8,
+                        });
+                        valide=false;
+           }
+           if(valide){
+           showmodal_payment.value=false;
+              context.emit('showloader')
+           store.dispatch(`${FACTURE_DETAIL_MODULE}${FACTURE_DETAIL_ADD_PAYMENT}`,paiement.value).then(()=> context.emit('hideloader')).finally(()=> context.emit('hideloader'));
+           }
           }
           const closemodal=()=>{
 
@@ -199,6 +255,10 @@ export default {
          
               context.emit('showloader')
               store.dispatch(`${FACTURE_DETAIL_MODULE}${FACTURE_DETAIL_REMOVE_PAYMENT}`,paiement.id).then(()=> context.emit('hideloader')).finally(()=> context.emit('hideloader'));
+          }
+          const setPaiementDate=(obj)=>{
+            paiement.value.datepaiement=obj.date;
+  
           }
           return {
             formatPrice,
@@ -216,7 +276,8 @@ export default {
             typeOptions,
             moneyconfig,
             checkmontant,
-            removePaiement
+            removePaiement,
+            setPaiementDate
           }
         }
 }

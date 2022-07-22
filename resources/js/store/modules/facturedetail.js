@@ -43,8 +43,8 @@ export const facturedetail= {
               return  Promise.resolve(error);
             });
       },
-      [FACTURE_DETAIL_ADD_PAYMENT]:async({commit},invoice_id)=>{
-        return axios.post(`/add-invoice-payment`,{invoice_id:invoice_id}).then((response)=>{
+      [FACTURE_DETAIL_ADD_PAYMENT]:async({commit},paiement)=>{
+        return axios.post(`/add-invoice-payment`,{paiement}).then((response)=>{
             commit(FACTURE_DETAIL_SET_PAYMENT,response.data);
             return  Promise.resolve(response);
                   

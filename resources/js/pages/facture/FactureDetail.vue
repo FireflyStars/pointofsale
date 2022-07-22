@@ -74,7 +74,9 @@
     </mini-panel>  
       </transition>
        <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
-    <payment v-if="show" :invoice_id="invoice.id" @showloader="showloader=true" @hideloader="showloader=false"/>
+
+           <payment v-if="show" :invoice_id="invoice.id" @showloader="showloader=true" @hideloader="showloader=false"></payment>
+
        </transition>
      <div class="od_actions mb-3" v-if="show">
         <button class="btn btn-outline-success almarai_700_normal" >VALIDE</button>
@@ -119,7 +121,7 @@ import Payment from './Payment.vue';
             const showloader=ref(false);
             let invoice_id=route.params.id;
             onMounted(()=>{
-            document.getElementsByTagName( 'body' )[0].className='hide-overflowY';
+            
                 store.dispatch(`${FACTURE_DETAIL_MODULE}${FACTURE_DETAIL_LOAD}`,invoice_id).then(()=>{
                     showloader.value=false;
                     show.value=true;

@@ -11,7 +11,9 @@
                  <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
                 <div class="close-wrapper" v-if="showclose">
                     <i class="icon-close" @click="close"></i>
+                     
                 </div>
+               
                  </transition>
            <slot></slot>
         </div>
@@ -20,7 +22,7 @@
 
 <script>
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { ITEM_LIST_GET_CURRENT, ITEM_LIST_GET_IDENTIFIER, ITEM_LIST_MODULE, ITEM_LIST_SELECT_CURRENT } from '../../../store/types/types';
    
@@ -48,9 +50,11 @@ import { ITEM_LIST_GET_CURRENT, ITEM_LIST_GET_IDENTIFIER, ITEM_LIST_MODULE, ITEM
         setup(props){
             const store=useStore();
             const router=useRouter();
+            const route=useRoute();
             const show=ref(false);
             const showclose=ref(false);
             onMounted(()=>{
+               store.dispatch(`${ITEM_LIST_MODULE}${ITEM_LIST_SELECT_CURRENT}`,{current:route.params.id});
                 document.getElementsByTagName( 'body' )[0].className='hide-overflowY';
                 show.value=true;
                  setTimeout(()=>{

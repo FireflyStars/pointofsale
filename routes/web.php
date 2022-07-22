@@ -191,6 +191,7 @@ Route::group([
     Route::post('/get-invoice-detail',[InvoiceController::class,'getInvoiceDetail'])->middleware('auth')->name('get-invoice-detail');
     Route::post('/get-invoice-payments',[InvoiceController::class,'getInvoicePayments'])->middleware('auth')->name('get-invoice-payments');
     Route::post('/remove-invoice-payment',[InvoiceController::class,'removeInvoicePayment'])->middleware('auth')->name('remove-invoice-payment');
+    Route::post('/add-invoice-payment',[InvoiceController::class,'addInvoicePayment'])->middleware('auth')->name('add-invoice-payment');
     
    
     
