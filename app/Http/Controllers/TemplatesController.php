@@ -14,15 +14,22 @@ class TemplatesController extends Controller
 {
     use TemplateFormattedFiles;
 
-    public function report_templates() 
+    public function report_templates(Request $request) 
     {
-        return response()->json(Template::all());
+
+        return response()->json(
+
+            Template::whereIn('affiliate_id', [$request->user()->affiliate_id, 0])
+                    ->get()
+
+        );
+
     }
     
     public function index(Request $request) 
     {
 
-        $data = Template::where('templates.affiliate_id', $request->user()->id)
+        $data = Template::whereIn('templates.affiliate_id', [$request->user()->affiliate_id, 0])
                 ->join('users', 'users.id', '=', 'templates.affiliate_id')
                 ->select(
                     'templates.id',
@@ -34,7 +41,6 @@ class TemplatesController extends Controller
                 );
 
         $data = (new TableFiltersController)->sorts($request, $data, 'templates.id');
-
         $data = (new TableFiltersController)->filters($request, $data);
         
         $data = $data

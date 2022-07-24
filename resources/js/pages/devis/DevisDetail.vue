@@ -246,7 +246,7 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
 
             onMounted(()=>{
                 store.commit(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_SET_FACTURATION}`,[]);
-                     document.getElementsByTagName( 'body' )[0].className='hide-overflowY';
+                     
                 show.value=false;
                 showloader.value=true;
                 store.commit(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_SET}`,{})
@@ -329,7 +329,6 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                 deep:true
             });
             const goto=()=>{
-                document.getElementsByTagName( 'body' )[0].className='';
                 router.push({ name: 'EditDevis', params: { id: order_id } })
             }
             const sumZoneH=(orderzone)=>{

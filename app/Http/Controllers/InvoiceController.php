@@ -11,10 +11,12 @@ use App\Models\OrderState;
 use App\Models\Paiement;
 use App\Models\PaiementState;
 use App\Models\PaiementType;
+use App\Traits\LcdtLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use stdClass;
+
 
 class InvoiceController extends Controller
 {
@@ -169,5 +171,54 @@ class InvoiceController extends Controller
 
         return response()->json(['paiements'=>$paiements,'paiement_states'=>PaiementState::all(),'paiement_types'=>PaiementType::all()]);
 
+    }
+
+    public function removeInvoicePayment(Request $request){
+        $paiement_id=$request->post('paiement_id');
+
+        $paiement=Paiement::find($paiement_id);
+        if($paiement==null)
+        return response('Cannot find payment',509);
+
+        $user=Auth::user();
+        if($paiement->affiliate_id!=$user->affiliate_id)
+        return response('Impossible de supprimer le paiement. Le paiement n\'est pas lié au même affilié que l\'utilisateur',509);
+        if($paiement->paiement_state_id!=1)
+        return response('Impossible de supprimer le paiement. Le paiement n\'est pas en statut nouveau.',509);
+
+        $paiement->delete();
+        return response()->json(['delete'=>'ok']);
+    }
+
+    public function addInvoicePayment(Request $request){
+        $payment=$request->post('paiement');
+
+
+        $invoice=Invoice::find($payment['invoice_id']);
+        if($invoice==null)
+        return response('Impossible de trouver la facture.',509);
+
+        $user=Auth::user();
+
+        if($user->affiliate_id!=$invoice->affiliate_id)
+        return response('Impossible d\'ajouter un paiement. La facture n\'est pas liée au même affilié que l\'utilisateur.',509);
+
+        $p=new Paiement();
+
+        $p->invoice_id=$invoice->id;
+        $p->affiliate_id=$user->affiliate_id;
+        $p->lang_id=1;
+        $p->responsable_id=$user->id;
+        $p->customer_id=$invoice->customer_id;
+        $p->paiement_type_id=$payment['type'];
+        $p->reference=$payment['reference'];
+        $p->montantpaiement=$payment['montantpaiement'];
+        $p->pourcentage=$payment['pourcentage'];
+        $p->datepaiement=$payment['datepaiement'];
+        $p->save();
+        $p->fresh();
+        $p->updateState(1);
+
+        return response()->json($p);
     }
 }

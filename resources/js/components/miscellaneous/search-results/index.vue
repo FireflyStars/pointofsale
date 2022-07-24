@@ -22,7 +22,7 @@
                         class="info-box" 
                         v-for="(customer, index) in results?.customers"
                         :key="index"
-                        @click.prevent="$router.push({ path: `/customer/detail/${customer.customer_id}` })"
+                        @click.prevent="$router.push({ path: `/entite/details/${customer.customer_id}` })"
                     >
                         <div class="item">
                             <h5>{{ customer.company }}</h5>
@@ -58,7 +58,7 @@
                         class="info-box"
                         v-for="(contact, index) in results.contacts"
                         :key="index"
-                        @click.prevent="$router.push({ path: `/contact/detail/${contact.contact_id}` })"
+                        @click.prevent="$router.push({ path: `/contact/details/${contact.contact_id}` })"
                     >
                         <div class="item">
                             <h5>{{ contact.firstname + " " + contact.name }}</h5>
@@ -128,7 +128,7 @@
                         class="info-box"
                         v-for="event in results.events"
                         :key="event.event_id"
-                        @click.prevent="$router.push({ path: `/event/detail/${event.event_id}` })"
+                        @click.prevent="$router.push({ path: `/action-commercial/details/${event.event_id}` })"
                     >
                         <div class="item">
                             <label class="font-14 font-light">{{ event.event_id }}</label>
@@ -358,6 +358,10 @@ export default {
                     text-align: center;
                     color: #000000;
                     border-radius: 70px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    padding: 0 10px;
 
 
                     &-contact-type {
@@ -379,6 +383,7 @@ export default {
                 .label-info {
                     display: flex;
                     align-items: flex-start;
+                    gap: .4rem;
                 }
 
                 label {

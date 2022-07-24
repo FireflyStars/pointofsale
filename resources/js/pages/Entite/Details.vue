@@ -384,7 +384,7 @@
 <simple-modal-popup 
     v-model="modal.show" 
     :title="modal.title" 
-    confirmButtonTitle="Change" 
+    confirmButtonTitle="Litige" 
     @modalconfirm="confirmChangeLitige"
 >
     
@@ -448,7 +448,7 @@ const show = ref(true)
 const comment = ref(null)
 const modal = reactive({
     show: false,
-    title: 'Change Litige'
+    title: 'Mettre cet entité en Litige'
 })
 
 const fetched = reactive({
@@ -471,8 +471,8 @@ const litigeBackground = computed(() => {
 
 const formattedAddress = computed(() => {
     
-    if(typeof details.value?.address == 'undefined') return 'PAS D ADRESSE CLIENTE'
-    if(!Object.entries(details.value?.address).length) return 'PAS D ADRESSE CLIENTE'
+    if(typeof details.value?.address == 'undefined' || details.value?.address == null) return 'PAS D ADRESSE CLIENTE'
+    if(!Object.entries(details.value?.address)?.length) return 'PAS D ADRESSE CLIENTE'
     
     const { firstname = '', lastname = '', address1 = '', address2 = '', postcode = '', city = '' } = details.value?.address
 
@@ -489,8 +489,8 @@ const formattedAddress = computed(() => {
 
 const contact = computed(() => {
     
-    if(typeof details.value?.contact == 'undefined') return '--/--'
-    if(!Object.entries(details.value?.contact).length) return '--/--'
+    if(typeof details.value?.contact == 'undefined' || details.value?.contact == null) return '--/--'
+    if(!Object.entries(details.value?.contact)?.length) return '--/--'
 
     const { name = '', email = '', mobile = '' } = details.value?.contact
 
@@ -604,6 +604,8 @@ const confirmChangeLitige = async () => {
             comment: comment.value 
         })
 
+        router.replace({ name: 'entite' })
+
     }
 
     catch(e) {
@@ -645,7 +647,6 @@ const appendResults = async (type) => {
 
 
 onMounted(() => {
-         document.getElementsByTagName( 'body' )[0].className='hide-overflowY';
     getEntiteDetails()
 })
 

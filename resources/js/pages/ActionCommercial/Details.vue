@@ -202,7 +202,7 @@
 
     </div>
 
-    <div class="footer-section d-flex justify-content-between align-items-center gap-2">
+    <div class="footer-section d-flex justify-content-between align-items-center" style="gap: 0.3rem;">
 
         <base-button 
             :disabled="showloader"

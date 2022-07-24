@@ -1,5 +1,6 @@
 <template>
 <item-detail-panel :showloader="showloader">
+     <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
     <div class="row" v-if="show">
         <div class="col-4">
             <page-title icon="facture" :name="`N° ${invoice.reference}`" class="almarai_extrabold_normal_normal" style="width: 45px; height: 45px;" />
@@ -8,24 +9,32 @@
             <invoice-state-tag :invoice_state_id="invoice.invoice_state_id" classes="almarai_700_normal" width="auto"></invoice-state-tag>
         </div>
     </div>
-
+     </transition>
+ <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
     <div class="row"  v-if="show" style="margin:40px 0 0 8px;">
         <div class="col-3" v-if="invoice.order!=null" ><h2 class="almarai_700_normal">Commande<br/>N° {{invoice.order.id}}</h2></div>
         <div class="col-3" v-if="invoice.order!=null" ><h2 class="almarai_700_normal">Date Commande<br/>{{formatDate(invoice.order.datecommande)}}</h2></div>
         <div class="col-3"  ><h2 class="almarai_700_normal">Date Facture<br/>{{formatDate(invoice.dateecheance)}}</h2></div>
     </div>
+ </transition>
     <hr v-if="show"/>
+     <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
     <div class="row" v-if="show"><div class="col"><h3 class="almarai_700_normal" v-if="typeof invoice.order.customer!='undefined'">{{invoice.order.customer.company}}</h3></div></div>
+     </transition>
+      <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
     <div class="row" v-if="show">
         <div class="col"><span class="subtitle almarai_700_normal">Adresse du chantier</span><br><span v-html="invoice.order.formatted_chantier_address"></span></div>
         <div class="col"><span class="subtitle almarai_700_normal">Adresse facturation</span><br><span v-html="invoice.order.formatted_facturation_address"></span></div>
     </div>
-
+      </transition>
+       <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
     <div class="row" v-if="show">
         <div class="col"><span class="subtitle almarai_700_normal">Contact</span><br><span v-if="invoice.order.contact!=null" v-html="`${typeof invoice.order.contact.firstname !='undefined'? invoice.order.contact.firstname:''} ${typeof invoice.order.contact.name !='undefined'?invoice.order.contact.name:''}${br(invoice.order.contact.mobile)}${br(invoice.order.contact.telephone)}`"></span><span v-else>Pas de contact</span></div>
         <div class="col"><span class="subtitle almarai_700_normal">Mode de paiement</span><br><span>--/--</span></div>
     </div>
+       </transition>
      <hr v-if="show"/>
+      <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
    <mini-panel title="" v-if="invoice.order_invoice!=null">
            <div class="row mt-3 mb-2">
             <div class="col-4"></div>
@@ -41,6 +50,8 @@
         </div>
 
    </mini-panel>
+       </transition>
+      <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
     <mini-panel title=""  v-if="show">
         <div class="row my-3">
             <div class="col-8"> 
@@ -61,11 +72,15 @@
             </div>
         </div>
     </mini-panel>  
-    <payment v-if="show" :invoice_id="invoice.id"/>
+      </transition>
+       <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
+
+           <payment v-if="show" :invoice_id="invoice.id" @showloader="showloader=true" @hideloader="showloader=false"></payment>
+
+       </transition>
      <div class="od_actions mb-3" v-if="show">
         <button class="btn btn-outline-success almarai_700_normal" >VALIDE</button>
         <button class="btn btn-outline-info almarai_700_normal" >ENVOYE</button>
-        <button class="btn btn-outline-primary almarai_700_normal">SOLDER</button>  
         <button class="btn btn-outline-secondary almarai_700_normal">EFFACER</button>  
         <button class="btn btn-outline-dark almarai_700_normal">ANNULER</button>   
      </div>
@@ -106,7 +121,7 @@ import Payment from './Payment.vue';
             const showloader=ref(false);
             let invoice_id=route.params.id;
             onMounted(()=>{
-            document.getElementsByTagName( 'body' )[0].className='hide-overflowY';
+            
                 store.dispatch(`${FACTURE_DETAIL_MODULE}${FACTURE_DETAIL_LOAD}`,invoice_id).then(()=>{
                     showloader.value=false;
                     show.value=true;

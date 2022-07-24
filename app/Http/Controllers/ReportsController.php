@@ -19,7 +19,7 @@ class ReportsController extends Controller
     public function index(Request $request) 
     {
 
-        $affiliate_id = $request->user()->affiliate->id;
+        $affiliate_id = $request->user()->affiliate_id;
 
         $orders = Order::query()->where('orders.affiliate_id', $affiliate_id)
         ->leftJoin('reports', 'reports.order_id', '=', 'orders.id')
@@ -35,7 +35,6 @@ class ReportsController extends Controller
         );
 
         $orders = (new TableFiltersController)->sorts($request, $orders, 'orders.id');
-
         $orders = (new TableFiltersController)->filters($request, $orders);
         
         $orders = $orders

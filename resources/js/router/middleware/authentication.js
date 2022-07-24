@@ -1,5 +1,7 @@
 export default (to,from,next)=>{
-    let htmltag=document.getElementsByTagName( 'html' )[0]
+    let htmltag=document.getElementsByTagName( 'html' )[0];
+    let bodytag=document.getElementsByTagName( 'body' )[0]
+    bodytag.className='';
 
     htmltag.className='';
     htmltag.classList.add(to.name);

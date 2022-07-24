@@ -36,6 +36,13 @@
                                         
                                         <item-list-table :table_def="list">
                                             
+                                            <template v-slot:product_wholesale_price="{ row }">
+
+                                                <span v-if="row.product_affiliate_price">{{ row.product_affiliate_price }}</span>
+                                                <span v-else>{{ row.product_wholesale_price }}</span>
+
+                                            </template>
+
                                         </item-list-table>
                                             
                                     </template>

@@ -127,6 +127,7 @@ import {
     RESET_DETAILS,
     ITEM_LIST_MODULE,
     ITEM_LIST_REMOVE_ROW,
+    ITEM_LIST_UPDATE_ROW,
 }
 from '../../store/types/types'
 
@@ -192,6 +193,11 @@ const validateProduct = async () => {
     try {
         showloader.value = true
         await store.dispatch(`${ARTICLES_MODULE}${ARTICLES_VALIDATE_PRODUCT}`, details.value)
+        store.commit(`${ITEM_LIST_MODULE}${ITEM_LIST_UPDATE_ROW}`, {
+            id: 'id', idValue: details.value?.id, 
+            colName: 'product_affiliate_price', colValue: details.value?.wholesale_price
+        })
+        router.replace({ name: 'articles' })
     }
 
     catch(e) {

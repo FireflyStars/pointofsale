@@ -43,8 +43,8 @@ export const facturedetail= {
               return  Promise.resolve(error);
             });
       },
-      [FACTURE_DETAIL_ADD_PAYMENT]:async({commit},invoice_id)=>{
-        return axios.post(`/add-invoice-payment`,{invoice_id:invoice_id}).then((response)=>{
+      [FACTURE_DETAIL_ADD_PAYMENT]:async({commit},paiement)=>{
+        return axios.post(`/add-invoice-payment`,{paiement}).then((response)=>{
             commit(FACTURE_DETAIL_SET_PAYMENT,response.data);
             return  Promise.resolve(response);
                   
@@ -52,9 +52,9 @@ export const facturedetail= {
             return  Promise.resolve(error);
           });
     },
-    [FACTURE_DETAIL_REMOVE_PAYMENT]:async({commit},invoice_id)=>{
-      return axios.post(`/remove-invoice-payment`,{invoice_id:invoice_id}).then((response)=>{
-          commit(FACTURE_DETAIL_UNSET_PAYMENT,payment_id);
+    [FACTURE_DETAIL_REMOVE_PAYMENT]:async({commit},paiement_id)=>{
+      return axios.post(`/remove-invoice-payment`,{paiement_id:paiement_id}).then((response)=>{
+          commit(FACTURE_DETAIL_UNSET_PAYMENT,paiement_id);
           return  Promise.resolve(response);
                 
         }).catch((error)=>{
