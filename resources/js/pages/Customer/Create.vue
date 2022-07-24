@@ -697,6 +697,7 @@ export default {
             raisonsociale: '',
             raisonsociale2: '',
             siret: '',
+            siretValidation: false,
             numLCDT: '',
             company: '',
             customerOrigin: 0,
@@ -783,6 +784,7 @@ export default {
                 store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'checking siret ...']);
                 axios.post('/check-siret', { 'siret' : form.value.siret }).then((res)=>{
                     if(res.data.success){
+                        form.value.siretValidation = true;
                         form.value.naf = res.data.data.activitePrincipaleUniteLegale.replace('.', '');
                         form.value.raisonsociale    = res.data.data.denominationUniteLegale;
                         form.value.raisonsociale2   = res.data.data.denominationUsuelle1UniteLegale;
@@ -832,6 +834,12 @@ export default {
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
                         message: 'Veuillez entrer SIRET',
+                        ttl: 5,
+                    });                    
+                }else if(form.value.siretValidation == false){
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Vous devez vérifier le siret s\'il est valide ou non.',
                         ttl: 5,
                     });                    
                 }else if(form.value.customerStatus == 0){
@@ -943,11 +951,18 @@ export default {
                         ttl: 5,
                     });
                 }else if(form.value.siret == '' || form.value.siret.length != 9){
+                    form.value.siretValidation = false;
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
                         message: 'Veuillez entrer SIRET',
                         ttl: 5,
-                    });                    
+                    });
+                }else if(form.value.siretValidation == false){
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Vous devez vérifier le siret s\'il est valide ou non.',
+                        ttl: 5,
+                    });
                 }else if(form.value.customerStatus == 0){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',

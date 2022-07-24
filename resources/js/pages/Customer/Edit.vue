@@ -697,6 +697,7 @@ export default {
             raisonsociale: '',
             raisonsociale2: '',
             siret: '',
+            siretValidation: false,
             numLCDT: '',
             company: '',
             customerOrigin: 0,
