@@ -161,7 +161,7 @@
                     <div class="col-6 px-3 d-flex">
                       <div class="col-9 px-5">
                         <p class="m-0 almarai-bold font-14 text-gray">Adresse du chantier</p>
-                        <p class="m-0 almarai-light font-14">{{ form.address.address1 }} {{ form.address.address1 }} {{ form.address.postCode }} {{ form.address.city }}</p>
+                        <p class="m-0 almarai-light font-14">{{ form.address.address1 }} {{ form.address.postCode }} {{ form.address.city }}</p>
                       </div>
                       <div class="col-3 bg-primary">
                         <GoogleMap v-model:latitude="form.address.lat" v-model:longitude="form.address.lon"></GoogleMap>
