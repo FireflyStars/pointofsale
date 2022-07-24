@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 
 class CustomerController extends Controller
 {
@@ -28,6 +29,71 @@ class CustomerController extends Controller
         ]);
     }
 
+    protected $siretBaseUrl  = 'https://api.insee.fr/entreprises/sirene/V3/siren/';
+    protected $accessToken  = 'Bearer 57999085-b282-3bf5-92de-6fc6168cdf88';
+    protected $clientKey    = 'VKSa7MH3ySsh61Y0XYKcJiWWfMoa';
+    protected $clientSecret = 'yGpLpImxJZngqp6iCsXjnd4RSnMa';
+
+    /**
+     * get siret number and check if it is valid or not
+     * 
+     */
+    public function checkSiret(Request $request){
+        try {
+            $client = new Client(['base_uri' => $this->siretBaseUrl]);
+    
+            $response = $client->request('GET', $request->siret, [
+                'headers' => [
+                    'Accept'     => 'application/json',
+                    'Authorization'     => $this->accessToken,
+                ]
+            ]);
+            $code = $response->getStatusCode();
+            if ($code == 200) {
+                $body   = $response->getBody();
+                $content = json_decode($body->getContents());
+                return response()->json([
+                    'success'=> true,
+                    'data'=> $content->uniteLegale->periodesUniteLegale[0],
+                ]);
+            }else if($code == 400){
+                $errorMessage = 'Incorrect number of parameters or parameters are incorrectly formatted';
+                return response()->json([
+                    'success'   => false,
+                    'error'     => $errorMessage,
+                ]);                
+            }else if($code == 401){
+                $errorMessage = 'Missing or invalid access token';
+                return response()->json([
+                    'success'   => false,
+                    'error'     => $errorMessage,
+                ]);                                
+            }else if($code == 403){
+                $errorMessage = 'Insufficient rights to view data from this unit';
+                return response()->json([
+                    'success'   => false,
+                    'error'     => $errorMessage,
+                ]);                                
+            }else if($code == 404){
+                $errorMessage = 'Company not found in the Sirene database';
+                return response()->json([
+                    'success'   => false,
+                    'error'     => $errorMessage,
+                ]);                                
+            }else if($code == 500){
+                $errorMessage = 'Internal Server Error';
+                return response()->json([
+                    'success'   => false,
+                    'error'     => $errorMessage,
+                ]);                                
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success'   => false,
+                'error'     => $th->getMessage(),
+            ]);
+        }
+    }
     /**
      * add a customer
      */

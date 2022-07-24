@@ -69,7 +69,7 @@
                     <div class="cust-page-content client-detail m-auto pt-5">
                         <div class="page-section">
                             <h3 class="m-0 mulish-extrabold font-22">ENTITE</h3>
-                            <div class="d-flex mt-3">
+                            <!-- <div class="d-flex mt-3">
                                 <div class="col-3">
                                     <p class="m-0 mulish-light font-14 text-gray">N {{ form.id }}</p>
                                 </div>
@@ -82,30 +82,31 @@
                                         <p class="m-0 mulish-light font-14 text-gray text-nowrap">Date Modification :</p>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="d-flex mt-3">
-                                <div class="col-7 d-flex">
-                                    <div class="col-4">
-                                        <div class="form-group">
-                                            <label class="mulish-medium font-16 text-nowrap">RAISON SOCIALE *</label>
-                                            <input type="text" v-model="form.raisonsociale" placeholder="Raison sociale" class="form-control">
-                                        </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label class="mulish-medium font-16 text-nowrap">RAISON SOCIALE *</label>
+                                        <input type="text" v-model="form.raisonsociale" placeholder="Raison sociale" class="form-control">
                                     </div>
-                                    <div class="col-1"></div>
-                                    <div class="col-7">
-                                        <div class="form-group">
-                                            <label class="mulish-medium font-16 text-nowrap">NOM COMMERCIAL</label>
-                                            <input type="text" v-model="form.raisonsociale2" placeholder="Raison2 sociale" class="form-control">
-                                        </div>                                        
-                                    </div>
+                                </div>
+                                <div class="col-6 ps-2">
+                                    <div class="form-group">
+                                        <label class="mulish-medium font-16 text-nowrap">NOM COMMERCIAL</label>
+                                        <input type="text" v-model="form.raisonsociale2" placeholder="Raison2 sociale" class="form-control">
+                                    </div>                                        
                                 </div>
                             </div>    
                             <div class="d-flex mt-3">
                                 <div class="col-7 d-flex">
-                                    <div class="col-8">
-                                        <div class="form-group">
+                                    <div class="d-flex col-8">
+                                        <div class="form-group col-9">
                                             <label>SIRET *</label>
-                                            <input type="text" v-model="form.siret" class="form-control">
+                                            <input type="text" v-model="form.siret" class="form-control" v-mask="'#########'">
+                                        </div>
+                                        <div class="form-group col-3 px-2">
+                                            <label>&nbsp;</label>
+                                            <button class="btn btn-primary" @click="checkSiret">Check</button>
                                         </div>
                                     </div>
                                     <div class="col-1"></div>
@@ -777,6 +778,35 @@ export default {
                 acceptcourrier: true,
             }],            
         });
+        const checkSiret = ()=>{
+            if(form.value.siret.length == 9){
+                store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'checking siret ...']);
+                axios.post('/check-siret', { 'siret' : form.value.siret }).then((res)=>{
+                    if(res.data.success){
+                        form.value.naf = res.data.data.activitePrincipaleUniteLegale.replace('.', '');
+                        form.value.raisonsociale    = res.data.data.denominationUniteLegale;
+                        form.value.raisonsociale2   = res.data.data.denominationUsuelle1UniteLegale;
+                    }else{
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: res.data.error,
+                            ttl: 5,
+                        });                         
+                    }
+                    console.log(res.data);
+                }).catch((error)=>{
+                    console.log(error);
+                }).finally(()=>{
+                    store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+                })
+            }else{
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Siret must be 9 digits',
+                    ttl: 5,
+                }); 
+            }
+        }
         const dateFormat = (date) => {
             const day = date.getDate();
             const month = date.getMonth() + 1;
@@ -798,7 +828,7 @@ export default {
                         message: 'Veuillez entrer RAISON SOCIALE',
                         ttl: 5,
                     });
-                }else if(form.value.siret == ''){
+                }else if(form.value.siret == '' || form.value.siret.length != 9){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
                         message: 'Veuillez entrer SIRET',
@@ -912,7 +942,7 @@ export default {
                         message: 'Veuillez entrer RAISON SOCIALE',
                         ttl: 5,
                     });
-                }else if(form.value.siret == ''){
+                }else if(form.value.siret == '' || form.value.siret.length != 9){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
                         message: 'Veuillez entrer SIRET',
@@ -1179,6 +1209,7 @@ export default {
             phoneCodesSorted,
             customerAddresses,
             dateFormat,
+            checkSiret,
             addAddress,
             addContact,
             removeAddress,

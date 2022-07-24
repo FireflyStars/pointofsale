@@ -84,20 +84,17 @@
                                 </div>
                             </div>
                             <div class="d-flex mt-3">
-                                <div class="col-7 d-flex">
-                                    <div class="col-4">
-                                        <div class="form-group">
-                                            <label class="mulish-medium font-16 text-nowrap">RAISON SOCIALE *</label>
-                                            <input type="text" v-model="form.raisonsociale" placeholder="Raison sociale" class="form-control">
-                                        </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label class="mulish-medium font-16 text-nowrap">RAISON SOCIALE *</label>
+                                        <input type="text" v-model="form.raisonsociale" placeholder="Raison sociale" class="form-control">
                                     </div>
-                                    <div class="col-1"></div>
-                                    <div class="col-7">
-                                        <div class="form-group">
-                                            <label class="mulish-medium font-16 text-nowrap">NOM COMMERCIAL</label>
-                                            <input type="text" v-model="form.raisonsociale2" placeholder="Raison2 sociale" class="form-control">
-                                        </div>                                        
-                                    </div>
+                                </div>
+                                <div class="col-6 ps-2">
+                                    <div class="form-group">
+                                        <label class="mulish-medium font-16 text-nowrap">NOM COMMERCIAL</label>
+                                        <input type="text" v-model="form.raisonsociale2" placeholder="Raison2 sociale" class="form-control">
+                                    </div>                                        
                                 </div>
                             </div>    
                             <div class="d-flex mt-3">
@@ -105,7 +102,7 @@
                                     <div class="col-8">
                                         <div class="form-group">
                                             <label>SIRET *</label>
-                                            <input type="text" v-model="form.siret" class="form-control">
+                                            <input type="text" v-model="form.siret" class="form-control" v-mask="'#########'">
                                         </div>
                                     </div>
                                     <div class="col-1"></div>
