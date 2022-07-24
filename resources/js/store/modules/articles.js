@@ -156,7 +156,7 @@ const table = {
         {
             id: "product_wholesale_price",
             display_name: "Mon Prix Achat",
-            type: "number",
+            type: "component",
             class: "justify-content-start",
             header_class: "",
             sort: true,

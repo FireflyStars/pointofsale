@@ -35,6 +35,7 @@ class ContactsController extends Controller
             'contacts.id',
             'contacts.name',
             'contacts.firstname',
+            'contacts.email',
             'contact_type.name as contact_type',
             'contact_type.color as contact_type_color',
             'contact_qualite.name as contact_qualite',

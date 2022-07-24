@@ -26,13 +26,12 @@
             <div class="col-1"></div>
         </div>
             
-        <transition-group tag="div" class="list"  name="list" appear>
+        <transition-group tag="div" class="list" name="list" appear>
             
             <div class="row mb-3" v-for="document, index in documents" :key="index">
                 
                 <div 
-                    class="col-4 documentline almarai_bold_normal font-14  d-flex align-items-center" 
-                    :class="{ report: document.template_id > 0 }"
+                    class="col-4 documentline almarai_bold_normal font-14 d-flex align-items-center" 
                 >
                     {{ document.name }}
                 </div>
@@ -50,8 +49,7 @@
                 <div 
                     class="col-1 d-flex align-items-center justify-content-center">
                     <span 
-                        v-if="document.template_id>0" 
-                        @click="editReport(document)"
+                        @click="openPdfModal(document)"
                     >
                         <icon name="file-outline" width="16px" height="16px" class="cursor-pointer" />
                     </span>
@@ -126,7 +124,13 @@
 
                 <div class="col">
                     <div class="form-group">
-                        <a href="#" class="link-upload text-gray font-16 almarai-bold" @click.prevent="addfile">Téléchargement le document en pdf</a>
+                        <a 
+                            href="#" 
+                            class="link-upload text-gray font-16 almarai-bold" 
+                            @click.prevent="addfile"
+                        >
+                            Téléchargement le document en pdf
+                        </a>
                     </div>
                 </div>
 
@@ -135,7 +139,9 @@
 
         </div>
         
-    </simple-modal-popup>  
+    </simple-modal-popup> 
+
+    <PdfModal ref="pdfModal"></PdfModal> 
 
 </template>
 
@@ -146,6 +152,7 @@ import MiniPanel from '../miscellaneous/MiniPanel.vue'
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import Swal from 'sweetalert2'
+import PdfModal from '../miscellaneous/PdfModal.vue'
 
 import { 
     TOASTER_MODULE,
@@ -181,10 +188,12 @@ const { generatePdfById, deleteReport } = useReports()
 const store = useStore()
 const router = useRouter()
             
+const fileUploadEl = ref(null)
+const pdfModal = ref(null)
+
 const documents = computed(() => store.getters[`${ARTICLES_MODULE}documents`])
 const loading = computed(() => store.getters[`${ARTICLES_MODULE}loading`])
 const disabledToDate = computed(() => new Date(new Date().getTime() - 24*60*60*1000).toJSON().slice(0,10))
-const fileUploadEl = ref(null)
 
 const typeOptions = computed(() => {
     return store.getters[`${ARTICLES_MODULE}documentTypes`]?.map(type => {
@@ -208,6 +217,10 @@ const modal = reactive({
     show: false,
     title: 'Ajout Document'
 })
+
+const openPdfModal = (document) => {
+    pdfModal.value.openModal(document.full_path)
+}
 
 
 const addDocument = async () => {

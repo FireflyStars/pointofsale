@@ -34,8 +34,19 @@ class ArticlesController extends Controller
             'units.code as unite',
             DB::raw('FORMAT(products.price, 2) as product_price'),
             DB::raw('FORMAT(products.wholesale_price, 2) as product_wholesale_price'),
+            DB::raw('FORMAT(product_affiliate.wholesale_price, 2) as product_affiliate_price'),
             DB::raw('DATE_FORMAT(products.created_at, "%Y-%m-%d") as created_at'),
-        )->leftJoin('units', 'units.id', '=', 'products.unit_id');
+        )->leftJoin('units', 'units.id', '=', 'products.unit_id')
+        ->leftJoin('product_affiliate', function($join) {
+            $join->on('product_affiliate.product_id', '=', 'products.id')
+            ->where(
+                'product_affiliate.id', 
+                '=', 
+                DB::raw(
+                    '(SELECT id from product_affiliate where product_affiliate.product_id = products.id order by product_affiliate.created_at DESC limit 1)'
+                )
+            );
+        });
 
         $details = (new TableFiltersController)->sorts($request, $details, 'products.id');
         $details = (new TableFiltersController)->filters($request, $details);
@@ -113,6 +124,7 @@ class ArticlesController extends Controller
         {
             $document->type = $document->type;
             $document->product = $document->product;
+            $document->full_path = rtrim(config('app.url'), '/') . '/storage/' . $document->file_path;
             $product_documents[] = $document;
         }
 

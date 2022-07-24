@@ -120,6 +120,19 @@ const table = {
             suffix: "",
             allow_groupby: true,
             table: "customers"
+        },
+        {
+            id: "email",
+            display_name: "Email",
+            type: "string",
+            class: "justify-content-start",
+            header_class: "",
+            sort: true,
+            filter: true,   
+            having: false,
+            prefix: "",
+            suffix: "",
+            table: "contacts"
         }
 
     ],
