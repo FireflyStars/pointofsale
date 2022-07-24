@@ -122,6 +122,7 @@ class UsersController extends Controller
                 'name'      => $user->name,
                 'firstName' => $user->firstname,
                 'email'     => $user->email,
+                'gender'    => $user->gender,
                 'coordpersonnelles' => $user->coordpersonnelles,
                 'contacturgence'    => $user->contacturgence,
                 'comment'           => $user->comment,

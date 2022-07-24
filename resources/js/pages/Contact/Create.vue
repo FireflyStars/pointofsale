@@ -226,8 +226,8 @@ export default {
         const store = useStore();
         const router = useRouter();
         const breadcrumbs = ref(['Choix ENTITE']);
-        // const step = ref('choose_customer');
-        const step = ref('create_contact');
+        const step = ref('choose_customer');
+        // const step = ref('create_contact');
         const contactTypes = ref([]);
         const contactQualites = ref([]);
         const uniqueEmail = ref({ status: true, msg: '' });

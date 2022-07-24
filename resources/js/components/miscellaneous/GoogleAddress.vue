@@ -43,6 +43,7 @@ export default {
                 ( address_components[2] && address_components[2].short_name) || "",
             ].join(" ");
             address_components.forEach(component => {
+                
                 const type = component.types[0];
                 if( type == "postal_code"){
                     address.value.postcode = component.long_name

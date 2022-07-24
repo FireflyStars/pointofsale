@@ -733,7 +733,7 @@ export default {
             // address tab
             addresses: [{
                 id: '',
-                addressType: '',
+                addressType: 3,
                 firstName: '',
                 Nom: '',
                 address1: '',

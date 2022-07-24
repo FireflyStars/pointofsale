@@ -728,7 +728,7 @@ export default {
             zpe: '',
             // address tab
             addresses: [{
-                addressType: '',
+                addressType: 3,
                 firstName: '',
                 Nom: '',
                 address1: '',

@@ -270,6 +270,7 @@ export default {
         });
         onMounted(()=>{
             axios.post('/contact/edit/'+route.params.id).then((res)=>{
+                console.log(res.data);
                 var contactTmp = res.data.contact;
                 if(contactTmp.active){
                     contactTmp.active = true;
@@ -291,6 +292,18 @@ export default {
                 }else{
                     contactTmp.acceptcourrier = false;
                 }
+                // let telephone = contactTmp.phoneCountryCode1.split("|");
+                // if(telephone.length >1){
+                //     contactTmp.phoneCountryCode1 = telephone[0];
+                // }else{
+                //     contactTmp.phoneNumber1 = telephone[1];
+                // }
+                // let mobile = contactTmp.phoneCountryCode2.split("|");
+                // if(mobile.length >1){
+                //     contactTmp.phoneCountryCode2 = mobile[0];
+                // }else{
+                //     contactTmp.phoneNumber2 = mobile[1];
+                // }
                 contact.value           = contactTmp;
                 contactTypes.value      = res.data.contactTypes;
                 contactQualites.value   = res.data.contactQualites;

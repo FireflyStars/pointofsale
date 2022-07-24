@@ -38,7 +38,7 @@
                                                 { value: 'Mlle', display: 'Mlle' },
                                             ]" 
                                             :name="'userGender'"
-                                            :label="'Le genre'"
+                                            :label="'&nbsp;'"
                                             ></select-box>
                                     </div>
                                     <div class="col-5 ps-2 form-group">

@@ -159,9 +159,10 @@
                     <div class="col-6 px-3 d-flex">
                       <div class="col-9 px-5">
                         <p class="m-0 almarai-bold font-14 text-gray">Adresse du chantier</p>
-                        <p class="m-0 almarai-light font-14">{{ form.address.address1 }} {{ form.address.address1 }} {{ form.address.postCode }} {{ form.address.city }}</p>
+                        <p class="m-0 almarai-light font-14">{{ form.address.address1 }} {{ form.address.postCode }} {{ form.address.city }}</p>
                       </div>
                       <div class="col-3 bg-primary">
+                        <GoogleMap v-model:latitude="address.lat" v-model:longitude="address.lon"></GoogleMap>
                       </div>
                     </div>
                   </div>
@@ -186,9 +187,9 @@
                           </div>
                         </div>
                       </div>
-                      <div v-if="gedCat[0].name == 'Vue exterieur'" class="get-cat-footer almarai-light font-14 mb-3">
+                      <!-- <div v-if="gedCat[0].name == 'Vue exterieur'" class="get-cat-footer almarai-light font-14 mb-3">
                         Attention grosse poutre en haut
-                      </div>
+                      </div> -->
                     </div>
                   </div>
                 </div>
@@ -937,6 +938,7 @@ import TaskModal from '../../components/miscellaneous/TaskModal';
 import EmptyOuvrageModal from '../../components/miscellaneous/EmptyOuvrageModal';
 import EmptyProductModal from '../../components/miscellaneous/EmptyProductModal';
 import PdfModal from '../../components/miscellaneous/PdfModal';
+import GoogleMap from '../../components/miscellaneous/GoogleMap';
 import Swal from 'sweetalert2';
 import {     
   DISPLAY_LOADER,
@@ -962,7 +964,8 @@ export default {
     TaskModal,
     EmptyOuvrageModal,
     EmptyProductModal,
-    PdfModal
+    PdfModal,
+    GoogleMap
   },
   setup() {
     const store = useStore();
@@ -1020,8 +1023,8 @@ export default {
         postcode: '',
         city: '',
         addressType: '',
-        lat: '36.846691982477985',
-        lon: '10.197948495703532',
+        lat: 36.846691982477985,
+        lon: 10.197948495703532,
       },
       totalHoursForInstall: 0,
       totalPriceForInstall: 0,
