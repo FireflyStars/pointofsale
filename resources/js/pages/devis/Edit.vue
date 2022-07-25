@@ -158,12 +158,12 @@
                         </div>
                       </div>
                     </div>
-                    <div class="col-6 px-3 d-flex">
-                      <div class="col-9 px-5">
+                    <div class="col-6 ps-2 d-flex">
+                      <div class="col-5 pe-2">
                         <p class="m-0 almarai-bold font-14 text-gray">Adresse du chantier</p>
                         <p class="m-0 almarai-light font-14">{{ form.address.address1 }} {{ form.address.postCode }} {{ form.address.city }}</p>
                       </div>
-                      <div class="col-3 bg-primary">
+                      <div class="col-7">
                         <GoogleMap v-model:latitude="form.address.lat" v-model:longitude="form.address.lon"></GoogleMap>
                       </div>
                     </div>
@@ -1295,7 +1295,18 @@ export default {
         units.value = res.data.units;
         roofAccesses.value = res.data.roofAccesses;
         gedCats.value = res.data.gedCats
-        form.value = res.data.devis
+        let devisData = res.data.devis
+        if(devisData.address.lat != null){
+            devisData.address.lat = parseFloat(devisData.address.lat.replace(/[a-zA-Z()]/g, ""));
+        }else{
+            devisData.address.lat = 48.85560142492883;
+        }
+        if(devisData.address.lon != null){
+            devisData.address.lon = parseFloat(devisData.address.lon.replace(/[a-zA-Z()]/g, ""));
+        }else{
+            devisData.address.lon = 2.3491914978706396;
+        }   
+        form.value = devisData;
         updateAllValues();
       }).catch((error)=>{
         console.log(error);
