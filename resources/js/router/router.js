@@ -40,10 +40,22 @@ const router = createRouter({
         {
             path: '/ouvrage',
             name: 'ouvrage',
+            props: true,
             component: () => import('../pages/Ouvrage/Index.vue'),
             meta:{
                 authenticated: true
             },
+            children: [
+                {
+                    path: '/ouvrage/details/:id',
+                    name: 'ouvrage-details',
+                    props: true,
+                    component: () => import('../pages/Ouvrage/Details'),
+                    meta: {
+                        authenticated: true
+                    }
+                }
+            ]
         },
 
         {
@@ -52,12 +64,12 @@ const router = createRouter({
             component: () => import('../pages/Articles/Index.vue'),
             children: [
                 {
-                    path:'/articles/detail/:id',
+                    path:'/articles/details/:id',
                     name: 'articles-details',
                     props: true,
                     component: () => import('../pages/Articles/Details.vue'),
                     meta: {
-                        authenticated:false
+                        authenticated: true
                     }
                 },
             ],

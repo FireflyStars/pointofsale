@@ -33,7 +33,6 @@
                                 <div class="col m-2">
                                     <multi-select 
                                         id="multiSelect"
-                                       
                                         width="116px"
                                         tagBackground="orange"
                                         tagColor="white"
@@ -44,6 +43,7 @@
                                         :dropdownStyles="{ width: '167px' }"
                                         v-model:options="options"
                                         transformOrigin="top center"
+                                        :selectedOptions="selectedMultiSelectOptions"
                                     />
                                 </div>
                                 
@@ -52,7 +52,6 @@
                                     <table-filter
                                         :checkboxOptions="filterCheckboxOptions"
                                         :selectOptions="filterSelectOptions"
-                                
                                         activeBackground="orange"
                                         activeColor="white"
                                         transformOrigin="top"
@@ -196,14 +195,13 @@ export default {
 
         const select1 = ref(0)
         const customCheckbox = ref(false)
-
         const showcontainer = ref(false)
+        const selectedMultiSelectOptions = ref([1, 2])
 
         onMounted(() => {
             nextTick(() => {
                 showcontainer.value=true
             })
-
         })
 
         const selectBoxOptions = ref([
@@ -212,7 +210,7 @@ export default {
         ])
 
         const options = ref([
-            { id: 1, value: 'Perdu', check: false},
+            { id: 1, value: 'Perdu', check: false },
             { id: 2, value: 'Gagne', check: false},
             { id: 3, value: 'Abondonne', check: false},
             { id: 4, value: 'Laravel', check: false},
@@ -261,7 +259,8 @@ export default {
             selectBoxOptions,
             filterSelectOptions,
             filterCheckboxOptions,
-            checkboxUpdated
+            checkboxUpdated,
+            selectedMultiSelectOptions
         }
     },
 }

@@ -76,7 +76,7 @@
 </template>
 
 <script>
-import { ref, computed } from "vue"
+import { ref, computed, onMounted } from "vue"
 import useToggler from '../../composables/useToggler'
 import useHelpers from '../../composables/useHelpers'
 
@@ -105,6 +105,11 @@ export default {
             type: Number,
             required: false,
             default: 0
+        },
+        selectedOptions: {
+            type: [Array],
+            required: false,
+            default: []
         }
     },
 
@@ -161,6 +166,15 @@ export default {
                 selectedValues.value.splice(optionIndex, 1)
             }
         }
+
+        onMounted(() => {
+            console.log(props.selectedOptions, " is the props.selectedOptions")
+            if(props.selectedOptions?.length) {
+                props.selectedOptions.forEach(option => {
+                    updateSelectOptions({ id: option, value: true })
+                })
+            }
+        })
 
         return {
             open, 

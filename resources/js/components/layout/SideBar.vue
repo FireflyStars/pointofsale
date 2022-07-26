@@ -16,6 +16,10 @@
                 xmlns="http://www.w3.org/2000/svg"
                 @click="router.push({ name: 'action-commercial' })"
                 :class="route_name =='action-commercial' ? 'active' :''"
+                data-bs-toggle="tooltip" 
+                data-bs-placement="right" 
+                title="Tooltip on right"
+                id="actionCommercial"
             >
 
                 <rect width="32" height="32" rx="8" />
@@ -292,11 +296,11 @@
 
 <script>
 
-    import {ref,computed,watch} from 'vue';
+    import { ref, computed, watch, onMounted } from 'vue';
     import { useRouter, useRoute } from 'vue-router'
 
     import axios from 'axios';
-    import {useStore} from 'vuex';
+    import { useStore } from 'vuex';
     import {
         DISPLAY_LOADER,
         HIDE_LOADER,
@@ -307,8 +311,8 @@
 
     export default {
         name: "SideBar",
-        components:{},
-        setup(){
+        components: {},
+        setup() {
             const store=useStore();
             const uname=ref(window.sessionStorage.getItem('name'));
             const initials= ref((uname.value!=null?uname.value.substr(0,2):''));
@@ -360,6 +364,11 @@
             function getEmailingParentPath(val){
                 return val.substring(0,9);
             }
+
+            // onMounted(() => {
+            //     const actionCommercial = document.querySelector('#actionCommercial')
+            //     new bootstrap.Tooltip(actionCommercial, {})
+            // })
 
 
             return {
