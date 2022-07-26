@@ -2,15 +2,43 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Unit;
+use App\Models\OuvrageDetail;
+use App\Models\OuvrageTaskAffiliate;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class OuvrageTask extends Model
 {
 	use HasFactory;
-    protected $table = 'ouvrage_task';
-	//
 	use SoftDeletes;
+
+    protected $table = 'ouvrage_task';
 	protected $dates = ['deleted_at'];
+	protected $appends = ['affiliated_textcustomer'];
+
+
+	public function unit() 
+	{
+		return $this->belongsTo(Unit::class);
+	}
+
+	public function OuvrageAffiliate() 
+	{
+		return $this->hasOne(OuvrageTaskAffiliate::class, 'ouvrage_task_id');
+	}
+
+	public function details() 
+	{
+		return $this->hasMany(OuvrageDetail::class, 'ouvrage_task_id');
+	}
+
+	public function getAffiliatedTextcustomerAttribute() 
+	{
+		return is_null($this->OuvrageAffiliate->textcustomer) 
+		? $this->textcustomer 
+		: $this->OuvrageAffiliate->textcustomer;
+	}
+
 }

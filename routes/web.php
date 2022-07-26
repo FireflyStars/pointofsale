@@ -25,7 +25,9 @@ use App\Http\Controllers\PageElementsController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ActionCommercialListController;
 use App\Http\Controllers\ArticlesController;
+use App\Http\Controllers\OuvragesController;
 use App\Http\Controllers\QuickLinkController;
+use App\Http\Controllers\UnitStatesController;
 use App\Http\Controllers\UsersController;
 
 Route::group(['prefix' => 'admin'], function () {
@@ -138,6 +140,12 @@ Route::post('/remove-user-document/{document}', [UsersController::class, 'remove
 Route::post('/get-user-document-url/{document}', [UsersController::class, 'get_document_url']);
 Route::post('/upload-user-document', [UsersController::class, 'upload_user_document']);
 Route::post('/delete-user/{user}', [UsersController::class, 'delete_user']);
+
+Route::post('/get-ouvrage-list', [OuvragesController::class, 'index']);
+Route::get('/get-ouvrage-list', [OuvragesController::class, 'index']);
+Route::post('/get-unit-states', [UnitStatesController::class, 'index']);
+Route::get('/get-ouvrage-details/{ouvrage}', [OuvragesController::class, 'show']);
+Route::post('/valider-ouvrage/{ouvrage}', [OuvragesController::class, 'valider']);
 
 
 // create action

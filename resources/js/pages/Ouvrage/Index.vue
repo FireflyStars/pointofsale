@@ -30,6 +30,29 @@
                             
                             <div class="col">
 
+                                <tab-pane :tabs="tabs" current='tout' class="almarai_700_normal">
+
+                                    <template v-slot:tout>
+                                        
+                                        <item-list-table :table_def="ouvrageList">
+
+                                             <template v-slot:unit_id="{ row }">
+
+                                                <unit-tag :id="row.unit_id" />
+
+                                            </template> 
+                                            
+                                        </item-list-table>
+                                            
+                                    </template>
+
+                                    <!-- <template v-slot:mes_entities>
+                                        
+                                        <item-list-table :table_def="entiteUserList" />
+
+                                    </template> -->
+                                    
+                                </tab-pane>
                             
                             </div>
                             
@@ -54,14 +77,25 @@
 
     import { useStore } from 'vuex'
     import { ref, computed } from 'vue'
-    import ItemListTable from '../../components/miscellaneous/ItemListTable/ItemListTable.vue';
+    import ItemListTable from '../../components/miscellaneous/ItemListTable/ItemListTable.vue'
+    import UnitTag from '../../components/Ouvrages/UnitTag'
 
-    import {
+    import { 
+        OUVRAGE_MODULE 
     }
     from '../../store/types/types'
 
 
     const store = useStore()
+
+    const tabs = ref({
+        tout: 'Tout',
+        installation: 'Installation',
+        securite: 'Sécurité',
+        prestation: 'Prestation'
+    })
+
+    const ouvrageList = computed(() => store.getters[`${OUVRAGE_MODULE}ouvrageList`])
 
 
 </script>

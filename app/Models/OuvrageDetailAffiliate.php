@@ -1,15 +1,14 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class OuvragePrestation extends Model
+class OuvrageDetailAffiliate extends Model
 {
-    protected $table = 'ouvrage_prestation';
+    protected $table = 'ouvrage_detail_affiliate';
 	//
-	
 	use SoftDeletes;
 	protected $dates = ['deleted_at'];
 }

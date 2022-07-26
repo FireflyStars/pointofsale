@@ -57,6 +57,8 @@ import { contactList as CONTACT_LIST_MODULE } from './modules/contact'
 import { personnel as PERSONNEL_LIST_MODULE } from './modules/personnel'
 
 import { articles as ARTICLES_MODULE } from './modules/articles'
+import { ouvrage as OUVRAGE_MODULE } from './modules/ouvrage'
+import { ouvrageTag as OUVRAGE_STATE_MODULE } from './modules/component_store/OuvrageTag'
 
 
 export default createStore({
@@ -87,6 +89,8 @@ export default createStore({
         ACTION_COMMERCIAL_STATUS_MODULE,
         CONTACT_LIST_MODULE,
         PERSONNEL_LIST_MODULE,
-        ARTICLES_MODULE
+        ARTICLES_MODULE,
+        OUVRAGE_MODULE,
+        OUVRAGE_STATE_MODULE
     }
 });
