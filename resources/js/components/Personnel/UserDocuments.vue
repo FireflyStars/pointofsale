@@ -31,8 +31,7 @@
             <div class="row mb-3" v-for="document, index in documents" :key="index">
                 
                 <div 
-                    class="col-4 documentline almarai_bold_normal font-14  d-flex align-items-center" 
-                    :class="{ report: document.template_id > 0 }"
+                    class="col-4 documentline almarai_bold_normal font-14 d-flex align-items-center" 
                 >
                     {{ document.name }}
                 </div>
@@ -47,8 +46,7 @@
                 <div 
                     class="col-1 d-flex align-items-center justify-content-center">
                     <span 
-                        v-if="document.template_id>0" 
-                        @click="editReport(document)"
+                        @click="openModal(document.fullpath)"
                     >
                         <icon name="file-outline" width="16px" height="16px" class="cursor-pointer" />
                     </span>
@@ -140,7 +138,10 @@
 
         </div>
         
-    </simple-modal-popup>  
+    </simple-modal-popup> 
+
+    <PdfModal ref="pdfModal" /> 
+
 
 </template>
 
@@ -150,6 +151,7 @@ import MiniPanel from '../miscellaneous/MiniPanel.vue'
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import Swal from 'sweetalert2'
+import PdfModal from '../miscellaneous/PdfModal'
 
 import { 
     TOASTER_MODULE,
@@ -183,6 +185,7 @@ const emit = defineEmits(['showloader'])
 const { generatePdfById, deleteReport } = useReports()
 const store = useStore()
 const router = useRouter()
+const pdfModal = ref(null)
             
 const documents = computed(() => store.getters[`${PERSONNEL_LIST_MODULE}userDocuments`])
 const loading = computed(() => store.getters[`${PERSONNEL_LIST_MODULE}loading`])
@@ -203,6 +206,10 @@ const modal = reactive({
     show: false,
     title: 'Ajout permis / Certification'
 })
+
+const openModal = (document) => {
+    pdfModal.value.openModal(document)
+}
 
 const editReport = (document) => {
     router.push({ name: 'edit-report-page', params: { id: document.id, orderId: document.order_id } })

@@ -34,23 +34,27 @@
 
                                     <template v-slot:tout>
                                         
-                                        <item-list-table :table_def="ouvrageList">
-
-                                             <template v-slot:unit_id="{ row }">
-
-                                                <unit-tag :id="row.unit_id" />
-
-                                            </template> 
-                                            
-                                        </item-list-table>
+                                        <item-list-table :table_def="ouvrageList" />
                                             
                                     </template>
 
-                                    <!-- <template v-slot:mes_entities>
+                                    <template v-slot:installation>
                                         
-                                        <item-list-table :table_def="entiteUserList" />
+                                        <item-list-table :table_def="ouvrageListInstallation" />
 
-                                    </template> -->
+                                    </template>
+
+                                    <template v-slot:securite>
+                                        
+                                        <item-list-table :table_def="ouvrageListSecurite" />
+
+                                    </template>
+
+                                    <template v-slot:prestation>
+                                        
+                                        <item-list-table :table_def="ouvrageListPrestation" />
+
+                                    </template>
                                     
                                 </tab-pane>
                             
@@ -96,6 +100,9 @@
     })
 
     const ouvrageList = computed(() => store.getters[`${OUVRAGE_MODULE}ouvrageList`])
+    const ouvrageListInstallation = computed(() => store.getters[`${OUVRAGE_MODULE}ouvrageListInstallation`])
+    const ouvrageListSecurite = computed(() => store.getters[`${OUVRAGE_MODULE}ouvrageListSecurite`])
+    const ouvrageListPrestation = computed(() => store.getters[`${OUVRAGE_MODULE}ouvrageListPrestation`])
 
 
 </script>

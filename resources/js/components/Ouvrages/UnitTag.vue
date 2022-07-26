@@ -52,7 +52,7 @@ const loaded = computed(() => store.getters[`${OUVRAGE_STATE_MODULE}loaded`])
 watch(() => states, (current_val) => {
     const state = current_val.value.find(obj => obj.id == props.id)
     if(typeof state != "undefined") {
-        status.value = state.name
+        status.value = state.code
         style.value = `width:${props.width}; background-color: ${state.color};color: ${state.fontcolor}`
     }
 }, {
@@ -62,7 +62,7 @@ watch(() => states, (current_val) => {
 watch(() => props.id, (current_val) => {
     const state=states.value.find(obj => obj.id == current_val)
     if(typeof state != "undefined") {
-        status.value = state.name
+        status.value = state.code
         style.value = `width:${props.width}; background-color: ${state.color}; color: ${state.fontcolor}`
     }
 }, {
@@ -76,7 +76,7 @@ onMounted(async ()=> {
     if(states.value.length > 0) {
         const state = states.value.find(obj => obj.id == props.id)
         if(typeof state != "undefined") {
-            status.value = state.name
+            status.value = state.code
             style.value = `width:${props.width};background-color: ${state.color};color: ${state.fontcolor || '#000'}`
         }
     }

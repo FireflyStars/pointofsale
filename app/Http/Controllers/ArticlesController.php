@@ -26,8 +26,8 @@ class ArticlesController extends Controller
 
         $details->select(
             'products.id',
-            'products.name',
-            'products.description',
+            DB::raw('LEFT(products.name, 30) as name'),
+            DB::raw('LEFT(products.description, 30) as description'),
             'products.reference',
             'products.supplier_reference',
             'products.type',

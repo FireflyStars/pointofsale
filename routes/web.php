@@ -142,6 +142,9 @@ Route::post('/upload-user-document', [UsersController::class, 'upload_user_docum
 Route::post('/delete-user/{user}', [UsersController::class, 'delete_user']);
 
 Route::post('/get-ouvrage-list', [OuvragesController::class, 'index']);
+Route::post('/get-ouvrage-list-installation', [OuvragesController::class, 'get_ouvrages_installation']);
+Route::post('/get-ouvrage-list-prestation', [OuvragesController::class, 'get_ouvrages_prestation']);
+Route::post('/get-ouvrage-list-securite', [OuvragesController::class, 'get_ouvrages_securite']);
 Route::get('/get-ouvrage-list', [OuvragesController::class, 'index']);
 Route::post('/get-unit-states', [UnitStatesController::class, 'index']);
 Route::get('/get-ouvrage-details/{ouvrage}', [OuvragesController::class, 'show']);

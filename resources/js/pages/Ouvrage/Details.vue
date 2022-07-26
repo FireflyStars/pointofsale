@@ -42,7 +42,7 @@
 
         <div class="d-flex flex-column gap-1">
             <span class="title-label">Type</span>
-            <span class="detail">{{ details.prestation?.name || '--/--' }}</span>
+            <span class="detail">{{ details.type || '--/--' }}</span>
         </div>
 
     </div>
@@ -66,7 +66,7 @@
                 <input 
                     v-model="details.textcustomer"
                     type="text" 
-                    style="border: none; background: none; width: 300px; color: #E8581B; font-weight: bold; outline: none" 
+                    style="border: none; background: none; min-width: 300px; width: auto; color: #E8581B; font-weight: bold; outline: none" 
                 >
             </span>
         </div>
@@ -88,7 +88,7 @@
                 <h4 class="heading-label-fade">Texte Client Tache</h4>
                 <input 
                     class="detail" 
-                    style="color: #E8581B; margin-top: .5rem; border: none; background: none; width: 300px; font-weight: bold; outline: none"
+                    style="color: #E8581B; margin-top: .5rem; border: none; background: none; min-width: 300px; width: auto; font-weight: bold; outline: none"
                     v-model="task.affiliated_textcustomer"
                 >
             </div>
@@ -112,9 +112,9 @@
 
                 </div>
 
-                <div>task.reference</div>
+                <div :title="detail.product?.name">{{ slice(detail.product?.name, 10) }}</div>
                 <div>{{ task.unit?.code }}</div>
-                <div>task.type</div>
+                <div>{{ detail.product?.type }}</div>
                 <div>{{ detail.qty }}</div>
                 <div>
                     <input 
@@ -164,6 +164,7 @@ import moment from 'moment'
 import { computed, onMounted, ref, onBeforeMount, reactive } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import useHelpers from '../../composables/useHelpers'
 
 import ItemDetailPanel from '../../components/miscellaneous/ItemListTable/ItemDetailPanel.vue'
 import StatusTag from '../../components/ActionCo/StatusTag.vue'
@@ -191,6 +192,8 @@ const props = defineProps({
 
 const store = useStore()
 const router = useRouter()
+
+const { slice } = useHelpers()
 
 const showloader = ref(false)
 const show = ref(true)
@@ -499,6 +502,14 @@ textarea {
 .responsable-section {
     .title-label {
         font-weight: 300 !important;
+    }
+}
+
+.history-section {
+    .title-rows {
+       .title-label {
+        font-weight: 300;
+       }
     }
 }
 
