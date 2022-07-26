@@ -122,6 +122,7 @@ class DevisController extends Controller
         $order->formatted_chantier_address=$chantier_address==null?'Pas d\'adresse de chantier':$chantier_address->getformattedAddress();
         $order->customer;
         $order->orderZones;
+        $order->mode_paiements=Invoice::getModeDePaiementsByOrderId($order->id);
     
         foreach($order->orderZones as &$orderzone){
             $orderzone->orderOuvrage;
@@ -153,12 +154,12 @@ class DevisController extends Controller
         return response('Order is not affiliated to user.Cannot load invoices.',509);
 
 
-        $orderInvoices=DB::table('order_invoices')->select(['order_invoices.*','invoice_type.sign','invoice_type.name as invoice_type_name','invoice_type.color as invoice_type_color','invoices.reference as ref'])->leftJoin('invoices',function($join){
+        $orderInvoices=DB::table('order_invoices')->select(['order_invoices.*','invoice_types.sign','invoice_types.name as invoice_type_name','invoice_types.color as invoice_type_color','invoices.reference as ref','invoices.invoice_state_id'])->leftJoin('invoices',function($join){
              $join->on('invoices.order_invoice_id','=','order_invoices.id')
              ->whereNull('invoices.deleted_at');  
-        })->leftJoin('invoice_type',function($join){
-             $join->on('invoice_type.id','=','invoices.invoice_type_id')
-             ->whereNull('invoice_type.deleted_at');  
+        })->leftJoin('invoice_types',function($join){
+             $join->on('invoice_types.id','=','invoices.invoice_type_id')
+             ->whereNull('invoice_types.deleted_at');  
         })->where('order_invoices.order_id','=',$order->id)
         ->whereNull('order_invoices.deleted_at')
         ->orderBy('order_invoices.id')
@@ -281,8 +282,8 @@ class DevisController extends Controller
         $oi->save();
         $oi->fresh();
 
-        if($invoice_type_id==2||$invoice_type_id==3){
-            $oi->facturer=1;
+    
+            $oi->facturer=0;
             $in=new Invoice();
             $in->order_id=$order_id;
             $in->montant=$oi->montant;
@@ -302,14 +303,14 @@ class DevisController extends Controller
             $oi->save();
          
 
-        }
+        
 
-        $orderInvoices=DB::table('order_invoices')->select(['order_invoices.*','invoice_type.sign','invoice_type.name as invoice_type_name','invoice_type.color as invoice_type_color'])->leftJoin('invoices',function($join){
+        $orderInvoices=DB::table('order_invoices')->select(['order_invoices.*','invoice_types.sign','invoice_types.name as invoice_type_name','invoice_types.color as invoice_type_color'])->leftJoin('invoices',function($join){
             $join->on('invoices.order_invoice_id','=','order_invoices.id')
             ->whereNull('invoices.deleted_at');  
-       })->leftJoin('invoice_type',function($join){
-            $join->on('invoice_type.id','=','invoices.invoice_type_id')
-            ->whereNull('invoice_type.deleted_at');  
+       })->leftJoin('invoice_types',function($join){
+            $join->on('invoice_types.id','=','invoices.invoice_type_id')
+            ->whereNull('invoice_types.deleted_at');  
        })->where('order_invoices.order_id','=',$order->id)
        ->whereNull('order_invoices.deleted_at')->get();
      
@@ -353,6 +354,7 @@ class DevisController extends Controller
         if($oi==null)
             return response('Order invoice not found.',509);
          
+          
         
         $order=$oi->order;
         $user=Auth::user();
@@ -361,26 +363,29 @@ class DevisController extends Controller
 
         if($oi->invoice_id>0){
             $invoice=Invoice::find($oi->invoice_id);
-            if($invoice->invoice_type_id!=2)
+            if($invoice->invoice_state_id!=1)
                 return response('Invoice already exists.Cannot delete',509);
 
    
          
-            if($invoice->invoice_type_id==2&&$invoice->invoice_state_id==1){//if remise and still in creation we can delete remise
+            if(($invoice->invoice_type_id==1||$invoice->invoice_type_id==2)&&$invoice->invoice_state_id==1){//if facture or remise and still in creation we can delete. we cannot delete avoir
                 $invoice->delete();   
         }
+        }
+        if($invoice_type_name=='AVOIR')
+        return response('Impossible de supprimer une avoir.',509);
 
         $oi->delete();
 
 
         if($invoice_type_name=='REMISE'){
              // mettre a jour les echeance qui ne sont pas encore facturer
-             $orderInvoices=DB::table('order_invoices')->select(['order_invoices.*','invoice_type.sign','invoice_type.name as invoice_type_name','invoice_type.color as invoice_type_color'])->leftJoin('invoices',function($join){
+             $orderInvoices=DB::table('order_invoices')->select(['order_invoices.*','invoice_types.sign','invoice_types.name as invoice_type_name','invoice_types.color as invoice_type_color'])->leftJoin('invoices',function($join){
                 $join->on('invoices.order_invoice_id','=','order_invoices.id')
                 ->whereNull('invoices.deleted_at');  
-           })->leftJoin('invoice_type',function($join){
-                $join->on('invoice_type.id','=','invoices.invoice_type_id')
-                ->whereNull('invoice_type.deleted_at');  
+           })->leftJoin('invoice_types',function($join){
+                $join->on('invoice_types.id','=','invoices.invoice_type_id')
+                ->whereNull('invoice_types.deleted_at');  
            })->where('order_invoices.order_id','=',$order->id)
            ->whereNull('order_invoices.deleted_at')->get();
          
@@ -414,7 +419,7 @@ class DevisController extends Controller
                 }
                
             }
-        }
+        
 
         return response()->json(array('message'=>'ok'));
     }
@@ -433,26 +438,13 @@ class DevisController extends Controller
         return response('Order is not affiliated to user.Cannot create invoice.',509);
  
          
-        if($invoice_type_name!=null||$oi->invoice_id>0)
+        if($oi->invoice_id>0&&$oi->facturer==1)
         return response('Invoice already exists.',509);
 
         $oi->facturer=1;
-        $in=new Invoice();
-        $in->order_id=$order->id;
-        $in->montant=$oi->montant;
-        $in->pourcentage=$oi->pourcentage;
-        $in->lang_id=1;
-        $in->customer_id=$order->customer_id;
-        $in->order_invoice_id=$oi->id;
-        $in->responsable_id=$user->id;
-        $in->affiliate_id=$order->affiliate_id;
-        $in->invoice_type_id=1;
-        $in->dateecheance=$oi->dateinvoice;
-        $in->save();
-        $in->fresh();
-        $in->reference='PROV'.$in->id;
-        $in->updateState(1);//creation
-        $oi->invoice_id=$in->id;
+        $in=Invoice::find($oi->invoice_id);
+   
+        $in->updateState(6);//valide
         $oi->save();
         $in->ref=$in->reference;
 

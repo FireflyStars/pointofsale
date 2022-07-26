@@ -139,7 +139,7 @@ export const devislist= {
                 having:true,
                 filter_options:[
                   { id: 'John Doe', value: 'John Doe'},
-                 
+                  { id: 'superadmin', value: 'superadmin'},
       
               ],
                 prefix:"",

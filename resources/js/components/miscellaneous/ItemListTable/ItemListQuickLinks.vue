@@ -1,9 +1,10 @@
 <template>
   <div class="item-list-quick-links d-flex gap-2">
-      
+  
+    
              <transition-group tag="div" class="d-flex gap-2"  name="list" appear>
             <template v-for="link,index in links" :key="index" >
-            <base-button v-if="link.page_route==router.currentRoute.value.name" :title="link.name" @contextmenu="showdelete($event,link)" :btnStyle="`background-color:${link.background_color};color:${link.font_color};`" @click="goto(link)"  prepend  :classList="`btn quicklink body_medium ${link.icon_name!=''&&link.icon_name!=null?'':' nogap'}`">
+            <base-button v-if="displayableOnCurrentRoute(link.page_route)" :title="link.name" @contextmenu="showdelete($event,link)" :btnStyle="`background-color:${link.background_color};color:${link.font_color};`" @click="goto(link)"  prepend  :classList="`btn quicklink body_medium ${link.icon_name!=''&&link.icon_name!=null?'':' nogap'}`">
             <icon v-if="link.icon_name!=''&&link.icon_name!=null" :name="link.icon_name" width="24px" height="24px" :color="link.font_color"/>
             </base-button>   
             </template> 
@@ -144,6 +145,18 @@ export default {
                     }
                     
                  }
+
+                 const displayableOnCurrentRoute=(page_route)=>{
+                  
+                        if(page_route==router.currentRoute.value.name)
+                        return true;
+
+                        let parent=router.currentRoute.value.matched.filter(obj=>obj.name==page_route);
+                        if(parent.length>0)
+                        return true;
+
+                        return false;
+                 }
              return {
                 showmodal_quicklink,
                 showaddbtn,
@@ -155,7 +168,8 @@ export default {
                 links,
                 goto,
                 router,
-                showdelete
+                showdelete,
+                displayableOnCurrentRoute
 
              }
         }

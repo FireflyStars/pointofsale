@@ -56,6 +56,8 @@ import { ITEM_LIST_GET_CURRENT, ITEM_LIST_GET_IDENTIFIER, ITEM_LIST_MODULE, ITEM
             onMounted(()=>{
                store.dispatch(`${ITEM_LIST_MODULE}${ITEM_LIST_SELECT_CURRENT}`,{current:route.params.id});
                 document.getElementsByTagName( 'body' )[0].className='hide-overflowY';
+                window.scrollTo({ left: 0, behavior: "smooth" });
+
                 show.value=true;
                  setTimeout(()=>{
                 showclose.value=true;

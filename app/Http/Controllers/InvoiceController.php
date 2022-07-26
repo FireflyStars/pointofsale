@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Address;
 use App\Models\Invoice;
 use App\Models\InvoiceState;
+use App\Models\InvoiceType;
 use App\Models\Order;
 use App\Models\OrderInvoice;
 use App\Models\OrderState;
@@ -103,6 +104,9 @@ class InvoiceController extends Controller
         }
 
         $list=$list->groupBy('invoices.id')->skip($skip)->take($take)->get();
+        foreach($list as &$l){
+            $l->payer=Invoice::totalPaid($l->id);
+        }
         return response()->json($list);
     }
 
@@ -127,9 +131,13 @@ class InvoiceController extends Controller
         $invoice_id=$request->post('invoice_id');
         $invoice=Invoice::find($invoice_id);
         $order_invoice=OrderInvoice::find($invoice->order_invoice_id);
+        $invoice_type=InvoiceType::find($invoice->invoice_type_id);
         $invoice->order=null;
         if($invoice->order_invoice_id>0&&$order_invoice!=null){
         $invoice->orderInvoice;
+        $invoice->invoiceTypes=InvoiceType::all();
+        $invoice->orderInvoice->invoice_type_name=$invoice_type->name;
+        $invoice->mode_paiements=Invoice::getModeDePaiementsByInvoiceId($invoice->id);
         $order=Order::find($order_invoice->order_id);
         $lastevent=$order->events()->orderBy('id','desc')->first();
         $order->contact=null;
@@ -156,6 +164,29 @@ class InvoiceController extends Controller
         return response()->json($invoice);
     }
 
+    public function updateInvoiceState(Request $request){
+        $invoice_id=$request->post('invoice_id');
+        $invoice_state_id=$request->post('invoice_state_id');
+        $user=Auth::user();
+        $invoice_state=InvoiceState::find($invoice_state_id);
+        if($invoice_state==null)
+        return response('Invalid invoice state',509);
+
+        $invoice=Invoice::find($invoice_id);
+        if($invoice==null){
+            return response('Invoice not found',509);
+        }
+
+        
+        if($user->affiliate_id!=$invoice->affiliate_id)
+        return response('Cannot update invoice state. Invoice is not linked to the same affiliate as the user',509);
+
+        $invoice->updateState($invoice_state_id);
+
+        $invoice->fresh();
+        return response()->json(['update state'=>'ok','reference'=>$invoice->reference]);
+
+    }
     public function getInvoicePayments(Request $request){
         $invoice_id=$request->post('invoice_id');
         $invoice=Invoice::find($invoice_id);
@@ -218,7 +249,7 @@ class InvoiceController extends Controller
         $p->save();
         $p->fresh();
         $p->updateState(1);
-
+        $p->mode_paiements=Invoice::getModeDePaiementsByInvoiceId($invoice->id);
         return response()->json($p);
     }
 }

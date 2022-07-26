@@ -72,7 +72,7 @@
             clickOutside: vClickOutside.directive
         },
         props:{
-            //modelValue: String,
+            modelValue: String,
             droppos: Object,
             label:String,
             disabled:Boolean,
@@ -90,8 +90,8 @@
                 required:true
             }
         },
-      //  emits: ['update:modelValue'],
-       emits: ['changed'],
+   
+       emits: ['update:modelValue','changed'],
         setup(props,context){
 
             const store=useStore();
@@ -174,15 +174,15 @@
             const MonthYear=ref({});
             const formated_date=ref('');
 
-            // if(props.modelValue!==""){
-            //     default_date.value=props.modelValue.split('-');
-            //     MonthYear.value.month=(default_date.value[1]-1);
-            //     MonthYear.value.year=parseInt(default_date.value[0]);
-            // }else{
+            if(props.modelValue!==""){
+                default_date.value=props.modelValue.split('-');
+                MonthYear.value.month=(default_date.value[1]-1);
+                MonthYear.value.year=parseInt(default_date.value[0]);
+            }else{
                 const d=new Date();
                 MonthYear.value.month=d.getMonth();
                 MonthYear.value.year=d.getFullYear();
-            //}
+            }
             function minusMonth() {
                 if(MonthYear.value.month==0){
                     MonthYear.value.month=11;
@@ -351,7 +351,8 @@
                 default_date.value[0]=parseInt(y);
                 default_date.value[1]=parseInt(m)+1;
                 default_date.value[2]=parseInt(d);
-              
+               context.emit("update:modelValue",`${default_date.value[0]}-${default_date.value[1].toString().padStart(2, "0")}-${default_date.value[2].toString().padStart(2, "0")}`);
+
                context.emit("changed",{name:props.name,col:props.col,date:`${default_date.value[0]}-${default_date.value[1].toString().padStart(2, "0")}-${default_date.value[2].toString().padStart(2, "0")}`});
                 toggleshowDp();
 
@@ -432,7 +433,9 @@
             function resetPicker(){
                 formated_date.value='';
                 default_date.value = [];
-                  context.emit("changed",{name:props.name,col:props.col,date:''});
+                context.emit("update:modelValue",'');
+                context.emit("changed",{name:props.name,col:props.col,date:''});
+
                 toggleshowDp();
             }
 

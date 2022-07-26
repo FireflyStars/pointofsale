@@ -15,6 +15,7 @@
         <div class="col-3" v-if="invoice.order!=null" ><h2 class="almarai_700_normal">Commande<br/>N° {{invoice.order.id}}</h2></div>
         <div class="col-3" v-if="invoice.order!=null" ><h2 class="almarai_700_normal">Date Commande<br/>{{formatDate(invoice.order.datecommande)}}</h2></div>
         <div class="col-3"  ><h2 class="almarai_700_normal">Date Facture<br/>{{formatDate(invoice.dateecheance)}}</h2></div>
+        <div class="col-3"><state-tag :id="invoice.invoice_type_id" :states="invoice.invoiceTypes" classes="almarai_700_normal" width="auto"></state-tag></div>
     </div>
  </transition>
     <hr v-if="show"/>
@@ -30,7 +31,7 @@
        <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
     <div class="row" v-if="show">
         <div class="col"><span class="subtitle almarai_700_normal">Contact</span><br><span v-if="invoice.order.contact!=null" v-html="`${typeof invoice.order.contact.firstname !='undefined'? invoice.order.contact.firstname:''} ${typeof invoice.order.contact.name !='undefined'?invoice.order.contact.name:''}${br(invoice.order.contact.mobile)}${br(invoice.order.contact.telephone)}`"></span><span v-else>Pas de contact</span></div>
-        <div class="col"><span class="subtitle almarai_700_normal">Mode de paiement</span><br><span>--/--</span></div>
+        <div class="col"><span class="subtitle almarai_700_normal">Mode de paiement</span><br><span>{{invoice.mode_paiements.join(", ")}}</span></div>
     </div>
        </transition>
      <hr v-if="show"/>
@@ -75,14 +76,14 @@
       </transition>
        <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
 
-           <payment v-if="show" :invoice_id="invoice.id" @showloader="showloader=true" @hideloader="showloader=false"></payment>
+           <payment v-if="show&&(invoice.invoice_state_id==2||invoice.invoice_state_id==3||invoice.invoice_state_id==5)" :invoice_id="invoice.id" @showloader="showloader=true" @hideloader="showloader=false"></payment>
 
        </transition>
      <div class="od_actions mb-3" v-if="show">
-        <button class="btn btn-outline-success almarai_700_normal" >VALIDE</button>
-        <button class="btn btn-outline-info almarai_700_normal" >ENVOYE</button>
-        <button class="btn btn-outline-secondary almarai_700_normal">EFFACER</button>  
-        <button class="btn btn-outline-dark almarai_700_normal">ANNULER</button>   
+        <button class="btn btn-outline-success almarai_700_normal" v-if="invoice.invoice_state_id==1" @click="updateInvoiceState(6)">VALIDE</button>
+        <button class="btn btn-outline-info almarai_700_normal" v-if="invoice.invoice_state_id==6"  @click="updateInvoiceState(2)">ENVOYE</button>
+        <button class="btn btn-outline-secondary almarai_700_normal" v-if="invoice.invoice_state_id==1&&invoice.invoice_type_id!=3" @click="removeInvoice()">EFFACER</button>  
+        <button class="btn btn-outline-dark almarai_700_normal" v-if="invoice.invoice_state_id!=3&&invoice.invoice_state_id!=5&&invoice.invoice_state_id!=1&&invoice.invoice_state_id!=4" @click="updateInvoiceState(4)">ANNULER</button>   
      </div>
 
 
@@ -99,6 +100,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex';
 import ItemDetailPanel from '../../components/miscellaneous/ItemListTable/ItemDetailPanel.vue'
 import InvoiceStateTag from '../../components/miscellaneous/InvoiceStateTag.vue';
+import StateTag from '../../components/miscellaneous/StateTag.vue';
 
 import { formatPrice,formatDate,br,isFloat } from '../../components/helpers/helpers';
 import Swal from 'sweetalert2';
@@ -107,12 +109,12 @@ import DatePicker from '../../components/miscellaneous/DatePicker.vue';
 import Icon from '../../components/miscellaneous/Icon.vue';
 
 import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
-import { FACTURE_DETAIL_GET, FACTURE_DETAIL_LOAD, FACTURE_DETAIL_MODULE } from '../../store/types/types';
+import { FACTURE_DETAIL_GET, FACTURE_DETAIL_LOAD, FACTURE_DETAIL_MODULE, FACTURE_DETAIL_REMOVE_FACTURATION, FACTURE_DETAIL_UPDATE_INVOICE_STATE } from '../../store/types/types';
 import Payment from './Payment.vue';
 
     export default {
         name: "InvoiceDetail",
-        components:{ItemDetailPanel,InvoiceStateTag, DatePicker, Icon,MiniPanel,Payment},
+        components:{ItemDetailPanel,InvoiceStateTag, DatePicker, Icon,MiniPanel,Payment,StateTag},
         setup(){
             const route=useRoute();
             const router=useRouter();
@@ -121,14 +123,35 @@ import Payment from './Payment.vue';
             const showloader=ref(false);
             let invoice_id=route.params.id;
             onMounted(()=>{
-            
+       
                 store.dispatch(`${FACTURE_DETAIL_MODULE}${FACTURE_DETAIL_LOAD}`,invoice_id).then(()=>{
                     showloader.value=false;
                     show.value=true;
+                }).finally(()=>{
+                     showloader.value=false;
                 });
             })
            
             const invoice=computed(()=>store.getters[`${FACTURE_DETAIL_MODULE}${FACTURE_DETAIL_GET}`]);
+            const updateInvoiceState=(invoiceStateid)=>{
+                showloader.value=true;
+                store.dispatch(`${FACTURE_DETAIL_MODULE}${FACTURE_DETAIL_UPDATE_INVOICE_STATE}`,invoiceStateid).then(()=>{
+                    showloader.value=false;
+                }).finally(()=>{
+                     showloader.value=false;
+                })
+            }
+            const removeInvoice=()=>{
+                
+                showloader.value=true;
+                store.dispatch(`${FACTURE_DETAIL_MODULE}${FACTURE_DETAIL_REMOVE_FACTURATION}`,invoice.value.order_invoice).then(()=>{
+                    showloader.value=false;
+                    router.back();
+                }).finally(()=>{
+                     showloader.value=false;
+                })
+
+            }
 
              return {
                 invoice,
@@ -137,6 +160,9 @@ import Payment from './Payment.vue';
                  formatPrice,
                  formatDate,
                  br,
+                 updateInvoiceState,
+                 removeInvoice
+
                 
 
              }

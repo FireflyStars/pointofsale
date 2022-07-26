@@ -23,7 +23,7 @@
     </div>
     <div class="row" v-if="show">
         <div class="col"><span class="subtitle almarai_700_normal">Contact</span><br><span v-if="order.contact!=null" v-html="`${typeof order.contact.firstname !='undefined'? order.contact.firstname:''} ${typeof order.contact.name !='undefined'?order.contact.name:''}${br(order.contact.mobile)}${br(order.contact.telephone)}`"></span><span v-else>Pas de contact</span></div>
-        <div class="col"><span class="subtitle almarai_700_normal">Mode de paiement</span><br><span>--/--</span></div>
+        <div class="col"><span class="subtitle almarai_700_normal">Mode de paiement</span><br><span>{{order.mode_paiements.join(", ")}}</span></div>
     </div>
      <hr v-if="show"/>
      <template v-if="typeof order.state!='undefined'&&order.state.order_type=='DEVIS'">
@@ -86,7 +86,7 @@
                 <transition-group tag="div" class="list"  name="list" appear>
             <template v-for="facture,index in facturations" :key="index">
                         <div class="row mb-3" :class="{avoir:facture.invoice_type_name=='AVOIR',remise:facture.invoice_type_name=='REMISE',facturer:(facture.invoice_type_name=='FACTURE'&&facture.facturer==1||facture.invoice_type_name==null&&facture.facturer==1),avenant:facture.invoice_type_name=='AVENANT',reste_a_facturer:facture.facturer==0}" >
-                            <div class="col-4 almarai_bold_normal font-14 invoiceline d-flex align-items-center" >{{`${facture.description}${facture.invoice_id>0?facture.invoice_type_name=='REMISE'?'':` (N°${facture.ref})`:''}`}}</div>
+                            <div class="col-4 almarai_bold_normal font-14 invoiceline d-inline align-items-center" >{{facture.description}} <span @click=" router.push({name:'FactureDetail', params: { id:facture.invoice_id }});" class="btn-link font-12 cursor-pointer" v-if="facture.invoice_id>0&&facture.invoice_type_name!='REMISE'">(N°{{facture.ref}})</span></div>
                             <div class="col-2 almarai-light  d-flex font-14 align-items-center" :class="{dangerred:facture.sign==-1}">{{isFloat(facture.pourcentage)?facture.pourcentage.toFixed(2):facture.pourcentage}}%</div>
                             <div class="col-2 almarai-light   d-flex font-14 align-items-center justify-content-center">{{formatDate(facture.dateinvoice)}}</div>
                             <div class="col-2 almarai-light   d-flex font-14 align-items-center justify-content-end" :class="{dangerred:facture.sign==-1}">{{formatPrice(facture.sign!=null?facture.sign*facture.montant:facture.montant)}}</div>
@@ -97,7 +97,7 @@
                             <div class="col-1 d-flex align-items-center justify-content-center"> <transition
                         enter-active-class="animate__animated animate__fadeIn"
                         leave-active-class="animate__animated animate__fadeOut"
-                ><icon v-if="((facture.invoice_type_name=='FACTURE')&&facture.facturer==0||facture.invoice_type_name==null&&facture.facturer==0||facture.invoice_type_name=='REMISE')" name="trash-x" width="20px" height="20px" class="cursor-pointer" @click="removeInvoice(facture)"></icon></transition></div>  
+                ><icon v-if="((facture.invoice_type_name=='FACTURE')&&facture.facturer==0||facture.invoice_type_name==null&&facture.facturer==0||facture.invoice_type_name=='REMISE')&&(facture.invoice_state_id==1||facture.invoice_state_id==null)" name="trash-x" width="20px" height="20px" class="cursor-pointer" @click="removeInvoice(facture)"></icon></transition></div>  
                         </div>
                         </template>
                             </transition-group>

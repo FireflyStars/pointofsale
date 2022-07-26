@@ -18,9 +18,9 @@
             <div v-if="item.visible==true" class="list-header-col almarai_700_normal" @drop="onDrop($event,item)" @dragover="onDragOver($event,item)"  @dragleave="onDragLeave($event,item)" @dragenter="onDragEnter($event,item)" @dragover.prevent  :draggable="isDraggable(item)" @dragstart="startDrag($event,item)" @dragend="endDrag($event,item)" :class="headerClasses(item,sortings)" :style="item.css">
                 <span  @click.exact="sortby(item,false)" @click.shift="sortby(item,true)" >{{item.display_name.toLowerCase()}}</span>
                 <check-box v-if="item.type=='checkbox'" name="checkall" id="checkall" :checked="lists.length==MULTI_CHECKED.length" @change="checkboxallclicked"/>
-                <input  class="mulish_400_normal" v-if="(item.type=='string'||item.type=='html'||item.type=='price')&&item.filter&&typeof item.filter_options=='undefined'" type="text" @keyup.enter="filterColumn(item,$event.target.value)"/>
-                <item-list-date-filter v-if="item.type=='date'" :col="item" :name="item.id" @onDateFiltered="filterdate" ></item-list-date-filter>
-                <item-list-multi-filter v-if="typeof item.filter_options!='undefined'" :id="item.id" @onMultiFiltered="multifilter" :col="item" :filteroptions="item.filter_options" :identifier="table_def.identifier"/>
+                <input  class="mulish_400_normal" v-if="(item.type=='string'||item.type=='html'||item.type=='price')&&item.filter&&typeof item.filter_options=='undefined'" :value="getFilterValue(item)" type="text" @keyup.enter="filterColumn(item,$event.target.value)"/>
+                <item-list-date-filter v-if="item.type=='date'" :col="item" :name="item.id" @onDateFiltered="filterdate" :value="getFilterValue(item)"></item-list-date-filter>
+                <item-list-multi-filter  :value="getFilterMValue(item)" v-if="typeof item.filter_options!='undefined'" :id="item.id" @onMultiFiltered="multifilter" :col="item" :filteroptions="item.filter_options" :identifier="table_def.identifier"/>
             </div>
         </template>
     </div>
@@ -595,6 +595,43 @@ export default {
                 return `background-color:${props.table_def.highlight_row.backgroundColor};color:${props.table_def.highlight_row.color};`
            }
         }
+        const getFilterValue=(item)=>{
+        
+            if(typeof colfilters.value!="undefined"){
+
+           
+                let colfilter=colfilters.value.filter(obj=>obj.id==item.id);
+                if(colfilter.length>0){
+                 
+                if(item.type=='date'){
+                    return {From:colfilter[0].word.from,To:colfilter[0].word.to}
+                }
+                return colfilter[0].word;
+                }
+                 
+            }
+            if(['string','html','price'].includes(item.type))
+            return '';
+
+            if(item.type=='date')
+            return {From:'',To:''};
+
+
+               
+        }   
+           const getFilterMValue=(item)=>{
+        
+            if(typeof colfilters.value!="undefined"){
+                 let colfilter=colfilters.value.filter(obj=>obj.id==item.id);
+                if(colfilter.length>0){
+                  return colfilter[0].word;
+                }
+            }
+                    
+               return [];
+
+               
+        }   
       return{
           table_def:props.table_def,
   
@@ -636,7 +673,9 @@ export default {
           listGroup,
           columnSelection,
           onTableFilerChange,
-          multifilter
+          multifilter,
+          getFilterValue,
+          getFilterMValue
       }
 
     }

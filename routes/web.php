@@ -203,6 +203,7 @@ Route::group([
     Route::post('/get-invoice-payments',[InvoiceController::class,'getInvoicePayments'])->middleware('auth')->name('get-invoice-payments');
     Route::post('/remove-invoice-payment',[InvoiceController::class,'removeInvoicePayment'])->middleware('auth')->name('remove-invoice-payment');
     Route::post('/add-invoice-payment',[InvoiceController::class,'addInvoicePayment'])->middleware('auth')->name('add-invoice-payment');
+    Route::post('/update-invoice-state',[InvoiceController::class,'updateInvoiceState'])->middleware('auth')->name('update-invoice-state');
     
    
     
