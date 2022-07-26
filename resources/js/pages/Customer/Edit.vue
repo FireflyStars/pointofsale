@@ -99,10 +99,14 @@
                             </div>    
                             <div class="d-flex mt-3">
                                 <div class="col-7 d-flex">
-                                    <div class="col-8">
-                                        <div class="form-group">
+                                    <div class="d-flex col-8">
+                                        <div class="form-group col-9">
                                             <label>SIRET *</label>
                                             <input type="text" v-model="form.siret" class="form-control" v-mask="'#########'">
+                                        </div>
+                                        <div class="form-group col-3 px-2">
+                                            <label>&nbsp;</label>
+                                            <button class="btn btn-primary" @click="checkSiret">VERIFIER</button>
                                         </div>
                                     </div>
                                     <div class="col-1"></div>
@@ -697,7 +701,7 @@ export default {
             raisonsociale: '',
             raisonsociale2: '',
             siret: '',
-            siretValidation: false,
+            siretValidation: true,
             numLCDT: '',
             company: '',
             customerOrigin: 0,
@@ -779,7 +783,7 @@ export default {
                 acceptSMS: true,
                 acceptmarketing: true,
                 acceptcourrier: true,
-            }],            
+            }],
         });
         const dateFormat = (date) => {
             const day = date.getDate();
@@ -794,6 +798,36 @@ export default {
             form.value.addresses[data.index].city = data.city;
             form.value.addresses[data.index].postCode = data.postcode;
         }
+        const checkSiret = ()=>{
+            if(form.value.siret.length == 9){
+                store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'checking siret ...']);
+                axios.post('/check-siret', { 'siret' : form.value.siret }).then((res)=>{
+                    if(res.data.success){
+                        form.value.siretValidation = true;
+                        form.value.naf = res.data.data.activitePrincipaleUniteLegale.replace('.', '');
+                        form.value.raisonsociale    = res.data.data.denominationUniteLegale;
+                        form.value.raisonsociale2   = res.data.data.denominationUsuelle1UniteLegale;
+                    }else{
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: res.data.error,
+                            ttl: 5,
+                        });                         
+                    }
+                    console.log(res.data);
+                }).catch((error)=>{
+                    console.log(error);
+                }).finally(()=>{
+                    store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+                })
+            }else{
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Siret must be 9 digits',
+                    ttl: 5,
+                }); 
+            }
+        }        
         const selectNav = (value)=>{
             if(step.value == 'client-detail'){
                 if(form.value.raisonsociale == ''){
@@ -1059,41 +1093,40 @@ export default {
             }
         })
         const submit = ()=>{
-            // var error = false;
-            // form.value.contacts.forEach(contact => {
-            //     if(contact.type == ''){
-            //         error = true;
-            //         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-            //             type: 'danger',
-            //             message: 'Veuillez sélectionner le type de contact',
-            //             ttl: 5,
-            //         });  
-            //     }else if(contact.firstName == ''){
-            //         error = true;
-            //         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-            //             type: 'danger',
-            //             message: 'Veuillez entrer PRENOM',
-            //             ttl: 5,
-            //         });                          
-            //     }else if(contact.email == ''){
-            //         error = true;
-            //         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-            //             type: 'danger',
-            //             message: 'Veuillez saisir un e-mail',
-            //             ttl: 5,
-            //         });
-            //     }else if(contact.name == ''){
-            //         error = true;
-            //         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-            //             type: 'danger',
-            //             message: 'Veuillez entrer NOM',
-            //             ttl: 5,
-            //         });                          
-            //     }
-            // });
-            // if(error){
-            //     return;
-            // }else{            
+            form.value.contacts.foreach((contact)=>{
+                if(contact.type != '' || contact.firstName != '' || contact.email == '' || contact.name == ''){
+                    if(contact.firstName == ''){
+                        error = true;
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez entrer PRENOM',
+                            ttl: 5,
+                        });
+                    }else if(contact.email == ''){
+                        error = true;
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez saisir un e-mail',
+                            ttl: 5,
+                        });
+                    }else if(contact.name == ''){
+                        error = true;
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez entrer NOM',
+                            ttl: 5,
+                        });                          
+                    }else if(contact.addressType == ''){
+                        error = true;
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez sélectionner le type d`adresse',
+                            ttl: 5,
+                        });                          
+                    }
+                }
+            })
+            if( error == false ){
                 store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Mise à jour du client ...']);
                 axios.post('/update-customer', form.value).then((res)=>{
                     if(res.data.success){
@@ -1111,7 +1144,7 @@ export default {
                 }).finally(()=>{
                     store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
                 })
-            // }
+            }
         }
         const formatPhone = (phoneNumber)=>{
             if(phoneNumber.split('|').length == 1){
@@ -1172,6 +1205,7 @@ export default {
                     customer.litige = true;
                 else
                     customer.litige = false;
+                customer.siretValidation = true;
                 form.value = customer;
                 if(form.value.addresses.length == 0)
                     addAddress();
@@ -1201,6 +1235,7 @@ export default {
             phoneCodesSorted,
             customerAddresses,
             dateFormat,
+            checkSiret,
             addAddress,
             addContact,
             removeAddress,

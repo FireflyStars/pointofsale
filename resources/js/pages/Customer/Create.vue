@@ -106,7 +106,7 @@
                                         </div>
                                         <div class="form-group col-3 px-2">
                                             <label>&nbsp;</label>
-                                            <button class="btn btn-primary" @click="checkSiret">Check</button>
+                                            <button class="btn btn-primary" @click="checkSiret">VERIFIER</button>
                                         </div>
                                     </div>
                                     <div class="col-1"></div>
@@ -622,6 +622,7 @@
                                     </div>
                                 </div>
                                 <div class="col-3 d-flex align-items-center ps-3">
+                                    <!-- <button @click="registerContact(index)" class="custom-btn btn-ok text-nowrap mb-3">ENREGISTRER</button> -->
                                     <button @click="removeContact(index)" class="custom-btn btn-danger text-nowrap">SUPPRIMER CONTACT</button>
                                 </div>
                             </div>
@@ -919,7 +920,6 @@ export default {
             }
         }
         const cancel = ()=>{
-
         }
         const validationUniqueEmail = (event, tableName)=>{
             axios.post('/check-email-exists', { table: tableName, email:  event.target.value })
@@ -1118,68 +1118,66 @@ export default {
             }
         })
         const submit = ()=>{
-            // var error = false;
-            // form.value.contacts.forEach(contact => {
-            //     if(contact.type == ''){
-            //         error = true;
-            //         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-            //             type: 'danger',
-            //             message: 'Veuillez sélectionner le type de contact',
-            //             ttl: 5,
-            //         });  
-            //     }else if(contact.firstName == ''){
-            //         error = true;
-            //         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-            //             type: 'danger',
-            //             message: 'Veuillez entrer PRENOM',
-            //             ttl: 5,
-            //         });                          
-            //     }else if(contact.email == ''){
-            //         error = true;
-            //         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-            //             type: 'danger',
-            //             message: 'Veuillez saisir un e-mail',
-            //             ttl: 5,
-            //         });
-            //     }else if(contact.name == ''){
-            //         error = true;
-            //         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-            //             type: 'danger',
-            //             message: 'Veuillez entrer NOM',
-            //             ttl: 5,
-            //         });                          
-            //     }
-            // });
-            // if(error){
-            //     return;
-            // }else{
-                if(uniqueEmail.value.status == false){
-                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                        type: 'danger',
-                        message: uniqueEmail.value.message,
-                        ttl: 5,
-                    });  
-                }else{
-                    store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Création d`un nouveau client ...']);
-                    axios.post('/add-customer', form.value).then((res)=>{
-                        if(res.data.success){
-                            router.push({ name: 'entite-details', params: { id: res.data.id } });
-                        }else{
-                            Object.values(res.data.errors).forEach(item => {
-                                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                                    type: 'danger',
-                                    message: item[0],
-                                    ttl: 5,
-                                });
-                            });
-                        }
-                    }).catch((errors)=>{
-                        console.log(errors);
-                    }).finally(()=>{
-                        store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
-                    })
+            form.value.contacts.foreach((contact)=>{
+                if(contact.type != '' || contact.firstName != '' || contact.email == '' || contact.name == ''){
+                    if(contact.firstName == ''){
+                        error = true;
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez entrer PRENOM',
+                            ttl: 5,
+                        });
+                    }else if(contact.email == ''){
+                        error = true;
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez saisir un e-mail',
+                            ttl: 5,
+                        });
+                    }else if(contact.name == ''){
+                        error = true;
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez entrer NOM',
+                            ttl: 5,
+                        });                          
+                    }else if(contact.addressType == ''){
+                        error = true;
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez sélectionner le type d`adresse',
+                            ttl: 5,
+                        });                          
+                    }
                 }
-            // }            
+            })
+            if(error) return;
+            if(uniqueEmail.value.status == false){
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: uniqueEmail.value.message,
+                    ttl: 5,
+                });  
+            }else{
+                store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Création d`un nouveau client ...']);
+                axios.post('/add-customer', form.value).then((res)=>{
+                    if(res.data.success){
+                        router.push({ name: 'entite-details', params: { id: res.data.id } });
+                    }else{
+                        Object.values(res.data.errors).forEach(item => {
+                            store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                                type: 'danger',
+                                message: item[0],
+                                ttl: 5,
+                            });
+                        });
+                    }
+                }).catch((errors)=>{
+                    console.log(errors);
+                }).finally(()=>{
+                    store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+                })
+            }
         }
         onMounted(()=>{
             axios.post('/get-list-info-for-customer').then((res)=>{

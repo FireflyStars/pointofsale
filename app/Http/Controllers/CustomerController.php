@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 
 class CustomerController extends Controller
 {
@@ -87,10 +88,10 @@ class CustomerController extends Controller
                     'error'     => $errorMessage,
                 ]);                                
             }
-        } catch (\Throwable $th) {
+        } catch (ClientException $e) {
             return response()->json([
                 'success'   => false,
-                'error'     => $th->getMessage(),
+                'error'     => $e->getResponse()->getReasonPhrase(),
             ]);
         }
     }
@@ -101,6 +102,7 @@ class CustomerController extends Controller
         $validator = Validator::make($request->all(), [
             'naf'               => 'required',
             'customerStatus'    => 'required',
+            'siret'             => 'required|unique:customers,siret',
             'email'             => $request->email != '' ? 'email' : '',
             'customerTax'       => 'required'
         ]);
@@ -188,30 +190,38 @@ class CustomerController extends Controller
             }
 
             foreach ($request->contacts as $contact) {
-                if( $contact['firstName'] != '' && $contact['name']){
-                    $newContact = [
-                        'contact_type_id'       => $contact['type'],
-                        'contact_qualite_id'    => $contact['qualite'],
-                        'customer_id'           => $customerID,
-                        'actif'                 => $contact['actif'],
-                        'address_id'            => 0,
-                        'num_contact_gx'        => $contact['numGx'],
-                        'name'                  => $contact['name'],
-                        'firstname'             => $contact['firstName'],
-                        'profillinedin'         => $contact['profilLinedin'],
-                        'gender'                => $contact['gender'],
-                        'email'                 => $contact['email'],
-                        'mobile'                => $contact['phoneCountryCode1'].'|'.$contact['phoneNumber1'],
-                        'telephone'             => $contact['phoneCountryCode2'].'|'.$contact['phoneNumber2'],
-                        'type'                  => DB::table('contact_type')->find($contact['type'])->name,
-                        'comment'               => $contact['note'],
-                        'acceptsms'             => $contact['acceptSMS'],
-                        'acceptmarketing'       => $contact['acceptmarketing'],
-                        'acceptcourrier'        => $contact['acceptcourrier'],
-                        'created_at'            => now(),
-                        'updated_at'            => now(),
-                    ];
-                    DB::table('contacts')->insert($newContact);
+                if( $contact['firstName'] != '' && $contact['name'] != '' && $contact['type'] != '' && $contact['name']){
+                    $contactValidator = Validator::make($contact, [
+                        'type'              => 'required',
+                        'email'             => 'required|unique:contacts,email',
+                        'firstName'         => 'required',
+                        'name'              => 'required'
+                    ]);
+                    if(!$contactValidator->fails()){
+                        $newContact = [
+                            'contact_type_id'       => $contact['type'],
+                            'contact_qualite_id'    => $contact['qualite'],
+                            'customer_id'           => $customerID,
+                            'actif'                 => $contact['actif'],
+                            'address_id'            => 0,
+                            'num_contact_gx'        => $contact['numGx'],
+                            'name'                  => $contact['name'],
+                            'firstname'             => $contact['firstName'],
+                            'profillinedin'         => $contact['profilLinedin'],
+                            'gender'                => $contact['gender'],
+                            'email'                 => $contact['email'],
+                            'mobile'                => $contact['phoneCountryCode1'].'|'.$contact['phoneNumber1'],
+                            'telephone'             => $contact['phoneCountryCode2'].'|'.$contact['phoneNumber2'],
+                            'type'                  => DB::table('contact_type')->find($contact['type'])->name,
+                            'comment'               => $contact['note'],
+                            'acceptsms'             => $contact['acceptSMS'],
+                            'acceptmarketing'       => $contact['acceptmarketing'],
+                            'acceptcourrier'        => $contact['acceptcourrier'],
+                            'created_at'            => now(),
+                            'updated_at'            => now(),
+                        ];
+                        DB::table('contacts')->insert($newContact);
+                    }
                 }
             }
         }
@@ -285,109 +295,123 @@ class CustomerController extends Controller
      * Update a customer
      */
     public function updateCustomer(Request $request){
-        $customerData = [
-            'affiliate_id'          => auth()->user()->affiliate_id,
-            'taxe_id'               => $request->customerTax,
-            'customer_statut_id'    => $request->customerStatus,
-            'customer_categories_id'=> $request->customerCat,
-            'customer_paiement_id'  => $request->customerPaiement,
-            'customer_origin_id'    => $request->customerOrigin,
-            'naf'                   => $request->naf,
-            'siret'                 => $request->siret,
-            'email'                 => $request->email,
-            'telephone'             => $request->phoneCountryCode.'|'.$request->phoneNumber,
-            'company'               => $request->company,
-            'raisonsociale'         => $request->raisonsociale,
-            'raisonsociale2'        => $request->raisonsociale2,
-            'firstname'             => $request->firstName,
-            'gender'                => $request->gender,
-            'name'                  => $request->lastName,
-            'libelleadresse'        => $request->address1,
-            'libellespecifique'     => $request->address2,
-            'centredistributeur'    => $request->address3,
-            'codepostal'            => $request->postCode,
-            'linkedin'              => $request->linkedin,
-            'siteweb'               => $request->website,
-            'litige'                => $request->litige,
-            'descision'             => $request->descision,
-            'active'                => $request->active,
-            'master_id'             => $request->masterId,
-            'zpe'                   => $request->zpe,
-            'environnement'         => $request->environment,
-            'statutetablissement'   => $request->statusEtablissement,
-            'trancheca'             => $request->trancheCA,
-            'trancheeffectif'       => $request->trancheEffectif,
-            'tranchetaillecommune'  => $request->trancheCommune,
-            'num_client_gx'         => $request->numLCDT,
-            'datecreationetablissement'=> Carbon::parse($request->dateCreated)->format('m/d/Y'),
-        ];
-        DB::table('customers')->where('id', $request->id)->update($customerData);
-        foreach ($request->addresses as $address) {
-            $addressData = [
-                'address_type_id'       => $address['addressType'],
-                'customer_id'           => $request->id,
-                'company'               => $customerData['company'],
-                'lastname'              => $address['nom'],
-                'firstname'             => $address['firstName'],
-                'gender'                => $customerData['gender'],
-                'address1'              => $address['address1'],
-                'address2'              => $address['address2'],
-                'address3'              => $address['address3'],
-                'postcode'              => $address['postCode'],
-                'city'                  => $address['city'],
-                'latitude'              => $address['latitude'],
-                'longitude'             => $address['longitude'],
-                'pente'                 => $address['pente'],
-                'surfacetoiture'        => $address['surfacetoiture'],
-                'materiau'              => $address['materiau'],
-                'presenceamiante'       => $address['presenceamiante'],
-                'presenceepc'           => $address['presenceepc'],
-                'accesexterieur'        => $address['accesexterieur'],
-                'presenceapportlumiere' => $address['presenceapportlumiere'],
-                'etattoiture'           => $address['etattoiture'],
-                'accesinterieur'        => $address['accesinterieur'],
-                'hauteurbatiment'       => $address['hauteurbatiment'],
-                'typebatiment'          => $address['typebatiment'],
-                'comment'               => $address['infoNote'],
+        $validator = Validator::make($request->all(), [
+            'naf'               => 'required',
+            'customerStatus'    => 'required',
+            'siret'             => 'required|unique:customers,siret,'.$request->id,
+            'email'             => $request->email != '' ? 'email' : '',
+            'customerTax'       => 'required'
+        ]);
+        if($validator->fails()){
+            return response()->json([
+                'success'   => false,
+                'errors'    => $validator->errors()
+            ]);
+        }else{
+            $customerData = [
+                'affiliate_id'          => auth()->user()->affiliate_id,
+                'taxe_id'               => $request->customerTax,
+                'customer_statut_id'    => $request->customerStatus,
+                'customer_categories_id'=> $request->customerCat,
+                'customer_paiement_id'  => $request->customerPaiement,
+                'customer_origin_id'    => $request->customerOrigin,
+                'naf'                   => $request->naf,
+                'siret'                 => $request->siret,
+                'email'                 => $request->email,
+                'telephone'             => $request->phoneCountryCode.'|'.$request->phoneNumber,
+                'company'               => $request->company,
+                'raisonsociale'         => $request->raisonsociale,
+                'raisonsociale2'        => $request->raisonsociale2,
+                'firstname'             => $request->firstName,
+                'gender'                => $request->gender,
+                'name'                  => $request->lastName,
+                'libelleadresse'        => $request->address1,
+                'libellespecifique'     => $request->address2,
+                'centredistributeur'    => $request->address3,
+                'codepostal'            => $request->postCode,
+                'linkedin'              => $request->linkedin,
+                'siteweb'               => $request->website,
+                'litige'                => $request->litige,
+                'descision'             => $request->descision,
+                'active'                => $request->active,
+                'master_id'             => $request->masterId,
+                'zpe'                   => $request->zpe,
+                'environnement'         => $request->environment,
+                'statutetablissement'   => $request->statusEtablissement,
+                'trancheca'             => $request->trancheCA,
+                'trancheeffectif'       => $request->trancheEffectif,
+                'tranchetaillecommune'  => $request->trancheCommune,
+                'num_client_gx'         => $request->numLCDT,
+                'datecreationetablissement'=> Carbon::parse($request->dateCreated)->format('m/d/Y'),
             ];
-            if($address['id'] == ''){
-                $addressData['country_id'] = 1;
-                $addressData['created_at'] = now();
-                $addressData['updated_at'] = now();
-                $addressID = DB::table('addresses')->insertGetId($addressData);
-            }else{
-                DB::table('addresses')->where('id', $address['id'])->update($addressData);
+            DB::table('customers')->where('id', $request->id)->update($customerData);
+            foreach ($request->addresses as $address) {
+                $addressData = [
+                    'address_type_id'       => $address['addressType'],
+                    'customer_id'           => $request->id,
+                    'company'               => $customerData['company'],
+                    'lastname'              => $address['nom'],
+                    'firstname'             => $address['firstName'],
+                    'gender'                => $customerData['gender'],
+                    'address1'              => $address['address1'],
+                    'address2'              => $address['address2'],
+                    'address3'              => $address['address3'],
+                    'postcode'              => $address['postCode'],
+                    'city'                  => $address['city'],
+                    'latitude'              => $address['latitude'],
+                    'longitude'             => $address['longitude'],
+                    'pente'                 => $address['pente'],
+                    'surfacetoiture'        => $address['surfacetoiture'],
+                    'materiau'              => $address['materiau'],
+                    'presenceamiante'       => $address['presenceamiante'],
+                    'presenceepc'           => $address['presenceepc'],
+                    'accesexterieur'        => $address['accesexterieur'],
+                    'presenceapportlumiere' => $address['presenceapportlumiere'],
+                    'etattoiture'           => $address['etattoiture'],
+                    'accesinterieur'        => $address['accesinterieur'],
+                    'hauteurbatiment'       => $address['hauteurbatiment'],
+                    'typebatiment'          => $address['typebatiment'],
+                    'comment'               => $address['infoNote'],
+                ];
+                if($address['id'] == ''){
+                    $addressData['country_id'] = 1;
+                    $addressData['created_at'] = now();
+                    $addressData['updated_at'] = now();
+                    $addressID = DB::table('addresses')->insertGetId($addressData);
+                }else{
+                    DB::table('addresses')->where('id', $address['id'])->update($addressData);
+                }
             }
+    
+            foreach ($request->contacts as $contact) {
+                $contactData = [
+                    'contact_type_id'       => $contact['type'],
+                    'contact_qualite_id'    => $contact['qualite'],
+                    'customer_id'           => $request->id,
+                    'actif'                 => $contact['actif'],
+                    'num_contact_gx'        => $contact['numGx'],
+                    'name'                  => $contact['name'],
+                    'firstname'             => $contact['firstName'],
+                    'profillinedin'         => $contact['profilLinedin'],
+                    'gender'                => $contact['gender'],
+                    'email'                 => $contact['email'],
+                    'mobile'                => $contact['phoneCountryCode1'].'|'.$contact['phoneNumber1'],
+                    'telephone'             => $contact['phoneCountryCode2'].'|'.$contact['phoneNumber2'],
+                    'type'                  => DB::table('contact_type')->find($contact['type'])->name,
+                    'comment'               => $contact['note'],
+                    'acceptsms'             => $contact['acceptSMS'],
+                    'acceptmarketing'       => $contact['acceptmarketing'],
+                    'acceptcourrier'        => $contact['acceptcourrier'],
+                ];
+                if($contact['id'] == '' && $contact['name'] != '' && $contact['firstName'] !='' && $contact['type'] != '' && $contact['email']){
+                    $contactData['address_id'] = 0;
+                    $contactData['created_at'] = now();
+                    $contactData['updated_at'] = now();
+                    DB::table('contacts')->insert($contactData);
+                }else{
+                    DB::table('contacts')->where('id', $contact['id'])->update($contactData);
+                }
         }
-
-        foreach ($request->contacts as $contact) {
-            $contactData = [
-                'contact_type_id'       => $contact['type'],
-                'contact_qualite_id'    => $contact['qualite'],
-                'customer_id'           => $request->id,
-                'actif'                 => $contact['actif'],
-                'num_contact_gx'        => $contact['numGx'],
-                'name'                  => $contact['name'],
-                'firstname'             => $contact['firstName'],
-                'profillinedin'         => $contact['profilLinedin'],
-                'gender'                => $contact['gender'],
-                'email'                 => $contact['email'],
-                'mobile'                => $contact['phoneCountryCode1'].'|'.$contact['phoneNumber1'],
-                'telephone'             => $contact['phoneCountryCode2'].'|'.$contact['phoneNumber2'],
-                'type'                  => DB::table('contact_type')->find($contact['type'])->name,
-                'comment'               => $contact['note'],
-                'acceptsms'             => $contact['acceptSMS'],
-                'acceptmarketing'       => $contact['acceptmarketing'],
-                'acceptcourrier'        => $contact['acceptcourrier'],
-            ];
-            if($contact['id'] == '' && $contact['name'] != '' && $contact['firstName'] !='' && $contact['type'] != 0){
-                $contactData['address_id'] = 0;
-                $contactData['created_at'] = now();
-                $contactData['updated_at'] = now();
-                DB::table('contacts')->insert($contactData);
-            }else{
-                DB::table('contacts')->where('id', $contact['id'])->update($contactData);
-            }
         }
         return response()->json(['success' => true]);
     }
