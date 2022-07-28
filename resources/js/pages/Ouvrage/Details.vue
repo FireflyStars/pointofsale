@@ -146,7 +146,8 @@
         </div>
 
         <base-button 
-            title="Annuler" 
+            title="Annuler"
+            @click.prevent="$router.push({ name: 'ouvrage' })" 
         />
         
     </div>
@@ -176,7 +177,6 @@ import {
     GET_OUVRAGE_DETAILS,
     RESET_DETAILS,
     ITEM_LIST_MODULE,
-    ITEM_LIST_REMOVE_ROW,
     ITEM_LIST_UPDATE_ROW,
     OUVRAGE_MODULE,
     VALIDER_OUVRAGE

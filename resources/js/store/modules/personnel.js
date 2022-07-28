@@ -58,7 +58,7 @@ export const personnel = {
             ,
             item_route_name: "personnel-details",// the route to trigger when a line is click 
             max_per_page: 10,//required          
-            identifier: "templates_list_all",//required
+            identifier: "personnel_list_all",//required
             filter: true,// required boolean
             rearrange_columns: true,// required boolean
             columns_def: [
@@ -84,7 +84,6 @@ export const personnel = {
                     filter: true,   
                     prefix: "",
                     suffix: "",
-                    table: 'templates',
                 },
                 {
                     id: "prenom",
@@ -97,7 +96,6 @@ export const personnel = {
                     having: true,
                     prefix: "",
                     suffix: "",
-                    table: 'templates',
                 },
                 {
                     id: "nom",

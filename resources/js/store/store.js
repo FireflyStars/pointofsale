@@ -46,6 +46,7 @@ import { mainSearch as SEARCH_MODULE } from './modules/mainSearch'
 import { campagneList as CAMPAGNE_LIST_MODULE } from './modules/campagneList'
 
 import {devisdetail as DEVIS_DETAIL_MODULE } from './modules/devisdetail'
+import { commandeDetails as COMMANDE_DETAIL_MODULE } from './modules/commandeDetail'
 
 import {facturedetail as FACTURE_DETAIL_MODULE } from './modules/facturedetail'
 import { entite as ENTITE_LIST_MODULE } from './modules/entite.js'
@@ -59,6 +60,11 @@ import { personnel as PERSONNEL_LIST_MODULE } from './modules/personnel'
 import { articles as ARTICLES_MODULE } from './modules/articles'
 import { ouvrage as OUVRAGE_MODULE } from './modules/ouvrage'
 import { ouvrageTag as OUVRAGE_STATE_MODULE } from './modules/component_store/OuvrageTag'
+
+import { commande as COMMANDE_LIST_MODULE } from "./modules/commande"
+
+import { intervention as INTERVENTION_LIST_MODULE } from './modules/intervention'
+import { InterventionStatusTag as INTERVENTION_STATUS_MODULE } from './modules/component_store/InterventionStatusTag'
 
 
 export default createStore({
@@ -91,6 +97,10 @@ export default createStore({
         PERSONNEL_LIST_MODULE,
         ARTICLES_MODULE,
         OUVRAGE_MODULE,
-        OUVRAGE_STATE_MODULE
+        OUVRAGE_STATE_MODULE,
+        COMMANDE_LIST_MODULE,
+        COMMANDE_DETAIL_MODULE,
+        INTERVENTION_LIST_MODULE,
+        INTERVENTION_STATUS_MODULE,
     }
 });

@@ -31,7 +31,34 @@
                             
                             <div class="col">
 
-                            
+                                <tab-pane :tabs="tabs" current='tout' class="almarai_700_normal">
+
+                                    <template v-slot:tout>
+                                        
+                                        <item-list-table :table_def="interventions">
+                                        
+                                            <template v-slot:pointage_type_id="{ row }">
+                                                <status-tag :id="row.pointage_type_id" />
+                                            </template>    
+
+                                        </item-list-table>
+                                            
+                                    </template>
+
+                                    <template v-slot:mes_interventions>
+                                        
+                                        <item-list-table :table_def="interventionsMes">
+
+                                            <template v-slot:pointage_type_id="{ row }">
+                                                <status-tag :id="row.pointage_type_id" />
+                                            </template>           
+
+                                        </item-list-table>
+                                            
+                                    </template>
+                                    
+                                </tab-pane>
+
                             </div>
                             
                         </div>
@@ -55,19 +82,30 @@
 
     import { useStore } from 'vuex'
     import { ref, computed } from 'vue'
-    import ItemListTable from '../../components/miscellaneous/ItemListTable/ItemListTable.vue';
+    import ItemListTable from '../../components/miscellaneous/ItemListTable/ItemListTable.vue'
+    import StatusTag from '../../components/Intervention/StatusTag'
 
     import {
+        INTERVENTION_LIST_MODULE,
     }
     from '../../store/types/types'
 
+    const tabs = ref({
+        tout: 'Tout',
+        mes_interventions: 'Mes interventions'
+    })
 
     const store = useStore()
+
+    const interventions = computed(() => store.getters[`${INTERVENTION_LIST_MODULE}interventions`])
+    const interventionsMes = computed(() => store.getters[`${INTERVENTION_LIST_MODULE}interventionsMes`])
 
 
 </script>
 
 <style lang="scss" scoped>
-
+.page-title {
+    margin-left: 0 !important;
+}
 
 </style>

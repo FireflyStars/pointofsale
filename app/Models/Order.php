@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
+use Exception;
 use App\Traits\Tools;
 use App\Models\Report;
-use App\Models\Contact;
 
+use App\Models\Contact;
 use App\Traits\LcdtLog;
 use App\Models\Customer;
+use App\Models\Pointage;
 use App\Models\Affiliate;
-use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -97,4 +98,10 @@ class Order extends Model
     {
         return $this->belongsTo(User::class, 'responsable_id');
     }
+
+    public function pointage() 
+    {
+        return $this->hasMany(Pointage::class);
+    }
+
 }

@@ -117,8 +117,8 @@ export default {
         }
 
         const select = (index) => {
-            current.value = index;
-            context.emit("update:modelValue", props.options[index].value);
+            current.value = index
+            context.emit("update:modelValue", props.options[index].value)
 
             store.commit(`${SELECT_MODULE}${SET_CURRENT_SELECT}`, "");
             toggle()

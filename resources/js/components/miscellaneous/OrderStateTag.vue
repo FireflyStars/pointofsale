@@ -1,6 +1,6 @@
 <template>
    <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
-    <span class="tag" :style="style" :class="classes" v-if="status!=''">{{status.toLowerCase()}}</span>
+        <span class="tag" :style="style" :class="classes" v-if="status!=''">{{status.toLowerCase()}}</span>
    </transition>
 
 </template>
