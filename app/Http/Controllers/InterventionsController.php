@@ -16,13 +16,13 @@ class InterventionsController extends Controller
 
         $interventions = $interventions->select(
             'pointage.id',
-            'order_states.name as commande',
+            'orders.id as commande',
             'customers.raisonsociale as client',
             'users.name as personnel',
             'numberh',
             'pointage_type_id',
             'pointage.comment',
-            DB::raw('DATE_FORMAT(pointage.created_at, "%Y-%m-%d") as created_at')
+            DB::raw('DATE_FORMAT(pointage.datepointage, "%Y-%m-%d") as datepointage')
         );
 
         $interventions = $interventions->leftJoin('orders', 'orders.id', '=', 'pointage.order_id')

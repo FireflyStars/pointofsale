@@ -70,9 +70,10 @@ const columns_def = [
         suffix: "",
     },
     {
-        id: "created_at",
-        display_name: "Date Creaction",
+        id: "datepointage",
+        display_name: "Date Pointage",
         type: "date",
+        format: "DD/MM/YY",
         class: "",
         header_class: "",
         sort: true,

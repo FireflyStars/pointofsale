@@ -54,7 +54,7 @@
                                         <h3 
                                             class="margin-align m-0"
                                         >
-                                            PLATEFORME MARKETING > Categorie XXX
+                                            PLATEFORME MARKETING
                                         </h3>
 
                                         <div class="d-flex align-items-center gap-2">
@@ -165,7 +165,7 @@
                                                                     <p class="fs-6" >
                                                                         <span v-html="product.description"></span> <br>
                                                                         Conditionnement: 1ex. <br>
-                                                                        Poids: {{ productPoids(product) }} kg
+                                                                        Poids: {{ productPoids(product)?.toFixed(2) }} kg
                                                                     </p>
                                                                 </div>
 
@@ -445,7 +445,10 @@
     const livraisonPrice = computed(() => {
         let total = 0
         products.value.forEach(product => {
-            total += (+productPrice(product) + +productPoids(product)) * Coef.value
+            let weight = +productPoids(product) - 10
+            weight = +Math.ceil(weight / 10)
+            let transportPrice = 17 + +(weight * 7)
+            total += (+productPrice(product) + +transportPrice) * Coef.value
         })
         return total.toFixed(2)
     })
