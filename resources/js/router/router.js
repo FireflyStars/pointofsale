@@ -123,7 +123,7 @@ const router = createRouter({
             },
             children:[
                 {
-                    path:'/commande/details/:id',
+                    path:'/commande/detail/:id',
                     name: 'commande-details',
                     component: () => import('../pages/Commande/Details'),
                     meta: {

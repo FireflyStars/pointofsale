@@ -92,13 +92,7 @@
                                                     classes="border-0"
                                                     style="border-radius: 10px; font-size: 12px !important"
                                                     @click.prevent="$router.push({
-                                                        name: 'emailingprestations',
-                                                        params: {
-                                                            id: 14
-                                                        },
-                                                        query: {
-                                                            redirect: true
-                                                        }
+                                                        name: 'emailing'
                                                     })"
                                                 />
                                             </div>
@@ -112,10 +106,10 @@
                                                     <p class="fs-6" v-html="category.text"></p>
                                                 </div>
         
-                                                <hr />
+                                                <hr v-if="fields?.personalize && isPersonalizeAble" />
         
         
-                                                <div class="row" v-if="fields?.personalize">
+                                                <div class="row" v-if="fields?.personalize && isPersonalizeAble">
         
                                                     <div class="col">
                                                         <p class="p-title text-uppercase text-start">
@@ -513,6 +507,7 @@
     const affiliate = computed(() => store.getters[`${CIBLE_MODULE}campagneCategory`]?.affiliate || {})
     const fields = computed(() => store.getters[`${CIBLE_MODULE}fields`])
 
+    
     const canGeneratePdf = computed(() => {
         return (category.value.typeofproduct?.toLowerCase() == 'download'
         || (category.value.typeofproduct?.toLowerCase() == 'product perso'))
@@ -520,10 +515,20 @@
     })
 
     const canAddToCart = computed(() => {
-        return (category.value.typeofproduct?.toLowerCase() == 'product' 
-        || (category.value.typeofproduct?.toLowerCase() == 'product perso'))
-        && category.value.type == 'Produit'
+        return (
+                category.value.typeofproduct?.toLowerCase() == 'product' 
+                || 
+                (category.value.typeofproduct?.toLowerCase() == 'product perso')
+            )
+        && 
+        category.value.type == 'Produit'
 
+    })
+
+    const isPersonalizeAble = computed(() => {
+        return !(category.value.typeofproduct?.toLowerCase() == 'product' 
+            && category.value.type?.toLowerCase() == 'produit'
+            && category.value.price == 0)
     })
 
     const cardQuantity = computed(() => category.value?.card_detail?.qty || 0)
