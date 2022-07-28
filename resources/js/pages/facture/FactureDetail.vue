@@ -1,18 +1,18 @@
 <template>
-<item-detail-panel :showloader="showloader">
+<item-detail-panel :showloader="showloader" ref="detailpanel">
      <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
     <div class="row" v-if="show">
-        <div class="col-4">
+        <div class="col-7">
             <page-title icon="facture" :name="`N° ${invoice.reference}`" class="almarai_extrabold_normal_normal" style="width: 45px; height: 45px;" />
         </div>
-        <div class="col-8" style="padding-top:33px">
+        <div class="col-5" style="padding-top:33px">
             <invoice-state-tag :invoice_state_id="invoice.invoice_state_id" classes="almarai_700_normal" width="auto"></invoice-state-tag>
         </div>
     </div>
      </transition>
  <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
     <div class="row"  v-if="show" style="margin:40px 0 0 8px;">
-        <div class="col-3" v-if="invoice.order!=null" ><h2 class="almarai_700_normal">Commande<br/>N° {{invoice.order.id}}</h2></div>
+        <div class="col-3" v-if="invoice.order!=null" ><h2 class="almarai_700_normal">Commande<br/>N° <span class="btn-link cursor-pointer" @click=" router.push({name:'DevisDetail', params: { id:invoice.order.id }});">{{invoice.order.id}}</span></h2></div>
         <div class="col-3" v-if="invoice.order!=null" ><h2 class="almarai_700_normal">Date Commande<br/>{{formatDate(invoice.order.datecommande)}}</h2></div>
         <div class="col-3"  ><h2 class="almarai_700_normal">Date Facture<br/>{{formatDate(invoice.dateecheance)}}</h2></div>
         <div class="col-3"><state-tag :id="invoice.invoice_type_id" :states="invoice.invoiceTypes" classes="almarai_700_normal" width="auto"></state-tag></div>
@@ -52,7 +52,8 @@
 
    </mini-panel>
        </transition>
-      <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
+      <!--<transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
+        
     <mini-panel title=""  v-if="show">
         <div class="row my-3">
             <div class="col-8"> 
@@ -62,18 +63,18 @@
                 <div class="row mb-2">
                     <div class="col"><span class="factions lcdtOrange font-14 d-flex align-items-center gap-1"><icon name="plus-circle"/><span class=" noselect">AJOUTER COMMENTAIRE CLIENT/INTERNE</span></span></div>
                 </div>
-                 <div class="row mb-2">
+                 <div class="row mb-2" v-if="invoice.invoice_state_id==1">
                     <div class="col"><span class="factions lcdtOrange font-14 d-flex align-items-center gap-1"><icon name="plus-circle"/><span class=" noselect">MODIFIER ECHEANCE</span></span></div>
                 </div>
             </div>
-            <div class="col-4">
-                <div class="row mb-2">
+            <div class="col-4" >
+                <div class="row mb-2 "  v-if="invoice.invoice_state_id==1">
                     <div class="col "><span class="factions lcdtOrange font-14 d-flex align-items-center gap-1"><icon name="plus-circle"/><span class=" noselect">CHANGER CONTACT</span></span></div>
                 </div>
             </div>
         </div>
     </mini-panel>  
-      </transition>
+      </transition>-->
        <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
 
            <payment v-if="show&&(invoice.invoice_state_id==2||invoice.invoice_state_id==3||invoice.invoice_state_id==5)" :invoice_id="invoice.id" @showloader="showloader=true" @hideloader="showloader=false"></payment>
@@ -83,7 +84,7 @@
         <button class="btn btn-outline-success almarai_700_normal" v-if="invoice.invoice_state_id==1" @click="updateInvoiceState(6)">VALIDE</button>
         <button class="btn btn-outline-info almarai_700_normal" v-if="invoice.invoice_state_id==6"  @click="updateInvoiceState(2)">ENVOYE</button>
         <button class="btn btn-outline-secondary almarai_700_normal" v-if="invoice.invoice_state_id==1&&invoice.invoice_type_id!=3" @click="removeInvoice()">EFFACER</button>  
-        <button class="btn btn-outline-dark almarai_700_normal" v-if="invoice.invoice_state_id!=3&&invoice.invoice_state_id!=5&&invoice.invoice_state_id!=1&&invoice.invoice_state_id!=4" @click="updateInvoiceState(4)">ANNULER</button>   
+        <button class="btn btn-outline-dark almarai_700_normal"  @click="detailpanel.close()">FERMER</button>   
      </div>
 
 
@@ -121,6 +122,7 @@ import Payment from './Payment.vue';
             const store=useStore();
             const show=ref(false);
             const showloader=ref(false);
+            const detailpanel=ref(null);
             let invoice_id=route.params.id;
             onMounted(()=>{
        
@@ -161,7 +163,9 @@ import Payment from './Payment.vue';
                  formatDate,
                  br,
                  updateInvoiceState,
-                 removeInvoice
+                 removeInvoice,
+                 router,
+                 detailpanel
 
                 
 

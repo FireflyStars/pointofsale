@@ -55,7 +55,7 @@ export const facturelist= {
                     },
                   } , 
                {
-                 id:"id",
+                 id:"reference",
                  display_name:"N° FACTURE",
                  type:"string",
                  class:"",

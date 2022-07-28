@@ -54,7 +54,7 @@ class InvoiceController extends Controller
         })->leftJoin('users',function($join){
             $join->on('users.id','=','orders.responsable_id');
         });
-        $list=$list->where('invoices.affiliate_id','=',$user->affiliate->id);
+        $list=$list->where('invoices.affiliate_id','=',$user->affiliate->id)->where('invoices.invoice_type_id','<>',2);
         $list=$list->whereNull('invoices.deleted_at');
         //column filters
         if($column_filters!=null)

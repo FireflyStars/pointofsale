@@ -72,6 +72,7 @@ export const facturedetail= {
         commit(`${FACTURE_DETAIL_SET_REFERENCE}`,response.data.reference);
 
         commit(`${ITEM_LIST_MODULE}${ITEM_LIST_UPDATE_ROW}`,{id:'id',idValue:state.invoice.id,colName:'invoice_state_id',colValue:invoice_state_id}, { root: true });
+        commit(`${ITEM_LIST_MODULE}${ITEM_LIST_UPDATE_ROW}`,{id:'id',idValue:state.invoice.id,colName:'reference',colValue:response.data.reference}, { root: true });
         return  Promise.resolve(response);
               
       }).catch((error)=>{

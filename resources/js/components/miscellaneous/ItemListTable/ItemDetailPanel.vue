@@ -69,7 +69,7 @@ import { ITEM_LIST_GET_CURRENT, ITEM_LIST_GET_IDENTIFIER, ITEM_LIST_MODULE, ITEM
                     if(currentValue.value[identifier.value]==''){
                         show.value=false;
                     setTimeout(()=>{
-                        router.back();
+                        router.push({name:router.currentRoute.value.matched[0].name});
                     },1000);
                     }
             },{
@@ -78,11 +78,7 @@ import { ITEM_LIST_GET_CURRENT, ITEM_LIST_GET_IDENTIFIER, ITEM_LIST_MODULE, ITEM
 
            
                 const close=()=>{
-                    store.dispatch(`${ITEM_LIST_MODULE}${ITEM_LIST_SELECT_CURRENT}`,{current:''});
-                  
-                      
-               
-                   
+                    store.dispatch(`${ITEM_LIST_MODULE}${ITEM_LIST_SELECT_CURRENT}`,{current:''});   
                 }
              return {
                  show,

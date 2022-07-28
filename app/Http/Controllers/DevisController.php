@@ -159,7 +159,9 @@ class DevisController extends Controller
         return response('Order is not affiliated to user.Cannot load invoices.',509);
 
 
-        $orderInvoices=DB::table('order_invoices')->select(['order_invoices.*','invoice_types.sign','invoice_types.name as invoice_type_name','invoice_types.color as invoice_type_color','invoices.reference as ref','invoices.invoice_state_id'])->leftJoin('invoices',function($join){
+        $orderInvoices=DB::table('order_invoices')
+        ->select(['order_invoices.*','invoice_types.sign','invoice_types.name as invoice_type_name','invoice_types.color as invoice_type_color','invoices.reference as ref','invoices.invoice_state_id'])
+        ->leftJoin('invoices',function($join){
              $join->on('invoices.order_invoice_id','=','order_invoices.id')
              ->whereNull('invoices.deleted_at');  
         })->leftJoin('invoice_types',function($join){
@@ -302,6 +304,7 @@ class DevisController extends Controller
             $in->dateecheance=$date;
             $in->save();
             $in->fresh();
+            if($invoice_type_id!=2)
             $in->reference='PROV'.$in->id;
             $in->updateState(1);//creation
             $oi->invoice_id=$in->id;

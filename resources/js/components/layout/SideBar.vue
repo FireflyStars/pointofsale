@@ -285,8 +285,9 @@
 
         <transition name="usermenu" >
             <div class="usermenu" v-if="dispmenu" >
-                <button class="btn mb-3 btn-outline-primary body_medium"  data-bs-toggle="tooltip" data-bs-placement="right" title="Developer Components Library" @click="router.push({name:'ComponentsTest'})">Developer</button>
-                <button class="btn btn-outline-dark body_medium"  data-bs-toggle="tooltip" data-bs-placement="right" title="Logout user" @click="logout">Sign out</button>
+                  <button class="btn mb-3 btn-outline-success body_medium"  data-bs-toggle="tooltip" data-bs-placement="right" title="Réinitialiser toutes les listes" @click="reinit()">Réinitialiser liste</button>
+                <button class="btn mb-3 btn-outline-primary body_medium"  data-bs-toggle="tooltip" data-bs-placement="right" title="Librairie de composants pour développeurs" @click="router.push({name:'ComponentsTest'})">Développeur</button>
+                <button class="btn btn-outline-dark body_medium"  data-bs-toggle="tooltip" data-bs-placement="right" title="Déconnexion de l'utilisateur" @click="logout">Se déconnecter</button>
             </div>
         </transition>
 
@@ -382,6 +383,9 @@
 
                         return false;
                  }
+                 const reinit=()=>{
+                    window.localStorage.clear();window.location.reload();
+                 }
             return {
                 uname,
                 initials,
@@ -393,7 +397,8 @@
                 router,
                 route_path,
                 getEmailingParentPath,
-                highlight_current
+                highlight_current,
+                reinit
             }
         }
     }

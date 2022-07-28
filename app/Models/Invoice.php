@@ -45,13 +45,7 @@ class Invoice extends Model
             $invoiceHistory->user_id=$user_id;
             $invoiceHistory->invoice_id=$this->id;
             if($invoice_state_id==6){//valide
-                    if($this->invoice_type_id==1||$this->invoice_type_id==4)
-                    $this->reference='F'.str_pad($this->id, 5, '0', STR_PAD_LEFT);
-                    if($this->invoice_type_id==2)
-                    $this->reference='R'.str_pad($this->id, 5, '0', STR_PAD_LEFT);
-                    if($this->invoice_type_id==3)
-                    $this->reference='A'.str_pad($this->id, 5, '0', STR_PAD_LEFT);
-
+                   $this->reference=InvoiceNumber::getInvoiceNumber($this->id);
                     if($this->order_invoice_id>0){
                         $orderInvoice=OrderInvoice::find($this->order_invoice_id);
                         $orderInvoice->facturer=1;
