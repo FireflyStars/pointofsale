@@ -158,7 +158,6 @@ const router = createRouter({
             meta: {
                 authenticated: true
             },
-
         },
         {
             path:'/entite/create',

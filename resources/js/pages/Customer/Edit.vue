@@ -704,7 +704,7 @@ export default {
             siretValidation: true,
             numLCDT: '',
             company: '',
-            customerOrigin: 0,
+            customerOrigin: 2,
             customerStatus: 0,
             segmentation: '',
             customerCat: 0,
@@ -1093,7 +1093,8 @@ export default {
             }
         })
         const submit = ()=>{
-            form.value.contacts.foreach((contact)=>{
+            let error = false;
+            form.value.contacts.forEach((contact)=>{
                 if(contact.type != '' || contact.firstName != '' || contact.email == '' || contact.name == ''){
                     if(contact.firstName == ''){
                         error = true;
@@ -1116,7 +1117,7 @@ export default {
                             message: 'Veuillez entrer NOM',
                             ttl: 5,
                         });                          
-                    }else if(contact.addressType == ''){
+                    }else if(contact.type == ''){
                         error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',

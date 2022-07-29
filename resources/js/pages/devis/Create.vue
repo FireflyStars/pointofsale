@@ -1387,6 +1387,16 @@ export default {
     // handler to choose a customer address
     const chooseCustomerAddress = (data)=>{
       devisCreateStep.value = 'create_devis';
+      if(data.lat != null){
+          data.lat = parseFloat(data.lat.replace(/[a-zA-Z()]/g, ""));
+      }else{
+          data.lat = 48.85560142492883;
+      }
+      if(data.lon != null){
+          data.lon = parseFloat(data.lon.replace(/[a-zA-Z()]/g, ""));
+      }else{
+          data.lon = 2.3491914978706396;
+      }      
       form.value.address = data;
     }
 

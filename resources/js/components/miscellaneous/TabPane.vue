@@ -1,16 +1,15 @@
 <template>
     <div class="tp-tabs">
-    <div v-for="(tab,index) in tabs" :key="index" class=" tp-tab" :class="classes(index)"  @click="show(index)">{{tab}}</div>
+        <div v-for="(tab,index) in tabs" :key="index" class=" tp-tab" :class="classes(index)"  @click="show(index)">{{tab}}</div>
     </div>
     <div>
         <template v-for="(tab,index) in tabs" :key="index">
             <transition
-                    enter-active-class="animate__animated animate__fadeIn"
-
+                enter-active-class="animate__animated animate__fadeIn"
             >
-            <div v-if="currenttab==index" class="tab-view">
-        <slot :name="index" ></slot>
-            </div>
+                <div v-if="currenttab==index" class="tab-view">
+                    <slot :name="index" ></slot>
+                </div>
             </transition>
         </template>
     </div>

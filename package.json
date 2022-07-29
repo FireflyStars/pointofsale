@@ -22,6 +22,7 @@
         "vue-loader": "^16.8.3"
     },
     "dependencies": {
+        "@amcharts/amcharts5": "^5.2.14",
         "@fullcalendar/bootstrap5": "^5.11.0",
         "@fullcalendar/core": "^5.11.0",
         "@fullcalendar/timegrid": "^5.11.0",

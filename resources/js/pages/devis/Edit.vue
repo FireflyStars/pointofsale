@@ -1484,6 +1484,16 @@ export default {
     // handler to choose a customer address
     const chooseCustomerAddress = (data)=>{
       devisCreateStep.value = 'create_devis';
+      if(data.lat != null){
+          data.lat = parseFloat(data.lat.replace(/[a-zA-Z()]/g, ""));
+      }else{
+          data.lat = 48.85560142492883;
+      }
+      if(data.lon != null){
+          data.lon = parseFloat(data.lon.replace(/[a-zA-Z()]/g, ""));
+      }else{
+          data.lon = 2.3491914978706396;
+      }         
       form.value.address = data;
     }
 
@@ -1497,7 +1507,7 @@ export default {
     // get details for a ouvrage selected
     const selectedOuvrage = (data)=>{
       store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Ajout de l`Ouvrage sélectionné..']);
-      axios.post('/get-ouvrage', { id: data.ouvrageId, qtyOuvrage: data.qtyOuvrage }).then((res)=>{
+      axios.post('/get-ouvrage', { id: data.ouvrageId, qtyOuvrage: data.qtyOuvrage, customerId: form.value.customer.id }).then((res)=>{
         if( data.type == 'installation' ){
           form.value.zones[data.zoneIndex].installOuvrage.ouvrages.push(res.data);
           document.querySelector('.installation-ouvrages').classList.add('open');

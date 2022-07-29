@@ -927,14 +927,14 @@ export default {
                 if( !res.data.success ){
                     uniqueEmail.value.status = false;
                     Object.values(res.data.errors).forEach(item => {
-                        uniqueEmail.value.item[0];
+                        uniqueEmail.value.msg = item[0];
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
                             message: item[0],
                             ttl: 5,
                         });
                     });                    
-                }{
+                }else{
                     uniqueEmail.value.status = true;
                     uniqueEmail.value.msg = '';
                 }
@@ -1118,7 +1118,8 @@ export default {
             }
         })
         const submit = ()=>{
-            form.value.contacts.foreach((contact)=>{
+            let error = false;
+            form.value.contacts.forEach((contact)=>{
                 if(contact.type != '' || contact.firstName != '' || contact.email == '' || contact.name == ''){
                     if(contact.firstName == ''){
                         error = true;
@@ -1141,7 +1142,7 @@ export default {
                             message: 'Veuillez entrer NOM',
                             ttl: 5,
                         });                          
-                    }else if(contact.addressType == ''){
+                    }else if(contact.type == ''){
                         error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
@@ -1194,7 +1195,7 @@ export default {
                 customerTypeBatiments.value    = res.data.customerTypeBatiments;
                 customerMateriaus.value    = res.data.customerMateriaus;
                 customerPaiements.value    = res.data.customerPaiements;
-                form.value.customerOrigin = 1;
+                form.value.customerOrigin = 2;
                 form.value.customerStatus = 1;
                 form.value.customerTax = 3;
             }).catch((errors)=>{
