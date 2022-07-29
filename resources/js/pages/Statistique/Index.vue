@@ -108,7 +108,7 @@
                                             </div>
                                             <div class="col-4 p-2 d-flex">
                                                 <div class="rounded-3 bg-white w-100 p-2">
-                                                    <div class="d-flex justify-content-end">
+                                                    <div class="d-flex">
                                                         <h3 class="font-20 mulish_600_normal m-0">Vente par Client</h3>
                                                         <TotalPercent class="ms-5" :amount="'4.7K'" :arrow="1" :symbol="'€'" :percent="38"></TotalPercent>
                                                     </div>
@@ -247,19 +247,19 @@
                                                             <div class="d-flex">
                                                                 <div class="col-4">Web</div>
                                                                 <div class="col-8">
-                                                                    <TotalPercent :size="14" class="ms-5" :amount="'103'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
+                                                                    <TotalPercent :size="14" :amount="'103'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
                                                                 </div>
                                                             </div>
                                                             <div class="d-flex">
                                                                 <div class="col-4">Emailling</div>
                                                                 <div class="col-8">
-                                                                    <TotalPercent :size="14" class="ms-5" :amount="'36'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
+                                                                    <TotalPercent :size="14" :amount="'36'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
                                                                 </div>
                                                             </div>
                                                             <div class="d-flex">
                                                                 <div class="col-4">Téléphone</div>
                                                                 <div class="col-8">
-                                                                    <TotalPercent :size="14" class="ms-5" :amount="'33'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
+                                                                    <TotalPercent :size="14" :amount="'33'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -268,7 +268,7 @@
                                                             <div class="d-flex">
                                                                 <div class="col-4">Prospection</div>
                                                                 <div class="col-8">
-                                                                    <TotalPercent :size="14" class="ms-5" :amount="'38'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
+                                                                    <TotalPercent :size="14" :amount="'38'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
                                                                 </div>
                                                             </div>                                                            
                                                         </div>
@@ -333,7 +333,7 @@
 </template>
 <script>
 import { useStore } from 'vuex'
-import { ref, computed, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import TotalPercent from '../../components/miscellaneous/TotalPercent.vue';
 
 import {
@@ -363,6 +363,90 @@ export default {
         const tabs = ref({
             sales:'Sales',
             production:'Production',
+        });
+        let totalRoot = null;
+        let totalChart = null;
+        let xAxis = null;
+        let yAxis = null;
+        let series1 = null;
+        let series2 = null;
+        let series3 = null;
+        let series4 = null;        
+        let series5 = null;
+        let series6 = null;
+        let series7 = null;
+        let series8 = null;        
+        let series9 = null;        
+        let series10 = null;        
+        watch( ()=> legend1.value, (cur_val, pre_val)=>{
+            if(cur_val){
+                addSeries(1);
+            }else{
+                removeSeries(series1);
+            }
+        });
+        watch( ()=> legend2.value, (cur_val, pre_val)=>{
+            if(cur_val){
+                addSeries(2);
+            }else{
+                removeSeries(series2);
+            }
+        });
+        watch( ()=> legend3.value, (cur_val, pre_val)=>{
+            if(cur_val){
+                addSeries(3);
+            }else{
+                removeSeries(series3);
+            }
+        });
+        watch( ()=> legend4.value, (cur_val, pre_val)=>{
+            if(cur_val){
+                addSeries(4);
+            }else{
+                removeSeries(series4);
+            }
+        });
+        watch( ()=> legend5.value, (cur_val, pre_val)=>{
+            if(cur_val){
+                addSeries(5);
+            }else{
+                removeSeries(series5);
+            }
+        });
+        watch( ()=> legend6.value, (cur_val, pre_val)=>{
+            if(cur_val){
+                addSeries(6);
+            }else{
+                removeSeries(series6);
+            }
+        });
+        watch( ()=> legend7.value, (cur_val, pre_val)=>{
+            if(cur_val){
+                addSeries(7);
+            }else{
+                removeSeries(series7);
+            }
+        });
+        watch( ()=> legend8.value, (cur_val, pre_val)=>{
+            if(cur_val){
+                addSeries(8);
+            }else{
+                removeSeries(series8);
+            }
+        });
+        watch( ()=> legend9.value, (cur_val, pre_val)=>{
+            if(cur_val){
+                addSeries(9);
+            }else{
+                removeSeries(series9);
+            }
+        });
+        watch( ()=> legend10.value, (cur_val, pre_val)=>{
+            if(cur_val){
+                addSeries(10);
+            }else{
+                removeSeries(series10);
+            }
         });
         onMounted(()=>{
             initOriginChart();
@@ -473,15 +557,14 @@ export default {
             })
             clientSeries.appear(1000, 100);
         }
-
         const initTotalChart = ()=>{
-            let root = am5.Root.new("totalChart");
-            root.setThemes([
-                am5themes_Animated.new(root)
+            totalRoot = am5.Root.new("totalChart");
+            totalRoot.setThemes([
+                am5themes_Animated.new(totalRoot)
             ]);
 
             // Create chart
-            let chart = root.container.children.push(am5xy.XYChart.new(root, {
+            totalChart = totalRoot.container.children.push(am5xy.XYChart.new(totalRoot, {
                 panX: true,
                 panY: true,
                 wheelX: "panX",
@@ -489,69 +572,271 @@ export default {
                 pinchZoomX: true
             }));
             // hide logo
-            chart._root._logo._childrenDisplay.visible  = false;
+            totalChart._root._logo._childrenDisplay.visible  = false;
             // Add cursor
-            let cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
+            let cursor = totalChart.set("cursor", am5xy.XYCursor.new(totalRoot, {
                 behavior: "none"
             }));
             cursor.lineY.set("visible", false);
-            // Generate random data
-            let date = new Date();
-            date.setHours(0, 0, 0, 0);
-            let value = 100;
 
-            function generateData() {
-                value = Math.round((Math.random() * 10 - 5) + value);
-                am5.time.add(date, "day", 1);
-                return {
-                    date: date.getTime(),
-                    value: value
-                };
-            }
-            function generateDatas(count) {
-                let data = [];
-                for (var i = 0; i < count; ++i) {
-                    data.push(generateData());
-                }
-                return data;
-            }
+            
             // Create axes
-            let xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
+            xAxis = totalChart.xAxes.push(am5xy.DateAxis.new(totalRoot, {
                 maxDeviation: 0.2,
                 baseInterval: {
                     timeUnit: "day",
                     count: 1
                 },
-                renderer: am5xy.AxisRendererX.new(root, {}),
-                tooltip: am5.Tooltip.new(root, {})
+                renderer: am5xy.AxisRendererX.new(totalRoot, {}),
+                tooltip: am5.Tooltip.new(totalRoot, {})
             }));
-            let yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
-                renderer: am5xy.AxisRendererY.new(root, {})
+            yAxis = totalChart.yAxes.push(am5xy.ValueAxis.new(totalRoot, {
+                renderer: am5xy.AxisRendererY.new(totalRoot, {})
             }));
-            // Add series
-            // https://www.amcharts.com/docs/v5/charts/xy-chart/series/
-            let series = chart.series.push(am5xy.LineSeries.new(root, {
-                name: "Series",
-                xAxis: xAxis,
-                yAxis: yAxis,
-                valueYField: "value",
-                valueXField: "date",
-                tooltip: am5.Tooltip.new(root, {
-                    labelText: "{valueY}"
-                })
-            }));
+
+            addSeries(1);
             // Add scrollbar
-            chart.set("scrollbarX", am5.Scrollbar.new(root, {
+            totalChart.set("scrollbarX", am5.Scrollbar.new(totalRoot, {
                 orientation: "horizontal"
             }));
-            // Set data
-            let data = generateDatas(20);
-            series.data.setAll(data);
-            // Make stuff animate on load
-            series.appear(1000);
-            chart.appear(1000, 100);            
-        }
 
+            totalChart.appear(1000, 100);
+        }
+        let date,value;
+        const addSeries = (seriesIndex)=>{
+            // Add series
+            if(seriesIndex == 1){
+                series1 = totalChart.series.push(am5xy.LineSeries.new(totalRoot, {
+                    name: name,
+                    xAxis: xAxis,
+                    yAxis: yAxis,
+                    valueYField: "value",
+                    valueXField: "date",
+                    tooltip: am5.Tooltip.new(totalRoot, {
+                        labelText: "{valueY}"
+                    })
+                }));
+                // Generate random data
+                date = new Date();
+                date.setHours(0, 0, 0, 0);
+                value = 100;
+    
+                // Set data
+                let data = generateDatas(20);
+                series1.data.setAll(data);
+                // Make stuff animate on load
+                series1.appear(1000);
+            }else if(seriesIndex == 2){
+                series2 = totalChart.series.push(am5xy.LineSeries.new(totalRoot, {
+                    name: name,
+                    xAxis: xAxis,
+                    yAxis: yAxis,
+                    valueYField: "value",
+                    valueXField: "date",
+                    tooltip: am5.Tooltip.new(totalRoot, {
+                        labelText: "{valueY}"
+                    })
+                }));
+                // Generate random data
+                date = new Date();
+                date.setHours(0, 0, 0, 0);
+                value = 100;
+    
+                // Set data
+                let data = generateDatas(20);
+                series2.data.setAll(data);
+                // Make stuff animate on load
+                series2.appear(1000);                
+            }else if(seriesIndex == 3){
+                series3 = totalChart.series.push(am5xy.LineSeries.new(totalRoot, {
+                    name: name,
+                    xAxis: xAxis,
+                    yAxis: yAxis,
+                    valueYField: "value",
+                    valueXField: "date",
+                    tooltip: am5.Tooltip.new(totalRoot, {
+                        labelText: "{valueY}"
+                    })
+                }));
+                // Generate random data
+                date = new Date();
+                date.setHours(0, 0, 0, 0);
+                value = 100;
+    
+                // Set data
+                let data = generateDatas(20);
+                series3.data.setAll(data);
+                // Make stuff animate on load
+                series3.appear(1000);                
+            }else if(seriesIndex == 4){
+                series4 = totalChart.series.push(am5xy.LineSeries.new(totalRoot, {
+                    name: name,
+                    xAxis: xAxis,
+                    yAxis: yAxis,
+                    valueYField: "value",
+                    valueXField: "date",
+                    tooltip: am5.Tooltip.new(totalRoot, {
+                        labelText: "{valueY}"
+                    })
+                }));
+                // Generate random data
+                date = new Date();
+                date.setHours(0, 0, 0, 0);
+                value = 100;
+    
+                // Set data
+                let data = generateDatas(20);
+                series4.data.setAll(data);
+                // Make stuff animate on load
+                series4.appear(1000);                
+            }else if(seriesIndex == 5){
+                series5 = totalChart.series.push(am5xy.LineSeries.new(totalRoot, {
+                    name: name,
+                    xAxis: xAxis,
+                    yAxis: yAxis,
+                    valueYField: "value",
+                    valueXField: "date",
+                    tooltip: am5.Tooltip.new(totalRoot, {
+                        labelText: "{valueY}"
+                    })
+                }));
+                // Generate random data
+                date = new Date();
+                date.setHours(0, 0, 0, 0);
+                value = 100;
+    
+                // Set data
+                let data = generateDatas(20);
+                series5.data.setAll(data);
+                // Make stuff animate on load
+                series5.appear(1000);                
+            }else if(seriesIndex == 6){
+                series6 = totalChart.series.push(am5xy.LineSeries.new(totalRoot, {
+                    name: name,
+                    xAxis: xAxis,
+                    yAxis: yAxis,
+                    valueYField: "value",
+                    valueXField: "date",
+                    tooltip: am5.Tooltip.new(totalRoot, {
+                        labelText: "{valueY}"
+                    })
+                }));
+                // Generate random data
+                date = new Date();
+                date.setHours(0, 0, 0, 0);
+                value = 100;
+    
+                // Set data
+                let data = generateDatas(20);
+                series6.data.setAll(data);
+                // Make stuff animate on load
+                series6.appear(1000);                
+            }else if(seriesIndex == 7){
+                series7 = totalChart.series.push(am5xy.LineSeries.new(totalRoot, {
+                    name: name,
+                    xAxis: xAxis,
+                    yAxis: yAxis,
+                    valueYField: "value",
+                    valueXField: "date",
+                    tooltip: am5.Tooltip.new(totalRoot, {
+                        labelText: "{valueY}"
+                    })
+                }));
+                // Generate random data
+                date = new Date();
+                date.setHours(0, 0, 0, 0);
+                value = 100;
+    
+                // Set data
+                let data = generateDatas(20);
+                series7.data.setAll(data);
+                // Make stuff animate on load
+                series7.appear(1000);                
+            }else if(seriesIndex == 8){
+                series8 = totalChart.series.push(am5xy.LineSeries.new(totalRoot, {
+                    name: name,
+                    xAxis: xAxis,
+                    yAxis: yAxis,
+                    valueYField: "value",
+                    valueXField: "date",
+                    tooltip: am5.Tooltip.new(totalRoot, {
+                        labelText: "{valueY}"
+                    })
+                }));
+                // Generate random data
+                date = new Date();
+                date.setHours(0, 0, 0, 0);
+                value = 100;
+    
+                // Set data
+                let data = generateDatas(20);
+                series8.data.setAll(data);
+                // Make stuff animate on load
+                series8.appear(1000);                
+            }else if(seriesIndex == 9){
+                series9 = totalChart.series.push(am5xy.LineSeries.new(totalRoot, {
+                    name: name,
+                    xAxis: xAxis,
+                    yAxis: yAxis,
+                    valueYField: "value",
+                    valueXField: "date",
+                    tooltip: am5.Tooltip.new(totalRoot, {
+                        labelText: "{valueY}"
+                    })
+                }));
+                // Generate random data
+                date = new Date();
+                date.setHours(0, 0, 0, 0);
+                value = 100;
+    
+                // Set data
+                let data = generateDatas(20);
+                series9.data.setAll(data);
+                // Make stuff animate on load
+                series9.appear(1000);                
+            }else{
+                series10 = totalChart.series.push(am5xy.LineSeries.new(totalRoot, {
+                    name: name,
+                    xAxis: xAxis,
+                    yAxis: yAxis,
+                    valueYField: "value",
+                    valueXField: "date",
+                    tooltip: am5.Tooltip.new(totalRoot, {
+                        labelText: "{valueY}"
+                    })
+                }));
+                // Generate random data
+                date = new Date();
+                date.setHours(0, 0, 0, 0);
+                value = 100;
+    
+                // Set data
+                let data = generateDatas(20);
+                series10.data.setAll(data);
+                // Make stuff animate on load
+                series10.appear(1000);                
+            }
+        }
+        const removeSeries = (series)=>{
+            totalChart.series.removeIndex(
+                totalChart.series.indexOf(series)
+            );
+        }
+        function generateData() {
+            value = Math.round((Math.random() * 10 - 5) + value);
+            am5.time.add(date, "day", 1);
+            return {
+                date: date.getTime(),
+                value: value
+            };
+        }
+        function generateDatas(count) {
+            let data = [];
+            for (var i = 0; i < count; ++i) {
+                data.push(generateData());
+            }
+            return data;
+        }        
         return {
             tabs,
             legend1,
