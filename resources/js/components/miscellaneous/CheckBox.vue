@@ -82,6 +82,7 @@ export default {
         display: inline-block;
         position: relative;
         border: #868686 2px solid;
+        cursor: pointer;
     }
     span.chkbox.checked {
         background: #47454B;

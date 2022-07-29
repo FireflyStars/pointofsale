@@ -337,12 +337,16 @@ import { ref, watch, onMounted } from 'vue'
 import TotalPercent from '../../components/miscellaneous/TotalPercent.vue';
 
 import {
+    LOADER_MODULE,
+    DISPLAY_LOADER,
+    HIDE_LOADER,
 }
 from '../../store/types/types'
 import * as am5 from "@amcharts/amcharts5";
 import * as am5percent from "@amcharts/amcharts5/percent";
 import * as am5xy from "@amcharts/amcharts5/xy";
 import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
+import axios from 'axios';
 
 export default {
     components:{
@@ -378,77 +382,15 @@ export default {
         let series8 = null;        
         let series9 = null;        
         let series10 = null;        
-        watch( ()=> legend1.value, (cur_val, pre_val)=>{
-            if(cur_val){
-                addSeries(1);
-            }else{
-                removeSeries(series1);
-            }
-        });
-        watch( ()=> legend2.value, (cur_val, pre_val)=>{
-            if(cur_val){
-                addSeries(2);
-            }else{
-                removeSeries(series2);
-            }
-        });
-        watch( ()=> legend3.value, (cur_val, pre_val)=>{
-            if(cur_val){
-                addSeries(3);
-            }else{
-                removeSeries(series3);
-            }
-        });
-        watch( ()=> legend4.value, (cur_val, pre_val)=>{
-            if(cur_val){
-                addSeries(4);
-            }else{
-                removeSeries(series4);
-            }
-        });
-        watch( ()=> legend5.value, (cur_val, pre_val)=>{
-            if(cur_val){
-                addSeries(5);
-            }else{
-                removeSeries(series5);
-            }
-        });
-        watch( ()=> legend6.value, (cur_val, pre_val)=>{
-            if(cur_val){
-                addSeries(6);
-            }else{
-                removeSeries(series6);
-            }
-        });
-        watch( ()=> legend7.value, (cur_val, pre_val)=>{
-            if(cur_val){
-                addSeries(7);
-            }else{
-                removeSeries(series7);
-            }
-        });
-        watch( ()=> legend8.value, (cur_val, pre_val)=>{
-            if(cur_val){
-                addSeries(8);
-            }else{
-                removeSeries(series8);
-            }
-        });
-        watch( ()=> legend9.value, (cur_val, pre_val)=>{
-            if(cur_val){
-                addSeries(9);
-            }else{
-                removeSeries(series9);
-            }
-        });
-        watch( ()=> legend10.value, (cur_val, pre_val)=>{
-            if(cur_val){
-                addSeries(10);
-            }else{
-                removeSeries(series10);
-            }
-        });
         onMounted(()=>{
+            // store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'loading data ...']);
+            // axios.post('/statistic').then((res)=>{
+
+            // }).catch((error)=>{
+
+            // }).finally(()=>{
+            //     store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+            // })
             initOriginChart();
             initClientChart();
             initTotalChart();
@@ -557,6 +499,7 @@ export default {
             })
             clientSeries.appear(1000, 100);
         }
+        
         const initTotalChart = ()=>{
             totalRoot = am5.Root.new("totalChart");
             totalRoot.setThemes([
@@ -602,6 +545,7 @@ export default {
 
             totalChart.appear(1000, 100);
         }
+
         let date,value;
         const addSeries = (seriesIndex)=>{
             // Add series
@@ -822,7 +766,7 @@ export default {
                 totalChart.series.indexOf(series)
             );
         }
-        function generateData() {
+        const generateData = ()=> {
             value = Math.round((Math.random() * 10 - 5) + value);
             am5.time.add(date, "day", 1);
             return {
@@ -830,13 +774,83 @@ export default {
                 value: value
             };
         }
-        function generateDatas(count) {
+        const generateDatas = (count)=> {
             let data = [];
             for (var i = 0; i < count; ++i) {
                 data.push(generateData());
             }
             return data;
-        }        
+        }  
+        watch( ()=> legend1.value, (cur_val, pre_val)=>{
+            if(cur_val){
+                addSeries(1);
+            }else{
+                removeSeries(series1);
+            }
+        });
+        watch( ()=> legend2.value, (cur_val, pre_val)=>{
+            if(cur_val){
+                addSeries(2);
+            }else{
+                removeSeries(series2);
+            }
+        });
+        watch( ()=> legend3.value, (cur_val, pre_val)=>{
+            if(cur_val){
+                addSeries(3);
+            }else{
+                removeSeries(series3);
+            }
+        });
+        watch( ()=> legend4.value, (cur_val, pre_val)=>{
+            if(cur_val){
+                addSeries(4);
+            }else{
+                removeSeries(series4);
+            }
+        });
+        watch( ()=> legend5.value, (cur_val, pre_val)=>{
+            if(cur_val){
+                addSeries(5);
+            }else{
+                removeSeries(series5);
+            }
+        });
+        watch( ()=> legend6.value, (cur_val, pre_val)=>{
+            if(cur_val){
+                addSeries(6);
+            }else{
+                removeSeries(series6);
+            }
+        });
+        watch( ()=> legend7.value, (cur_val, pre_val)=>{
+            if(cur_val){
+                addSeries(7);
+            }else{
+                removeSeries(series7);
+            }
+        });
+        watch( ()=> legend8.value, (cur_val, pre_val)=>{
+            if(cur_val){
+                addSeries(8);
+            }else{
+                removeSeries(series8);
+            }
+        });
+        watch( ()=> legend9.value, (cur_val, pre_val)=>{
+            if(cur_val){
+                addSeries(9);
+            }else{
+                removeSeries(series9);
+            }
+        });
+        watch( ()=> legend10.value, (cur_val, pre_val)=>{
+            if(cur_val){
+                addSeries(10);
+            }else{
+                removeSeries(series10);
+            }
+        });              
         return {
             tabs,
             legend1,

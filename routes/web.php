@@ -30,7 +30,7 @@ use App\Http\Controllers\UnitStatesController;
 use App\Http\Controllers\CampagneListController;
 use App\Http\Controllers\PageElementsController;
 use App\Http\Controllers\ActionCommercialListController;
-use App\Http\Controllers\InterventionsController;
+use App\Http\Controllers\StatisticController;
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
@@ -303,6 +303,10 @@ Route::group([
     Route::post('/get-affiliate-detail',[LcdtFrontController::class,'getAffiliateDetail'])->middleware('auth')->name('get-affiliate-detail');
     Route::post('/get-campagne-details',[LcdtFrontController::class, 'getCampagneCategory'])->middleware('auth')->name('get-campagne-details');
     Route::post('/get-cible-emails',[LcdtFrontController::class,'getCibleEmails'])->middleware('auth')->name('get-cible-emails');
+
+
+    // statistique 
+    Route::post('/statistic',   [StatisticController::class,'index'])->middleware('auth')->name('get.statis');
 });
 // Outlook Agenda
 Route::get('/outlook/sync', [ ActionCommercialListController::class, 'syncOutlook' ])->middleware('auth')->name('outlook.sync');
