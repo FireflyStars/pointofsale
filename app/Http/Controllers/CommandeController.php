@@ -2,148 +2,188 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Address;
-use App\Models\Customer;
-use App\Traits\Tools;
-use App\Traits\GedFileProcessor;
-use App\Models\OrderState;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use stdClass;
 use Carbon\Carbon;
+use App\Models\Ged;
+use App\Models\User;
+use App\Models\Order;
+use App\Traits\Tools;
+use App\Models\Address;
+use App\Models\Invoice;
+use App\Models\Customer;
+use App\Models\Pointage;
+use App\Models\GedDetail;
+use App\Models\OrderState;
+use App\Models\OrderInvoice;
+use Illuminate\Http\Request;
+use App\Models\OrderDocument;
+use App\Traits\GedFileProcessor;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Auth;
-use App\Models\Ged;
-use App\Models\Order;
-use App\Models\OrderZone;
-use App\Models\GedCategory;
-use App\Models\GedDetail;
-use App\Models\Invoice;
-use App\Models\OrderDocument;
-use App\Models\OrderInvoice;
-use Exception;
-use stdClass;
+use App\Http\Controllers\TableFiltersController;
+use App\Models\PointageType;
 
-class DevisController extends Controller
+class CommandeController extends Controller
 {
     use Tools;
     use GedFileProcessor;
 
-    public function loadList(Request $request){
+    public function index(Request $request)
+    {
 
-        $column_filters=$request->post('column_filters');
-        $column_sortby=$request->post('sortby');
-        $skip=$request->post('skip');
-        $take=$request->post('take');
-        $user=Auth::user();
+        $user = $request->user();
 
-        $orderList=DB::table('orders')
-        ->select(['orders.*',
-        'events.id as evnt',
-        'users.name as responsable', 
-        DB::raw("DATE_FORMAT(orders.created_at, '%Y-%m-%d') as created_at"),
-        DB::raw("CONCAT(customers.company,' ',customers.firstname,' ',customers.name) as customer"),
-        DB::raw("TRIM(CONCAT(contacts.firstname,' ',contacts.name,'<br/>',contacts.mobile)) as contact"),
-        DB::raw("TRIM(CONCAT(addresses.address1, IF(addresses.address2<>'', '<br/>',''),addresses.address2,'<br/>',addresses.postcode,' ',addresses.city)) as address")])
-          ->join('customers',function($join){
+        $orderList = DB::table('orders')
+        ->select([
+            'orders.*',
+            'events.id as evnt',
+            'users.name as responsable', 
+            DB::raw("DATE_FORMAT(orders.created_at, '%Y-%m-%d') as created_at"),
+            DB::raw("CONCAT(customers.company,' ',customers.firstname,' ',customers.name) as customer"),
+            DB::raw("TRIM(CONCAT(contacts.firstname,' ',contacts.name,'<br/>',contacts.mobile)) as contact"),
+            DB::raw("TRIM(CONCAT(addresses.address1, IF(addresses.address2<>'', '<br/>',''),addresses.address2,'<br/>',addresses.postcode,' ',addresses.city)) as address")
+        ])
+          ->join('customers', function($join) {
             $join->on('customers.id','=','orders.customer_id');
-        })->leftJoin('events',function($join){
+        })->leftJoin('events', function($join) {
             $join->on('events.order_id','=','orders.id');
-        })->leftJoin('contacts',function($join){
+        })->leftJoin('contacts', function($join) {
             $join->on('contacts.id','=','events.contact_id');
-        })->leftJoin('addresses',function($join){
+        })->leftJoin('addresses', function($join) {
             $join->on('addresses.id','=','events.address_id')
             ->where('addresses.address_type_id','=',2);
-        })->leftJoin('users',function($join){
+        })->leftJoin('users', function($join) {
             $join->on('users.id','=','orders.responsable_id');
         })
         ->leftJoin('order_states', function($join) {
             $join->on('order_states.id', '=', 'orders.order_state_id');
         });
-        $orderList=$orderList->where('orders.affiliate_id','=',$user->affiliate->id);
-        $orderList=$orderList->whereNull('orders.deleted_at')->where('order_states.order_type', '=', 'DEVIS');
-        //column filters
-        if($column_filters!=null)
-        foreach($column_filters as $column_filter){
-       
-            if($column_filter['type']=='date'){
-                if(isset($column_filter['having'])&&$column_filter['having']==true){
-                    if($column_filter['word']['from']!=''){
-                        $orderList=$orderList->having($column_filter['id'],'>=',$column_filter['word']['from']);
-                    }
-                    if($column_filter['word']['to']!=''){
-                        $orderList=$orderList->having($column_filter['id'],'<',$column_filter['word']['to']);
-                    }
-                }else{
-                   if($column_filter['word']['from']!=''){
-                        $orderList=$orderList->whereDate((isset($column_filter['table'])?$column_filter['table'].'.':'').$column_filter['id'],'>=',$column_filter['word']['from']);
-                    }
-                    if($column_filter['word']['to']!=''){
-                        $orderList=$orderList->whereDate((isset($column_filter['table'])?$column_filter['table'].'.':'').$column_filter['id'],'<',$column_filter['word']['to']);
-                    }
-                }
-            }elseif(isset($column_filter['filter_options'])&&count($column_filter['word'])>0){
-           
-                if(isset($column_filter['having'])&&$column_filter['having']==true){
-                   
-                    $orderList=$orderList->havingRaw($column_filter['id']." IN ('".implode("','",$column_filter['word'])."')");
-                }else{
-                    $orderList=$orderList->whereIn($column_filter['id'],$column_filter['word']);
-                }
-            
-            }else{
-                if(isset($column_filter['having'])&&$column_filter['having']==true){
-                    $orderList=$orderList->having($column_filter['id'],'LIKE','%'.$column_filter['word'].'%');
-                }else{
-                    $orderList=$orderList->where((isset($column_filter['table'])?$column_filter['table'].'.':'').$column_filter['id'],'LIKE','%'.$column_filter['word'].'%');
-                }
-            }
-        }
 
-        //sortby
-        if($column_sortby!=null){
-        foreach($column_sortby as $sortby){
-            $orderList=$orderList->orderBy($sortby['id'],$sortby['orderby']);
-        }
-        }else{//by default newest first
-            $orderList=$orderList->orderBy('id','desc');
-        }
+        $orderList = $orderList
+                    ->where('orders.affiliate_id', '=', $user->affiliate->id)
+                    ->where('order_states.order_type', '=', 'COMMANDE')
+                    ->whereNull('orders.deleted_at');
 
-        $orderList=$orderList->groupBy('orders.id')->skip($skip)->take($take)->get();
+        $orderList = (new TableFiltersController)->sorts($request, $orderList, 'orders.id');
+        $orderList = (new TableFiltersController)->filters($request, $orderList);
+        
+
+        $orderList = $orderList
+                ->groupBy('orders.id')
+                ->skip($request->skip ?? 0)
+                ->take($request->take ?? 15)
+                ->get();
+
         return response()->json($orderList);
+        
     }
 
-    public function getOrderDetail(Request $request)
+    public function show(Order $order)
     {
-        $order_id=$request->post('order_id');
-        $order=Order::find($order_id);
-        $lastevent=$order->events()->orderBy('id','desc')->first();
-        $order->contact=null;
-        $chantier_address=null;
-        if($lastevent!=null){
-        $order->contact=$lastevent->contact;
-        $chantier_address=$lastevent->address()->where('address_type_id','=',2)->first();
+
+        $lastevent = $order->events()->orderBy('id','desc')->first();
+        $order->contact = null;
+        $chantier_address = null;
+
+        if($lastevent != null)
+        {
+            $order->contact = $lastevent->contact;
+            $chantier_address = $lastevent->address()->where('address_type_id', '=', 2)->first();
         }
-        $order->formatted_chantier_address=$chantier_address==null?'Pas d\'adresse de chantier':$chantier_address->getformattedAddress();
+
+        $order->formatted_chantier_address=$chantier_address == null 
+        ? 'Pas d\'adresse de chantier' 
+        : $chantier_address->getformattedAddress();
+
         $order->customer;
         $order->orderZones;
-        $order->mode_paiements=Invoice::getModeDePaiementsByOrderId($order->id);
+        $order->mode_paiements = Invoice::getModeDePaiementsByOrderId($order->id);
     
-        foreach($order->orderZones as &$orderzone){
+        foreach($order->orderZones as &$orderzone)
+        {
             $orderzone->orderOuvrage;
-            $groupOrderOuvrage=[];
-            foreach( $orderzone->orderOuvrage as $order_ouvrage){
-                
+            $groupOrderOuvrage = [];
+            foreach($orderzone->orderOuvrage as $order_ouvrage)
+            {
                 $order_ouvrage->orderCategory;
                 $groupOrderOuvrage[$order_ouvrage->orderCategory->name][]=$order_ouvrage;
             }
-            $orderzone->groupedOrderOuvrage=$groupOrderOuvrage;
+            $orderzone->groupedOrderOuvrage = $groupOrderOuvrage;
         }
-        $facturation_address=Address::getFacturationAddress($order->customer->id);
-        $order->formatted_facturation_address=$facturation_address==null?'Pas d\'adresse de facturation':$facturation_address->getformattedAddress();
-        $order->state=OrderState::find($order->order_state_id);
+
+        $facturation_address = Address::getFacturationAddress($order->customer->id);
+
+        $order->formatted_facturation_address = $facturation_address == null 
+        ? 'Pas d\'adresse de facturation'
+        : $facturation_address->getformattedAddress();
+
+        $order->state = OrderState::find($order->order_state_id);
+
         return response()->json($order);
+
     }
+
+    public function get_pointage(Request $request, Order $order)
+    {
+        
+        $user = $request->user();
+
+        if($order->affiliate_id != $user->affiliate_id) 
+        {
+            return response('Order is not affiliated to user.Cannot load invoices.', 509);
+        }
+
+        return response()->json(
+            $order->pointage()
+            ->where('affiliate_id', $request->user()->affiliate_id)
+            ->get()
+            ->load('type', 'user')
+        );
+
+    }
+
+
+    public function get_personnel_list(Request $request) 
+    {
+        return response()->json(
+            User::where('affiliate_id', $request->affiliate_id)
+            ->get()
+        );
+    }
+
+    public function get_pointage_types() 
+    {
+        return response()->json(PointageType::all());    
+    }
+
+    public function get_pointage_types_formatted() 
+    {
+        return response()->json(
+            PointageType::select('id', 'name as value')
+                        ->get()
+        );    
+    }
+
+    public function create_pointage(Request $request, Order $order) 
+    {
+
+        $pointage = $order->pointage()->create([
+            'user_id'          => $request->personnel, 
+            'affiliate_id'     => $request->affiliate_id,
+            'datepointage'     => $request->date,
+            'numberh'          => $request->numberh,
+            'comment'          => $request->comment,
+            'pointage_type_id' => $request->type,
+        ]);
+
+        return response()->json(
+            $pointage->load('type', 'user')
+        );
+
+    }
+
 
     public function setOrderState(Request $request){
         $order_state_id=$request->post('order_state_id');
@@ -151,6 +191,7 @@ class DevisController extends Controller
         $order=Order::find($order_id);
         $order->updateState($order_state_id);
     }
+
     public function loadOrderInvoices(Request $request){
         $order_id=$request->post('order_id'); 
         $user=Auth::user();
@@ -159,9 +200,7 @@ class DevisController extends Controller
         return response('Order is not affiliated to user.Cannot load invoices.',509);
 
 
-        $orderInvoices=DB::table('order_invoices')
-        ->select(['order_invoices.*','invoice_types.sign','invoice_types.name as invoice_type_name','invoice_types.color as invoice_type_color','invoices.reference as ref','invoices.invoice_state_id'])
-        ->leftJoin('invoices',function($join){
+        $orderInvoices=DB::table('order_invoices')->select(['order_invoices.*','invoice_types.sign','invoice_types.name as invoice_type_name','invoice_types.color as invoice_type_color','invoices.reference as ref','invoices.invoice_state_id'])->leftJoin('invoices',function($join){
              $join->on('invoices.order_invoice_id','=','order_invoices.id')
              ->whereNull('invoices.deleted_at');  
         })->leftJoin('invoice_types',function($join){
@@ -174,6 +213,7 @@ class DevisController extends Controller
         return response()->json($orderInvoices);
 
     }
+
     public function loadOrderDocuments(Request $request){
             $order_id=$request->post('order_id');
             $order=Order::find($order_id);
@@ -304,7 +344,6 @@ class DevisController extends Controller
             $in->dateecheance=$date;
             $in->save();
             $in->fresh();
-            if($invoice_type_id!=2)
             $in->reference='PROV'.$in->id;
             $in->updateState(1);//creation
             $oi->invoice_id=$in->id;

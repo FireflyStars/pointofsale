@@ -17,9 +17,10 @@ class OuvrageResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'type' => $this->type,
             'reference' => $this->codelcdt,
             'description' => $this->textchargeaffaire,
-            'textcustomer' => $this->getOuvrageTextcustomer($this),
+            'textcustomer' => $this->getOuvrageTextcustomer($this) ?? '--/--',
             'ouvrage_affiliate' => $this->OuvrageAffiliate,
             'prestation' => $this->prestation,
             'metier' => $this->metier,
@@ -42,6 +43,7 @@ class OuvrageResource extends JsonResource
                 'OuvrageAffiliate', 
                 'unit', 
                 'details', 
+                'details.product',
                 'details.OuvrageAffiliate'
             );
     }

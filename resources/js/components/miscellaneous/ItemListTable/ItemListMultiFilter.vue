@@ -13,6 +13,7 @@
                                         :options="loadedoptions"
                                         transformOrigin="top center"
                                         @onUpdate="onupdate"
+                                        :selectedOptions="value"
                                     />
                             
                      
@@ -46,6 +47,10 @@ export default {
                 identifier:{
                     type:String,
                     required:true
+                },
+                value:{
+                    type:Array,
+                    default:[]
                 }
     },
     emits: ['onMultiFiltered'],

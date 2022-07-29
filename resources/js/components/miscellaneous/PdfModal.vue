@@ -1,6 +1,6 @@
 <template>
     <Teleport to="body">
-        <div class="pdfviewer-layer d-flex align-items-center justify-content-center position-fixed" v-if="showModal">
+        <div class="pdfviewer-layer d-flex align-items-center justify-content-center position-fixed" v-if="showModal" style="z-index: 9999999999;">
             <transition name="list" appear>
                 <div class="pdfviewer-panel m-auto bg-white">
                     <div class="pdfviewer-header text-capitalize d-flex align-items-center justify-content-center position-relative almarai-extrabold font-22">

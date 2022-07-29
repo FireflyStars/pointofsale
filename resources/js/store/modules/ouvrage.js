@@ -9,7 +9,10 @@ import {
     SAVE_OUVRAGE_DETAILS,
     GET_OUVRAGE_RESULTS,
     UPDATE_OUVRAGE_RESULTS,
-    VALIDER_OUVRAGE
+    VALIDER_OUVRAGE,
+    GET_OUVRAGE_LIST_PRESTATION,
+    GET_OUVRAGE_LIST_INSTALLATION,
+    GET_OUVRAGE_LIST_SECURITE
 }
 from '../types/types'
 
@@ -50,7 +53,7 @@ const table = {
             having: false,
             prefix: "",
             suffix: "",
-            table: "contacts"
+            table: "ouvrages"
         },
         {
             id: "textchargeaffaire",
@@ -64,7 +67,7 @@ const table = {
             prefix: "",
             suffix: "",
             allow_groupby: true,
-            table: "contacts",
+            table: "ouvrages",
         },
         {
             id: "codelcdt",
@@ -93,9 +96,9 @@ const table = {
            
         },
         {
-            id: "unit_id",
+            id: "unit_name",
             display_name: "Unité",
-            type: "component",
+            type: "string",
             class: "justify-content-start",
             header_class: "",
             sort: true,
@@ -103,10 +106,21 @@ const table = {
             having: true,
             prefix: "",
             suffix: "",
-            allow_groupby: true
+            allow_groupby: true,
+            filter_options: [
+                { id: 'L', value: 'L' },
+                { id: 'HR', value: 'HR' },
+                { id: 'UNIT', value: 'UNIT' },
+                { id: 'KG', value: 'KG' },
+                { id: 'M', value: 'M' },
+                { id: 'M2', value: 'M2' },
+                { id: 'ML', value: 'ML' },
+                { id: 'ENS', value: 'ENS' },
+                { id: 'F', value: 'F' },
+            ]
         },
         {
-            id: "ouvrage_prestation_name",
+            id: "type",
             display_name: "Type",
             type: "string",
             class: "justify-content-start",
@@ -116,7 +130,12 @@ const table = {
             having: true,
             prefix: "",
             suffix: "",
-            allow_groupby: true
+            allow_groupby: true,
+            filter_options: [
+                { id: 'PRESTATION', value: 'PRESTATION' },
+                { id: 'INSTALLATION', value: 'INSTALLATION' },
+                { id: 'SECURITE', value: 'SECURITE' }
+            ]
         },
         {
             id: "ouvrage_toit_name",
@@ -129,7 +148,13 @@ const table = {
             having: true,
             prefix: "",
             suffix: "",
-            allow_groupby: true
+            allow_groupby: true,
+            filter_options: [
+                { id: 'Bac Acier', value: 'Bac Acier' },
+                { id: 'Etanchéité Bitumineuse', value: 'Etanchéité Bitumineuse' },
+                { id: 'Plaques Fibres Ciment', value: 'Plaques Fibres Ciment' },
+                { id: 'Tous les toits', value: 'Tous les toits' },
+            ]
         },
         {
             id: "ouvrage_metier_name",
@@ -142,7 +167,15 @@ const table = {
             having: true,
             prefix: "",
             suffix: "",
-            allow_groupby: true
+            allow_groupby: true,
+            filter_options: [
+                { id: 'Maintenance', value: 'Maintenance' },
+                { id: 'Interventions', value: 'Interventions' },
+                { id: 'Etudes', value: 'Etudes' },
+                { id: 'Organisation Chantier', value: 'Organisation Chantier' },
+                { id: 'Transverse', value: 'Transverse' },
+                { id: 'Réparation', value: 'Réparation' }
+            ]
         }
 
     ],
@@ -176,6 +209,18 @@ const table = {
     
 }
 
+const def = {
+    column_filters: [],//required empty array
+    batch_actions: table.batch_actions,
+    translations: table.translations,
+    highlight_row: table.highlight_row,
+    item_route_name: "ouvrage-details",// the route to trigger when a line is click 
+    max_per_page: 15,//required          
+    filter: true,// required boolean
+    rearrange_columns: true,// required boolean
+    columns_def: table.columns_def,
+}
+
 
 export const ouvrage = {
 
@@ -183,22 +228,49 @@ export const ouvrage = {
 
     state: {
 
+        
+
         table_def: {
 
-            column_filters: [],//required empty array
             store: {
               MODULE: OUVRAGE_MODULE,//required
               INIT: GET_OUVRAGE_LIST,//required
             },
-            batch_actions: table.batch_actions,
-            translations: table.translations,
-            highlight_row: table.highlight_row,
-            item_route_name: "ouvrage-details",// the route to trigger when a line is click 
-            max_per_page: 15,//required          
             identifier: "ouvrage_list_all",//required
-            filter: true,// required boolean
-            rearrange_columns: true,// required boolean
-            columns_def: table.columns_def,
+            ...def,
+
+        },
+
+        table_def_installation: {
+
+            store: {
+              MODULE: OUVRAGE_MODULE,//required
+              INIT: GET_OUVRAGE_LIST_INSTALLATION,//required
+            },
+            identifier: "ouvrage_list_installation",//required
+            ...def,
+
+        },
+
+        table_def_securite: {
+
+            store: {
+              MODULE: OUVRAGE_MODULE,//required
+              INIT: GET_OUVRAGE_LIST_SECURITE,//required
+            },
+            identifier: "ouvrage_list_securite",//required
+            ...def,
+
+        },
+
+        table_def_prestation: {
+
+            store: {
+              MODULE: OUVRAGE_MODULE,//required
+              INIT: GET_OUVRAGE_LIST_PRESTATION,//required
+            },
+            identifier: "ouvrage_list_prestation",//required
+            ...def,
 
         },
 
@@ -214,6 +286,9 @@ export const ouvrage = {
 
     getters: {
         ouvrageList: state => state.table_def,
+        ouvrageListInstallation: state => state.table_def_installation,
+        ouvrageListSecurite: state => state.table_def_securite,
+        ouvrageListPrestation: state => state.table_def_prestation,
         loading: state => state.loading,
         details: state => state.details,
     },
@@ -239,6 +314,39 @@ export const ouvrage = {
         async [GET_OUVRAGE_LIST]({ commit }, params) {
 
             return axios.post(`/get-ouvrage-list`, params).then((response) => {
+                return Promise.resolve(response)
+                      
+            }).catch((error) => {
+                return  Promise.resolve(error)
+            })
+
+        },
+
+        async [GET_OUVRAGE_LIST_INSTALLATION]({ commit }, params) {
+
+            return axios.post(`/get-ouvrage-list-installation`, params).then((response) => {
+                return Promise.resolve(response)
+                      
+            }).catch((error) => {
+                return  Promise.resolve(error)
+            })
+
+        },
+
+        async [GET_OUVRAGE_LIST_PRESTATION]({ commit }, params) {
+
+            return axios.post(`/get-ouvrage-list-prestation`, params).then((response) => {
+                return Promise.resolve(response)
+                      
+            }).catch((error) => {
+                return  Promise.resolve(error)
+            })
+
+        },
+
+        async [GET_OUVRAGE_LIST_SECURITE]({ commit }, params) {
+
+            return axios.post(`/get-ouvrage-list-securite`, params).then((response) => {
                 return Promise.resolve(response)
                       
             }).catch((error) => {

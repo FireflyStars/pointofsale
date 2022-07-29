@@ -26,7 +26,8 @@ class OuvrageTask extends Model
 
 	public function OuvrageAffiliate() 
 	{
-		return $this->hasOne(OuvrageTaskAffiliate::class, 'ouvrage_task_id');
+		return $this->hasOne(OuvrageTaskAffiliate::class, 'ouvrage_task_id')
+		->where('affiliate_id', request()->user()->affiliate_id);
 	}
 
 	public function details() 
@@ -36,9 +37,12 @@ class OuvrageTask extends Model
 
 	public function getAffiliatedTextcustomerAttribute() 
 	{
-		return is_null($this->OuvrageAffiliate->textcustomer) 
+		$textcustomer = is_null(optional($this->OuvrageAffiliate)->textcustomer) 
 		? $this->textcustomer 
 		: $this->OuvrageAffiliate->textcustomer;
+
+		return $textcustomer ?? '--/--';
+
 	}
 
 }

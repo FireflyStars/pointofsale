@@ -168,7 +168,7 @@ export default {
         }
 
         onMounted(() => {
-            console.log(props.selectedOptions, " is the props.selectedOptions")
+        
             if(props.selectedOptions?.length) {
                 props.selectedOptions.forEach(option => {
                     updateSelectOptions({ id: option, value: true })

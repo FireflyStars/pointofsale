@@ -38,7 +38,7 @@
                                         <h3 
                                             class="margin-align m-0"
                                         >
-                                            PLATEFORME MARKETING > Categorie XXX
+                                            PLATEFORME MARKETING > Categorie {{ category.id || 'XXX' }}
                                         </h3>
 
                                         <div class="d-flex align-items-center gap-2">
@@ -92,13 +92,7 @@
                                                     classes="border-0"
                                                     style="border-radius: 10px; font-size: 12px !important"
                                                     @click.prevent="$router.push({
-                                                        name: 'emailingprestations',
-                                                        params: {
-                                                            id: 14
-                                                        },
-                                                        query: {
-                                                            redirect: true
-                                                        }
+                                                        name: 'emailing'
                                                     })"
                                                 />
                                             </div>
@@ -112,10 +106,10 @@
                                                     <p class="fs-6" v-html="category.text"></p>
                                                 </div>
         
-                                                <hr />
+                                                <hr v-if="fields?.personalize && !isPersonalizeAble" />
         
         
-                                                <div class="row" v-if="fields?.personalize">
+                                                <div class="row" v-if="fields?.personalize && !isPersonalizeAble">
         
                                                     <div class="col">
                                                         <p class="p-title text-uppercase text-start">
@@ -261,9 +255,10 @@
         
                                                 </div>
         
-                                                <hr />
+                                                <hr v-if="!productWithDownloadOnly" />
     
-                                                <div class="footer">
+                                                <div class="footer" v-if="!productWithDownloadOnly">
+
                                                     <p class="p-title text-uppercase text-start">
                                                         votre commande
                                                     </p>
@@ -344,77 +339,82 @@
                                                     style="width: 210mm; height: 297mm;"
                                                 >
 
-                                                <template v-for="(item, index) in fields" :key="index">
+                                                <template v-if="!productWithDownloadOnly && !isPersonalizeAble">
+                                                    
+                                                    <template v-for="(item, index) in fields" :key="index">
 
-                                                    <span 
-                                                        v-if="item.active == 1" 
-                                                    >
+                                                        <span 
+                                                            v-if="item.active == 1" 
+                                                        >
 
-                                                        <template v-if="index == 'Prenom_dirigeant'">
-                                                            <span 
-                                                            :style="{
-                                                                color: item.color,
-                                                                fontSize: `18px`,
-                                                                fontFamily: item.font,
-                                                                top: `874px`,
-                                                                left: `274px`,
-                                                                position: 'absolute'
-                                                            }">
-                                                                {{ item.value }}
-                                                            </span>
+                                                            <template v-if="index == 'Prenom_dirigeant'">
+                                                                <span 
+                                                                :style="{
+                                                                    color: item.color,
+                                                                    fontSize: `18px`,
+                                                                    fontFamily: item.font,
+                                                                    top: `874px`,
+                                                                    left: `274px`,
+                                                                    position: 'absolute'
+                                                                }">
+                                                                    {{ item.value }}
+                                                                </span>
+                                                                
+                                                            </template>
+
+                                                            <template v-if="index == 'Nom_dirigeant'">
+                                                                <span 
+                                                                :style="{
+                                                                    color: item.color,
+                                                                    fontSize: `18px`,
+                                                                    fontFamily: item.font,
+                                                                    top: `874px`,
+                                                                    left: `366px`,
+                                                                    position: 'absolute'
+                                                                }">
+                                                                    {{ item.value }}
+                                                                </span>
+                                                                
+                                                            </template>
+
+                                                            <template v-if="'Email_agence' == index">
+
+                                                                <span 
+                                                                :style="{
+                                                                    color: item.color,
+                                                                    fontSize: `18px`,
+                                                                    fontFamily: item.font,
+                                                                    top: `900px`,
+                                                                    left: `274px`,
+                                                                    position: 'absolute'
+                                                                }">
+                                                                    {{ email }}
+                                                                </span>
+                                                                
+                                                            </template>
+
+                                                            <template v-if="'Telephone_agence' == index">
+                                                                
+                                                                <span 
+                                                                :style="{
+                                                                    color: item.color,
+                                                                    fontSize: `18px`,
+                                                                    fontFamily: item.font,
+                                                                    top: `924px`,
+                                                                    left: `274px`,
+                                                                    position: 'absolute'
+                                                                }">
+                                                                    {{ phone }}
+                                                                </span>
+
+                                                            </template>
                                                             
-                                                        </template>
+                                                        </span>
 
-                                                        <template v-if="index == 'Nom_dirigeant'">
-                                                            <span 
-                                                            :style="{
-                                                                color: item.color,
-                                                                fontSize: `18px`,
-                                                                fontFamily: item.font,
-                                                                top: `874px`,
-                                                                left: `366px`,
-                                                                position: 'absolute'
-                                                            }">
-                                                                {{ item.value }}
-                                                            </span>
-                                                            
-                                                        </template>
-
-                                                        <template v-if="'Email_agence' == index">
-
-                                                            <span 
-                                                            :style="{
-                                                                color: item.color,
-                                                                fontSize: `18px`,
-                                                                fontFamily: item.font,
-                                                                top: `900px`,
-                                                                left: `274px`,
-                                                                position: 'absolute'
-                                                            }">
-                                                                {{ email }}
-                                                            </span>
-                                                            
-                                                        </template>
-
-                                                        <template v-if="'Telephone_agence' == index">
-                                                            
-                                                            <span 
-                                                            :style="{
-                                                                color: item.color,
-                                                                fontSize: `18px`,
-                                                                fontFamily: item.font,
-                                                                top: `924px`,
-                                                                left: `274px`,
-                                                                position: 'absolute'
-                                                            }">
-                                                                {{ phone }}
-                                                            </span>
-
-                                                        </template>
-                                                        
-                                                    </span>
-
+                                                    </template>
+                                                
                                                 </template>
+
                                                 
                                             </div>
 
@@ -504,6 +504,7 @@
     })
 
     const store = useStore()
+    const loading = ref(false)
 
     const phone = ref('')
     const email = ref('')
@@ -513,6 +514,12 @@
     const affiliate = computed(() => store.getters[`${CIBLE_MODULE}campagneCategory`]?.affiliate || {})
     const fields = computed(() => store.getters[`${CIBLE_MODULE}fields`])
 
+    const productWithDownloadOnly = computed(() => {
+        return category.value.typeofproduct?.toLowerCase() == 'download' 
+        && category.value.type?.toLowerCase() == 'produit' 
+    })
+
+    
     const canGeneratePdf = computed(() => {
         return (category.value.typeofproduct?.toLowerCase() == 'download'
         || (category.value.typeofproduct?.toLowerCase() == 'product perso'))
@@ -520,10 +527,19 @@
     })
 
     const canAddToCart = computed(() => {
-        return (category.value.typeofproduct?.toLowerCase() == 'product' 
-        || (category.value.typeofproduct?.toLowerCase() == 'product perso'))
-        && category.value.type == 'Produit'
+        return (
+                category.value.typeofproduct?.toLowerCase() == 'product' 
+                || 
+                (category.value.typeofproduct?.toLowerCase() == 'product perso')
+            )
+        && 
+        category.value.type == 'Produit'
 
+    })
+
+    const isPersonalizeAble = computed(() => {
+        return category.value.typeofproduct?.toLowerCase() == 'product' 
+            && category.value.type?.toLowerCase() == 'produit'
     })
 
     const cardQuantity = computed(() => category.value?.card_detail?.qty || 0)
@@ -541,7 +557,16 @@
     })
     
     const getCategory = (id) => {
-        return store.dispatch(`${[CIBLE_MODULE]}${[GET_CAMPAGNE_CATEGORY]}`, id)
+        try {
+            loading.value = true
+            return store.dispatch(`${[CIBLE_MODULE]}${[GET_CAMPAGNE_CATEGORY]}`, id)
+        }
+        catch(e) {
+            throw e
+        }
+        finally {
+            loading.value = false
+        }
     }
 
     const getFieldsData = (id) => {
@@ -576,7 +601,7 @@
             })
             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                 type: 'success',
-                message: 'Product saved to cart',
+                message: 'Produit ajouté au panier',
                 ttl: 5,
             })
 

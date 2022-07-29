@@ -18,18 +18,18 @@ class OuvragesController extends Controller
     {
         $this->middleware(['auth']);
     }
-    
-    public function index(Request $request) 
-    {
 
+    private function get_data(Request $request) 
+    {
         $ouvrages = Ouvrage::query();
 
         $ouvrages->select(
             'ouvrages.id',
             'ouvrages.name',
-            'textchargeaffaire',
+            'ouvrages.type',
+            DB::raw('CONCAT(LEFT(`textchargeaffaire`, 30), "...") as textchargeaffaire'),
             'codelcdt',
-            'units.id as unit_id',
+            'units.code as unit_name',
             'ouvrage_prestation.name as ouvrage_prestation_name',
             'ouvrage_toit.name as ouvrage_toit_name',
             'ouvrage_metier.name as ouvrage_metier_name',
@@ -46,9 +46,54 @@ class OuvragesController extends Controller
                 ->skip($request->skip ?? 0)
                 ->take($request->take ?? 15);
 
+        return $ouvrages;
+
+    }
+    
+    public function index(Request $request) 
+    {
+
+        $ouvrages = $this->get_data($request);
+
         return response()->json(
             $ouvrages->get()
         );
+    }
+
+    public function get_ouvrages_installation(Request $request) 
+    {
+        $ouvrages = $this->get_data($request);
+        
+        $ouvrages = $ouvrages->where('ouvrages.type', 'INSTALLATION');
+
+        return response()->json(
+            $ouvrages->get()
+        );
+
+    }
+
+    public function get_ouvrages_prestation(Request $request) 
+    {
+        $ouvrages = $this->get_data($request);
+        
+        $ouvrages = $ouvrages->where('ouvrages.type', 'PRESTATION');
+
+        return response()->json(
+            $ouvrages->get()
+        );
+
+    }
+
+    public function get_ouvrages_securite(Request $request) 
+    {
+        $ouvrages = $this->get_data($request);
+        
+        $ouvrages = $ouvrages->where('ouvrages.type', 'SECURITE');
+
+        return response()->json(
+            $ouvrages->get()
+        );
+
     }
 
     public function show(Ouvrage $ouvrage) 
@@ -103,14 +148,28 @@ class OuvragesController extends Controller
                 {
                     $affiliate_detail = new OuvrageDetailAffiliate;
                     $affiliate_detail->affiliate_id = $request->user()->affiliate_id;
-                    $affiliate_detail->qty = $detail['ouvrage_detail_qty'];
+                    if($detail['product']['type'] == 'MO') 
+                    {
+                        $affiliate_detail->numberh = $detail['ouvrage_detail_qty'];
+                    }
+                    else 
+                    {
+                        $affiliate_detail->qty = $detail['ouvrage_detail_qty'];
+                    }
                     $affiliate_detail->ouvrage_detail_id = $detail['id'];
                     $affiliate_detail->save();
                 }
                 else 
                 {
                     $affiliate_detail = OuvrageDetailAffiliate::find($detail['ouvrage_affiliate']['id']);
-                    $affiliate_detail->qty = $detail['ouvrage_detail_qty'];
+                    if($detail['product']['type'] == 'MO') 
+                    {
+                        $affiliate_detail->numberh = $detail['ouvrage_detail_qty'];
+                    }
+                    else 
+                    {
+                        $affiliate_detail->qty = $detail['ouvrage_detail_qty'];
+                    }
                     $affiliate_detail->save();
                 }
             }

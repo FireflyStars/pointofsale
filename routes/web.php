@@ -9,26 +9,28 @@ use App\Http\Controllers\ApiController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\CibleController;
 use App\Http\Controllers\DevisController;
+use App\Http\Controllers\UsersController;
 use App\Http\Controllers\EntiteController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\ArticlesController;
+use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\CompagneController;
 use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\OuvragesController;
 use App\Http\Controllers\LcdtAdminController;
 use App\Http\Controllers\LcdtFrontController;
+use App\Http\Controllers\QuickLinkController;
 use App\Http\Controllers\TemplatesController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\CampagneListController;
-use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\PageElementsController;
-use App\Http\Controllers\ContactController;
-use App\Http\Controllers\ActionCommercialListController;
-use App\Http\Controllers\ArticlesController;
-use App\Http\Controllers\OuvragesController;
-use App\Http\Controllers\QuickLinkController;
 use App\Http\Controllers\UnitStatesController;
-use App\Http\Controllers\UsersController;
+use App\Http\Controllers\CampagneListController;
+use App\Http\Controllers\PageElementsController;
+use App\Http\Controllers\ActionCommercialListController;
+use App\Http\Controllers\InterventionsController;
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
@@ -142,10 +144,29 @@ Route::post('/upload-user-document', [UsersController::class, 'upload_user_docum
 Route::post('/delete-user/{user}', [UsersController::class, 'delete_user']);
 
 Route::post('/get-ouvrage-list', [OuvragesController::class, 'index']);
+Route::post('/get-ouvrage-list-installation', [OuvragesController::class, 'get_ouvrages_installation']);
+Route::post('/get-ouvrage-list-prestation', [OuvragesController::class, 'get_ouvrages_prestation']);
+Route::post('/get-ouvrage-list-securite', [OuvragesController::class, 'get_ouvrages_securite']);
 Route::get('/get-ouvrage-list', [OuvragesController::class, 'index']);
 Route::post('/get-unit-states', [UnitStatesController::class, 'index']);
 Route::get('/get-ouvrage-details/{ouvrage}', [OuvragesController::class, 'show']);
 Route::post('/valider-ouvrage/{ouvrage}', [OuvragesController::class, 'valider']);
+
+Route::post('/get-commande-list', [CommandeController::class, 'index']);
+Route::get('/get-commande-list', [CommandeController::class, 'index']);
+Route::get('/get-commande-details/{order}', [CommandeController::class, 'show']);
+Route::post('/get-commande-details/{order}', [CommandeController::class, 'show']);
+Route::post('/get-order-detail-pointage/{order}', [CommandeController::class, 'get_pointage']);
+Route::get('/get-order-detail-pointage/{order}', [CommandeController::class, 'get_pointage']);
+Route::get('/get-personnel-list', [CommandeController::class, 'get_personnel_list']);
+Route::get('/get-pointage-types', [CommandeController::class, 'get_pointage_types']);
+Route::post('/get-pointage-types', [CommandeController::class, 'get_pointage_types']);
+Route::post('/get-pointage-types-formatted', [CommandeController::class, 'get_pointage_types_formatted']);
+Route::post('/create-pointage/{order}', [CommandeController::class, 'create_pointage']);
+
+Route::post('/get-interventions-list', [InterventionsController::class, 'index']);
+Route::get('/get-interventions-list', [InterventionsController::class, 'index']);
+Route::post('/get-interventions-list-mes', [InterventionsController::class, 'interventions_mes']);
 
 
 // create action
@@ -200,6 +221,7 @@ Route::group([
     Route::post('/get-invoice-payments',[InvoiceController::class,'getInvoicePayments'])->middleware('auth')->name('get-invoice-payments');
     Route::post('/remove-invoice-payment',[InvoiceController::class,'removeInvoicePayment'])->middleware('auth')->name('remove-invoice-payment');
     Route::post('/add-invoice-payment',[InvoiceController::class,'addInvoicePayment'])->middleware('auth')->name('add-invoice-payment');
+    Route::post('/update-invoice-state',[InvoiceController::class,'updateInvoiceState'])->middleware('auth')->name('update-invoice-state');
     
    
     

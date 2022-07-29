@@ -22,7 +22,8 @@ class Ouvrage extends Model
 
 	public function OuvrageAffiliate() 
 	{
-		return $this->hasOne(OuvrageAffiliate::class, 'ouvrages_id');
+		return $this->hasOne(OuvrageAffiliate::class, 'ouvrages_id')
+		->where('affiliate_id', request()->user()->affiliate_id);
 	}
 
 	public function unit() 

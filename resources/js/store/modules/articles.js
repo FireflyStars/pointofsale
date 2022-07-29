@@ -53,10 +53,9 @@ const table = {
             header_class: "",
             sort: true,
             filter: true,   
-            having: false,
+            having: true,
             prefix: "",
             suffix: "",
-            table: 'products'
         },
         {
             id: "description",
@@ -66,11 +65,9 @@ const table = {
             header_class: "",
             sort: true,
             filter: true,   
-            having: false,
+            having: true,
             prefix: "",
             suffix: "",
-            allow_groupby: true,
-            table: 'products'
         },
         {
             id: "reference",

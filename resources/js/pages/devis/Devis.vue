@@ -81,10 +81,10 @@ export default {
 
     setup() {
 
-        const tabs=ref({});
-        const store=useStore();
+        const tabs = ref({})
+        const store = useStore()
 
-        const all_devis=computed(()=>store.getters[`${DEVIS_LIST_MODULE}${GET_DEVIS_LIST_DEF}`]);
+        const all_devis = computed(()=>store.getters[`${DEVIS_LIST_MODULE}${GET_DEVIS_LIST_DEF}`]);
     
         tabs.value= {
             tout:'Tout',

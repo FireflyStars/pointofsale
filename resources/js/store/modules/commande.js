@@ -1,47 +1,39 @@
-import {  DEVISLIST_LOAD_TAB, DEVISLIST_SET_LIST, DEVIS_LIST_MODULE, GET_DEVIS_LIST_DEF } from "../types/types";
+import {  COMMANDE_LOAD_TAB, COMMANDE_SET_LIST, COMMANDE_LIST_MODULE, GET_COMMANDE_LIST_DEF } from "../types/types";
 
-export const devislist= {
+export const commande = {
+
     namespaced:true,
+
     state: {
       
         table_def: {
             store:{
-              MODULE:DEVIS_LIST_MODULE,//required
-              INIT:DEVISLIST_LOAD_TAB,//required
+              MODULE: COMMANDE_LIST_MODULE,
+              INIT: COMMANDE_LOAD_TAB,
             },
-            // batch_actions:{
-            //     delete:{
-            //         name:"Delete",
-            //         route:"DeleteDevis",
-            //         type:'button'
-            //     },
-            //     status:{
-            //         type:"component"
-            //     }
-
-            // },
+          
             translations:{
-              group_item:'devis',
-              group_items:'devis',
-              footer_item:'ITEM',
-              footer_items:'ITEMS',
-              no_batch_action:"Aucune action par lot n'est disponible.",
+              group_item: 'COMMANDE',
+              group_items: 'COMMANDE',
+              footer_item: 'ITEM',
+              footer_items: 'ITEMS',
+              no_batch_action: "Aucune action par lot n'est disponible.",
             },
             highlight_row:{
-                  where:[
-                    {col:'id',value:10}, //conditions to higlight rows
-                    {col:'nbheure',value:6}
+                  where: [
+                    { col: 'id', value: 10 }, //conditions to higlight rows
+                    { col: 'nbheure', value: 6 }
                   ], 
-                  backgroundColor:'#f7c5af',
-                  color:'#fd3b35'
+                  backgroundColor: '#f7c5af',
+                  color: '#fd3b35'
                 }
             ,
-            item_route_name:"DevisDetail",// the route to trigger when a line is click 
-            max_per_page:10,//required          
-            identifier:"devislist_all",//required
-            filter:true,// required boolean
-            rearrange_columns:true,// required boolean
-            columns_def:[
+            item_route_name: "commande-details",// the route to trigger when a line is click 
+            max_per_page: 15,//required          
+            identifier: "COMMANDE_all",//required
+            filter: true,// required boolean
+            rearrange_columns: true,// required boolean
+            columns_def: [
                 {
                     id:"id",
                     display_name:"",
@@ -56,7 +48,7 @@ export const devislist= {
                   } , 
                {
                  id:"id",
-                 display_name:"No DEVIS",
+                 display_name:"No COMMANDE",
                  type:"string",
                  class:"",
                  header_class:"",
@@ -200,29 +192,37 @@ export const devislist= {
               },
             ]
 
-            
-
         },
         
     },
-    mutations: {
-      [DEVISLIST_SET_LIST]:(state,list)=>{
-        state.list=list;
-      }
-    },
-    actions: {
-      [DEVISLIST_LOAD_TAB]:async({commit,state,dispatch},params)=>{
- 
-        params.myparam=1
-        return axios.post(`/get-devis-list`,params).then((response)=>{
-          return  Promise.resolve(response);
-                
-        }).catch((error)=>{
-          return  Promise.resolve(error);
-        });
-    },
-    },
+
     getters: {
-        [GET_DEVIS_LIST_DEF]: state => state.table_def,
-    }
+
+      commandeList: state => state.table_def,
+
+    },
+
+    mutations: {
+
+      [COMMANDE_SET_LIST]:(state,list)=>{
+        state.list = list
+      }
+
+    },
+
+    actions: {
+
+        [COMMANDE_LOAD_TAB]:async({ commit, state, dispatch }, params)=>{
+  
+          params.myparam = 1
+          return axios.post(`/get-commande-list`, params).then((response)=>{
+            return  Promise.resolve(response);
+                  
+          }).catch((error)=>{
+            return  Promise.resolve(error);
+          })
+        }
+
+    },
+    
 }

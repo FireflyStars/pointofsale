@@ -208,6 +208,7 @@ class UsersController extends Controller
             $document->date_document = Carbon::parse($document->dateofdocument)->format('d/m/Y');
             $document->user = $document->user;
             $document->strtotime = strtotime($document->created_at);
+            $document->fullpath = rtrim(config('app.url'), '/') . '/storage' . '/' . $document->file_path;
             $user_documents[] = $document;
         }
 

@@ -17,12 +17,13 @@
 
 <script setup>
 
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, onBeforeMount, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 
 import { 
-    OUVRAGE_LOAD_TAG_STATES, 
-    OUVRAGE_STATE_MODULE 
+    INTERVENTION_LOAD_ORDER_STATES, 
+    INTERVENTION_STATUS_MODULE,
+    INTERVENTION_SET_LOADED
 } from '../../store/types/types';
 
 const props = defineProps({
@@ -45,14 +46,14 @@ const store = useStore()
 const status = ref('')
 const style = ref('')
 
-const states = computed(() => store.getters[`${OUVRAGE_STATE_MODULE}states`])
-const loaded = computed(() => store.getters[`${OUVRAGE_STATE_MODULE}loaded`])
+const interventionStates = computed(() => store.getters[`${INTERVENTION_STATUS_MODULE}interventionStates`])
+const loaded = computed(() => store.getters[`${INTERVENTION_STATUS_MODULE}loaded`])
 
 
-watch(() => states, (current_val) => {
-    const state = current_val.value.find(obj => obj.id == props.id)
+watch(() => interventionStates, (current_val) => {
+    const state = current_val.value?.find(obj => obj.id == props.id)
     if(typeof state != "undefined") {
-        status.value = state.code
+        status.value = state.name
         style.value = `width:${props.width}; background-color: ${state.color};color: ${state.fontcolor}`
     }
 }, {
@@ -60,9 +61,9 @@ watch(() => states, (current_val) => {
 })
 
 watch(() => props.id, (current_val) => {
-    const state=states.value.find(obj => obj.id == current_val)
+    const state=interventionStates.value?.find(obj => obj.id == current_val)
     if(typeof state != "undefined") {
-        status.value = state.code
+        status.value = state.name
         style.value = `width:${props.width}; background-color: ${state.color}; color: ${state.fontcolor}`
     }
 }, {
@@ -70,17 +71,22 @@ watch(() => props.id, (current_val) => {
 })
 
 onMounted(async ()=> {
+    console.log(loaded.value, " is the loaded value")
     if(loaded.value === false) {
-        await store.dispatch(`${OUVRAGE_STATE_MODULE}${OUVRAGE_LOAD_TAG_STATES}`, { route: '/get-unit-states', params: {} }) 
+        await store.dispatch(`${INTERVENTION_STATUS_MODULE}${INTERVENTION_LOAD_ORDER_STATES}`) 
     }
-    if(states.value.length > 0) {
-        const state = states.value.find(obj => obj.id == props.id)
+    if(interventionStates.value?.length > 0) {
+        const state = interventionStates.value?.find(obj => obj.id == props.id)
         if(typeof state != "undefined") {
-            status.value = state.code
+            status.value = state.name
             style.value = `width:${props.width};background-color: ${state.color};color: ${state.fontcolor || '#000'}`
         }
     }
     
+})
+
+onBeforeMount(() => {
+    store.commit(`${INTERVENTION_STATUS_MODULE}${INTERVENTION_SET_LOADED}`, false)
 })
           
            
