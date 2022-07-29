@@ -249,7 +249,7 @@ class InvoiceController extends Controller
         $p->paiement_type_id=$payment['type'];
         $p->reference=$payment['reference'];
         $p->montantpaiement=$payment['montantpaiement'];
-        $p->pourcentage=$payment['pourcentage'];
+        $p->pourcentage=str_replace('%','',$payment['pourcentage']);
         $p->datepaiement=$payment['datepaiement'];
         $p->save();
         $p->fresh();
