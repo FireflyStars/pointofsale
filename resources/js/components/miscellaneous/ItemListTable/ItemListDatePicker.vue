@@ -208,7 +208,7 @@
             function renderPicker() {
 
                 if(typeof default_date.value[0]!="undefined"&&typeof default_date.value[1]!="undefined"&&typeof default_date.value[2]!="undefined")
-                formated_date.value=`${default_date.value[1]}/${default_date.value[2]}/${default_date.value[0]}`
+                formated_date.value=`${default_date.value[2]}/${default_date.value[1]}/${default_date.value[0]}`
                 displayed_dates_rows.value = {0: [], 1: [], 2: [], 3: [], 4: [], 5: []};
                 displayed_dates.value = [];
                 let firstDayofMonth = new Date(MonthYear.value.year, MonthYear.value.month, 1).getDay();

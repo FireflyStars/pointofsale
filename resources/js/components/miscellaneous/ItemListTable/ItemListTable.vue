@@ -592,7 +592,7 @@ export default {
             if(typeof props.table_def.highlight_row !="undefined")
             for(const i in props.table_def.highlight_row.where){
                 if(row[props.table_def.highlight_row.where[i]['col']]===props.table_def.highlight_row.where[i]['value'])
-                return `background-color:${props.table_def.highlight_row.backgroundColor};color:${props.table_def.highlight_row.color};`
+                return `background-color:${props.table_def.highlight_row.backgroundColor}!important;color:${props.table_def.highlight_row.color};`
            }
         }
         const getFilterValue=(item)=>{

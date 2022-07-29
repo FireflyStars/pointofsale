@@ -29,8 +29,8 @@ export const facturelist= {
             },
             highlight_row:{
                   where:[
-                    {col:'id',value:10}, //conditions to higlight rows
-                    {col:'nbheure',value:6}
+                    {col:'invoice_type_id',value:3}, //conditions to higlight rows
+                    //{col:'nbheure',value:6}
                   ], 
                   backgroundColor:'#f7c5af',
                   color:'#fd3b35'
