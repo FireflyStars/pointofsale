@@ -96,24 +96,24 @@
             let sel=computed(()=>store.getters[`${SELECT_MODULE}${GET_CURRENT_SELECT}`]);
 
             const days=[
-                {
-                    dayName:'Mo',
+                 {
+                    dayName:'Lu',
                     jsDay:1
                 },
                 {
-                    dayName:'Tu',
+                    dayName:'Ma',
                     jsDay:2
                 },
                 {
-                    dayName:'We',
+                    dayName:'Me',
                     jsDay:3
                 },
                 {
-                    dayName:'Th',
+                    dayName:'Je',
                     jsDay:4
                 },
                 {
-                    dayName:'Fr',
+                    dayName:'Ve',
                     jsDay:5
                 },
                 {
@@ -121,47 +121,47 @@
                     jsDay:6
                 },
                 {
-                    dayName:'Su',
+                    dayName:'Di',
                     jsDay:0
                 },
             ];
 
             const monthsName= {
-                    0:{
-                        name:"January"
+                      0:{
+                        name:"Janvier"
                     },
                     1:{
-                        name:"Febuary"
+                        name:"Février"
                     },
                     2:{
-                        name:"March"
+                        name:"Mars"
                     },
                     3:{
-                        name:"April"
+                        name:"Avril"
                     },
                     4:{
-                        name:"May"
+                        name:"Mai"
                     },
                     5:{
-                        name:"June"
+                        name:"Juin"
                     },
                     6:{
-                        name:"July"
+                        name:"Juillet"
                     },
                     7:{
-                        name:"August"
+                        name:"Août"
                     },
                     8:{
-                        name:"September"
+                        name:"Septembre"
                     },
                     9:{
-                        name:"October"
+                        name:"Octobre"
                     },
                     10:{
-                        name:"November"
+                        name:"Novembre"
                     },
                     11:{
-                        name:"December"
+                        name:"Décembre "
                     }
                 };
             const currentView=ref('dates');
@@ -203,7 +203,7 @@
             function renderPicker() {
 
                 if(typeof default_date.value[0]!="undefined"&&typeof default_date.value[1]!="undefined"&&typeof default_date.value[2]!="undefined")
-                formated_date.value=`${default_date.value[1]}/${default_date.value[2]}/${default_date.value[0]}`
+                formated_date.value=`${default_date.value[2]}/${default_date.value[1]}/${default_date.value[0]}`
                 displayed_dates_rows.value = {0: [], 1: [], 2: [], 3: [], 4: [], 5: []};
                 displayed_dates.value = [];
                 let firstDayofMonth = new Date(MonthYear.value.year, MonthYear.value.month, 1).getDay();

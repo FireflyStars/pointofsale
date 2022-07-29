@@ -35,6 +35,7 @@ class InvoiceController extends Controller
         ->select(['invoices.*',
         'events.id as evnt',
         'users.name as responsable', 
+        'invoice_types.sign',
         DB::raw("DATE_FORMAT(invoices.dateecheance, '%Y-%m-%d') as dateecheance"),
         DB::raw("0 as payer"),
         DB::raw("CONCAT(customers.company,' ',customers.firstname,' ',customers.name) as customer"),
@@ -53,6 +54,9 @@ class InvoiceController extends Controller
             ->where('addresses.address_type_id','=',2);
         })->leftJoin('users',function($join){
             $join->on('users.id','=','orders.responsable_id');
+        })
+        ->leftJoin('invoice_types',function($join){
+            $join->on('invoice_types.id','=','invoices.invoice_type_id');
         });
         $list=$list->where('invoices.affiliate_id','=',$user->affiliate->id)->where('invoices.invoice_type_id','<>',2);
         $list=$list->whereNull('invoices.deleted_at');
@@ -106,6 +110,7 @@ class InvoiceController extends Controller
         $list=$list->groupBy('invoices.id')->skip($skip)->take($take)->get();
         foreach($list as &$l){
             $l->payer=Invoice::totalPaid($l->id);
+            $l->montant*=$l->sign;
         }
         return response()->json($list);
     }

@@ -19,15 +19,15 @@ export const commande = {
               footer_items: 'ITEMS',
               no_batch_action: "Aucune action par lot n'est disponible.",
             },
-            highlight_row:{
-                  where: [
-                    { col: 'id', value: 10 }, //conditions to higlight rows
-                    { col: 'nbheure', value: 6 }
-                  ], 
-                  backgroundColor: '#f7c5af',
-                  color: '#fd3b35'
-                }
-            ,
+            // highlight_row:{
+            //       where: [
+            //         { col: 'id', value: 10 }, //conditions to higlight rows
+            //         { col: 'nbheure', value: 6 }
+            //       ], 
+            //       backgroundColor: '#f7c5af',
+            //       color: '#fd3b35'
+            //     }
+            // ,
             item_route_name: "commande-details",// the route to trigger when a line is click 
             max_per_page: 15,//required          
             identifier: "COMMANDE_all",//required

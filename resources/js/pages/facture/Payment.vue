@@ -19,7 +19,7 @@
           <transition-group tag="div" class="list"  name="list" appear>
       <template v-for="payment,index in payments" :key="index">
         <div class="row mb-2">
-        <div class="col-2 font-14 paymentid almarai_700_normal d-flex align-items-center" :class="{valide:payment.paiement_state_id==2}">{{payment.id}}</div>
+        <div class="col-2 font-14 paymentid almarai_700_normal d-flex align-items-center" :class="{valide:payment.paiement_state_id==2}"><span class="btn-link cursor-pointer" @click="router.push({path:`/paiement/detail/${payment.id}`})">{{payment.id}}</span></div>
         <div class="col-2 font-14d-flex align-items-center justify-content-center">{{formatDate(payment.datepaiement)}}</div>
         <div class="col-1 font-14 d-flex align-items-center justify-content-right">{{payment.pourcentage}}%</div>
         <div class="col-2  d-flex align-items-center"><state-tag width="100%" classes="almarai_700_normal" :id="payment.paiement_state_id" :states="payment_states"/></div>
@@ -54,7 +54,7 @@
                 <div class="col-6">Montant</div><div class="col-6"><money3 v-model="paiement.montantpaiement" v-bind="moneyconfig" @keyup="checkmontant"></money3></div>
             </div>
             <div class="row mb-3">
-                <div class="col-6">Taux</div><div class="col-6"><input type="text" v-model="paiement.pourcentage" class="input-text"/></div>
+                <div class="col-6">Taux</div><div class="col-6"><input type="text" v-model="paiement.pourcentage" class="input-text" @keyup="checktaux"  @blur="addper"/></div>
             </div>
              <div class="row mb-3">
                 <div class="col-6">Reference</div><div class="col-6"><input type="text" v-model="paiement.reference" class="input-text"/></div>
@@ -77,6 +77,7 @@ import StateTag from '../../components/miscellaneous/StateTag.vue';
  import { Money3Component } from 'v-money3';
 import { useStore } from 'vuex';
 import DatePicker from '../../components/miscellaneous/DatePicker.vue';
+import { useRouter } from 'vue-router';
 export default {
         name: "Payment",
         props:{
@@ -105,6 +106,7 @@ export default {
                             });
         
           const store=useStore();
+          const router=useRouter();
           const showmodal_payment=ref(false);
           const paiement=ref({
               invoice_id:props.invoice_id,
@@ -164,7 +166,7 @@ export default {
              return isFloat(v)?v.toFixed(2):v;
           }
        
-          watch(()=>paiement.value.montantpaiement,(current_val,previous_val)=>{
+           const checkmontant=()=>{
               let total_paid=payments.value.reduce((acc, payment) => {
                 //if(payment.paiement_state_id==2)
                   return acc + payment.montantpaiement;
@@ -173,13 +175,32 @@ export default {
           
              let reste_a_payer= invoice.value.montant-total_paid;
 
-             if(parseFloat(current_val)>reste_a_payer)
+             if(parseFloat( paiement.value.montantpaiement)>reste_a_payer)
              paiement.value.montantpaiement=reste_a_payer;
 
              paiement.value.pourcentage=((paiement.value.montantpaiement/invoice.value.montant)*100);
-              paiement.value.pourcentage=isFloat( paiement.value.pourcentage)? paiement.value.pourcentage.toFixed(2): paiement.value.pourcentage;
+              paiement.value.pourcentage=`${isFloat( paiement.value.pourcentage)? paiement.value.pourcentage.toFixed(2): paiement.value.pourcentage}%`;
 
-          })
+          };
+           const checktaux=()=>{
+              let total_paid=payments.value.reduce((acc, payment) => {
+                //if(payment.paiement_state_id==2)
+                  return acc + payment.montantpaiement;
+                 //  return acc;
+                }, 0);
+          
+             let reste_a_payer= invoice.value.montant-total_paid;
+
+             let taux_reste_a_payer=(reste_a_payer/invoice.value.montant)*100;
+
+         
+             if(parseFloat(paiement.value.pourcentage)>taux_reste_a_payer)
+             paiement.value.pourcentage=taux_reste_a_payer;
+
+             paiement.value.montantpaiement=((paiement.value.pourcentage*invoice.value.montant))/100;
+       
+
+          };
           const showpaymentform=()=>{
              paiement.value={
               invoice_id:props.invoice_id,
@@ -191,9 +212,7 @@ export default {
           };
               showmodal_payment.value=true;
           }
-          const checkmontant=()=>{
 
-          }
           const newpaiement=()=>{
               
 
@@ -260,6 +279,10 @@ export default {
             paiement.value.datepaiement=obj.date;
   
           }
+
+          const addper=()=>{
+            paiement.value.pourcentage=`${paiement.value.pourcentage}%`;
+          }
           return {
             formatPrice,
             formatDate,
@@ -275,9 +298,12 @@ export default {
             paiement,
             typeOptions,
             moneyconfig,
-            checkmontant,
             removePaiement,
-            setPaiementDate
+            setPaiementDate,
+            router,
+            addper,
+            checktaux,
+            checkmontant
           }
         }
 }

@@ -97,7 +97,7 @@
                             <div class="col-1 d-flex align-items-center justify-content-center"> <transition
                         enter-active-class="animate__animated animate__fadeIn"
                         leave-active-class="animate__animated animate__fadeOut"
-                ><icon v-if="((facture.invoice_type_name=='FACTURE')&&facture.facturer==0||facture.invoice_type_name==null&&facture.facturer==0||facture.invoice_type_name=='REMISE')&&(facture.invoice_state_id==1||facture.invoice_state_id==null)" name="trash-x" width="20px" height="20px" class="cursor-pointer" @click="removeInvoice(facture)"></icon></transition></div>  
+                ><icon v-if="((facture.invoice_type_name=='AVOIR')&&facture.facturer==0||(facture.invoice_type_name=='FACTURE')&&facture.facturer==0||facture.invoice_type_name==null&&facture.facturer==0||facture.invoice_type_name=='REMISE')&&(facture.invoice_state_id==1||facture.invoice_state_id==null)" name="trash-x" width="20px" height="20px" class="cursor-pointer" @click="removeInvoice(facture)"></icon></transition></div>  
                         </div>
                         </template>
                             </transition-group>
@@ -150,7 +150,7 @@
 <div class="row mb-3" v-if="order.total>0">
     <div class="col-6">Taux</div><div class="col-6"><input type="text" v-model="facture.taux" @keyup="checktaux" @blur="addper" class="input-text" ></div> 
 </div>
-<div class="row mb-3">
+<div class="row mb-3" v-if="facture.invoice_type_id!=2">
     <div class="col-6">Date</div><div class="col-6"><date-picker @changed="setEcheanceDate" :disabledToDate="disabledToDate" name="echeance" :droppos="{top:'40px',right:'auto',bottom:'auto',left:'0',transformOrigin:'top center'}"></date-picker></div>
 </div>
 <div class="row mb-3">
@@ -290,6 +290,8 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                         store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_UPDATE_ORDER_STATE}`,order_state_id).then(response=>{
                             showloader.value=false;
                             store.commit(`${ITEM_LIST_MODULE}${ITEM_LIST_UPDATE_ROW}`,{id:'id',idValue:order_id,colName:'order_state_id',colValue:order_state_id});
+                            if(order_state_id==4)//gagne
+                            router.push({name:'commande-details',params:{id:order_id}});
                         })
                     }
                 });      
@@ -413,7 +415,7 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                         });
                         valide=false;
            }
-             if(facture.value.date.trim()==''){
+             if(facture.value.date.trim()==''&&facture.value.invoice_type_id!=2){
              store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
                             message: 'Veuillez saisir une échéance.',

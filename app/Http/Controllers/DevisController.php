@@ -342,7 +342,7 @@ class DevisController extends Controller
 
         if($invoice_type_id==2){// mettre a jour les echeance qui ne sont pas encore facturer
             foreach($orderInvoices as $orderInvoice){
-                if($orderInvoice->invoice_type_name==''&&$orderInvoice->facturer==0){
+                if($orderInvoice->invoice_type_name=='FACTURE'&&$orderInvoice->facturer==0){
                     $montant=($reste_a_facturer/(100-$total_taux_facture)*$orderInvoice->pourcentage);
                     $oi=OrderInvoice::find($orderInvoice->id);
                     $oi->montant=$montant;
@@ -369,19 +369,20 @@ class DevisController extends Controller
         if($order->affiliate_id!=$user->affiliate_id)
         return response('Order is not affiliated to user.Cannot delete invoice.',509);
 
+        
         if($oi->invoice_id>0){
             $invoice=Invoice::find($oi->invoice_id);
             if($invoice->invoice_state_id!=1)
                 return response('Invoice already exists.Cannot delete',509);
 
-   
+                if($invoice_type_name=='AVOIR'&&$invoice->invoice_state_id!=1)
+                return response('Impossible de supprimer une avoir.',509);
          
-            if(($invoice->invoice_type_id==1||$invoice->invoice_type_id==2)&&$invoice->invoice_state_id==1){//if facture or remise and still in creation we can delete. we cannot delete avoir
+            if(($invoice->invoice_type_id==1||$invoice->invoice_type_id==2||$invoice->invoice_type_id==3)&&$invoice->invoice_state_id==1){//if facture or remise and still in creation we can delete. we cannot delete avoir
                 $invoice->delete();   
         }
         }
-        if($invoice_type_name=='AVOIR')
-        return response('Impossible de supprimer une avoir.',509);
+     
 
         $oi->delete();
 
@@ -417,7 +418,7 @@ class DevisController extends Controller
     
 
                 foreach($orderInvoices as $orderInvoice){
-                    if($orderInvoice->invoice_type_name==null&&$orderInvoice->facturer==0){
+                    if($orderInvoice->invoice_type_name=='FACTURE'&&$orderInvoice->facturer==0){
                        
                         $montant=($reste_a_facturer/(100-$total_taux_facture)*$orderInvoice->pourcentage);
                         $oi=OrderInvoice::find($orderInvoice->id);
