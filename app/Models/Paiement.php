@@ -2,18 +2,57 @@
 
 namespace App\Models;
 
-use App\Traits\LcdtLog;
 use Exception;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Invoice;
+use App\Traits\LcdtLog;
+use App\Models\Customer;
+use App\Models\PaiementType;
+use App\Models\PaiementState;
+use App\Models\PaiementHistory;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Paiement extends Model
 {
     use HasFactory;
     use SoftDeletes;
     use LcdtLog;
+
+    protected $guarded = ['id'];
+
+
+    public function type() 
+    {
+        return $this->belongsTo(PaiementType::class, 'paiement_type_id');
+    }
+
+    public function state() 
+    {
+        return $this->belongsTo(PaiementState::class, 'paiement_state_id');
+    }
+
+    public function customer() 
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function user() 
+    {
+        return $this->belongsTo(User::class, 'responsable_id');
+    }
+
+    public function invoice() 
+    {
+        return $this->belongsTo(Invoice::class, 'invoice_id');
+    }
+
+    public function history() 
+    {
+        return $this->hasMany(PaiementHistory::class, 'paiement_id');
+    }
+
 
     public function updateState($paiement_state_id, $user_id=null){
         if($user_id==null)

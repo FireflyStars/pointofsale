@@ -66,6 +66,9 @@ import { commande as COMMANDE_LIST_MODULE } from "./modules/commande"
 import { intervention as INTERVENTION_LIST_MODULE } from './modules/intervention'
 import { InterventionStatusTag as INTERVENTION_STATUS_MODULE } from './modules/component_store/InterventionStatusTag'
 
+import { paiement as PAIEMENT_LIST_MODULE } from "./modules/paiement"
+import { paiementStatusTag as PAIEMENT_STATUS_MODULE } from './modules/component_store/paiementStatusTag'
+
 
 export default createStore({
     modules: {
@@ -102,5 +105,7 @@ export default createStore({
         COMMANDE_DETAIL_MODULE,
         INTERVENTION_LIST_MODULE,
         INTERVENTION_STATUS_MODULE,
+        PAIEMENT_LIST_MODULE,
+        PAIEMENT_STATUS_MODULE
     }
 });

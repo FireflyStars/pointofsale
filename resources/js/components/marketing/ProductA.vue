@@ -38,7 +38,7 @@
                                         <h3 
                                             class="margin-align m-0"
                                         >
-                                            PLATEFORME MARKETING > Categorie {{ category.id || 'XXX' }}
+                                            PLATEFORME MARKETING > {{ category.name }}
                                         </h3>
 
                                         <div class="d-flex align-items-center gap-2">
@@ -61,7 +61,7 @@
                                                 prepend
                                                 class="btn btn-newrdv body_medium"
                                                 kind="warning"
-                                                :title="'Panier :' + cardQuantity"
+                                                :title="'Panier :' + cardQty"
                                                 classes="border-0"
                                                 style="border-radius: 10px; font-size: 12px !important"
                                                 @click.prevent="$router.push({
@@ -106,10 +106,10 @@
                                                     <p class="fs-6" v-html="category.text"></p>
                                                 </div>
         
-                                                <hr v-if="fields?.personalize && !isPersonalizeAble" />
+                                                <hr v-if="!isPersonalizeAble && !loading" />
         
         
-                                                <div class="row" v-if="fields?.personalize && !isPersonalizeAble">
+                                                <div class="row" v-if="!isPersonalizeAble && !loading">
         
                                                     <div class="col">
                                                         <p class="p-title text-uppercase text-start">
@@ -137,26 +137,34 @@
                                                     </div>
         
                                                     <div class="col-lg-12 group_input">
+
+                                                        <template v-if="fields?.Telephone_agence?.active == 1">
+                                                            
+                                                            <label class="fix_width">coord:</label>
+                                                            <input
+                                                                type="text"
+                                                                placeholder="1 Rue Jean-Baptiste Colbert"
+                                                                name="adresse"
+                                                                v-model="phone"
+                                                            />
                                                         
-                                                        <label class="fix_width">coord:</label>
-                                                        <input
-                                                            type="text"
-                                                            placeholder="1 Rue Jean-Baptiste Colbert"
-                                                            name="adresse"
-                                                            v-model="phone"
-                                                        />
+                                                        </template>
+                                                        
+                                                        <template v-if="fields?.Email_agence?.active == 1">
         
-                                                        <label class="fix_width_tiret">-</label>
-                                                        <input
-                                                            type="text"
-                                                            id="inputPassword"
-                                                            name="adresse2"
-                                                            v-model="email"
-                                                        />
+                                                            <label class="fix_width_tiret">-</label>
+                                                            <input
+                                                                type="text"
+                                                                id="inputPassword"
+                                                                name="adresse2"
+                                                                v-model="email"
+                                                            />
+
+                                                        </template>
         
                                                     </div>
         
-                                                    <div class="col-lg-12 group_input">
+                                                    <div class="col-lg-12 group_input" v-if="fields?.Adresse_agence?.active == 1">
                                                         
                                                         <label class="fix_width">adresse:</label>
                                                         <input
@@ -178,7 +186,7 @@
         
                                                     </div>
         
-                                                    <div class="col-lg-12 group_input">
+                                                    <div class="col-lg-12 group_input" v-if="fields?.CP_agence?.active == 1 && fields?.Ville_agence?.active == 1">
                                                         
                                                         <label class="fix_width">cp & ville:</label>
                                                         <input
@@ -206,6 +214,7 @@
                                                             type="text"
                                                             id="inputPassword"
                                                             name="adresse2"
+                                                            disabled
                                                         />
         
                                                     </div>
@@ -240,6 +249,7 @@
                                                             placeholder="1 Rue Jean-Baptiste Colbert"
                                                             name="adresse"
                                                             :value="affiliate.ape"
+                                                            disabled
                                                         />
         
                                                         <label class="fix_width_tiret">-</label>
@@ -255,9 +265,9 @@
         
                                                 </div>
         
-                                                <hr v-if="!productWithDownloadOnly" />
+                                                <hr v-if="!productWithDownloadOnly && !loading" />
     
-                                                <div class="footer" v-if="!productWithDownloadOnly">
+                                                <div class="footer" v-if="!productWithDownloadOnly && !loading">
 
                                                     <p class="p-title text-uppercase text-start">
                                                         votre commande
@@ -326,92 +336,44 @@
                                                 style="
                                                 position: absolute; 
                                                 left: 1.5rem; 
-                                                transform: scale(0.75) !important; 
+                                                transform: scale(.75);
                                                 transform-origin: top left;
-                                                min-width: 600px;
-                                                min-height: 800px;
+                                                min-width: 500px;
+                                                min-height: 500px;
                                                 "
                                             >
                                                 
                                                 <img 
                                                     :src="category.imageTemplateUrl" 
                                                     alt="Lcdt Logo" 
-                                                    style="width: 210mm; height: 297mm;"
+                                                    style="width: 100%; height: 100%"
                                                 >
 
-                                                <template v-if="!productWithDownloadOnly && !isPersonalizeAble">
-                                                    
+
+                                                <template v-if="!productWithDownloadOnly && !isPersonalizeAble && !loading">
+
                                                     <template v-for="(item, index) in fields" :key="index">
 
-                                                        <span 
-                                                            v-if="item.active == 1" 
-                                                        >
+                                                            <span 
+                                                                v-if="item != '' && item != null && typeof item != 'undefined' && item?.active == 1" 
+                                                            >
 
-                                                            <template v-if="index == 'Prenom_dirigeant'">
                                                                 <span 
                                                                 :style="{
                                                                     color: item.color,
-                                                                    fontSize: `18px`,
+                                                                    fontSize: item.size,
                                                                     fontFamily: item.font,
-                                                                    top: `874px`,
-                                                                    left: `274px`,
+                                                                    top: item.y + 'px',
+                                                                    left: item.x + 'px',
                                                                     position: 'absolute'
                                                                 }">
                                                                     {{ item.value }}
                                                                 </span>
+                                                                    
                                                                 
-                                                            </template>
+                                                            </span>
 
-                                                            <template v-if="index == 'Nom_dirigeant'">
-                                                                <span 
-                                                                :style="{
-                                                                    color: item.color,
-                                                                    fontSize: `18px`,
-                                                                    fontFamily: item.font,
-                                                                    top: `874px`,
-                                                                    left: `366px`,
-                                                                    position: 'absolute'
-                                                                }">
-                                                                    {{ item.value }}
-                                                                </span>
-                                                                
-                                                            </template>
-
-                                                            <template v-if="'Email_agence' == index">
-
-                                                                <span 
-                                                                :style="{
-                                                                    color: item.color,
-                                                                    fontSize: `18px`,
-                                                                    fontFamily: item.font,
-                                                                    top: `900px`,
-                                                                    left: `274px`,
-                                                                    position: 'absolute'
-                                                                }">
-                                                                    {{ email }}
-                                                                </span>
-                                                                
-                                                            </template>
-
-                                                            <template v-if="'Telephone_agence' == index">
-                                                                
-                                                                <span 
-                                                                :style="{
-                                                                    color: item.color,
-                                                                    fontSize: `18px`,
-                                                                    fontFamily: item.font,
-                                                                    top: `924px`,
-                                                                    left: `274px`,
-                                                                    position: 'absolute'
-                                                                }">
-                                                                    {{ phone }}
-                                                                </span>
-
-                                                            </template>
-                                                            
-                                                        </span>
-
-                                                    </template>
+                                                        </template> 
                                                 
                                                 </template>
 
@@ -495,6 +457,10 @@
         HIDE_LOADER
     }
     from '../../store/types/types'
+    import useCard from '../../composables/useCard'
+
+
+    const { getCardQty, cardQty } = useCard()
 
     const props = defineProps({
         categoryId: {
@@ -509,7 +475,6 @@
     const phone = ref('')
     const email = ref('')
 
-
     const category = computed(() => store.getters[`${CIBLE_MODULE}campagneCategory`]?.campagne || {})
     const affiliate = computed(() => store.getters[`${CIBLE_MODULE}campagneCategory`]?.affiliate || {})
     const fields = computed(() => store.getters[`${CIBLE_MODULE}fields`])
@@ -518,7 +483,6 @@
         return category.value.typeofproduct?.toLowerCase() == 'download' 
         && category.value.type?.toLowerCase() == 'produit' 
     })
-
     
     const canGeneratePdf = computed(() => {
         return (category.value.typeofproduct?.toLowerCase() == 'download'
@@ -556,10 +520,10 @@
         return percentage?.toFixed(2) || 0
     })
     
-    const getCategory = (id) => {
+    const getCategory = async (id) => {
         try {
             loading.value = true
-            return store.dispatch(`${[CIBLE_MODULE]}${[GET_CAMPAGNE_CATEGORY]}`, id)
+            await store.dispatch(`${[CIBLE_MODULE]}${[GET_CAMPAGNE_CATEGORY]}`, id)
         }
         catch(e) {
             throw e
@@ -599,6 +563,9 @@
                 email: email.value,
                 phone: phone.value
             })
+            
+            await getCardQty()
+
             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                 type: 'success',
                 message: 'Produit ajouté au panier',
@@ -621,7 +588,32 @@
 
     }
 
+    const downloadProductFile = async () => {
+        try {
+            if(category.value?.fileDepliantFull?.fullpath) {
+                window.location = category.value?.fileDepliantFull?.fullpath
+            }
+        }
+        catch(e) {
+            store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                type: 'danger',
+                message: e || 'Something went wrong',
+                ttl: 5,
+            })
+            throw e
+        }
+    }
+
     const generatePDF = async () => {
+
+
+        if(productWithDownloadOnly.value) {
+
+            downloadProductFile()
+
+            return
+        }
+
         
         try {
             store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Veuillez patienter. Génération du PDF en cours...'])
@@ -653,6 +645,7 @@
     onMounted(async () => {
         await getCategory(props.categoryId)
         getFieldsData(props.categoryId)
+        getCardQty()
     })
 
 </script>
@@ -664,9 +657,9 @@
 }
 
 .apercu {
-    height: 600px;
+    height: auto;
     overflow: overlay;
-    width: 465px;
+    width: auto;
 }
 
 .panel-title {

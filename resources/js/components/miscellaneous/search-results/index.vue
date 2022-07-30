@@ -22,7 +22,7 @@
                         class="info-box" 
                         v-for="(customer, index) in results?.customers"
                         :key="index"
-                        @click.prevent="$router.push({ path: `/entite/details/${customer.customer_id}` })"
+                        @click.prevent="$router.push({ name: 'entite-details', params: { id: customer.customer_id } })"
                     >
                         <div class="item">
                             <h5>{{ customer.company }}</h5>
@@ -58,7 +58,7 @@
                         class="info-box"
                         v-for="(contact, index) in results.contacts"
                         :key="index"
-                        @click.prevent="$router.push({ path: `/contact/details/${contact.contact_id}` })"
+                        @click.prevent="$router.push({ name: 'contact-details', params: { id: contact.contact_id } })"
                     >
                         <div class="item">
                             <h5>{{ contact.firstname + " " + contact.name }}</h5>
@@ -128,7 +128,7 @@
                         class="info-box"
                         v-for="event in results.events"
                         :key="event.event_id"
-                        @click.prevent="$router.push({ path: `/action-commercial/details/${event.event_id}` })"
+                        @click.prevent="$router.push({ name: 'action-commercial-details', params: { id: event.event_id } })"
                     >
                         <div class="item">
                             <label class="font-14 font-light">{{ event.event_id }}</label>

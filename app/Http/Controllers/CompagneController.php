@@ -41,6 +41,15 @@ class CompagneController extends Controller
 
     private $pdf;
 
+    public function get_card_quantity(Request $request) 
+    {
+        
+        $card = campagne_card::where('user_id', $request->user()->id)->where('status', 'NOUVEAU')->first();
+
+        return response()->json($card->details->sum('qty'));
+
+    }
+
     public function generate_pdf(CampagneCategory $campagne, Request $request) 
     {
 
@@ -132,12 +141,12 @@ class CompagneController extends Controller
             return $product->tax->taux ?? 0.20;
         })->sum();
 
-        $transport = $products->sum(function($product) use($product_price, $product_poids) {
+        $transport = $products->sum(function($product) use($product_poids) {
             $poids = $product_poids($product);
             $weight = $poids - 10;
             $weight = (int) ceil($weight / 10);
             $transportPrice = 17 + ($weight * 7);
-            return ($product_price($product) + $transportPrice) * 1;
+            return ($transportPrice) * 1;
         });
 
         $cardPrice = $products->sum(function($product) use($product_price) {
@@ -216,7 +225,7 @@ class CompagneController extends Controller
     {
         
         $affiliate = $request->user()->affiliate;
-        $card = optional(campagne_card::where('user_id', $request->user()->id))->first();
+        $card = optional(campagne_card::where('user_id', $request->user()->id)->where('status', 'NOUVEAU'))->first();
         
         $card_details = campagne_card_detail::with('campagneCategory', 'tax')
                         ->where('campagne_card_id', optional($card)->id)
