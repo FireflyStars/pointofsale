@@ -206,6 +206,16 @@
     background-position: center;
     background-repeat: no-repeat;    
 }
+.play-icon{
+    min-width: 35px;   
+    height: 35px;
+    display: block;
+    background-image: url(../js/images/play-butoon.svg);
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;    
+    cursor: pointer;
+}
 .ouvrage-section.open{
     .arrow-icon{
         background-image: url(../js/images/down-arrow.svg);

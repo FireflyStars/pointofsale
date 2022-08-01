@@ -1135,12 +1135,12 @@ class DevisController extends Controller
                 $ged_details = DB::table('ged_details')
                                 ->where('order_zone_id', $zone->id)
                                 ->where('ged_category_id', $item->id)
-                                ->whereNotIn('type', ['txt', 'description', 'm4a', 'm4v'])
+                                ->whereNotIn('type', ['txt', 'description'])
                                 ->where('user_id', Auth::id())
                                 ->select(
                                     DB::raw('CONCAT(CONCAT(storage_path, "/",file), ".", type) as url'), 
                                     'human_readable_filename as fileName',
-                                    'id'
+                                    'id', 'type'
                                 )->get();
                 if($ged_details->count() > 0){
                     foreach ($ged_details as $ged_detail) {
@@ -1149,6 +1149,7 @@ class DevisController extends Controller
                             'fileName'      => $ged_detail->fileName,
                             'url'           => getenv('APP_URL').Storage::url($ged_detail->url),
                             'id'            => $ged_detail->id,
+                            'type'          => $ged_detail->type,
                         ];
                     }
                 }else{

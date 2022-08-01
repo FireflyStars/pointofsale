@@ -181,10 +181,22 @@
                         <div class="img ms-2" v-for="(gedDetail, index) in gedCat[0].items" :key="index">
                           <div class="rounded border border-1 ged-image"
                             :style="{ 'background-image': `url(${gedDetail.url != '' ? gedDetail.url : gedDetail.base64data})`}"
-                          >
+                            v-if="gedDetail.type == 'png'">
                             <div class="w-100 h-100 image-overlayer d-flex justify-content-around align-items-center">
-                              <span class="eye-icon" @click="zoomImage(gedDetail.url != '' ? gedDetail.url : gedDetail.base64data)"></span>
+                              <span class="eye-icon" @click="viewGedMedia(gedDetail.url != '' ? gedDetail.url : gedDetail.base64data, gedDetail.type)"></span>
                               <span class="cancel-icon" @click="removeImage(zoneIndex, gedCat[0].id,index)"></span>
+                            </div>
+                          </div>
+                          <div class="rounded border border-1 ged-image"
+                            v-else-if="gedDetail.type == 'm4a'">
+                            <div class="w-100 h-100 d-flex justify-content-around align-items-center">
+                              <span class="play-icon" @click="viewGedMedia(gedDetail.url != '' ? gedDetail.url : gedDetail.base64data, gedDetail.type)"></span>
+                            </div>
+                          </div>
+                          <div class="rounded border border-1 ged-image"
+                            v-else>
+                            <div class="w-100 h-100 d-flex justify-content-around align-items-center">
+                              <span class="play-icon" @click="viewGedMedia(gedDetail.url != '' ? gedDetail.url : gedDetail.base64data, gedDetail.type)"></span>
                             </div>
                           </div>
                         </div>
@@ -1346,8 +1358,8 @@ export default {
         });
       }
     }
-    const zoomImage = (content)=>{
-      zoomModal.value.openModal(content);
+    const viewGedMedia = (content, type)=>{
+      zoomModal.value.openModal(content, type);
     }
     const togglePanel = (eleID)=>{
       document.getElementById(eleID).classList.toggle('open');
@@ -2095,7 +2107,7 @@ export default {
       addFileToGed,
       previewFile,
       removeImage,
-      zoomImage,
+      viewGedMedia,
       togglePanel,
       openSecuriteModal,
       openInstallationModal,
