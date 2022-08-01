@@ -140,6 +140,7 @@
         <base-button 
             title="Fermer" 
             class="text-uppercase"
+            @click.prevent="$router.push({ name: 'paiement' })"
         />
         
     </div>

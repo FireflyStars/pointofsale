@@ -70,7 +70,7 @@ watch(() => props.id, (current_val) => {
 })
 
 onMounted(async ()=> {
-    if(loaded.value === false) {
+    if(loaded.value == false) {
         await store.dispatch(`${PAIEMENT_STATUS_MODULE}${PAIEMENT_LOAD_STATES}`) 
     }
     if(states.value.length > 0) {

@@ -36,9 +36,8 @@
                                         
                                         <item-list-table :table_def="paiements">
 
-                                            <template v-slot:paiement_type_id="{ row }">
-                                                
-                                                <status-tag :id="row.paiement_type_id" />
+                                            <template v-slot:paiement_state_id="{ row }">
+                                                <status-tag :id="row.paiement_state_id" />
                                             
                                             </template>
 
@@ -50,9 +49,9 @@
                                         
                                         <item-list-table :table_def="paiementsMes">
 
-                                            <template v-slot:paiement_type_id="{ row }">
+                                            <template v-slot:paiement_state_id="{ row }">
                                                 
-                                                <status-tag :id="row.paiement_type_id" />
+                                                <status-tag :id="row.paiement_state_id" />
                                             
                                             </template>
 
@@ -64,9 +63,9 @@
                                         
                                         <item-list-table :table_def="paiementsValider">
 
-                                            <template v-slot:paiement_type_id="{ row }">
+                                            <template v-slot:paiement_state_id="{ row }">
                                                 
-                                                <status-tag :id="row.paiement_type_id" />
+                                                <status-tag :id="row.paiement_state_id" />
                                             
                                             </template>
                                             

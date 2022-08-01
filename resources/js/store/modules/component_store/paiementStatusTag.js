@@ -15,14 +15,14 @@ export const paiementStatusTag = {
       [PAIEMENT_SET_STATES]:(state, states)=>{
         state.paiementStates = states;
       },
-      [PAIEMENT_SET_LOADED]:(state, load = true)=>{
-        state.loaded = load;
+      [PAIEMENT_SET_LOADED]:(state)=>{
+        state.loaded = true
       }
     },
     actions: {
       [PAIEMENT_LOAD_STATES]: async({ commit,state,dispatch }, params) => {
         commit(PAIEMENT_SET_LOADED)
-        return axios.post(`/get-paiement-types`, params).then((response)=>{
+        return axios.post(`/get-paiements-types`, params).then((response)=>{
           commit(PAIEMENT_SET_STATES, response.data);
           return  Promise.resolve(response);
                 

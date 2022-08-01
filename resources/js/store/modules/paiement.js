@@ -370,7 +370,8 @@ export const paiement = {
             
             try {
                 commit(SET_LOADING, { id: 'history', status: true })
-                const { data } = await axios.get(`get-paiement-history/${id}`)
+                const { data } = await axios.get(`/get-paiement-history/${id}`)
+                console.log(data)
                 commit(SAVE_PAIEMENT_RESULTS, data)
             }
 

@@ -438,14 +438,6 @@
         return affiliate.value?.firstnamedirector + ' ' + affiliate.value?.namedirector
     })
 
-    // const cardQuantity = computed(() => {
-    //     // console.log(products.value)
-    //     // return products.value
-    //     // .map(product => product.qty)
-    //     // .reduce((oldQty, newQty) => oldQty + newQty, 0)
-    //     return store.getters[`${CIBLE_MODULE}cardQty`]
-    // })
-
     const cardPrice = computed(() => {
         let total = 0
         products.value
@@ -454,14 +446,22 @@
     })
 
     const livraisonPrice = computed(() => {
+        
         let total = 0
+        let weight = 0
+
         products.value.forEach(product => {
-            let weight = +productPoids(product) - 10
-            weight = +Math.ceil(weight / 10)
-            let transportPrice = 17 + +(weight * 7)
-            total += +transportPrice * Coef.value
+            console.log(+weight + +productPoids(product))
+            weight = +weight + +productPoids(product)
         })
+
+        weight = weight - 10
+        weight = +Math.ceil(weight / 10)
+        let transportPrice = 17 + +(weight * 7)
+        total = (+transportPrice * Coef.value)
+        
         return total.toFixed(2)
+
     })
 
     const totalHt = computed(() => (+cardPrice.value + +livraisonPrice.value).toFixed(2))
