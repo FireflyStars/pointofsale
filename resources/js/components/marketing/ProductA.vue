@@ -335,8 +335,9 @@
                                                 class="text-center bg-panel" 
                                                 style="
                                                 position: absolute; 
+                                                top: -3.9rem;
                                                 left: 1.5rem; 
-                                                transform: scale(.75);
+                                                transform: scale(.75)
                                                 transform-origin: top left;
                                                 min-width: 500px;
                                                 min-height: 500px;
@@ -346,7 +347,7 @@
                                                 <img 
                                                     :src="category.imageTemplateUrl" 
                                                     alt="Lcdt Logo" 
-                                                    style="width: 100%; height: 100%"
+                                                    style="width: auto; height: auto"
                                                 >
 
 
