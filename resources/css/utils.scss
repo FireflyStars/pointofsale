@@ -206,7 +206,8 @@
     background-position: center;
     background-repeat: no-repeat;    
 }
-.play-icon{
+.play-icon,
+.music-play-icon{
     min-width: 35px;   
     height: 35px;
     display: block;
@@ -215,6 +216,9 @@
     background-position: center;
     background-repeat: no-repeat;    
     cursor: pointer;
+}
+.music-play-icon{
+    background-image: url(../js/images/music-play.svg);
 }
 .ouvrage-section.open{
     .arrow-icon{

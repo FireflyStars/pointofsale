@@ -11,6 +11,16 @@ const router = createRouter({
         {
             path:'',
             name:'LandingPage',
+            component:()=> import('../pages/Home/Index.vue'),
+            meta:{
+                authenticated:true
+            },
+
+        },
+
+        {
+            path:'/devis',
+            name:'Devis',
             component:()=> import('../pages/devis/Devis.vue'),//import('../Pages/Index'),
             children:[
                 {

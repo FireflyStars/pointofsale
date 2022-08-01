@@ -320,6 +320,7 @@ Route::group([
     // statistique 
     Route::post('/statistique',   [StatisticController::class,'index'])->middleware('auth')->name('get.statis');
 });
+// Route::get('/statistique',   [StatisticController::class,'index'])->middleware('auth')->name('get.statis');
 // Outlook Agenda
 Route::get('/outlook/sync', [ ActionCommercialListController::class, 'syncOutlook' ])->middleware('auth')->name('outlook.sync');
 Route::get('/callback', [ ActionCommercialListController::class, 'outlookSyncCallback' ])->middleware('auth')->name('outlook.sync.callback');

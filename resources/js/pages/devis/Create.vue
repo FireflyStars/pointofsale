@@ -179,12 +179,25 @@
                         <div class="img ms-2" v-for="(gedDetail, index) in gedCat[0].items" :key="index">
                           <div class="rounded border border-1 ged-image"
                             :style="{ 'background-image': `url(${gedDetail.url != '' ? gedDetail.url : gedDetail.base64data})`}"
+                            v-if="gedDetail.type == 'png'"
                           >
                             <div class="w-100 h-100 image-overlayer d-flex justify-content-around align-items-center">
-                              <span class="eye-icon" @click="zoomImage(gedDetail.url != '' ? gedDetail.url : gedDetail.base64data)"></span>
+                              <span class="eye-icon" @click="viewGedMedia(gedDetail.url != '' ? gedDetail.url : gedDetail.base64data, gedDetail.type)"></span>
                               <span class="cancel-icon" @click="removeImage(zoneIndex, gedCat[0].id,index)"></span>
                             </div>
                           </div>
+                          <div class="rounded border border-1 ged-image"
+                            v-else-if="gedDetail.type == 'm4a'">
+                            <div class="w-100 h-100 d-flex justify-content-around align-items-center">
+                              <span class="music-play-icon" @click="viewGedMedia(gedDetail.url != '' ? gedDetail.url : gedDetail.base64data, gedDetail.type)"></span>
+                            </div>
+                          </div>
+                          <div class="rounded border border-1 ged-image"
+                            v-else>
+                            <div class="w-100 h-100 d-flex justify-content-around align-items-center">
+                              <span class="play-icon" @click="viewGedMedia(gedDetail.url != '' ? gedDetail.url : gedDetail.base64data, gedDetail.type)"></span>
+                            </div>
+                          </div>                          
                         </div>
                       </div>
                       <!-- <div v-if="gedCat[0].name == 'Vue exterieur'" class="get-cat-footer almarai-light font-14 mb-3">
@@ -904,7 +917,7 @@
           </div>
         </div>
       </div>
-      <input type="file" @change="previewFile" accept="image/*" ref="file" multiple class="d-none">
+      <input type="file" @change="previewFile" accept="audio/*,video/*,image/*" ref="file" multiple class="d-none">
       <zoom-modal ref="zoomModal"></zoom-modal>
       <SecuriteModal ref="securiteModal" @selectedOuvrage="selectedOuvrage" @openEmptyOuvrageModal="openEmptyOuvrageModal"></SecuriteModal>
       <InstallationModal ref="installationModal" @selectedOuvrage="selectedOuvrage" @openEmptyOuvrageModal="openEmptyOuvrageModal"></InstallationModal>
@@ -1298,12 +1311,23 @@ export default {
     const previewFile = ()=>{
       let images = file.value.files;
       for (let i = 0; i < images.length; i++) {
+        let type = images[i].type.split("/")[0];
+        if(type == 'image'){
+          type = 'png';
+        }else if(type == 'audio'){
+          type = 'm4a';
+        }else{
+          type = 'm4v';
+        }
         let reader = new FileReader();
         reader.onload = (e) => {
           form.value.zones[zoneIndex.value].gedCats[gedCatId.value][0].items.push({
             url: '',
             base64data: reader.result,
             fileName: images[i].name,
+            type: type,
+            url: reader.result,
+            id: '',            
           })
         };
         reader.readAsDataURL(images[i]);
@@ -1314,8 +1338,8 @@ export default {
         return i != index;
       })
     }
-    const zoomImage = (content)=>{
-      zoomModal.value.openModal(content);
+    const viewGedMedia = (content, type)=>{
+      zoomModal.value.openModal(content, type);
     }
     const togglePanel = (eleID)=>{
       document.getElementById(eleID).classList.toggle('open');
@@ -1959,7 +1983,7 @@ export default {
       addFileToGed,
       previewFile,
       removeImage,
-      zoomImage,
+      viewGedMedia,
       togglePanel,
       openSecuriteModal,
       openInstallationModal,

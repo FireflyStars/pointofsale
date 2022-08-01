@@ -190,7 +190,7 @@
                           <div class="rounded border border-1 ged-image"
                             v-else-if="gedDetail.type == 'm4a'">
                             <div class="w-100 h-100 d-flex justify-content-around align-items-center">
-                              <span class="play-icon" @click="viewGedMedia(gedDetail.url != '' ? gedDetail.url : gedDetail.base64data, gedDetail.type)"></span>
+                              <span class="music-play-icon" @click="viewGedMedia(gedDetail.url != '' ? gedDetail.url : gedDetail.base64data, gedDetail.type)"></span>
                             </div>
                           </div>
                           <div class="rounded border border-1 ged-image"
@@ -918,7 +918,7 @@
           </div>
         </div>
       </div>
-      <input type="file" @change="previewFile" accept="image/*" ref="file" multiple class="d-none">
+      <input type="file" @change="previewFile" accept="audio/*,video/*,image/*" ref="file" multiple class="d-none">
       <zoom-modal ref="zoomModal"></zoom-modal>
       <SecuriteModal ref="securiteModal" @selectedOuvrage="selectedOuvrage" @openEmptyOuvrageModal="openEmptyOuvrageModal"></SecuriteModal>
       <InstallationModal ref="installationModal" @selectedOuvrage="selectedOuvrage" @openEmptyOuvrageModal="openEmptyOuvrageModal"></InstallationModal>
@@ -1332,6 +1332,14 @@ export default {
     const previewFile = ()=>{
       let images = file.value.files;
       for (let i = 0; i < images.length; i++) {
+        let type = images[i].type.split("/")[0];
+        if(type == 'image'){
+          type = 'png';
+        }else if(type == 'audio'){
+          type = 'm4a';
+        }else{
+          type = 'm4v';
+        }        
         let reader = new FileReader();
         reader.onload = (e) => {
           form.value.zones[zoneIndex.value].gedCats[gedCatId.value][0].items.push({
@@ -1340,6 +1348,7 @@ export default {
             fileName: images[i].name,
             url: reader.result,
             id: '',
+            type: type
           })
         };
         reader.readAsDataURL(images[i]);

@@ -297,15 +297,25 @@ export default {
         let xAxis = null;
         let yAxis = null;
         let series1 = null;
+        const series1Data = ref([]);
         let series2 = null;
+        const series2Data = ref([]);
         let series3 = null;
+        const series3Data = ref([]);
         let series4 = null;        
+        const series4Data = ref([]);
         let series5 = null;
+        const series5Data = ref([]);
         let series6 = null;
+        const series6Data = ref([]);
         let series7 = null;
+        const series7Data = ref([]);
         let series8 = null;        
+        const series8Data = ref([]);
         let series9 = null;        
+        const series9Data = ref([]);
         let series10 = null;        
+        const series10Data = ref([]);
         const salesByOriginTotal = ref(0);
         const salesByOriginTotalToCompare = ref(0);        
         const salesByClientTotal = ref(0);
@@ -333,6 +343,17 @@ export default {
                     clientChartData.value = res.data.salesByClient;
                     salesByClientTotal.value = res.data.salesByClientTotal;
                     salesByClientTotalToCompare.value = res.data.salesByClientTotalToCompare;
+
+                    series1Data.value = res.data.series1Data;
+                    series2Data.value = res.data.series2Data;
+                    series3Data.value = res.data.series3Data;
+                    series4Data.value = res.data.series4Data;
+                    series5Data.value = res.data.series5Data;
+                    series6Data.value = res.data.series6Data;
+                    series7Data.value = res.data.series7Data;
+                    series8Data.value = res.data.series8Data;
+                    series9Data.value = res.data.series9Data;
+                    series10Data.value = res.data.series10Data;
                     initOriginChart();
                     initClientChart();
                     initTotalChart();
@@ -544,7 +565,6 @@ export default {
             totalChart.set("scrollbarX", am5.Scrollbar.new(totalRoot, {
                 orientation: "horizontal"
             }));
-
             totalChart.appear(1000, 100);
         }
 
@@ -556,20 +576,16 @@ export default {
                     name: name,
                     xAxis: xAxis,
                     yAxis: yAxis,
-                    valueYField: "value",
+                    valueYField: "amount",
                     valueXField: "date",
                     tooltip: am5.Tooltip.new(totalRoot, {
                         labelText: "{valueY}"
                     })
                 }));
-                // Generate random data
-                date = new Date();
-                date.setHours(0, 0, 0, 0);
-                value = 100;
-    
-                // Set data
-                let data = generateDatas(20);
-                series1.data.setAll(data);
+                series1.data.processor = am5.DataProcessor.new(totalRoot, {
+                    dateFields: ["date"], dateFormat: "yyyy-MM-dd"
+                });                
+                series1.data.setAll(series1Data.value);
                 // Make stuff animate on load
                 series1.appear(1000);
             }else if(seriesIndex == 2){
@@ -577,19 +593,16 @@ export default {
                     name: name,
                     xAxis: xAxis,
                     yAxis: yAxis,
-                    valueYField: "value",
+                    valueYField: "amount",
                     valueXField: "date",
                     tooltip: am5.Tooltip.new(totalRoot, {
                         labelText: "{valueY}"
                     })
                 }));
                 // Generate random data
-                date = new Date();
-                date.setHours(0, 0, 0, 0);
-                value = 100;
-    
-                // Set data
-                let data = generateDatas(20);
+                series2.data.processor = am5.DataProcessor.new(totalRoot, {
+                    dateFields: ["date"], dateFormat: "yyyy-MM-dd"
+                });                                
                 series2.data.setAll(data);
                 // Make stuff animate on load
                 series2.appear(1000);                
@@ -598,19 +611,16 @@ export default {
                     name: name,
                     xAxis: xAxis,
                     yAxis: yAxis,
-                    valueYField: "value",
+                    valueYField: "amount",
                     valueXField: "date",
                     tooltip: am5.Tooltip.new(totalRoot, {
                         labelText: "{valueY}"
                     })
                 }));
                 // Generate random data
-                date = new Date();
-                date.setHours(0, 0, 0, 0);
-                value = 100;
-    
-                // Set data
-                let data = generateDatas(20);
+                series3.data.processor = am5.DataProcessor.new(totalRoot, {
+                    dateFields: ["date"], dateFormat: "yyyy-MM-dd"
+                });                    
                 series3.data.setAll(data);
                 // Make stuff animate on load
                 series3.appear(1000);                
@@ -619,19 +629,16 @@ export default {
                     name: name,
                     xAxis: xAxis,
                     yAxis: yAxis,
-                    valueYField: "value",
+                    valueYField: "amount",
                     valueXField: "date",
                     tooltip: am5.Tooltip.new(totalRoot, {
                         labelText: "{valueY}"
                     })
                 }));
                 // Generate random data
-                date = new Date();
-                date.setHours(0, 0, 0, 0);
-                value = 100;
-    
-                // Set data
-                let data = generateDatas(20);
+                series4.data.processor = am5.DataProcessor.new(totalRoot, {
+                    dateFields: ["date"], dateFormat: "yyyy-MM-dd"
+                });    
                 series4.data.setAll(data);
                 // Make stuff animate on load
                 series4.appear(1000);                
@@ -640,19 +647,15 @@ export default {
                     name: name,
                     xAxis: xAxis,
                     yAxis: yAxis,
-                    valueYField: "value",
+                    valueYField: "amount",
                     valueXField: "date",
                     tooltip: am5.Tooltip.new(totalRoot, {
                         labelText: "{valueY}"
                     })
                 }));
-                // Generate random data
-                date = new Date();
-                date.setHours(0, 0, 0, 0);
-                value = 100;
-    
-                // Set data
-                let data = generateDatas(20);
+                series5.data.processor = am5.DataProcessor.new(totalRoot, {
+                    dateFields: ["date"], dateFormat: "yyyy-MM-dd"
+                });    
                 series5.data.setAll(data);
                 // Make stuff animate on load
                 series5.appear(1000);                
@@ -661,19 +664,15 @@ export default {
                     name: name,
                     xAxis: xAxis,
                     yAxis: yAxis,
-                    valueYField: "value",
+                    valueYField: "amount",
                     valueXField: "date",
                     tooltip: am5.Tooltip.new(totalRoot, {
                         labelText: "{valueY}"
                     })
                 }));
-                // Generate random data
-                date = new Date();
-                date.setHours(0, 0, 0, 0);
-                value = 100;
-    
-                // Set data
-                let data = generateDatas(20);
+                series6.data.processor = am5.DataProcessor.new(totalRoot, {
+                    dateFields: ["date"], dateFormat: "yyyy-MM-dd"
+                });    
                 series6.data.setAll(data);
                 // Make stuff animate on load
                 series6.appear(1000);                
@@ -682,19 +681,15 @@ export default {
                     name: name,
                     xAxis: xAxis,
                     yAxis: yAxis,
-                    valueYField: "value",
+                    valueYField: "amount",
                     valueXField: "date",
                     tooltip: am5.Tooltip.new(totalRoot, {
                         labelText: "{valueY}"
                     })
                 }));
-                // Generate random data
-                date = new Date();
-                date.setHours(0, 0, 0, 0);
-                value = 100;
-    
-                // Set data
-                let data = generateDatas(20);
+                series7.data.processor = am5.DataProcessor.new(totalRoot, {
+                    dateFields: ["date"], dateFormat: "yyyy-MM-dd"
+                });    
                 series7.data.setAll(data);
                 // Make stuff animate on load
                 series7.appear(1000);                
@@ -703,19 +698,15 @@ export default {
                     name: name,
                     xAxis: xAxis,
                     yAxis: yAxis,
-                    valueYField: "value",
+                    valueYField: "amount",
                     valueXField: "date",
                     tooltip: am5.Tooltip.new(totalRoot, {
                         labelText: "{valueY}"
                     })
                 }));
-                // Generate random data
-                date = new Date();
-                date.setHours(0, 0, 0, 0);
-                value = 100;
-    
-                // Set data
-                let data = generateDatas(20);
+                series8.data.processor = am5.DataProcessor.new(totalRoot, {
+                    dateFields: ["date"], dateFormat: "yyyy-MM-dd"
+                });    
                 series8.data.setAll(data);
                 // Make stuff animate on load
                 series8.appear(1000);                
@@ -724,19 +715,15 @@ export default {
                     name: name,
                     xAxis: xAxis,
                     yAxis: yAxis,
-                    valueYField: "value",
+                    valueYField: "amount",
                     valueXField: "date",
                     tooltip: am5.Tooltip.new(totalRoot, {
                         labelText: "{valueY}"
                     })
                 }));
-                // Generate random data
-                date = new Date();
-                date.setHours(0, 0, 0, 0);
-                value = 100;
-    
-                // Set data
-                let data = generateDatas(20);
+                series9.data.processor = am5.DataProcessor.new(totalRoot, {
+                    dateFields: ["date"], dateFormat: "yyyy-MM-dd"
+                });    
                 series9.data.setAll(data);
                 // Make stuff animate on load
                 series9.appear(1000);                
@@ -745,19 +732,15 @@ export default {
                     name: name,
                     xAxis: xAxis,
                     yAxis: yAxis,
-                    valueYField: "value",
+                    valueYField: "amount",
                     valueXField: "date",
                     tooltip: am5.Tooltip.new(totalRoot, {
                         labelText: "{valueY}"
                     })
                 }));
-                // Generate random data
-                date = new Date();
-                date.setHours(0, 0, 0, 0);
-                value = 100;
-    
-                // Set data
-                let data = generateDatas(20);
+                series10.data.processor = am5.DataProcessor.new(totalRoot, {
+                    dateFields: ["date"], dateFormat: "yyyy-MM-dd"
+                });    
                 series10.data.setAll(data);
                 // Make stuff animate on load
                 series10.appear(1000);                
@@ -768,21 +751,6 @@ export default {
                 totalChart.series.indexOf(series)
             );
         }
-        const generateData = ()=> {
-            value = Math.round((Math.random() * 10 - 5) + value);
-            am5.time.add(date, "day", 1);
-            return {
-                date: date.getTime(),
-                value: value
-            };
-        }
-        const generateDatas = (count)=> {
-            let data = [];
-            for (var i = 0; i < count; ++i) {
-                data.push(generateData());
-            }
-            return data;
-        }  
         watch( ()=> legend1.value, (cur_val, pre_val)=>{
             if(cur_val){
                 addSeries(1);
@@ -866,7 +834,17 @@ export default {
             legend10,
             filterVal,
             originChartData,
-            clientChartData
+            clientChartData,
+            series1Data,
+            series2Data,
+            series3Data,
+            series4Data,
+            series5Data,
+            series6Data,
+            series7Data,
+            series8Data,
+            series9Data,
+            series10Data,
         }
     }
 }

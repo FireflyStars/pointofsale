@@ -153,6 +153,19 @@ class StatisticController extends Controller
                 $salesByClientNew[5]['client'] = 'Autres Clients';
             }
         }
+        // sales by date
+        $salesByDate = Order::select(
+            'total as amount', DB::raw('DATE_FORMAT(created_at, "%Y-%m-%d") as date')
+        )
+        // ->whereBetween('created_at', $period)
+        ->get();
+
+        // hours by date
+        $hoursByDate = Order::select(
+            'nbheure as amount', DB::raw('DATE_FORMAT(created_at, "%Y-%m-%d") as date')
+        )
+        // ->whereBetween('created_at', $period)
+        ->get();
         return response()->json([
             'salesByOrigin'                 => $salesByOrigin,
             'salesByOriginTotal'            => $salesByOriginTotal,
@@ -161,6 +174,17 @@ class StatisticController extends Controller
             'salesByClient'                 => $salesByClientNew,
             'salesByClientTotal'            => $salesByClientTotal,
             'salesByClientTotalToCompare'   => $salesByClientTotalToCompare,
+
+            'series1Data'   => $salesByDate,
+            'series2Data'   => $hoursByDate,
+            'series3Data'   => $salesByDate,
+            'series4Data'   => $salesByDate,
+            'series5Data'   => $salesByDate,
+            'series6Data'   => $salesByDate,
+            'series7Data'   => $salesByDate,
+            'series8Data'   => $salesByDate,
+            'series9Data'   => $salesByDate,
+            'series10Data'   => $salesByDate,
         ]);
     }
 }
