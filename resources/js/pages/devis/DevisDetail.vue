@@ -225,6 +225,7 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
             const orderObj=ref({});                 
             const reste_a_facturer=ref(0);
             const total_remise=ref(0);
+             const total_remise_taux=ref(0);
             const total_facture=ref(0);
             const total_taux_facture=ref(0);
             const order_total=ref(0);
@@ -317,6 +318,7 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                     }
                     if(current_val[i].invoice_type_name=='REMISE'){
                     total_remise.value+=current_val[i].montant;
+                    total_remise_taux.value+=current_val[i].pourcentage;
                     }
                     if(current_val[i].invoice_type_name=='AVOIR'){
                     avoir_total.value+=current_val[i].montant;
@@ -530,12 +532,12 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
 
                     if(facture.value.invoice_type_id==3){
                         let taux=parseFloat(facture.value.taux);
-                        if(taux>total_taux_facture.value-avoir_total_taux.value)
-                        taux=total_taux_facture.value-avoir_total_taux.value;
+                        if(taux>((total_facture.value-avoir_total.value)/order.value.total)*100)
+                        taux=(((total_facture.value-avoir_total.value)/order.value.total)*100);
                      
                            
 
-                        facture.value.taux=isNaN(taux)?'':`${Math.abs(taux)}`;
+                        facture.value.taux=isNaN(taux)?'':`${Math.abs(taux.toFixed(2))}`;
                         facture.value.montant=isNaN(taux)?'':Math.abs((order.value.total/100)*taux);
                     }
 
@@ -565,9 +567,9 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                     }
                 
                     if(facture.value.invoice_type_id==3){
-                    
-                        if(montant.toFixed(2)>total_facture.value.toFixed(2)-avoir_total.value){//Regle2 : La somme des avoirs ne doit pas depasser la somme des FACTURES
-                            montant=total_facture.value.toFixed(2)-avoir_total.value;  
+      
+                        if(montant>total_facture.value-avoir_total.value){//Regle2 : La somme des avoirs ne doit pas depasser la somme des FACTURES
+                            montant=total_facture.value-avoir_total.value;  
                      
                         }
                        taux=(montant/order.value.total)*100;
