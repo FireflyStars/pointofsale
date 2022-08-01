@@ -558,7 +558,7 @@ class DevisController extends Controller
                             ->select(
                                 'ouvrage_detail.qty', 'units.id as unit_id','products.type', 'units.code as unit', 
                                 'products.id as productId', 'products.name', 'products.taxe_id as tax',
-                                DB::raw('IF(ouvrage_detail_affiliate.numberh = 0, ouvrage_detail.numberh, ouvrage_detail_affiliate.numberh) as numberH'),
+                                DB::raw('IF(ISNULL(ouvrage_detail_affiliate.numberh), ouvrage_detail.numberh, ouvrage_detail_affiliate.numberh) as numberH'),
                                 DB::raw('IF(ISNULL(product_affiliate.wholesale_price), products.wholesale_price, product_affiliate.wholesale_price) as unitPrice')
                             )->get();
             foreach ($details as $detail) {
