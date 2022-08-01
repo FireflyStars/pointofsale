@@ -331,23 +331,27 @@
                                             style="margin: 0; padding: 0;"
                                         >
 
+                                            <div id="imagePortray"></div>
+
                                             <div 
                                                 class="text-center bg-panel" 
                                                 style="
                                                 position: absolute; 
-                                                top: -3.9rem;
                                                 left: 1.5rem; 
-                                                transform: scale(.75)
                                                 transform-origin: top left;
+                                                transform: scale(.201)
                                                 min-width: 500px;
                                                 min-height: 500px;
                                                 "
+                                                :style="{ transform: `scale(${transformedProductImageValue || 1})`}"
                                             >
                                                 
                                                 <img 
                                                     :src="category.imageTemplateUrl" 
                                                     alt="Lcdt Logo" 
-                                                    style="width: auto; height: auto"
+                                                    style="width: auto; height: auto;"
+                                                    ref="productImage"
+                                                    id="productImage"
                                                 >
 
 
@@ -475,10 +479,16 @@
 
     const phone = ref('')
     const email = ref('')
+    const productImage = ref()
 
     const category = computed(() => store.getters[`${CIBLE_MODULE}campagneCategory`]?.campagne || {})
     const affiliate = computed(() => store.getters[`${CIBLE_MODULE}campagneCategory`]?.affiliate || {})
+    const widthImage = computed(() => store.getters[`${CIBLE_MODULE}campagneCategory`]?.width || 0)
     const fields = computed(() => store.getters[`${CIBLE_MODULE}fields`])
+
+    const transformedProductImageValue = computed(() => {
+        return 602 / widthImage
+    })
 
     const productWithDownloadOnly = computed(() => {
         return category.value.typeofproduct?.toLowerCase() == 'download' 
@@ -635,6 +645,21 @@
         }
 
     }
+
+    watch(category, (value) => {
+        if(value) {
+            
+            const image = document.createElement('img')
+            image.setAttribute('src', value.imageTemplateUrl)
+            image.setAttribute('width', 'auto')
+            image.setAttribute('height', 'auto')
+            image.setAttribute('id', 'productImageDynamic')
+            document.getElementById('imagePortray').appendChild(image)
+            const newImage = document.getElementById('productImageDynamic')
+            console.log(newImage.naturalWidth, newImage.clientWidth, newImage.width, newImage, newImage.style.width)  
+    
+        }
+    })
 
     watch(fields, (value) => {
         if(value) {
