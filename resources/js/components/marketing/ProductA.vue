@@ -487,7 +487,8 @@
     const fields = computed(() => store.getters[`${CIBLE_MODULE}fields`])
 
     const transformedProductImageValue = computed(() => {
-        return 602 / widthImage
+        console.log(widthImage.value, 602/widthImage.value)
+        return 602 / widthImage.value
     })
 
     const productWithDownloadOnly = computed(() => {
