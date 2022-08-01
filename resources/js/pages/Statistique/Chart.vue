@@ -7,26 +7,12 @@
                     <h3 class="font-20 mulish_600_normal">Vente par origine</h3>
                     <div class="d-flex">
                         <div class="col-7">
-                            <div class="d-flex">
+                            <div class="d-flex" v-for="(origin, index) in originChartData" :key="index">
                                 <div class="col-1 d-flex align-items-center">
                                     <div class="origin-dot bg-danger rounded-circle"></div>
                                 </div>
-                                <div class="col-6">Fichier initial</div>
-                                <div class="col-5">28 630 €</div>
-                            </div>
-                            <div class="d-flex">
-                                <div class="col-1 d-flex align-items-center">
-                                    <div class="origin-dot bg-success rounded-circle"></div>
-                                </div>
-                                <div class="col-6">Client affiliate</div>
-                                <div class="col-5">50 000 €</div>
-                            </div>
-                            <div class="d-flex">
-                                <div class="col-1 d-flex align-items-center">
-                                    <div class="origin-dot bg-success rounded-circle"></div>
-                                </div>
-                                <div class="col-6">prospect 2022</div>
-                                <div class="col-5">23 882 €</div>
+                                <div class="col-6">{{ origin.origin }}</div>
+                                <div class="col-5">{{ origin.amount }} €</div>
                             </div>
                         </div>
                         <div class="col-5" id="saleByOrigin" style="height: 150px">
@@ -39,47 +25,17 @@
                     <h3 class="font-20 mulish_600_normal">Vente par Client</h3>
                     <div class="d-flex">
                         <div class="col-7">
-                            <div class="d-flex">
+                            <div class="d-flex" v-for="(client, index) in clientChartData" :key="index">
                                 <div class="col-1 d-flex align-items-center">
-                                    <div class="origin-dot bg-danger rounded-circle"></div>
+                                    <div class="origin-dot rounded-circle" v-if="index==0" :style="{'background-color': '#EB5757'}"></div>
+                                    <div class="origin-dot rounded-circle" v-else-if="index==1" :style="{'background-color': '#5200FF'}"></div>
+                                    <div class="origin-dot rounded-circle" v-else-if="index==2" :style="{'background-color': '#8ADFDF'}"></div>
+                                    <div class="origin-dot rounded-circle" v-else-if="index==3" :style="{'background-color': '#80A2EC'}"></div>
+                                    <div class="origin-dot rounded-circle" v-else-if="index==4" :style="{'background-color': '#EEE516'}"></div>
+                                    <div class="origin-dot rounded-circle" v-else :style="{'background-color': '#1F78B4'}"></div>
                                 </div>
-                                <div class="col-6">Client XX</div>
-                                <div class="col-5">28 630 €</div>
-                            </div>
-                            <div class="d-flex">
-                                <div class="col-1 d-flex align-items-center">
-                                    <div class="origin-dot bg-success rounded-circle"></div>
-                                </div>
-                                <div class="col-6">Client XX</div>
-                                <div class="col-5">50 000 €</div>
-                            </div>
-                            <div class="d-flex">
-                                <div class="col-1 d-flex align-items-center">
-                                    <div class="origin-dot bg-success rounded-circle"></div>
-                                </div>
-                                <div class="col-6">Client XX</div>
-                                <div class="col-5">50 000 €</div>
-                            </div>
-                            <div class="d-flex">
-                                <div class="col-1 d-flex align-items-center">
-                                    <div class="origin-dot bg-success rounded-circle"></div>
-                                </div>
-                                <div class="col-6">Client XX</div>
-                                <div class="col-5">50 000 €</div>
-                            </div>
-                            <div class="d-flex">
-                                <div class="col-1 d-flex align-items-center">
-                                    <div class="origin-dot bg-success rounded-circle"></div>
-                                </div>
-                                <div class="col-6">Client XX</div>
-                                <div class="col-5">50 000 €</div>
-                            </div>
-                            <div class="d-flex">
-                                <div class="col-1 d-flex align-items-center">
-                                    <div class="origin-dot bg-success rounded-circle"></div>
-                                </div>
-                                <div class="col-6">Autres Clients</div>
-                                <div class="col-5">50 000 €</div>
+                                <div class="col-6">{{ client.client }}</div>
+                                <div class="col-5">{{ client.amount }} €</div>
                             </div>
                         </div>
                         <div class="col-5" id="saleByClient" style="height: 150px">
@@ -350,23 +306,10 @@ export default {
         let series8 = null;        
         let series9 = null;        
         let series10 = null;        
-        onMounted(()=>{
-            // store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'loading data ...']);
-            // axios.post('/statistic').then((res)=>{
-
-            // }).catch((error)=>{
-
-            // }).finally(()=>{
-            //     store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
-            // })
-            initOriginChart();
-            initClientChart();
-            initTotalChart();
-        })
-        onUnmounted(()=>{
-            originChartRoot.dispose();
-            clientChartRoot.dispose();
-        })
+        const salesByOriginTotal = ref(0);
+        const salesByOriginTotalToCompare = ref(0);        
+        const salesByClientTotal = ref(0);
+        const salesByClientTotalToCompare = ref(0);        
         const today = new Date();
         const filterVal = ref({
             customFilter: 0,
@@ -377,26 +320,53 @@ export default {
             compareCustomFilter: false,
             compareStartDate: `${today.getFullYear()-1}-${today.getMonth()+1}-${today.getDate()}`,
             compareEndDate: `${today.getFullYear()-1}-${today.getMonth()+1}-${today.getDate()}`,
-        });
+        });        
+        onMounted(()=>{
+            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Loading data...']);
+            axios.post('/statistique', filterVal.value)
+                .then((res) => {
+                    originChartData.value = res.data.salesByOrigin;
+                    salesByOriginTotal.value = res.data.salesByOriginTotal;
+                    salesByOriginTotalToCompare.value = res.data.salesByOriginTotalToCompare;
+                    
+
+                    clientChartData.value = res.data.salesByClient;
+                    salesByClientTotal.value = res.data.salesByClientTotal;
+                    salesByClientTotalToCompare.value = res.data.salesByClientTotalToCompare;
+                    initOriginChart();
+                    initClientChart();
+                    initTotalChart();
+                }).finally(()=>{
+                    store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+            });
+        })
+        onUnmounted(()=>{
+            destroyChart();
+        })
+        const destroyChart = ()=>{
+            originChartRoot.dispose();
+            clientChartRoot.dispose();
+        }
         watch(() => filterVal.value, (current_val, previous_val) => {
             store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Loading data...']);
             axios.post('/statistique', current_val)
-                .then((response) => {
-                    console.log(response.data);
-                    stats.value = response.data.stats;
+                .then((res) => {
+                    originChartData.value = res.data.salesByOrigin;
+                    clientChartData.value = res.data.salesByClient;                    
+                    destroyChart();
                 }).finally(()=>{
                     store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
-                });
+            });
         });        
         let originChartRoot = null;
         let originChart = null;
         let originSeries= null;
+        const originChartData = ref([
+            { origin: "Fichier initial", amount: 0 },
+            { origin: "Client affiliate", amount: 0 } 
+        ]);
         const initOriginChart = ()=>{
             // Define data for sales by origin
-            let originChartData = [
-                { sector: "Fichier initial", size: 28630 },
-                { sector: "Client affiliate", size: 50000 } 
-            ];
             // Create root element
             if(originChartRoot == null){
                 originChartRoot = am5.Root.new("saleByOrigin");
@@ -418,8 +388,8 @@ export default {
             // Create series
             originSeries = originChart.series.push(am5percent.PieSeries.new(originChartRoot, {
                 name: "Series",
-                valueField: "size",
-                categoryField: "sector",
+                valueField: "amount",
+                categoryField: "origin",
             }));
             originSeries.get("colors").set("colors", [
                 am5.color(0xEB5757),
@@ -428,15 +398,28 @@ export default {
             originSeries.labels.template.set("forceHidden", true);
             originSeries.ticks.template.set("visible", false);
             // Add label
+            let percent = '';
+            if(salesByOriginTotal.value == salesByOriginTotalToCompare.value){
+                percent = `[#0f0][fontStyle: italic]0%[/][/]`;
+            }
+            if(salesByOriginTotal.value > salesByOriginTotalToCompare.value && salesByOriginTotalToCompare.value != 0){
+                percent = `[#0f0][fontStyle: italic]${(salesByOriginTotal.value* 100 / salesByOriginTotalToCompare.value).toFixed(0)}%[/][/]`;
+            }
+            if(salesByOriginTotal.value < salesByOriginTotalToCompare.value && salesByOriginTotalToCompare.value != 0){
+                percent = `[#f00][fontStyle: italic]${(salesByOriginTotal.value* 100 / salesByOriginTotalToCompare.value).toFixed(0)}%[/][/]`;
+            }
+            if(salesByOriginTotal.value > salesByOriginTotalToCompare.value && salesByOriginTotalToCompare.value == 0){
+                percent = "--";
+            }
             let originLabel = originSeries.children.push(am5.Label.new(originChartRoot, {
-                text: "${valueSum.formatNumber('#,###.')}\n  [#f00][fontStyle: italic]38%[/][/]",
+                text: "${valueSum.formatNumber('#,###.')}\n   "+ percent,
                 centerX: am5.percent(50),
                 centerY: am5.percent(50),
                 fontSize: 20,
                 populateText: true
             }));
             // Set data
-            originSeries.data.setAll(originChartData);
+            originSeries.data.setAll(originChartData.value);
             originSeries.onPrivate("valueSum", function(){
                 originLabel.text.markDirtyText();
             })
@@ -446,16 +429,16 @@ export default {
         let clientChartRoot = null;
         let clientChart = null;
         let clientSeries = null;
+        // Define data for sales by customer
+        const clientChartData = ref([
+            { client: "Client xx", amount: 28630 },
+            { client: "Client xx", amount: 10000 },
+            { client: "Client xx", amount: 20000 },
+            { client: "Client xx", amount: 15000 },
+            { client: "Client xx", amount: 24000 },
+            { client: "Autres Clients", amount: 26000 },
+        ]);
         const initClientChart = ()=>{
-            // Define data for sales by customer
-            let clientChartData = [
-                { sector: "Client xx", size: 28630 },
-                { sector: "Client xx", size: 10000 },
-                { sector: "Client xx", size: 20000 },
-                { sector: "Client xx", size: 15000 },
-                { sector: "Client xx", size: 24000 },
-                { sector: "Autres Clients", size: 26000 },
-            ];
             // Create root element
             clientChartRoot = am5.Root.new("saleByClient");
             // Set themes
@@ -475,8 +458,8 @@ export default {
             // Create series
             clientSeries = clientChart.series.push(am5percent.PieSeries.new(clientChartRoot, {
                 name: "Series",
-                valueField: "size",
-                categoryField: "sector",
+                valueField: "amount",
+                categoryField: "client",
             }));
             clientSeries.get("colors").set("colors", [
                 am5.color(0xEB5757),
@@ -489,15 +472,28 @@ export default {
             clientSeries.labels.template.set("forceHidden", true);
             clientSeries.ticks.template.set("visible", false);
             // Add label
+            let percent = '';
+            if(salesByClientTotal.value == salesByClientTotalToCompare.value){
+                percent = `[#0f0][fontStyle: italic]0%[/][/]`;
+            }
+            if(salesByClientTotal.value > salesByClientTotalToCompare.value && salesByClientTotalToCompare.value != 0){
+                percent = `[#0f0][fontStyle: italic]${(salesByClientTotal.value* 100 / salesByClientTotalToCompare.value).toFixed(0)}%[/][/]`;
+            }
+            if(salesByClientTotal.value < salesByClientTotalToCompare.value && salesByClientTotalToCompare.value != 0){
+                percent = `[#f00][fontStyle: italic]${(salesByClientTotal.value* 100 / salesByClientTotalToCompare.value).toFixed(0)}%[/][/]`;
+            }
+            if(salesByClientTotal.value > salesByClientTotalToCompare.value && salesByClientTotalToCompare.value == 0){
+                percent = "--";
+            }            
             let clientLabel = clientSeries.children.push(am5.Label.new(clientChartRoot, {
-                text: "${valueSum.formatNumber('#,###.')}\n  [#0f0][fontStyle: italic]38%[/][/]",
+                text: "${valueSum.formatNumber('#,###.')}\n   " + percent,
                 centerX: am5.percent(50),
                 centerY: am5.percent(50),
                 fontSize: 20,
                 populateText: true
             }));
             // Set data
-            clientSeries.data.setAll(clientChartData);
+            clientSeries.data.setAll(clientChartData.value);
             clientSeries.onPrivate("valueSum", function(){
                 clientLabel.text.markDirtyText();
             })
@@ -868,7 +864,9 @@ export default {
             legend8,
             legend9,
             legend10,
-            filterVal
+            filterVal,
+            originChartData,
+            clientChartData
         }
     }
 }

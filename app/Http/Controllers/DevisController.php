@@ -1135,7 +1135,7 @@ class DevisController extends Controller
                 $ged_details = DB::table('ged_details')
                                 ->where('order_zone_id', $zone->id)
                                 ->where('ged_category_id', $item->id)
-                                ->whereNotIn('type', ['txt', 'description'])
+                                ->whereNotIn('type', ['txt', 'description', 'm4a', 'm4v'])
                                 ->where('user_id', Auth::id())
                                 ->select(
                                     DB::raw('CONCAT(CONCAT(storage_path, "/",file), ".", type) as url'), 

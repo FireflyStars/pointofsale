@@ -110,19 +110,40 @@ class StatisticController extends Controller
             $join->on('customers.id', '=', 'orders.customer_id')->where('orders.customer_id', '!=', 0);
         })->rightJoin('customer_origins', function($join){
             $join->on('customer_origins.id', '=', 'customers.customer_origin_id')->where('customers.customer_origin_id', '!=', 0);
-        })->select(
-            DB::raw('IFNULL(CEIL(SUM(orders.total)), 0) as amount'), 'customer_origins.name as origin'
-        )->groupBy('origin')->orderBy('amount', 'DESC')->get()/* ->mapWithKeys(function ($item, $key) {
-            return [$item['name'] => $item['total'] ?? 0 ];
-        })->all() */;
+        })
+        // ->whereBetween('orders.created_at', $period)
+        ->select(
+            DB::raw('IFNULL(FLOOR(SUM(orders.total)), 0) as amount'), 'customer_origins.name as origin', 'customer_origins.color'
+        )->groupBy('origin')->orderBy('amount', 'DESC')->get();
+        $salesByOriginTotal = $salesByOrigin->sum('amount');
+
+        $salesByOriginTotalToCompare = Order::join('customers', function($join){
+            $join->on('customers.id', '=', 'orders.customer_id')->where('orders.customer_id', '!=', 0);
+        })->rightJoin('customer_origins', function($join){
+            $join->on('customer_origins.id', '=', 'customers.customer_origin_id')->where('customers.customer_origin_id', '!=', 0);
+        })
+        // ->whereBetween('orders.created_at', $last_period)
+        ->select(
+            DB::raw('IFNULL(FLOOR(SUM(orders.total)), 0) as amount')
+        )->value('amount');
 
         $salesByClient = Order::rightJoin('customers', function($join){
             $join->on('customers.id', '=', 'orders.customer_id')->where('orders.customer_id', '!=', 0);
         })->select(
-            DB::raw('IFNULL(CEIL(SUM(orders.total)), 0) as amount'), DB::raw('CONCAT(customers.firstname, " ", customers.name) as client')
-        )->groupBy('client')->orderBy('amount', 'DESC')->get()/* ->mapWithKeys(function ($item, $key) {
-            return [$item['name'] => $item['total'] ?? 0 ];
-        })->all() */;
+            DB::raw('IFNULL(FLOOR(SUM(orders.total)), 0) as amount'), DB::raw('CONCAT(customers.firstname, " ", customers.name) as client')
+        )
+        // ->whereBetween('orders.created_at', $period)
+        ->groupBy('client')->orderBy('amount', 'DESC')->get();
+
+        $salesByClientTotalToCompare = Order::rightJoin('customers', function($join){
+            $join->on('customers.id', '=', 'orders.customer_id')->where('orders.customer_id', '!=', 0);
+        })->select(
+            DB::raw('IFNULL(FLOOR(SUM(orders.total)), 0) as amount')
+        )
+        // ->whereBetween('orders.created_at', $last_period)
+        ->value('amount');
+        $salesByClientTotal = $salesByClient->sum('amount');
+
         $salesByClientNew = [];
         foreach ($salesByClient as $key => $item) {
             if($key <= 5){
@@ -133,8 +154,13 @@ class StatisticController extends Controller
             }
         }
         return response()->json([
-            'salesByOrigin'=> $salesByOrigin,
-            'salesByClient'=> $salesByClientNew,
+            'salesByOrigin'                 => $salesByOrigin,
+            'salesByOriginTotal'            => $salesByOriginTotal,
+            'salesByOriginTotalToCompare'   => $salesByOriginTotalToCompare,
+            
+            'salesByClient'                 => $salesByClientNew,
+            'salesByClientTotal'            => $salesByClientTotal,
+            'salesByClientTotalToCompare'   => $salesByClientTotalToCompare,
         ]);
     }
 }
