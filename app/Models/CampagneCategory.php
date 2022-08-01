@@ -12,9 +12,9 @@ class CampagneCategory extends Model
 {
     use HasFactory;
 
-    protected $table="campagne_category";
+    protected $table = "campagne_category";
 
-    protected $appends = ['imageTemplateUrl'];
+    protected $appends = ['imageTemplateUrl', 'fileDepliantFull'];
 
     public function cardDetail() 
     {
@@ -29,6 +29,22 @@ class CampagneCategory extends Model
     public function getImageTemplateUrlAttribute() 
     {
         return rtrim(config('app.url'), '/') . Storage::url($this->imagetemplate);
+    }
+
+    public function getFileDepliantFullAttribute() 
+    {
+        $filedepliant = (array) json_decode($this->filedepliant);
+
+        if(is_null($filedepliant) || !count($filedepliant)) return $filedepliant;
+
+        $filedepliant = $filedepliant[0];
+
+        if(is_null($filedepliant)) return $filedepliant;
+
+        $filedepliant->fullpath = rtrim(config('app.url'), '/') . Storage::url($filedepliant->download_link);
+
+        return $filedepliant;
+
     }
 
 }

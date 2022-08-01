@@ -36,7 +36,7 @@
        </transition>
      <hr v-if="show"/>
       <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
-   <mini-panel title="" v-if="invoice.order_invoice!=null">
+   <mini-panel title="" v-if="invoice.order_invoice!=null&&show">
            <div class="row mt-3 mb-2">
             <div class="col-4"></div>
             <div class="col-3"><h3 class="almarai_700_normal">% Commande</h3></div>

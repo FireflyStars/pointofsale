@@ -77,7 +77,7 @@
                                                 prepend
                                                 class="btn btn-newrdv body_medium"
                                                 kind="warning"
-                                                :title="'Panier :' + cardQuantity"
+                                                :title="'Panier :' + cardQty"
                                                 classes="border-0"
                                                 style="border-radius: 10px; font-size: 12px !important"
                                                 @click.prevent=""
@@ -143,6 +143,7 @@
                                                                     </h4>
                                                                     
                                                                     <base-button
+                                                                        v-if="!perso(product)"
                                                                         class="btn btn-newrdv body_medium text-uppercase border-0"
                                                                         kind="warning"
                                                                         title="VOIR"
@@ -397,7 +398,10 @@
     }
     from '../../store/types/types'
 
+    import useCard from '../../composables/useCard'
+
     const store = useStore()
+    const { getCardQty, cardQty } = useCard()
 
     const Coef = ref(1)
     const loading = ref(false)
@@ -405,6 +409,11 @@
 
     const products = computed(() => store.getters[`${CIBLE_MODULE}products`]?.card_details || [])
     const affiliate = computed(() => store.getters[`${CIBLE_MODULE}products`]?.affiliate || {})
+
+    const perso = (product) => {
+        return product.value?.campagne_category?.typeofproduct?.toLowerCase() == 'product perso' 
+        && product.value?.campagne_category?.type == 'Produit'
+    }
 
     const address = computed(() => {
         const address = affiliate.value?.address || ''
@@ -429,11 +438,13 @@
         return affiliate.value?.firstnamedirector + ' ' + affiliate.value?.namedirector
     })
 
-    const cardQuantity = computed(() => {
-        return products.value
-        .map(product => product.qty)
-        .reduce((oldQty, newQty) => oldQty + newQty, 0)
-    })
+    // const cardQuantity = computed(() => {
+    //     // console.log(products.value)
+    //     // return products.value
+    //     // .map(product => product.qty)
+    //     // .reduce((oldQty, newQty) => oldQty + newQty, 0)
+    //     return store.getters[`${CIBLE_MODULE}cardQty`]
+    // })
 
     const cardPrice = computed(() => {
         let total = 0
@@ -448,7 +459,7 @@
             let weight = +productPoids(product) - 10
             weight = +Math.ceil(weight / 10)
             let transportPrice = 17 + +(weight * 7)
-            total += (+productPrice(product) + +transportPrice) * Coef.value
+            total += +transportPrice * Coef.value
         })
         return total.toFixed(2)
     })
@@ -591,7 +602,10 @@
         }
     }
 
-    onMounted(() => getProducts())
+    onMounted(() => {
+        getProducts()
+        getCardQty()
+    })
 
 </script>
 

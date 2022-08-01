@@ -194,6 +194,8 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
             const disabledToDate=ref('');
             const facturation_total_taux=ref(0);
             const facturation_total=ref(0);
+            const avoir_total=ref(0);
+            const avoir_total_taux=ref(0);
             const showFactureBtn=ref(false);
             disabledToDate.value= new Date(new Date().getTime() - 24*60*60*1000).toJSON().slice(0,10);
             let order_id=route.params.id;
@@ -302,6 +304,8 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                     total_facture.value=0;
                     total_taux_facture.value=0;
                     total_remise.value=0;
+                    avoir_total.value=0;
+                      avoir_total_taux.value=0;
                 //    
 
                 let percentage=0;
@@ -313,6 +317,10 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                     }
                     if(current_val[i].invoice_type_name=='REMISE'){
                     total_remise.value+=current_val[i].montant;
+                    }
+                    if(current_val[i].invoice_type_name=='AVOIR'){
+                    avoir_total.value+=current_val[i].montant;
+                      avoir_total_taux.value+=current_val[i].pourcentage;
                     }
                     
 
@@ -522,8 +530,8 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
 
                     if(facture.value.invoice_type_id==3){
                         let taux=parseFloat(facture.value.taux);
-                        if(taux>total_taux_facture.value)
-                        taux=total_taux_facture.value;
+                        if(taux>total_taux_facture.value-avoir_total_taux.value)
+                        taux=total_taux_facture.value-avoir_total_taux.value;
                      
                            
 
@@ -558,8 +566,8 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                 
                     if(facture.value.invoice_type_id==3){
                     
-                        if(montant.toFixed(2)>total_facture.value.toFixed(2)){//Regle2 : La somme des avoirs ne doit pas depasser la somme des FACTURES
-                            montant=total_facture.value.toFixed(2);  
+                        if(montant.toFixed(2)>total_facture.value.toFixed(2)-avoir_total.value){//Regle2 : La somme des avoirs ne doit pas depasser la somme des FACTURES
+                            montant=total_facture.value.toFixed(2)-avoir_total.value;  
                      
                         }
                        taux=(montant/order.value.total)*100;

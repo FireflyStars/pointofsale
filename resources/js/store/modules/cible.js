@@ -33,7 +33,19 @@ import {
     CIBLE_UNSET_CAMPAGNE_SELECTION, 
     CIBLE_GET_CAMPAGNE_SELECTION, 
     CIBLE_SET_UNIQUE_CONTACTS, 
-    CIBLE_GET_UNIQUE_CONTACTS, CIBLE_GET_UNSELECTED_EMAILS, CIBLE_SET_UNSELECTED_EMAIL, CIBLE_UNSET_UNSELECTED_EMAIL, CIBLE_GET_FILTERED_EMAILS, CIBLE_SET_FILTERED_EMAILS, CIBLE_SET_PRICE, CIBLE_GET_PRICE, CIBLE_CREATE_CAMPAGNE, TOASTER_MODULE, CIBLE_SET_CAMPAGNE_CATEGORY, CIBLE_GET_CAMPAGNE_CATEGORY, CIBLE_RESET_STATE,
+    CIBLE_GET_UNIQUE_CONTACTS, 
+    CIBLE_GET_UNSELECTED_EMAILS, 
+    CIBLE_SET_UNSELECTED_EMAIL, 
+    CIBLE_UNSET_UNSELECTED_EMAIL, 
+    CIBLE_GET_FILTERED_EMAILS, 
+    CIBLE_SET_FILTERED_EMAILS, 
+    CIBLE_SET_PRICE, 
+    CIBLE_GET_PRICE, 
+    CIBLE_CREATE_CAMPAGNE, 
+    TOASTER_MODULE, 
+    CIBLE_SET_CAMPAGNE_CATEGORY, 
+    CIBLE_GET_CAMPAGNE_CATEGORY, 
+    CIBLE_RESET_STATE,
     GET_CAMPAGNE_CATEGORY,
     SAVE_CAMPAGNE_CATEGORY,
     GET_CAMPAGNE_FIELDS,
@@ -48,7 +60,9 @@ import {
     GET_CAMPAGNE_DETAILS,
     SAVE_CAMPAGNE_DETAILS,
     GENERATE_PRODUCT_PDF,
-    RESET_DETAILS
+    RESET_DETAILS,
+    GET_CARD_QUANTITY,
+    SAVE_CARD_QUANTITY
 
 } from '../types/types';
 
@@ -78,7 +92,8 @@ export const cible= {
         filtered_emails:[],
         fields: {},
         products: [],
-        campagne: {}
+        campagne: {},
+        cardQty: 0
     },
     mutations:{
         [CIBLE_SET_CAMPAGNE_CATEGORY_ID]:(state,id)=>{
@@ -159,8 +174,8 @@ export const cible= {
         [SAVE_CAMPAGNE_CATEGORY](state, category) {
             state.campagne_category = category
         },
-        [SAVE_CAMPAGNE_FIELDS](state, fields) {
-            state.fields = fields
+        [SAVE_CAMPAGNE_FIELDS](state, data) {
+            state.fields = data
         },
         [SAVE_CARD_PRODUCTS](state, data) {
             state.products = data
@@ -178,10 +193,23 @@ export const cible= {
         },
         [RESET_DETAILS](state) {
             state.campagne = {}
+        },
+        [SAVE_CARD_QUANTITY](state, qty) {
+            state.cardQty = qty
         }
     },
 
     actions: {
+
+        async [GET_CARD_QUANTITY]({ commit }) {
+            try {
+                const { data } = await axios.get('/get-card-quantity')
+                commit(SAVE_CARD_QUANTITY, data)
+            }
+            catch(e) {
+                throw e
+            }
+        },
 
         async [GENERATE_PRODUCT_PDF]({ commit }, id) {
             try {
@@ -388,6 +416,7 @@ export const cible= {
         campagneCategory: state => state.campagne_category, 
         fields: state => state.fields,
         products: state => state.products,
-        campagne: state => state.campagne
+        campagne: state => state.campagne,
+        cardQty: state => state.cardQty
     }
 }

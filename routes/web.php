@@ -31,6 +31,8 @@ use App\Http\Controllers\CampagneListController;
 use App\Http\Controllers\PageElementsController;
 use App\Http\Controllers\ActionCommercialListController;
 use App\Http\Controllers\StatisticController;
+use App\Http\Controllers\InterventionsController;
+use App\Http\Controllers\PaiementsController;
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
@@ -82,6 +84,7 @@ Route::delete('/card-product/{card}', [CompagneController::class, 'delete_card_p
 Route::post('/valider-card', [CompagneController::class, 'valider_card'])->middleware('auth');
 Route::post('/generate-campagne-product-pdf/{campagne}', [CompagneController::class, 'generate_pdf']);
 Route::get('/generate-campagne-product-pdf/{campagne}', [CompagneController::class, 'generate_pdf']);
+Route::get('/get-card-quantity', [CompagneController::class, 'get_card_quantity']);
 
 
 Route::get('/get-entite-list', [EntiteController::class, 'index']);
@@ -168,6 +171,15 @@ Route::post('/get-interventions-list', [InterventionsController::class, 'index']
 Route::get('/get-interventions-list', [InterventionsController::class, 'index']);
 Route::post('/get-interventions-list-mes', [InterventionsController::class, 'interventions_mes']);
 
+Route::get('/get-paiements-list', [PaiementsController::class, 'index']);
+Route::post('/get-paiements-list', [PaiementsController::class, 'index']);
+Route::post('/get-paiements-types-formatted', [PaiementsController::class, 'paiement_types_formatted']);
+Route::post('/get-paiements-types', [PaiementsController::class, 'paiement_types']);
+Route::post('/get-paiements-list-mes', [PaiementsController::class, 'paiements_mes']);
+Route::post('/get-paiements-list-validar', [PaiementsController::class, 'paiements_validar']);
+Route::get('/get-paiement-details/{paiement}', [PaiementsController::class, 'get_paiement_details']);
+Route::get('/get-paiement-history/{paiement}', [PaiementsController::class, 'get_history']);
+Route::post('/valider-paiement', [PaiementsController::class, 'valider_paiement']);
 
 // create action
 Route::post('/get-action-info', [ActionCommercialListController::class, 'getActionInfo'])->name('get.action.info');

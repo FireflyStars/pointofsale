@@ -206,6 +206,7 @@ vertical-align: middle;
 
                             @foreach($dataTypeRows as $row)
                                 <!-- GET THE DISPLAY OPTIONS -->
+
                                 @php
                                     $display_options = $row->details->display ?? NULL;
                                     if ($dataTypeContent->{$row->field.'_'.($edit ? 'edit' : 'add')}) {
@@ -263,7 +264,7 @@ vertical-align: middle;
         </div>
     </div>
 
-<!--Modal positiioning -->
+<!--Modal positiioning  old background styles background-size:auto 100%;width:210mm;height:297mm;background-repeat: no-repeat; -->
 
 <div id="modal_pos" class="modal fade">
     <div class="modal-dialog" role="document" style="width:auto !important;">
@@ -274,7 +275,8 @@ vertical-align: middle;
             </div>
             <div class="modal-body" style="display:table; width:1000px;">
             <div class="float-left">
-                <div class="modalPosDiv float-left" id="div_modal_{{ $dataTypeContent->getKey() }}" style="background-size:auto 100%;width:210mm;height:297mm;background-repeat: no-repeat;">
+                <div class="modalPosDiv float-left" id="div_modal_{{ $dataTypeContent->getKey() }}" 
+                    style="background-size:auto; background-repeat: no-repeat;">
 
                     <div id="modalDraggable" style="background:rgba(0,0,0,0.5); position: relative;">
                    

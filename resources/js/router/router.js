@@ -112,6 +112,17 @@ const router = createRouter({
             meta:{
                 authenticated: true
             },
+            children:[
+                {
+                    path:'/paiement/detail/:id',
+                    name: 'paiement-details',
+                    props: true,
+                    component: () => import('../pages/Paiement/Details'),
+                    meta: {
+                        authenticated: true
+                    }
+                },
+            ],
         },
 
         {
@@ -124,6 +135,7 @@ const router = createRouter({
             children:[
                 {
                     path:'/commande/detail/:id',
+                    props: true,
                     name: 'commande-details',
                     component: () => import('../pages/Commande/Details'),
                     meta: {
@@ -288,7 +300,7 @@ const router = createRouter({
                 authenticated: true
             },
             children: [{
-                path: '/contact/details/:id',
+                path: '/contact/detail/:id',
                 name: 'contact-details',
                 component: () => import('../pages/contact/Details'),
                 props: true,
@@ -306,7 +318,7 @@ const router = createRouter({
                 authenticated: true
             },
             children: [{
-                path: '/entite/details/:id',
+                path: '/entite/detail/:id',
                 name: 'entite-details',
                 component: () => import('../pages/Entite/Details'),
                 props: true,
@@ -324,7 +336,7 @@ const router = createRouter({
                 authenticated: true
             },
             children: [{
-                path: '/action-commercial/details/:id',
+                path: '/action-commercial/detail/:id',
                 name: 'action-commercial-details',
                 component: () => import('../pages/ActionCommercial/Details'),
                 props: true,

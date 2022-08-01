@@ -110,9 +110,9 @@ export default {
                                 });
                                 valide=false;
                 }
-               console.log('before quicklink:', link.value.page_route);
+         
                    link.value.page_route=router.currentRoute.value.name;
-console.log('after quicklink:', link.value.page_route);
+
                  if(valide){
                  store.dispatch(`${ITEMLISTQUICKLINK_MODULE}${ITEMLISTQUICKLINK_ADD_LINK}`,link.value);
                  showmodal_quicklink.value=false;
