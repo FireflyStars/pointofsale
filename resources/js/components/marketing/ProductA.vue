@@ -646,21 +646,6 @@
 
     }
 
-    watch(category, (value) => {
-        if(value) {
-            
-            const image = document.createElement('img')
-            image.setAttribute('src', value.imageTemplateUrl)
-            image.setAttribute('width', 'auto')
-            image.setAttribute('height', 'auto')
-            image.setAttribute('id', 'productImageDynamic')
-            document.getElementById('imagePortray').appendChild(image)
-            const newImage = document.getElementById('productImageDynamic')
-            console.log(newImage.naturalWidth, newImage.clientWidth, newImage.width, newImage, newImage.style.width)  
-    
-        }
-    })
-
     watch(fields, (value) => {
         if(value) {
             email.value = value.Email_agence.value
