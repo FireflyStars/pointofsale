@@ -29,8 +29,11 @@ class LcdtAdminController extends Controller{
             "Prenom_dirigeant",
             "Nom_dirigeant",
             "Email_dirigeant",
-            "Portable_dirigeant"
-            
+            "Portable_dirigeant",
+            "STATUS",
+            "SIRET",
+            "APE",
+            "TVA",
         );
         $FIELDS_DEF=array();
         foreach($FIELDS as $FIELD){

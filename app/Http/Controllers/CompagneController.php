@@ -3,36 +3,24 @@
 namespace App\Http\Controllers;
 use Mail;
 use Carbon\Carbon;
-use App\Models\PDF;
-use App\Models\User;
-use App\Models\Contact;
 use App\Mail\MyDemoMail;
-
 use App\Models\Campagne;
-use App\Models\Customer;
-use App\Models\Affiliate;
-use App\Models\campagne_card;
 use App\Traits\Sarbacane;
-use App\Models\CustomerNaf;
 use App\Models\page_builder;
 use Illuminate\Http\Request;
-use App\Models\CampagneCible;
+use App\Models\campagne_card;
 use App\Models\CompagneCible;
-use App\Models\CustomerStatut;
 use App\Models\CampagneCategory;
-// use Codedge\Fpdf\Fpdf\Fpdf;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\App;
 use App\Models\campagne_card_detail;
-use App\Models\campagne_detail;
-use App\Models\CampagneCibleStatuts;
-use App\Notifications\campagneCardNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use App\Notifications\CourierNotification;
 use Illuminate\Support\Facades\Notification;
+use App\Notifications\campagneCardNotification;
 
 class CompagneController extends Controller
 {
@@ -306,11 +294,14 @@ class CompagneController extends Controller
 
     public function get_campagne_category(CampagneCategory $campagne, Request $request) 
     {
+
         $affiliate = $request->user()->affiliate;
         $campagne = $campagne->load('cardDetail');
+        
+        [$width, $height] = getimagesize($campagne->imageTemplateUrl);
 
         return response()->json(
-            ['data' => compact('affiliate', 'campagne')]
+            ['data' => compact('affiliate', 'campagne', 'width', 'height')]
         );
     }
 
