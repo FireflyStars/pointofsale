@@ -84,9 +84,10 @@
                 type: String,
                 required: true
             },
+            modelValue: String,
         },
       //  emits: ['update:modelValue'],
-       emits: ['changed'],
+       emits: ['changed', 'update:modelValue'],
         setup(props,context){
 
             const store=useStore();
@@ -343,6 +344,7 @@
                 //context.emit("update:modelValue",`${default_date.value[0]}-${default_date.value[1].toString().padStart(2, "0")}-${default_date.value[2].toString().padStart(2, "0")}`);
 
                context.emit("changed",{name:props.name,date:`${default_date.value[0]}-${default_date.value[1].toString().padStart(2, "0")}-${default_date.value[2].toString().padStart(2, "0")}`});
+               context.emit("update:modelValue",`${default_date.value[0]}-${default_date.value[1].toString().padStart(2, "0")}-${default_date.value[2].toString().padStart(2, "0")}`);
                 toggleshowDp();
             }
             function setMonth(m){

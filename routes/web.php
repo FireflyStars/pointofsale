@@ -306,7 +306,7 @@ Route::group([
 
 
     // statistique 
-    Route::post('/statistic',   [StatisticController::class,'index'])->middleware('auth')->name('get.statis');
+    Route::post('/statistique',   [StatisticController::class,'index'])->middleware('auth')->name('get.statis');
 });
 // Outlook Agenda
 Route::get('/outlook/sync', [ ActionCommercialListController::class, 'syncOutlook' ])->middleware('auth')->name('outlook.sync');
