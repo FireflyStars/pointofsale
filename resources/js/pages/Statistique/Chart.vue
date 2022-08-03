@@ -47,19 +47,15 @@
                 <div class="rounded-3 bg-white w-100 p-2">
                     <div class="d-flex">
                         <h3 class="font-20 mulish_600_normal m-0">Vente par Client</h3>
-                        <TotalPercent class="ms-5" :amount="'4.7K'" :arrow="1" :symbol="'€'" :percent="38"></TotalPercent>
+                        <TotalPercent class="ms-5" :amount="avgSale" :symbol="'€'" :pastAmount="avgSaleToCompare"></TotalPercent>
                     </div>
                     <div class="d-flex mt-2">
                         <div class="col-5">
                             <h4 class="font-16 mulish_600_normal">Par type de client</h4>
                             <div class="d-flex flex-wrap">
-                                <div class="avg-sale-block py-3 px-2 mt-2 me-2 d-flex flex-wrap">
-                                    <p class="w-100 text-center font-12">SARL</p>
-                                    <p class="w-100 text-center font-20 mulish_600_normal align-self-end">3,3 K€</p>
-                                </div>
-                                <div class="avg-sale-block py-3 px-2 mt-2 d-flex flex-wrap">
-                                    <p class="w-100 text-center font-12">SAS</p>
-                                    <p class="w-100 text-center font-20 mulish_600_normal align-self-end">5.3 K€</p>
+                                <div class="avg-sale-block py-3 px-2 mt-2 me-2 d-flex flex-wrap" v-for="(cate, index) in salesByCustCat" :key="index">
+                                    <p class="w-100 text-center font-12">{{cate.name}}</p>
+                                    <p class="w-100 text-center font-16 mulish_600_normal align-self-end">{{ cate.amount }}€</p>
                                 </div>
                             </div>
                         </div>
@@ -68,15 +64,15 @@
                             <div class="d-flex flex-wrap">
                                 <div class="avg-sale-block py-3 px-2 mt-2 me-2 d-flex flex-wrap">
                                     <p class="w-100 text-center font-12">Paiement</p>
-                                    <p class="w-100 text-center font-20 mulish_600_normal align-self-end">3,3 K€</p>
+                                    <p class="w-100 text-center font-16 mulish_600_normal align-self-end">{{ paiement }}%</p>
                                 </div>
                                 <div class="avg-sale-block py-3 px-2 me-2 mt-2 d-flex flex-wrap">
                                     <p class="w-100 text-center font-12">Commande Facturé</p>
-                                    <p class="w-100 text-center font-20 mulish_600_normal align-self-end">5.3 K€</p>
+                                    <p class="w-100 text-center font-16 mulish_600_normal align-self-end">{{ facture }}%</p>
                                 </div>
                                 <div class="avg-sale-block py-3 px-2 mt-2 d-flex flex-wrap">
                                     <p class="w-100 text-center font-12">Rentabilité</p>
-                                    <p class="w-100 text-center font-20 mulish_600_normal align-self-end">5.3 K€</p>
+                                    <p class="w-100 text-center font-16 mulish_600_normal align-self-end">5.3 K€</p>
                                 </div>
                             </div>
                         </div>
@@ -91,8 +87,8 @@
                 <div class="bg-gray p-3 rounded-3">
                     <div class="d-flex align-items-center p-2">
                         <h3 class="font-20 mulish_600_normal m-0">Total Vente</h3>
-                        <TotalPercent class="ms-5" :amount="'150 471'" :arrow="1" :symbol="'€'" :percent="38"></TotalPercent>
-                        <TotalPercent class="ms-5" :amount="'4501'" :arrow="1" :symbol="'h'" :percent="25"></TotalPercent>
+                        <TotalPercent class="ms-5" :amount="salesByOriginTotal" :symbol="'€'" :pastAmount="salesByOriginTotalToCompare"></TotalPercent>
+                        <TotalPercent class="ms-5" :amount="salesByClientTotal" :symbol="'h'" :pastAmount="salesByClientTotalToCompare"></TotalPercent>
                         <h4 class="mb-0 ms-auto font-14 text-custom-success text-decoration-underline cursor-pointer"><em>Voir rapport</em></h4>
                     </div>
                     <div class="legends bg-white p-2">
@@ -130,21 +126,11 @@
                         <div class="col-6">
                             <h3 class="font-20 mulish_600_normal">Commande</h3>
                             <h4 class="font-16 mulish_600_normal mt-3">Par Responsable</h4>
-                            <div class="d-flex">
-                                <div class="col-3">Laurent</div>
-                                <TotalPercent class="col-4" :size="14" :amount="'38k'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
-                                <TotalPercent class="ms-3" :size="14" :amount="'15k'" :arrow="1" :symbol="'h'" :percent="184"></TotalPercent>
-                            </div>                                                            
-                            <div class="d-flex">
-                                <div class="col-3">Franck</div>
-                                <TotalPercent class="col-4" :size="14" :amount="'38k'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
-                                <TotalPercent class="ms-3" :size="14" :amount="'15k'" :arrow="1" :symbol="'h'" :percent="184"></TotalPercent>                                                                
-                            </div>                                                            
-                            <div class="d-flex">
-                                <div class="col-3">André</div>
-                                <TotalPercent class="col-4" :size="14" :amount="'38k'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
-                                <TotalPercent class="ms-3" :size="14" :amount="'15k'" :arrow="1" :symbol="'h'" :percent="184"></TotalPercent>                                                                
-                            </div>                                                            
+                            <div class="d-flex" v-for="(saleByUser, index) in salesByUser" :key="index">
+                                <div class="col-3">{{ saleByUser.name }}</div>
+                                <TotalPercent class="col-4" :fontSize="14" :amount="saleByUser.amount" :symbol="''" :pastAmount="saleByUser.pastAmount"></TotalPercent>
+                                <TotalPercent class="ms-3" :fontSize="14" :amount="saleByUser.hour" :symbol="'h'" :pastAmount="saleByUser.pastHour"></TotalPercent>
+                            </div>
                         </div>
                         <div class="col-6">
                             <div class="d-flex justify-content-between">
@@ -152,21 +138,12 @@
                                 <h4 class="mb-0 ms-auto font-14 text-custom-success text-decoration-underline cursor-pointer"><em>Voir rapport</em></h4>
                             </div>
                             <h4 class="font-16 mulish_600_normal mt-3">Par commande</h4>
-                            <div class="d-flex">
-                                <div class="col-4">Commande XXX</div>
-                                <TotalPercent class="col-4" :size="14" :amount="'38k'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
-                                <TotalPercent class="ms-3" :size="14" :amount="'15k'" :arrow="1" :symbol="'h'" :percent="184"></TotalPercent>                                                                
+                            <div class="d-flex" v-for="(saleByCommande, index) in salesByCommande" :key="index">
+                                <div class="col-3">{{ saleByCommande.id }}</div>
+                                <div class="col-3">{{ saleByCommande.name }}</div>
+                                <div class="col-3">{{ saleByCommande.amount }}€</div>
+                                <div class="col-3">{{ saleByCommande.hour }}h</div>
                             </div>                                                            
-                            <div class="d-flex">
-                                <div class="col-4">Commande lerou</div>
-                                <TotalPercent class="col-4" :size="14" :amount="'38k'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
-                                <TotalPercent class="ms-3" :size="14" :amount="'15k'" :arrow="1" :symbol="'h'" :percent="184"></TotalPercent>                                                                
-                            </div>                                                            
-                            <div class="d-flex">
-                                <div class="col-4">installation truc</div>
-                                <TotalPercent class="col-4" :size="14" :amount="'38k'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
-                                <TotalPercent class="ms-3" :size="14" :amount="'15k'" :arrow="1" :symbol="'h'" :percent="184"></TotalPercent>                                                                
-                            </div>                                                           
                         </div>
                     </div>
                 </div>
@@ -175,82 +152,50 @@
                 <div class="bg-gray rounded-3 p-3">
                     <div class="d-flex align-items-center">
                         <h3 class="font-20 mulish_600_normal m-0">Actions Commerciales</h3>
-                        <TotalPercent class="ms-5" :amount="'239'" :arrow="1" :symbol="''" :percent="38"></TotalPercent>
+                        <TotalPercent class="ms-5" :amount="totalEventCount" :symbol="''" :pastAmount="totalEventCountPast"></TotalPercent>
                         <h4 class="mb-0 ms-auto font-14 text-custom-success text-decoration-underline cursor-pointer"><em>Voir rapport</em></h4>
                     </div>
                     <div class="d-flex">
                         <div class="col-6">
-                            <h4 class="font-16 mulish_600_normal mt-3">Par Origine</h4>
-                            <div class="d-flex">
-                                <div class="col-4">Web</div>
+                            <h4 class="font-16 mulish_600_normal mt-3">Par Action</h4>
+                            <div class="d-flex" v-for="(event, index) in eventsByStatus" :key="index">
+                                <div class="col-4">{{ event.status }}</div>
                                 <div class="col-8">
-                                    <TotalPercent :size="14" :amount="'103'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
-                                </div>
-                            </div>
-                            <div class="d-flex">
-                                <div class="col-4">Emailling</div>
-                                <div class="col-8">
-                                    <TotalPercent :size="14" :amount="'36'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
-                                </div>
-                            </div>
-                            <div class="d-flex">
-                                <div class="col-4">Téléphone</div>
-                                <div class="col-8">
-                                    <TotalPercent :size="14" :amount="'33'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
+                                    <TotalPercent :fontSize="14" :amount="event.countOfEvent" :symbol="''" :pastAmount="event.pastCountOfEvent"></TotalPercent>
                                 </div>
                             </div>
                         </div>
                         <div class="col-6">
                             <h4 class="font-16 mulish_600_normal mt-3">Par Type</h4>
-                            <div class="d-flex">
-                                <div class="col-4">Prospection</div>
+                            <div class="d-flex" v-for="(event, index) in eventsByType" :key="index">
+                                <div class="col-4">{{event.type}}</div>
                                 <div class="col-8">
-                                    <TotalPercent :size="14" :amount="'38'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
+                                    <TotalPercent :fontSize="14" :amount="event.countOfEvent" :symbol="''" :pastAmount="event.pastCountOfEvent"></TotalPercent>
                                 </div>
-                            </div>                                                            
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="bg-gray rounded-3 p-3 mt-3">
                     <div class="d-flex align-items-center">
                         <h3 class="font-20 mulish_600_normal m-0">Devis</h3>
-                        <TotalPercent class="ms-5" :amount="'1026'" :arrow="1" :symbol="''" :percent="38"></TotalPercent>
+                        <TotalPercent class="ms-5" :amount="totalDevisCount" :symbol="''" :pastAmount="totalDevisCountPast"></TotalPercent>
                         <h4 class="mb-0 ms-auto font-14 text-custom-success text-decoration-underline cursor-pointer"><em>Voir rapport</em></h4>
                     </div>
                     <div class="d-flex mt-3">
                         <div class="col-6">
                             <h4 class="font-16 mulish_600_normal mt-3">Par Statut</h4>
-                            <div class="d-flex">
-                                <div class="col-4">Delivery</div>
-                                <TotalPercent :size="14" class="ms-5" :amount="'38k'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
-                            </div>                                                            
-                            <div class="d-flex">
-                                <div class="col-4">Marylebone</div>
-                                <TotalPercent :size="14" class="ms-5" :amount="'38k'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
-                            </div>                                                            
-                            <div class="d-flex">
-                                <div class="col-4">Notting Hill</div>
-                                <TotalPercent :size="14" class="ms-5" :amount="'38k'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
-                            </div>                                                            
-                            <div class="d-flex">
-                                <div class="col-4">Chelsea</div>
-                                <TotalPercent :size="14" class="ms-5" :amount="'38k'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
-                            </div>                                                            
-                            <div class="d-flex">
-                                <div class="col-4">South Ken</div>
-                                <TotalPercent :size="14" class="ms-5" :amount="'38k'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
-                            </div>                                                            
+                            <div class="d-flex" v-for="(devis, index) in devisByStatus" :key="index">
+                                <div class="col-4">{{ devis.status }}</div>
+                                <TotalPercent :fontSize="14" class="ms-5" :amount="devis.countOfDevis" :symbol="''" :pastAmount="devis.pastCountOfDevis"></TotalPercent>
+                            </div>
                         </div>
                         <div class="col-6">
                             <h4 class="font-16 mulish_600_normal mt-3">Par Créateur / Responsable</h4>
-                            <div class="d-flex">
-                                <div class="col-4">Laurent</div>
-                                <TotalPercent :size="14" class="ms-5" :amount="'38k'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
-                            </div>                                                            
-                            <div class="d-flex">
-                                <div class="col-4">Franck</div>
-                                <TotalPercent :size="14" class="ms-5" :amount="'38k'" :arrow="1" :symbol="''" :percent="184"></TotalPercent>
-                            </div>                                                            
+                            <div class="d-flex" v-for="(devis, index) in devisByUser" :key="index">
+                                <div class="col-4">{{ devis.name }}</div>
+                                <TotalPercent :fontSize="14" class="ms-5" :amount="devis.countOfDevis" :symbol="''" :pastAmount="devis.pastCountOfDevis"></TotalPercent>
+                            </div>
                         </div>
                     </div>                                                    
                 </div>                                                
@@ -316,10 +261,30 @@ export default {
         const series9Data = ref([]);
         let series10 = null;        
         const series10Data = ref([]);
+
         const salesByOriginTotal = ref(0);
         const salesByOriginTotalToCompare = ref(0);        
         const salesByClientTotal = ref(0);
-        const salesByClientTotalToCompare = ref(0);        
+        const salesByClientTotalToCompare = ref(0);    
+
+        const salesByCustCat = ref(0);
+        const avgSale = ref(0);
+        const avgSaleToCompare = ref(0);
+        const facture = ref(0);
+        const paiement = ref(0);
+        const salesByCommande = ref([]);
+        const salesByUser = ref([]);
+
+        const devisByStatus = ref([]);
+        const devisByUser = ref([]);
+        const totalDevisCount = ref(0);
+        const totalDevisCountPast = ref(0);
+
+        const eventsByStatus = ref([]);
+        const eventsByType = ref([]);
+        const totalEventCount = ref(0);
+        const totalEventCountPast = ref(0);
+
         const today = new Date();
         const filterVal = ref({
             customFilter: 0,
@@ -338,7 +303,6 @@ export default {
                     originChartData.value = res.data.salesByOrigin;
                     salesByOriginTotal.value = res.data.salesByOriginTotal;
                     salesByOriginTotalToCompare.value = res.data.salesByOriginTotalToCompare;
-                    
 
                     clientChartData.value = res.data.salesByClient;
                     salesByClientTotal.value = res.data.salesByClientTotal;
@@ -354,6 +318,24 @@ export default {
                     series8Data.value = res.data.series8Data;
                     series9Data.value = res.data.series9Data;
                     series10Data.value = res.data.series10Data;
+
+                    salesByCustCat.value = res.data.salesByCustCat;
+                    avgSale.value = res.data.avgSale;
+                    avgSaleToCompare.value = res.data.avgSaleToCompare;
+                    facture.value = res.data.facture;
+                    paiement.value = res.data.paiement;
+                    salesByCommande.value = res.data.salesByCommande;
+                    salesByUser.value = res.data.salesByUser;
+
+                    devisByStatus.value = res.data.devisByStatus;
+                    devisByUser.value = res.data.devisByUser;
+                    totalDevisCount.value = res.data.totalDevisCount;
+                    totalDevisCountPast.value = res.data.totalDevisCountPast;
+
+                    eventsByStatus.value = res.data.eventsByStatus;
+                    eventsByType.value = res.data.eventsByType;
+                    totalEventCount.value = res.data.totalEventCount;
+                    totalEventCountPast.value = res.data.totalEventCountPast;
                     initOriginChart();
                     initClientChart();
                     initTotalChart();
@@ -369,14 +351,51 @@ export default {
             clientChartRoot.dispose();
         }
         watch(() => filterVal.value, (current_val, previous_val) => {
+            destroyChart();
             store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Loading data...']);
-            axios.post('/statistique', current_val)
-                .then((res) => {
-                    originChartData.value = res.data.salesByOrigin;
-                    clientChartData.value = res.data.salesByClient;                    
-                    destroyChart();
-                }).finally(()=>{
-                    store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+            axios.post('/statistique', current_val).then((res) => {
+                destroyChart();
+                originChartData.value = res.data.salesByOrigin;
+                salesByOriginTotal.value = res.data.salesByOriginTotal;
+                salesByOriginTotalToCompare.value = res.data.salesByOriginTotalToCompare;
+
+                clientChartData.value = res.data.salesByClient;
+                salesByClientTotal.value = res.data.salesByClientTotal;
+                salesByClientTotalToCompare.value = res.data.salesByClientTotalToCompare;
+
+                series1Data.value = res.data.series1Data;
+                series2Data.value = res.data.series2Data;
+                series3Data.value = res.data.series3Data;
+                series4Data.value = res.data.series4Data;
+                series5Data.value = res.data.series5Data;
+                series6Data.value = res.data.series6Data;
+                series7Data.value = res.data.series7Data;
+                series8Data.value = res.data.series8Data;
+                series9Data.value = res.data.series9Data;
+                series10Data.value = res.data.series10Data;
+
+                salesByCustCat.value = res.data.salesByCustCat;
+                avgSale.value = res.data.avgSale;
+                avgSaleToCompare.value = res.data.avgSaleToCompare;
+                facture.value = res.data.facture;
+                paiement.value = res.data.paiement;
+                salesByCommande.value = res.data.salesByCommande;
+                salesByUser.value = res.data.salesByUser;
+
+                devisByStatus.value = res.data.devisByStatus;
+                devisByUser.value = res.data.devisByUser;
+                totalDevisCount.value = res.data.totalDevisCount;
+                totalDevisCountPast.value = res.data.totalDevisCountPast;
+
+                eventsByStatus.value = res.data.eventsByStatus;
+                eventsByType.value = res.data.eventsByType;
+                totalEventCount.value = res.data.totalEventCount;
+                totalEventCountPast.value = res.data.totalEventCountPast;
+                initOriginChart();
+                initClientChart();
+                initTotalChart();                    
+            }).finally(()=>{
+                store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
             });
         });        
         let originChartRoot = null;
@@ -452,12 +471,7 @@ export default {
         let clientSeries = null;
         // Define data for sales by customer
         const clientChartData = ref([
-            { client: "Client xx", amount: 28630 },
-            { client: "Client xx", amount: 10000 },
-            { client: "Client xx", amount: 20000 },
-            { client: "Client xx", amount: 15000 },
-            { client: "Client xx", amount: 24000 },
-            { client: "Autres Clients", amount: 26000 },
+            { client: "client", amount: 0 }
         ]);
         const initClientChart = ()=>{
             // Create root element
@@ -603,7 +617,7 @@ export default {
                 series2.data.processor = am5.DataProcessor.new(totalRoot, {
                     dateFields: ["date"], dateFormat: "yyyy-MM-dd"
                 });                                
-                series2.data.setAll(data);
+                series2.data.setAll(series2Data.value);
                 // Make stuff animate on load
                 series2.appear(1000);                
             }else if(seriesIndex == 3){
@@ -621,7 +635,7 @@ export default {
                 series3.data.processor = am5.DataProcessor.new(totalRoot, {
                     dateFields: ["date"], dateFormat: "yyyy-MM-dd"
                 });                    
-                series3.data.setAll(data);
+                series3.data.setAll(series3Data.value);
                 // Make stuff animate on load
                 series3.appear(1000);                
             }else if(seriesIndex == 4){
@@ -639,7 +653,7 @@ export default {
                 series4.data.processor = am5.DataProcessor.new(totalRoot, {
                     dateFields: ["date"], dateFormat: "yyyy-MM-dd"
                 });    
-                series4.data.setAll(data);
+                series4.data.setAll(series4Data.value);
                 // Make stuff animate on load
                 series4.appear(1000);                
             }else if(seriesIndex == 5){
@@ -656,7 +670,7 @@ export default {
                 series5.data.processor = am5.DataProcessor.new(totalRoot, {
                     dateFields: ["date"], dateFormat: "yyyy-MM-dd"
                 });    
-                series5.data.setAll(data);
+                series5.data.setAll(series5Data.value);
                 // Make stuff animate on load
                 series5.appear(1000);                
             }else if(seriesIndex == 6){
@@ -673,7 +687,7 @@ export default {
                 series6.data.processor = am5.DataProcessor.new(totalRoot, {
                     dateFields: ["date"], dateFormat: "yyyy-MM-dd"
                 });    
-                series6.data.setAll(data);
+                series6.data.setAll(series6Data.value);
                 // Make stuff animate on load
                 series6.appear(1000);                
             }else if(seriesIndex == 7){
@@ -690,7 +704,7 @@ export default {
                 series7.data.processor = am5.DataProcessor.new(totalRoot, {
                     dateFields: ["date"], dateFormat: "yyyy-MM-dd"
                 });    
-                series7.data.setAll(data);
+                series7.data.setAll(series7Data.value);
                 // Make stuff animate on load
                 series7.appear(1000);                
             }else if(seriesIndex == 8){
@@ -707,7 +721,7 @@ export default {
                 series8.data.processor = am5.DataProcessor.new(totalRoot, {
                     dateFields: ["date"], dateFormat: "yyyy-MM-dd"
                 });    
-                series8.data.setAll(data);
+                series8.data.setAll(series8Data.value);
                 // Make stuff animate on load
                 series8.appear(1000);                
             }else if(seriesIndex == 9){
@@ -724,7 +738,7 @@ export default {
                 series9.data.processor = am5.DataProcessor.new(totalRoot, {
                     dateFields: ["date"], dateFormat: "yyyy-MM-dd"
                 });    
-                series9.data.setAll(data);
+                series9.data.setAll(series9Data.value);
                 // Make stuff animate on load
                 series9.appear(1000);                
             }else{
@@ -741,7 +755,7 @@ export default {
                 series10.data.processor = am5.DataProcessor.new(totalRoot, {
                     dateFields: ["date"], dateFormat: "yyyy-MM-dd"
                 });    
-                series10.data.setAll(data);
+                series10.data.setAll(series10Data.value);
                 // Make stuff animate on load
                 series10.appear(1000);                
             }
@@ -845,6 +859,25 @@ export default {
             series8Data,
             series9Data,
             series10Data,
+            salesByOriginTotal,
+            salesByOriginTotalToCompare,
+            salesByClientTotal,
+            salesByClientTotalToCompare,
+            salesByCustCat,
+            avgSale,
+            avgSaleToCompare,
+            facture,
+            paiement,
+            salesByCommande,
+            salesByUser,
+            devisByStatus,
+            devisByUser,
+            totalDevisCount,
+            totalDevisCountPast,
+            eventsByStatus,
+            eventsByType,
+            totalEventCount,
+            totalEventCountPast,
         }
     }
 }
