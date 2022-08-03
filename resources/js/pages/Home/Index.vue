@@ -30,8 +30,8 @@
                                     <div class="d-flex justify-content-between">
                                         <h4 class="font-24 mulish_normal_600">Vente par mois</h4>
                                         <div class="me-3">
-                                            <TotalPercent :amount="'230 K'" :arrow="1" :percent="38"></TotalPercent>
-                                            <TotalPercent :amount="'360'" :arrow="0" :symbol="'Hr'" :percent="18"></TotalPercent>
+                                            <TotalPercent :amount="230" :pastAmount="380"></TotalPercent>
+                                            <TotalPercent :amount="360" :symbol="'Hr'" :pastAmount="200"></TotalPercent>
                                         </div>
                                     </div>
                                     <div class="d-flex mt-3 px-3">

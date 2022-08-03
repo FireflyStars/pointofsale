@@ -14,20 +14,20 @@ class StatisticController extends Controller
 {
     //
     public function index(Request $request){
-        // $customFilter   =   $request->post('customFilter');
-        $customFilter   =   true;
-        // $startDate      =   $request->post('startDate');
-        $startDate      =   '2022-07-01';
-        // $endDate        =   $request->post('endDate');
-        $endDate        =   '2022-07-31';
+        $customFilter   =   $request->post('customFilter');
+        // $customFilter   =   true;
+        $startDate      =   $request->post('startDate');
+        // $startDate      =   '2022-07-01';
+        $endDate        =   $request->post('endDate');
+        // $endDate        =   '2022-07-31';
         $dateRangeType  =   $request->post('dateRangeType');
         $compareCustomFilter    =   $request->post('compareCustomFilter');
-        // $compareStartDate       =   $request->post('compareStartDate');
-        $compareStartDate       =   '2021-07-01';
-        // $compareEndDate         =   $request->post('compareEndDate');
-        $compareEndDate         =   '2021-07-31';
-        // $compareMode            =   $request->post('compareMode');
-        $compareMode            =   'year';
+        $compareStartDate       =   $request->post('compareStartDate');
+        // $compareStartDate       =   '2021-07-01';
+        $compareEndDate         =   $request->post('compareEndDate');
+        // $compareEndDate         =   '2021-07-31';
+        $compareMode            =   $request->post('compareMode');
+        // $compareMode            =   'year';
 
         $period         = [ Carbon::parse($startDate)->startOfDay()->toDateTimeString(), Carbon::parse($endDate)->endOfDay()->toDateTimeString() ];
         if(!$compareCustomFilter){
@@ -181,14 +181,14 @@ class StatisticController extends Controller
                         ->where('order_states.order_type', 'COMMANDE')
                         ->whereBetween('orders.datecommande', $period)
                         ->select(
-                            DB::raw('FLOOR(AVG(orders.total)) as avg')
+                            DB::raw('IFNULL(FLOOR(AVG(orders.total)), 0) as avg')
                         )
                         ->value('avg');
         $avgSaleToCompare = Order::join('order_states', 'orders.order_state_id', '=', 'order_states.id')
                         ->where('order_states.order_type', 'COMMANDE')
                         ->whereBetween('orders.datecommande', $past_period)
                         ->select(
-                            DB::raw('FLOOR(AVG(orders.total)) as avg')
+                            DB::raw('IFNULL(FLOOR(AVG(orders.total)), 0) as avg')
                         )
                         ->value('avg');
         //sales by customer category
