@@ -66,8 +66,14 @@ import { commande as COMMANDE_LIST_MODULE } from "./modules/commande"
 import { intervention as INTERVENTION_LIST_MODULE } from './modules/intervention'
 import { InterventionStatusTag as INTERVENTION_STATUS_MODULE } from './modules/component_store/InterventionStatusTag'
 
+
+import { pointage as POINTAGE_LIST_MODULE } from './modules/pointage'
+import { pointageStatusTag as POINTAGE_STATUS_MODULE } from './modules/component_store/pointageStatusTag'
+
 import { paiement as PAIEMENT_LIST_MODULE } from "./modules/paiement"
 import { paiementStatusTag as PAIEMENT_STATUS_MODULE } from './modules/component_store/paiementStatusTag'
+
+import { menu as MENU_ITEMS_MODULE } from "./modules/menu"
 
 
 export default createStore({
@@ -106,6 +112,9 @@ export default createStore({
         INTERVENTION_LIST_MODULE,
         INTERVENTION_STATUS_MODULE,
         PAIEMENT_LIST_MODULE,
-        PAIEMENT_STATUS_MODULE
+        PAIEMENT_STATUS_MODULE,
+        POINTAGE_LIST_MODULE,
+        POINTAGE_STATUS_MODULE,
+        MENU_ITEMS_MODULE
     }
 });

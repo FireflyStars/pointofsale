@@ -47,7 +47,7 @@ export const commandeDetails = {
         [COMMANDE_DETAIL_GET]: state => state.order,
         [COMMANDE_DETAIL_GET_FACTURATION]:state=>state.facturation,
         [COMMANDE_DETAIL_GET_ORDER_DOCUMENTS]:state=>state.order_documents,
-        pointage: state => state.pointage,
+        pointages: state => state.pointage,
         personnelList: state => state.personnelList,
         pointageTypes: state => state.pointageTypes,
     },
@@ -179,14 +179,21 @@ export const commandeDetails = {
               });
         },
 
-        [COMMANDE_DETAIL_LOAD_POINTAGE]:async({commit,state})=>{
-            return axios.post(`/get-order-detail-pointage/${state.order.id}`).then((response) => {
-                commit(COMMANDE_DETAIL_SET_POINTAGE, response.data)
-                return  Promise.resolve(response)
-                      
-              }).catch((error)=>{
-                return  Promise.resolve(error)
-              });
+        [COMMANDE_DETAIL_LOAD_POINTAGE]:async({commit,state}, data) => {
+
+          const { id, take } = data
+
+          return axios.post(`/get-order-detail-pointage/${id}`, {
+            take
+          }).then((response) => {
+              commit(COMMANDE_DETAIL_SET_POINTAGE, response.data)
+              return  Promise.resolve(response)
+                    
+          })
+          .catch((error)=>{
+              return  Promise.resolve(error)
+          })
+
         },
 
         [COMMANDE_DETAIL_UPDATE_ORDER_STATE]:async({commit,state},order_state_id)=>{

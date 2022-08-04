@@ -135,9 +135,15 @@ class CommandeController extends Controller
             return response('Order is not affiliated to user.Cannot load invoices.', 509);
         }
 
+        $has_take = $request->has('take') && $request->take != null && $request->take != 0 && $request->take != 'all';
+
         return response()->json(
             $order->pointage()
             ->where('affiliate_id', $request->user()->affiliate_id)
+            ->when($has_take, function($query) use ($request) {
+                $query->take($request->take);
+            })
+            ->latest('created_at')
             ->get()
             ->load('type', 'user')
         );

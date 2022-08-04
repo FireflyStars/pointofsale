@@ -22,8 +22,7 @@ export const InterventionStatusTag = {
     actions: {
       [INTERVENTION_LOAD_ORDER_STATES]: async({ commit,state,dispatch }, params) => {
         commit(INTERVENTION_SET_LOADED);
-        return axios.post(`/get-pointage-types`, params).then((response)=>{
-          console.log(response.data)
+        return axios.post(`/get-intervention-status`, params).then((response)=>{
           commit(INTERVENTION_SET_STATES, response.data);
           return  Promise.resolve(response);
                 

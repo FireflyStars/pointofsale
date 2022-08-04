@@ -23,16 +23,20 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OuvragesController;
 use App\Http\Controllers\LcdtAdminController;
 use App\Http\Controllers\LcdtFrontController;
+use App\Http\Controllers\PaiementsController;
+use App\Http\Controllers\PointagesController;
 use App\Http\Controllers\QuickLinkController;
+use App\Http\Controllers\StatisticController;
 use App\Http\Controllers\TemplatesController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\UnitStatesController;
 use App\Http\Controllers\CampagneListController;
 use App\Http\Controllers\PageElementsController;
-use App\Http\Controllers\ActionCommercialListController;
-use App\Http\Controllers\StatisticController;
 use App\Http\Controllers\InterventionsController;
-use App\Http\Controllers\PaiementsController;
+use App\Http\Controllers\ActionCommercialListController;
+use App\Http\Controllers\MenuController;
+use App\Models\Intervention;
+use App\Models\InterventionType;
 use App\Http\Controllers\HomeController;
 
 Route::group(['prefix' => 'admin'], function () {
@@ -168,9 +172,19 @@ Route::post('/get-pointage-types', [CommandeController::class, 'get_pointage_typ
 Route::post('/get-pointage-types-formatted', [CommandeController::class, 'get_pointage_types_formatted']);
 Route::post('/create-pointage/{order}', [CommandeController::class, 'create_pointage']);
 
+Route::post('/get-pointages-list', [PointagesController::class, 'index']);
+Route::get('/get-pointages-list', [PointagesController::class, 'index']);
+Route::post('/get-pointages-list-mes', [PointagesController::class, 'pointages_mes']);
+
 Route::post('/get-interventions-list', [InterventionsController::class, 'index']);
 Route::get('/get-interventions-list', [InterventionsController::class, 'index']);
 Route::post('/get-interventions-list-mes', [InterventionsController::class, 'interventions_mes']);
+Route::post('/get-intervention-status-formatted', [InterventionsController::class, 'get_intervention_status_formatted']);
+Route::post('/get-intervention-status', [InterventionsController::class, 'get_intervention_status']);
+Route::post('/get-intervention-types-formatted', [InterventionsController::class, 'get_intervention_types']);
+
+Route::get('/get-menu-items', [MenuController::class, 'index']);
+
 
 Route::get('/get-paiements-list', [PaiementsController::class, 'index']);
 Route::post('/get-paiements-list', [PaiementsController::class, 'index']);

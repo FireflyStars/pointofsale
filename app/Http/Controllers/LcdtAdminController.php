@@ -34,6 +34,8 @@ class LcdtAdminController extends Controller{
             "SIRET",
             "APE",
             "TVA",
+            "Capital_agence",
+            "RCS_agence"
         );
         $FIELDS_DEF=array();
         foreach($FIELDS as $FIELD){

@@ -22,7 +22,7 @@
                         
                         <page-title 
                             icon="intervention" 
-                            name="Intervention" 
+                            name="Pointage" 
                             class="almarai_extrabold_normal_normal"
                             style="height: 45px; width: 45px;"
                         />
@@ -35,22 +35,22 @@
 
                                     <template v-slot:tout>
                                         
-                                        <item-list-table :table_def="interventions">
+                                        <item-list-table :table_def="pointages">
                                         
-                                            <template v-slot:intervention_statut_id="{ row }">
-                                                <status-tag :id="row.intervention_statut_id" />
+                                            <template v-slot:pointage_type_id="{ row }">
+                                                <status-tag :id="row.pointage_type_id" />
                                             </template>    
 
                                         </item-list-table>
                                             
                                     </template>
 
-                                    <template v-slot:mes_interventions>
+                                    <template v-slot:mes_pointages>
                                         
-                                        <item-list-table :table_def="interventionsMes">
+                                        <item-list-table :table_def="pointagesMes">
 
-                                            <template v-slot:intervention_statut_id="{ row }">
-                                                <status-tag :id="row.intervention_statut_id" />
+                                            <template v-slot:pointage_type_id="{ row }">
+                                                <status-tag :id="row.pointage_type_id" />
                                             </template>           
 
                                         </item-list-table>
@@ -83,22 +83,22 @@
     import { useStore } from 'vuex'
     import { ref, computed } from 'vue'
     import ItemListTable from '../../components/miscellaneous/ItemListTable/ItemListTable.vue'
-    import StatusTag from '../../components/Intervention/StatusTag'
+    import StatusTag from '../../components/Pointage/StatusTag'
 
     import {
-        INTERVENTION_LIST_MODULE,
+        POINTAGE_LIST_MODULE,
     }
     from '../../store/types/types'
 
     const tabs = ref({
         tout: 'Tout',
-        mes_interventions: 'Mes interventions'
+        mes_pointages: 'Mes Pointages'
     })
 
     const store = useStore()
 
-    const interventions = computed(() => store.getters[`${INTERVENTION_LIST_MODULE}interventions`])
-    const interventionsMes = computed(() => store.getters[`${INTERVENTION_LIST_MODULE}interventionsMes`])
+    const pointages = computed(() => store.getters[`${POINTAGE_LIST_MODULE}pointages`])
+    const pointagesMes = computed(() => store.getters[`${POINTAGE_LIST_MODULE}pointagesMes`])
 
 
 </script>

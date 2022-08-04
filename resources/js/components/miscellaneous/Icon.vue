@@ -60,7 +60,6 @@
         viewBox="0 0 32 32" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg" 
-        class="side-icons"
         v-bind="$attrs"
     >
         <rect width="32" height="32" rx="8" />
@@ -77,12 +76,29 @@
         :height="$attrs.height || 24"
         viewBox="0 0 32 32" 
         fill="none" xmlns="http://www.w3.org/2000/svg" 
-        class="side-icons"
         v-bind="$attrs"
     >
         <rect width="32" height="32" rx="8" />
         <path transform="translate(4, 5)" d="M8.60718 7.95133C8.60718 7.95133 12.7819 6.88276 15.9285 8.23626C15.9285 8.23626 21.0841 4.09225 20.1029 2.77447C19.1215 1.45654 16.9252 1.06457 16.9252 1.06457C16.9252 1.06457 16.972 2.31134 15.5235 4.44849C15.5235 4.44849 16.7851 1.06457 15.6168 0.423544C14.4486 -0.217626 9.02803 -0.146462 9.02803 0.744066C9.02803 1.63458 10.2167 4.16586 10.2897 5.90902C10.2897 5.90902 8.74757 2.73875 8.60735 2.52511C8.46713 2.31134 8.46713 2.31134 8.46713 2.31134C8.46713 2.31134 5.85031 3.1108 6.55123 4.11796C7.25218 5.12539 8.51381 7.03713 8.60718 7.95133Z" fill="#010101"/>
         <path transform="translate(5, 5)" d="M12 8.37512C5.37263 8.37512 0 14.3197 0 18.4672C0 22.615 5.3725 24 12 24C18.6275 24 24 22.615 24 18.4672C24 14.3197 18.6275 8.37512 12 8.37512ZM12.9915 18.1859V19.1203H11.0508V18.2572C10.3632 18.2007 9.70635 18.055 9.25391 17.8528L8.91398 17.7008L9.61133 16.4817L10.1998 16.7276C10.6476 16.9149 11.2463 17.0263 11.8023 17.0263C12.4251 17.0263 12.8274 16.8426 12.8274 16.5591C12.8274 16.3779 12.7382 16.1622 11.6737 15.8923C10.4246 15.5857 9.14178 15.136 9.14178 14.1362C9.14178 13.3631 9.91287 12.7557 11.1438 12.5252V11.6164H13.0708V12.4498C13.6069 12.4968 14.085 12.5991 14.5216 12.7592L14.9244 12.907L14.1973 14.1067L13.6353 13.9055C13.4384 13.8346 12.9764 13.669 12.2401 13.669C11.7064 13.669 11.3872 13.8063 11.3872 14.0364C11.3872 14.211 11.4781 14.349 12.6898 14.6626C13.8045 14.9471 15.0865 15.4136 15.0865 16.5006C15.0865 17.2975 14.2619 17.9455 12.9915 18.1859Z" fill="#010101" />
+    </svg>
+
+    <svg 
+        v-else-if="name == 'personnel'"
+        :width="$attrs.width || 24" 
+        :height="$attrs.height || 24" 
+        viewBox="0 0 32 32"  
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg"
+        v-bind="$attrs" 
+    >
+        <rect width="32" height="32" rx="8" />
+        <path transform="translate(5, 5)" d="M12.001 13.0857C9.62685 13.0857 7.70209 15.7477 7.70209 19.0327V23.6003H16.2979V19.0327C16.2979 15.7477 14.3732 13.0857 12.001 13.0857Z" fill="#010101"/>
+        <path transform="translate(5, 5)" d="M12 11.9846C13.88 11.9846 15.4041 9.87585 15.4041 7.27454C15.4041 4.67323 13.88 2.56445 12 2.56445C10.12 2.56445 8.59589 4.67323 8.59589 7.27454C8.59589 9.87585 10.12 11.9846 12 11.9846Z" fill="#010101"/>
+        <path transform="translate(5, 5)" d="M19.702 9.42018C21.5821 9.42018 23.1061 7.3113 23.1061 4.71009C23.1061 2.10838 21.5822 0 19.702 0C17.8219 0 16.2979 2.10826 16.2979 4.71009C16.2979 7.3113 17.822 9.42018 19.702 9.42018Z" fill="#010101"/>
+        <path transform="translate(5, 5)" d="M4.29785 9.42018C6.17791 9.42018 7.70197 7.3113 7.70197 4.71009C7.70197 2.10838 6.17791 0 4.29785 0C2.4178 0 0.893738 2.10826 0.893738 4.71009C0.89383 7.3113 2.4178 9.42018 4.29785 9.42018Z" fill="#010101"/>
+        <path transform="translate(5, 5)" d="M19.703 10.5213C17.8734 10.5213 16.312 12.1026 15.6912 14.3309C16.4983 15.5577 16.9906 17.1882 16.9906 18.9787V21.036H24V16.468C24 13.1827 22.0752 10.5213 19.703 10.5213Z" fill="#010101"/>
+        <path transform="translate(5, 5)" d="M7.00941 18.9786C7.00941 17.1887 7.50173 15.5576 8.30883 14.3314C7.68819 12.1025 6.12715 10.5212 4.29889 10.5212C1.92476 10.5212 0 13.1826 0 16.468V21.0358H7.00941V18.9786Z" fill="#010101"/>
     </svg>
 
     <svg 
@@ -92,7 +108,6 @@
         viewBox="0 0 32 32" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg" 
-        class="side-icons"
         v-bind="$attrs"
     >
         <rect width="32" height="32" rx="8" />
@@ -107,7 +122,6 @@
         viewBox="0 0 32 32" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg" 
-        class="side-icons"
         v-bind="$attrs"
     >
         <rect width="32" height="32" rx="8" />
@@ -122,7 +136,6 @@
         viewBox="0 0 32 32" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg" 
-        class="side-icons"
         v-bind="$attrs"
     >
         <rect width="32" height="32" rx="8" />
@@ -137,7 +150,6 @@
         viewBox="0 0 32 32" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg"
-        class="side-icons"
         v-bind="$attrs"
     >
         
@@ -158,7 +170,6 @@
         viewBox="0 0 32 32" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg" 
-        class="side-icons"
         v-bind="$attrs"
     >
         <rect width="32" height="32" rx="8" />
@@ -173,7 +184,6 @@
         viewBox="0 0 32 32" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg" 
-        class="side-icons"
         v-bind="$attrs"
     >
         <rect width="32" height="32" rx="8" />
@@ -193,7 +203,6 @@
         viewBox="0 0 32 32" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg" 
-        class="side-icons"
         v-bind="$attrs"
     >
         <rect width="32" height="32" rx="8" />
@@ -637,12 +646,12 @@
 
     <svg 
         v-else-if="name == 'emailing'" 
-        style="width:44px; height:44px;" 
         width="32" 
         height="32" 
         viewBox="0 0 32 32" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg" 
+        v-bind="$attrs"
     >
         <rect width="32" height="32" rx="8" />
         <path transform="translate(5,7)"  d="M2 2.5V0.993C2.00183 0.730378 2.1069 0.479017 2.29251 0.293218C2.47813 0.107418 2.72938 0.00209465 2.992 0H21.008C21.556 0 22 0.445 22 0.993V17.007C21.9982 17.2696 21.8931 17.521 21.7075 17.7068C21.5219 17.8926 21.2706 17.9979 21.008 18H2.992C2.72881 17.9997 2.4765 17.895 2.29049 17.7088C2.10448 17.5226 2 17.2702 2 17.007V16H20V4.3L12 11.5L2 2.5ZM0 7H5V9H0V7ZM0 12H8V14H0V12Z" fill="black" />
@@ -655,7 +664,6 @@
         viewBox="0 0 32 32" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg" 
-        class="side-icons"
         v-bind="$attrs"
     >
         <rect width="32" height="32" rx="8" />
@@ -668,7 +676,8 @@
         :height="$attrs.height || 32" 
         viewBox="0 0 32 32" 
         fill="none" 
-        xmlns="http://www.w3.org/2000/svg" 
+        xmlns="http://www.w3.org/2000/svg"
+        v-bind="$attrs"
     >
         <rect width="32" height="32" rx="8"/>
         <path transform="translate(6.975,4.975)" d="M8 13V15C6.4087 15 4.88258 15.6321 3.75736 16.7574C2.63214 17.8826 2 19.4087 2 21H0C0 18.8783 0.842855 16.8434 2.34315 15.3431C3.84344 13.8429 5.87827 13 8 13ZM8 12C4.685 12 2 9.315 2 6C2 2.685 4.685 0 8 0C11.315 0 14 2.685 14 6C14 9.315 11.315 12 8 12ZM8 10C10.21 10 12 8.21 12 6C12 3.79 10.21 2 8 2C5.79 2 4 3.79 4 6C4 8.21 5.79 10 8 10ZM14 20.5L11.061 22.045L11.622 18.773L9.245 16.455L12.531 15.977L14 13L15.47 15.977L18.755 16.455L16.378 18.773L16.938 22.045L14 20.5Z" :fill="$attrs.color || 'black'"/>
@@ -681,6 +690,7 @@
         viewBox="0 0 24 24" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg"
+        v-bind="$attrs"
     >
         <path d="M12.001 13.0859C9.62691 13.0859 7.70215 15.748 7.70215 19.0329V23.6006H16.298V19.0329C16.298 15.748 14.3732 13.0859 12.001 13.0859Z" fill="#010101"/>
         <path d="M11.9998 11.9846C13.8799 11.9846 15.4039 9.87585 15.4039 7.27454C15.4039 4.67323 13.8799 2.56445 11.9998 2.56445C10.1198 2.56445 8.5957 4.67323 8.5957 7.27454C8.5957 9.87585 10.1198 11.9846 11.9998 11.9846Z" fill="#010101"/>
@@ -690,6 +700,38 @@
         <path d="M7.00941 18.9789C7.00941 17.189 7.50173 15.5579 8.30883 14.3317C7.68819 12.1028 6.12715 10.5215 4.29889 10.5215C1.92476 10.5215 0 13.1829 0 16.4683V21.0361H7.00941V18.9789Z" fill="#010101"/>
     </svg>
 
+    <svg 
+        v-else-if="name == 'angle-down-new'"
+        xmlns="http://www.w3.org/2000/svg" 
+        xml:space="preserve" 
+        :width="$attrs.width || 34" 
+        :height="$attrs.height || 34" 
+        shape-rendering="geometricPrecision" 
+        text-rendering="geometricPrecision" 
+        image-rendering="optimizeQuality" 
+        fill-rule="evenodd" 
+        clip-rule="evenodd" 
+        viewBox="0 0 512 298.04"
+        v-bind="$attrs"
+    >
+        <path fill-rule="nonzero" d="M12.08 70.78c-16.17-16.24-16.09-42.54.15-58.7 16.25-16.17 42.54-16.09 58.71.15L256 197.76 441.06 12.23c16.17-16.24 42.46-16.32 58.71-.15 16.24 16.16 16.32 42.46.15 58.7L285.27 285.96c-16.24 16.17-42.54 16.09-58.7-.15L12.08 70.78z"/>
+    </svg>
+
+    <svg 
+        v-else-if="name == 'angle-right-new'"
+        :width="$attrs.width || 34" 
+        :height="$attrs.height || 34"
+        xmlns="http://www.w3.org/2000/svg" 
+        shape-rendering="geometricPrecision" 
+        text-rendering="geometricPrecision" 
+        image-rendering="optimizeQuality" 
+        fill-rule="evenodd" 
+        clip-rule="evenodd" 
+        viewBox="0 0 312 511.42"
+        v-bind="$attrs"
+    >
+        <path fill-rule="nonzero" d="M35.54 0 312 252.82 29.84 511.42 0 478.8l246.54-225.94L5.7 32.62z"/>
+    </svg>
 
     <svg 
         v-else-if="name == 'check'"
@@ -697,6 +739,7 @@
         :height="$attrs.height || 17" 
         viewBox="0 0 23 17" 
         fill="none" xmlns="http://www.w3.org/2000/svg"
+        v-bind="$attrs"
     >
         <path 
             d="M8.09998 16.2L0 8.20001L2.19995 6L8.09998 12L20 0L22.2 2.20001L8.09998 16.2Z" 
@@ -711,6 +754,7 @@
         viewBox="0 0 22 22" 
         fill="none" 
         xmlns="http://www.w3.org/2000/svg"
+        v-bind="$attrs"
     >
         <path 
             d="M11 0C4.9 0 0 4.9 0 11C0 17.1 4.9 22 11 22C17.1 22 22 17.1 22 11C22 4.9 17.1 0 11 0ZM17 15L15 17L11 13L7 17L5 15L9 11L5 7L7 5L11 9L15 5L17 7L13 11L17 15Z" 
@@ -728,6 +772,7 @@
         fill="none" 
         xmlns="http://www.w3.org/2000/svg" 
         xmlns:xlink="http://www.w3.org/1999/xlink"
+        v-bind="$attrs"
     >
         <rect width="19" height="19" fill="url(#pattern0)"/>
         <defs>
@@ -746,6 +791,7 @@
         fill="none" 
         xmlns="http://www.w3.org/2000/svg" 
         xmlns:xlink="http://www.w3.org/1999/xlink"
+        v-bind="$attrs"
     >
         <rect width="19" height="19" fill="url(#pattern0)"/>
         <defs>
@@ -946,4 +992,83 @@
         }
     }
 }
+
+.side-icons{
+    margin-bottom: 20px;
+    cursor: pointer !important
+
+}
+    .usermenu {
+        background: #FFFFFF;
+
+        /* Drop shadow */
+        box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+        min-width: 184px;
+        position: fixed;
+        left: 16px;
+        bottom: 79px;
+        z-index: 2;
+        padding:45px 1rem 37px 1rem;
+        transform-origin: left bottom;
+    }
+    .usermenu .btn {
+        min-width: 154px;
+        margin: 0 auto;
+        display: block;
+
+    }
+    .usermenu-enter-from {
+        opacity: 0;
+        transform: scale(0.6);
+    }
+    .usermenu-enter-to {
+        opacity: 1;
+        transform: scale(1);
+    }
+    .usermenu-enter-active{
+        transition: all ease 0.2s;
+    }
+    .usermenu-leave-from{
+        opacity: 1;
+        transform: scale(1);
+    }
+    .usermenu-leave-to{
+        opacity: 0;
+        transform: scale(0.6);
+    }
+    .usermenu-leave-active{
+        transition: all ease 0.2s;
+    }
+
+    rect {
+        transition: fill  .3s ease;
+    }
+
+    .side-icons.active rect {
+        fill:#FFA500 !important;
+    }
+
+    .side-icons.active path,  .side-icons.active circle {
+        fill: #A23E13 !important;
+    }
+
+    .side-icons:not(.active):hover path, .side-icons:not(.active):hover circle {
+        fill: #fff !important;
+    }
+
+    .side-icons.stroke-able:not(.active):hover path {
+        stroke: #fff !important;
+    }
+    .side-icons.stroke-able.active path,  .side-icons.stroke-able.active circle {
+        fill: #A23E13 !important;
+        stroke: #A23E13 !important;
+    }
+    .side-icons rect {
+        fill:#FBFBFB !important;
+    }
+    .side-icons:not(.active):hover rect {
+        fill: #47454B !important;
+    }
+
 </style>

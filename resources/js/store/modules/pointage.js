@@ -2,9 +2,9 @@
 import axios from 'axios'
 import {
     SET_LOADING,
-    INTERVENTION_LIST_MODULE,
-    GET_INTERVENTION_LIST,
-    GET_INTERVENTION_LIST_MES,
+    POINTAGE_LIST_MODULE,
+    GET_POINTAGE_LIST,
+    GET_POINTAGE_LIST_MES,
     RESET_DETAILS,
 }
 from '../types/types'
@@ -34,20 +34,8 @@ const columns_def = [
         suffix: "",
     },
     {
-        id: "client_name",
-        display_name: "NOM CLIENT",
-        type: "string",
-        class: "",
-        header_class: "",
-        sort: true,
-        filter: true,   
-        having: true,
-        prefix: "",
-        suffix: "",
-    },
-    {
         id: "commande",
-        display_name: "COMMANDE",
+        display_name: "Commande",
         type: "string",
         class: "",
         header_class: "",
@@ -58,8 +46,20 @@ const columns_def = [
         suffix: "",
     },
     {
-        id: "affecte_a",
-        display_name: "AFFECTE A",
+        id: "client",
+        display_name: "Client",
+        type: "string",
+        class: "",
+        header_class: "",
+        sort: true,
+        filter: true,   
+        having: true,
+        prefix: "",
+        suffix: "",
+    },
+    {
+        id: "personnel",
+        display_name: "Personnel",
         type: "string",
         class: "",
         header_class: "",
@@ -70,8 +70,8 @@ const columns_def = [
         suffix: "",
     },
     {
-        id: "dateaction",
-        display_name: "DATE ACTION",
+        id: "datepointage",
+        display_name: "Date Pointage",
         type: "date",
         format: "DD/MM/YY",
         class: "",
@@ -85,8 +85,8 @@ const columns_def = [
         allow_groupby: true,
     },
     {
-        id: "intervention_type",
-        display_name: "TYPE INTERVENTION",
+        id: "numberh",
+        display_name: "Numbre Heure",
         type: "string",
         class: "",
         header_class: "",
@@ -95,32 +95,25 @@ const columns_def = [
         having: true,   
         prefix: "",
         suffix: "",
-        allow_groupby: true,
-        filter_options: [
-            { id: 'PRESTATION', value: 'PRESTATION' },
-            { id: 'SAV', value: 'SAV' },
-            { id: 'MAINTENANCE', value: 'MAINTENANCE' },
-            { id: 'AUDIT', value: 'AUDIT' },
-            { id: 'CONTROLE', value: 'CONTROLE' },
-        ]
     },
     {
-        id: "intervention_statut_id",
-        display_name: "STATUT",
+        id: "pointage_type_id",
+        display_name: "Type",
         type: "component",
         class: "",
         header_class: "",
         sort: true,
         filter: true,   
+        having: true,
         prefix: "",
         suffix: "",
         allow_groupby: true,
-        filter_options: '/get-intervention-status-formatted'
+        filter_options: '/get-pointage-types-formatted'
     },
     {
-        id: "address",
-        display_name: "ADRESSE",
-        type: "html",
+        id: "comment",
+        display_name: "Commentaire",
+        type: "string",
         class: "",
         header_class: "",
         sort: true,
@@ -132,7 +125,7 @@ const columns_def = [
 
 ]
 
-export const intervention = {
+export const pointage = {
 
     namespaced: true,
 
@@ -142,8 +135,8 @@ export const intervention = {
 
             column_filters: [],//required empty array
             store: {
-              MODULE: INTERVENTION_LIST_MODULE,//required
-              INIT: GET_INTERVENTION_LIST,//required
+              MODULE: POINTAGE_LIST_MODULE,//required
+              INIT: GET_POINTAGE_LIST,//required
             },
             batch_actions: {
                 delete: {
@@ -157,8 +150,8 @@ export const intervention = {
 
             },
             translations: {
-              group_item: 'Intervention',
-              group_items: 'Interventions',
+              group_item: 'Pointage',
+              group_items: 'Pointages',
               footer_item: 'ITEM',
               footer_items: 'ITEMS',
               no_batch_action: "Aucune action par lot n'est disponible.",
@@ -173,7 +166,7 @@ export const intervention = {
             ,
             item_route_name: "",// the route to trigger when a line is click 
             max_per_page: 10,//required          
-            identifier: "intervention-list-all",//required
+            identifier: "Poimtage-list-all",//required
             filter: true,// required boolean
             rearrange_columns: true,// required boolean
             columns_def,
@@ -184,8 +177,8 @@ export const intervention = {
 
             column_filters: [],//required empty array
             store: {
-              MODULE: INTERVENTION_LIST_MODULE,//required
-              INIT: GET_INTERVENTION_LIST_MES,//required
+              MODULE: POINTAGE_LIST_MODULE,//required
+              INIT: GET_POINTAGE_LIST_MES,//required
             },
             batch_actions: {
                 delete: {
@@ -199,8 +192,8 @@ export const intervention = {
 
             },
             translations: {
-              group_item: 'Intervention',
-              group_items: 'Interventions',
+              group_item: 'Poimtage',
+              group_items: 'Poimtages',
               footer_item: 'ITEM',
               footer_items: 'ITEMS',
               no_batch_action: "Aucune action par lot n'est disponible.",
@@ -215,7 +208,7 @@ export const intervention = {
             ,
             item_route_name: "",// the route to trigger when a line is click 
             max_per_page: 10,//required          
-            identifier: "intervention-list-all",//required
+            identifier: "pointage-list-all",//required
             filter: true,// required boolean
             rearrange_columns: true,// required boolean
             columns_def,
@@ -230,8 +223,8 @@ export const intervention = {
     },
 
     getters: {
-        interventions: state => state.table_def,
-        interventionsMes: state => state.table_def_mes,
+        pointages: state => state.table_def,
+        pointagesMes: state => state.table_def_mes,
         loading: state => state.loading,
     },
 
@@ -239,7 +232,6 @@ export const intervention = {
 
         [RESET_DETAILS](state) {
             state.details = {}
-            state.userDocuments = []
         },
 
         [SET_LOADING](state, payload) {
@@ -251,10 +243,10 @@ export const intervention = {
 
     actions: {
 
-        async [GET_INTERVENTION_LIST]({ commit }, params) {
+        async [GET_POINTAGE_LIST]({ commit }, params) {
 
 
-            return axios.post(`/get-interventions-list`, params).then((response) => {
+            return axios.post(`/get-pointages-list`, params).then((response) => {
                 return Promise.resolve(response)
                       
             }).catch((error)=>{
@@ -264,10 +256,10 @@ export const intervention = {
 
         },
 
-        async [GET_INTERVENTION_LIST_MES]({ commit }, params) {
+        async [GET_POINTAGE_LIST_MES]({ commit }, params) {
 
 
-            return axios.post(`/get-interventions-list-mes`, params).then((response) => {
+            return axios.post(`/get-pointages-list-mes`, params).then((response) => {
                 return Promise.resolve(response)
                       
             }).catch((error)=>{

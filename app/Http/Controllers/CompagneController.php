@@ -49,7 +49,7 @@ class CompagneController extends Controller
             'isHtml5ParserEnabled' => true, 
         ]);
 
-        $fields = $this->fields_for_marketing($campagne, $request);
+        $fields = $this->fields_for_marketing($campagne, $request, $request->email, $request->phone);
     
         $data = array(
             'fields'           => $fields,

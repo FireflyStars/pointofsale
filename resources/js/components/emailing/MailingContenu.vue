@@ -258,6 +258,8 @@ export default {
         const texteenveloppe = ref('');
         const textlettre = ref('');
         const textflyer = ref ('');
+        const filedepliant = ref('')
+        const fileEnvelop = ref('')
         const loading = ref(false)
          
         const store = useStore()
@@ -318,7 +320,8 @@ export default {
                     texteenveloppe.value=response.data.campagneCategory.texteenveloppe;
                     textlettre.value=response.data.campagneCategory.textlettre;
                     textflyer.value=response.data.campagneCategory.texteflyer;
-                    
+                    filedepliant.value = response.data.campagneCategory.fileDepliantFull
+                    fileEnvelop.value = response.data.campagneCategory.fileEnvelopFull
                 
             
                 }).catch(function (error) {
@@ -353,16 +356,16 @@ export default {
         });
 
         const voirdepliant=()=>{
-              window.open("/download?path=campagne-category/April2022/irN4f7owwoqFLUivFC2j.pdf&filename=DÉPLIANT.pdf");
-           
-            
+            if(filedepliant.value?.fullpath) window.open(filedepliant.value?.fullpath)
         }
 
         const voirenveloppe=()=>{
-            window.open("/download?path=campagne-category/May2022/FA1DfuHAlDGU0CG0pRpi.pdf&filename=ENVELOPPE PORTEUSE.pdf")
+            if(fileEnvelop.value?.fullpath) window.open(fileEnvelop.value?.fullpath)
         }
 
         return {
+            filedepliant,
+            fileEnvelop,
             loading,
             validateAndSendEmail,
             showcontainer,

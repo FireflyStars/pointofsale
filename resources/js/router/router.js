@@ -116,6 +116,15 @@ const router = createRouter({
         },
 
         {
+            path: '/pointage',
+            name: 'pointage',
+            component: () => import('../pages/Pointage/Index.vue'),
+            meta:{
+                authenticated: true
+            },
+        },
+
+        {
             path: '/paiement',
             name: 'paiement',
             component: () => import('../pages/Paiement/Index.vue'),

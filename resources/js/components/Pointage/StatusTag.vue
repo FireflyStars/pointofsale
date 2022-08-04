@@ -9,7 +9,7 @@
             :class="classes" 
             v-if="status!=''"
         >
-            {{ status?.toLowerCase() }}
+            {{ status.toLowerCase() }}
         </span>
    </transition>
 
@@ -21,9 +21,9 @@ import { computed, onMounted, onBeforeMount, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 
 import { 
-    INTERVENTION_LOAD_ORDER_STATES, 
-    INTERVENTION_STATUS_MODULE,
-    INTERVENTION_SET_LOADED
+    POINTAGE_LOAD_ORDER_STATES, 
+    POINTAGE_STATUS_MODULE,
+    POINTAGE_SET_LOADED
 } from '../../store/types/types';
 
 const props = defineProps({
@@ -46,11 +46,11 @@ const store = useStore()
 const status = ref('')
 const style = ref('')
 
-const interventionStates = computed(() => store.getters[`${INTERVENTION_STATUS_MODULE}interventionStates`])
-const loaded = computed(() => store.getters[`${INTERVENTION_STATUS_MODULE}loaded`])
+const pointageStates = computed(() => store.getters[`${POINTAGE_STATUS_MODULE}pointageStates`])
+const loaded = computed(() => store.getters[`${POINTAGE_STATUS_MODULE}loaded`])
 
 
-watch(() => interventionStates, (current_val) => {
+watch(() => pointageStates, (current_val) => {
     const state = current_val.value?.find(obj => obj.id == props.id)
     if(typeof state != "undefined") {
         status.value = state.name
@@ -61,7 +61,7 @@ watch(() => interventionStates, (current_val) => {
 })
 
 watch(() => props.id, (current_val) => {
-    const state=interventionStates.value?.find(obj => obj.id == current_val)
+    const state=pointageStates.value?.find(obj => obj.id == current_val)
     if(typeof state != "undefined") {
         status.value = state.name
         style.value = `width:${props.width}; background-color: ${state.color}; color: ${state.fontcolor}`
@@ -71,11 +71,12 @@ watch(() => props.id, (current_val) => {
 })
 
 onMounted(async ()=> {
+    console.log(loaded.value, " is the loaded value")
     if(loaded.value === false) {
-        await store.dispatch(`${INTERVENTION_STATUS_MODULE}${INTERVENTION_LOAD_ORDER_STATES}`) 
+        await store.dispatch(`${POINTAGE_STATUS_MODULE}${POINTAGE_LOAD_ORDER_STATES}`) 
     }
-    if(interventionStates.value?.length > 0) {
-        const state = interventionStates.value?.find(obj => obj.id == props.id)
+    if(pointageStates.value?.length > 0) {
+        const state = pointageStates.value?.find(obj => obj.id == props.id)
         if(typeof state != "undefined") {
             status.value = state.name
             style.value = `width:${props.width};background-color: ${state.color};color: ${state.fontcolor || '#000'}`
@@ -85,7 +86,7 @@ onMounted(async ()=> {
 })
 
 onBeforeMount(() => {
-    store.commit(`${INTERVENTION_STATUS_MODULE}${INTERVENTION_SET_LOADED}`, false)
+    store.commit(`${POINTAGE_STATUS_MODULE}${POINTAGE_SET_LOADED}`, false)
 })
           
            
