@@ -339,11 +339,13 @@
                                                 position: absolute; 
                                                 left: 1.5rem; 
                                                 transform-origin: top left;
-                                                transform: scale(.201)
                                                 min-width: 500px;
                                                 min-height: 500px;
+                                                
                                                 "
-                                                :style="{ transform: `scale(${transformedProductImageValue || 1})`}"
+                                                :style="{ 
+                                                    transform: `scale(${transformedProductImageValue || 1})`,
+                                                }"
                                             >
                                                 
                                                 <img 
@@ -355,7 +357,7 @@
                                                 >
 
 
-                                                <template v-if="!productWithDownloadOnly && !isPersonalizeAble && !loading">
+                                                <template v-if="(!productWithDownloadOnly && !isPersonalizeAble) && !loading">
 
                                                     <template v-for="(item, index) in fields" :key="index">
 
@@ -364,6 +366,33 @@
                                                             >
 
                                                                 <span 
+                                                                v-if="index == 'Telephone_agence'"
+                                                                :style="{
+                                                                    color: item.color,
+                                                                    fontSize: item.size,
+                                                                    fontFamily: item.font,
+                                                                    top: item.y + 'px',
+                                                                    left: item.x + 'px',
+                                                                    position: 'absolute'
+                                                                }">
+                                                                    {{ phone }}
+                                                                </span>
+
+                                                                <span 
+                                                                v-else-if="index == 'Email_agence'"
+                                                                :style="{
+                                                                    color: item.color,
+                                                                    fontSize: item.size,
+                                                                    fontFamily: item.font,
+                                                                    top: item.y + 'px',
+                                                                    left: item.x + 'px',
+                                                                    position: 'absolute'
+                                                                }">
+                                                                    {{ email }}
+                                                                </span>
+
+                                                                <span 
+                                                                v-else
                                                                 :style="{
                                                                     color: item.color,
                                                                     fontSize: item.size,
@@ -487,8 +516,10 @@
     const fields = computed(() => store.getters[`${CIBLE_MODULE}fields`])
 
     const transformedProductImageValue = computed(() => {
-        console.log(widthImage.value, 602/widthImage.value)
-        return 602 / widthImage.value
+        if(proudctPerso.value) {
+            return 1
+        }
+         return 602 / widthImage.value
     })
 
     const productWithDownloadOnly = computed(() => {
@@ -515,6 +546,11 @@
 
     const isPersonalizeAble = computed(() => {
         return category.value.typeofproduct?.toLowerCase() == 'product' 
+            && category.value.type?.toLowerCase() == 'produit'
+    })
+
+    const proudctPerso = computed(() => {
+        return category.value.typeofproduct == 'PRODUCT PERSO' 
             && category.value.type?.toLowerCase() == 'produit'
     })
 
