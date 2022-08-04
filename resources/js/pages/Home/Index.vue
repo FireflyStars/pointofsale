@@ -7,8 +7,8 @@
                 <div class="col main-view container">
                     <div class="row m-0 ml-5 mr-5">
                         <div class="col p-0 d-flex mt-5">
-                            <div class="home-news-pannel bg-white rounded-3 p-3">
-                                home news
+                            <div class="home-news-pannel bg-white rounded-3 p-3" v-html="content">
+                                
                             </div>
                             <div class="stats-pannel">
                                 <div class="breif-total p-3 bg-white rounded-3">
@@ -76,10 +76,37 @@
     </div>    
 </template>
 <script>
+import { ref, onMounted } from 'vue';
 import TotalPercent from '../../components/miscellaneous/TotalPercent';
+import {
+    LOADER_MODULE,
+    DISPLAY_LOADER,
+    HIDE_LOADER,
+}
+from '../../store/types/types'
+import axios from 'axios';
+import { useStore } from 'vuex';
 export default {
     components:{
         TotalPercent
+    },
+    setup(){
+        const store = useStore();
+        const content = ref('');
+
+        onMounted(()=>{
+            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Loading home news...']);
+            axios.post('/homenews').then((res)=>{
+                content.value = res.data;
+            }).catch((error)=>{
+                console.log(error);
+            }).finally(()=>{
+                store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+            })
+        })
+        return {
+            content
+        }
     }
 }
 </script>

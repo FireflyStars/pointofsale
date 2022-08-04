@@ -33,6 +33,7 @@ use App\Http\Controllers\ActionCommercialListController;
 use App\Http\Controllers\StatisticController;
 use App\Http\Controllers\InterventionsController;
 use App\Http\Controllers\PaiementsController;
+use App\Http\Controllers\HomeController;
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
@@ -319,6 +320,7 @@ Route::group([
 
     // statistique 
     Route::post('/statistique',   [StatisticController::class,'index'])->middleware('auth')->name('get.statis');
+    Route::post('/homenews',   [HomeController::class,'index'])->middleware('auth')->name('get.home.news');
 });
 // Route::get('/statistique',   [StatisticController::class,'index'])->middleware('auth')->name('get.statis');
 // Outlook Agenda

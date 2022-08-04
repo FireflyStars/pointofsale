@@ -63,6 +63,9 @@
             });
 
             const slideinMenu = ()=> {
+                router.push({
+                    name: 'LandingPage'
+                })
                 store.commit(`${SIDEBAR_MODULE}${SIDEBAR_SET_SLIDEIN}`);
             }
             const createDevis = ()=>{
