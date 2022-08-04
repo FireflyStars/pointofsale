@@ -211,13 +211,15 @@ export const cible= {
             }
         },
 
-        async [GENERATE_PRODUCT_PDF]({ commit }, id) {
+        async [GENERATE_PRODUCT_PDF]({ commit }, pdfData) {
             try {
+                const { id, email, phone } = pdfData
                 const formData = new FormData()
+                formData.append('email', email)
+                formData.append('phone', phone)
                 const { data } = await axios.post(`/generate-campagne-product-pdf/${id}`, formData, {
                     responseType: 'arraybuffer'
                 })
-                console.log(data)
                 generatePDF(data, name = 'Product.pdf')
             }
             catch(e) {

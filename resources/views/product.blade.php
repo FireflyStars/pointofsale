@@ -34,7 +34,9 @@
     </style>
 </head>
 
-<body>
+<body
+    style="min-width: 795px; min-height: 1124px;"
+>
 
         
     @php
@@ -45,14 +47,16 @@
         class="container"
         style="
             position: relative !important;
+            background-image: url('{{ $backgroundImage }}');
+            background-size: contain;
+            background-repeat: no-repeat;
         "
     >
-        <img 
+        {{-- <img 
             src="{{ $backgroundImage }}" 
             alt="Flyer background"
-            {{-- style="width: 100%; height: 100%; object-fit: cover; position: fixed; z-index: -1" --}}
             style="width: auto; height: auto; object-fit: cover; position: fixed; z-index: -1"
-        >
+        > --}}
 
         
         @foreach ($data['fields'] as $key => $item)
@@ -60,7 +64,6 @@
             @if (isset($item->active) && $item->active == 1)
                 <span>
 
-                    {{-- @if ($key == 'Prenom_dirigeant') --}}
                         <span 
                         class="item"
                         style="
@@ -73,52 +76,6 @@
                         ">
                             {{ $item->value }}
                         </span>
-                    {{-- @endif --}}
-
-                    {{-- @if ($key == 'Nom_dirigeant')
-                        <span 
-                        class="item"
-                        style="
-                            color: {{ $item->color }}; 
-                            font-size: 18px; 
-                            font-family: {{ $item->font}}; 
-                            top: {{ 874 }}px;
-                            left: {{ 374 }}px;
-                            z-index: 10;
-                        ">
-                            {{ $item->value }}
-                        </span>
-                    @endif
-
-                    @if ($key == 'Email_agence')
-                        <span 
-                        class="item"
-                        style="
-                            color: {{ $item->color }}; 
-                            font-size: 18px; 
-                            font-family: {{ $item->font}}; 
-                            top: {{ 900 }}px;
-                            left: {{ 274 }}px;
-                            z-index: 10;
-                        ">
-                            {{ $item->value }}
-                        </span>
-                    @endif
-
-                    @if ($key == 'Telephone_agence')
-                        <span 
-                        class="item"
-                        style="
-                            color: {{ $item->color }}; 
-                            font-size: 18px; 
-                            font-family: {{ $item->font}}; 
-                            top: {{ 926 }}px;
-                            left: {{ 274 }}px;
-                            z-index: 10;
-                        ">
-                            {{ $item->value }}
-                        </span>
-                    @endif --}}
 
                 </span>
 

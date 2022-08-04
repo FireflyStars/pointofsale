@@ -49,7 +49,7 @@ class CompagneController extends Controller
             'isHtml5ParserEnabled' => true, 
         ]);
 
-        $fields = $this->fields_for_marketing($campagne, $request);
+        $fields = $this->fields_for_marketing($campagne, $request, $request->email, $request->phone);
     
         $data = array(
             'fields'           => $fields,
@@ -298,10 +298,7 @@ class CompagneController extends Controller
         $affiliate = $request->user()->affiliate;
         $campagne = $campagne->load('cardDetail');
         
-        // [$width, $height] = getimagesize($campagne->imageTemplateUrl);
-
-        $width = 0;
-        $height = 0;
+        [$width, $height] = getimagesize($campagne->imageTemplateUrl);
 
         return response()->json(
             ['data' => compact('affiliate', 'campagne', 'width', 'height')]

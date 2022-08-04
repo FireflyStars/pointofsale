@@ -14,7 +14,7 @@ class CampagneCategory extends Model
 
     protected $table = "campagne_category";
 
-    protected $appends = ['imageTemplateUrl', 'fileDepliantFull'];
+    protected $appends = ['imageTemplateUrl', 'fileDepliantFull', 'fileEnvelopFull'];
 
     public function cardDetail() 
     {
@@ -44,6 +44,22 @@ class CampagneCategory extends Model
         $filedepliant->fullpath = rtrim(config('app.url'), '/') . Storage::url($filedepliant->download_link);
 
         return $filedepliant;
+
+    }
+
+    public function getFileEnvelopFullAttribute() 
+    {
+        $fileenveloppe = (array) json_decode($this->fileenveloppe);
+
+        if(is_null($fileenveloppe) || !count($fileenveloppe)) return $fileenveloppe;
+
+        $fileenveloppe = $fileenveloppe[0];
+
+        if(is_null($fileenveloppe)) return $fileenveloppe;
+
+        $fileenveloppe->fullpath = rtrim(config('app.url'), '/') . Storage::url($fileenveloppe->download_link);
+
+        return $fileenveloppe;
 
     }
 

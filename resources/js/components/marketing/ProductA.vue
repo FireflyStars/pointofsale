@@ -339,22 +339,25 @@
                                                 position: absolute; 
                                                 left: 1.5rem; 
                                                 transform-origin: top left;
-                                                min-width: 500px;
-                                                min-height: 500px;
+                                                min-width: 795px;
+                                                min-height: 1124px;
                                                 
                                                 "
                                                 :style="{ 
                                                     transform: `scale(${transformedProductImageValue || 1})`,
+                                                    'background-image': `url(${category.imageTemplateUrl})`,
+                                                    'background-repeat': 'no-repeat',
+                                                    'background-size': 'contain'
                                                 }"
                                             >
                                                 
-                                                <img 
+                                                <!-- <img 
                                                     :src="category.imageTemplateUrl" 
                                                     alt="Lcdt Logo" 
                                                     style="width: auto; height: auto;"
                                                     ref="productImage"
                                                     id="productImage"
-                                                >
+                                                > -->
 
 
                                                 <template v-if="(!productWithDownloadOnly && !isPersonalizeAble) && !loading">
@@ -516,10 +519,7 @@
     const fields = computed(() => store.getters[`${CIBLE_MODULE}fields`])
 
     const transformedProductImageValue = computed(() => {
-        if(proudctPerso.value) {
-            return 1
-        }
-         return 602 / widthImage.value
+        return proudctPerso.value ? 1 : 602 / widthImage.value
     })
 
     const productWithDownloadOnly = computed(() => {
@@ -656,16 +656,18 @@
 
 
         if(productWithDownloadOnly.value) {
-
             downloadProductFile()
-
             return
         }
 
         
         try {
             store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Veuillez patienter. Génération du PDF en cours...'])
-            await store.dispatch(`${CIBLE_MODULE}${GENERATE_PRODUCT_PDF}`, category.value.id)
+            await store.dispatch(`${CIBLE_MODULE}${GENERATE_PRODUCT_PDF}`, {
+                id: category.value.id,
+                email: email.value,
+                phone: phone.value
+            })
         }
         
         catch(e) {
