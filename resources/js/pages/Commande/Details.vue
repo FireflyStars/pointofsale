@@ -124,41 +124,115 @@
      </template>
          </transition>
        
- <transition
-                        enter-active-class="animate__animated animate__fadeIn"
-                        leave-active-class="animate__animated animate__fadeOut"
-                >
+    <transition
+        enter-active-class="animate__animated animate__fadeIn"
+        leave-active-class="animate__animated animate__fadeOut"
+    >
                 
-     <order-documents v-if="typeof order!='undefined'&& typeof order.state!='undefined'&&order.state.order_type=='COMMANDE'"  :order_id="order.id"></order-documents>
- </transition>
-     <div class="od_actions mb-3" v-if="show">
+        <order-documents v-if="typeof order!='undefined'&& typeof order.state!='undefined'&&order.state.order_type=='COMMANDE'"  :order_id="order.id"></order-documents>
+    </transition>
+
+    <pointage-list @trigger="TriggerNewPointage" :orderId="order_id" />
+
+
+    <div class="od_actions mb-3" v-if="show">
         <button class="btn btn-outline-dark almarai_700_normal" @click="goto()">Editer</button>
         <button v-if="order.order_state_id!=4" class="btn btn-outline-success almarai_700_normal" @click.once="changeOrderState(4)">Gagne</button>
         <button v-if="order.order_state_id!=4 && order.order_state_id!=20" class="btn btn-outline-secondary almarai_700_normal" @click.once="changeOrderState(20)">Perdu</button>  
         <button v-if="order.order_state_id!=4 && order.order_state_id!=18" class="btn btn-outline-primary almarai_700_normal"  @click.once="changeOrderState(18)">Abandonne</button>  
         <button v-if="order.order_state_id!=4 && order.order_state_id!=3" class="btn btn-outline-warning almarai_700_normal"  @click.once="changeOrderState(3)">Attente client</button>   
-     </div>
+    </div>
 
 
 </item-detail-panel>
 
-<simple-modal-popup v-model="showmodal_facturation" :title="modal_facturation_title" @modalconfirm="newOrderInvoice" @modalclose="closemodal">
-    <div class="container-fluid">
-<div class="row mb-3">
-    <div class="col-6">Description</div><div class="col-6"><input type="text" v-model="facture.description" class="input-text"/></div>
-</div>
-<div class="row mb-3" v-if="order.total>0">
-    <div class="col-6">Taux</div><div class="col-6"><input type="text" v-model="facture.taux" @keyup="checktaux" @blur="addper" class="input-text" ></div> 
-</div>
-<div class="row mb-3" v-if="facture.invoice_type_id!=2">
-    <div class="col-6">Date</div><div class="col-6"><date-picker @changed="setEcheanceDate" :disabledToDate="disabledToDate" name="echeance" :droppos="{top:'40px',right:'auto',bottom:'auto',left:'0',transformOrigin:'top center'}"></date-picker></div>
-</div>
-<div class="row mb-3">
-    <div class="col-6">Montant</div><div class="col-6"> <money3 v-model="facture.montant" v-bind="moneyconfig" @keyup="checkmontant"></money3>
+<simple-modal-popup v-model="modal.show" :title="modal.title" @modalconfirm="commitAction" @modalclose="closemodal">
+    
+    
+    <template v-if="modal.type == 'facturation'">
+        
+        <div class="container-fluid">
+            <div class="row mb-3">
+                <div class="col-6">Description</div><div class="col-6"><input type="text" v-model="facture.description" class="input-text"/></div>
+            </div>
+            <div class="row mb-3" v-if="order.total>0">
+                <div class="col-6">Taux</div><div class="col-6"><input type="text" v-model="facture.taux" @keyup="checktaux" @blur="addper" class="input-text" ></div> 
+            </div>
+            <div class="row mb-3" v-if="facture.invoice_type_id!=2">
+                <div class="col-6">Date</div><div class="col-6"><date-picker @changed="setEcheanceDate" :disabledToDate="disabledToDate" name="echeance" :droppos="{top:'40px',right:'auto',bottom:'auto',left:'0',transformOrigin:'top center'}"></date-picker></div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-6">Montant</div><div class="col-6"> <money3 v-model="facture.montant" v-bind="moneyconfig" @keyup="checkmontant"></money3>
 
-     </div>
-</div>
-    </div>
+                </div>
+            </div>
+        </div>
+    
+    </template>
+
+
+    <template v-if="modal.type == 'pointage'">
+
+        <div class="container">
+
+            <div class="row mb-3">
+                <div class="col-6">
+                    <label>TYPE POINTAGE*</label>
+                    <select-box
+                        v-model="newPointage.type" 
+                        placeholder="Intervention" 
+                        :options="pointageTypes" 
+                        name="pointageTypes" 
+                    />    
+                </div>
+
+                <div class="col-6">
+
+                    <label for="">DATE*</label>
+                    <date-picker 
+                        @changed="setPointageDate" 
+                        :disabledToDate="disabledToDate" 
+                        name="pointage" 
+                        :droppos="{top:'40px',right:'auto',bottom:'auto',left:'0',transformOrigin:'top center'}">
+                    </date-picker>
+
+                </div>
+
+            </div>
+
+            <div class="row mb-3">
+
+                <div class="col-6">
+                    <label for="">PERSONNEL*</label>
+                    <select-box
+                        v-model="newPointage.personnel" 
+                        placeholder="Personnel"
+                        :options="personnelList" 
+                        name="personnelList" 
+                    />    
+                </div> 
+
+
+                <div class="col-6">
+
+                    <label for="">NOMRE HEURE *</label>
+                    <input type="text" v-model="newPointage.numberh" style="padding: 5px;">
+                
+                </div>
+                
+
+            </div>
+
+            <div class="row mb-3">
+
+                <label for="">NOTES / INFORMATIONS / COMMENTAIRES</label>
+                <textarea name="comment" v-model="newPointage.comment" style="margin-left: 0.8rem; box-sizing: border-box; width: 89%;"></textarea>
+            
+            </div>
+        
+        </div>
+
+    </template>
      
 </simple-modal-popup>
 
@@ -166,12 +240,41 @@
 </template>
 
 <script>
-import { computed, onMounted, ref,h, watch } from 'vue';
+import moment from 'moment'
+import { computed, onMounted, ref, unref, h, watch, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex';
 import ItemDetailPanel from '../../components/miscellaneous/ItemListTable/ItemDetailPanel.vue'
 import OrderStateTag from '../../components/miscellaneous/OrderStateTag.vue';
-import { DEVIS_DETAIL_CREATE_FACTURATION, DEVIS_DETAIL_GET, DEVIS_DETAIL_GET_FACTURATION, DEVIS_DETAIL_LOAD, DEVIS_DETAIL_LOAD_FACTURATION, DEVIS_DETAIL_MODULE, DEVIS_DETAIL_NEW_FACTURATION, DEVIS_DETAIL_REMOVE_FACTURATION, DEVIS_DETAIL_SET, DEVIS_DETAIL_SET_FACTURATION, DEVIS_DETAIL_UPDATE_ORDER_STATE, ITEM_LIST_MODULE, ITEM_LIST_UPDATE_ROW, ORDERSTATETAG_GET_ORDER_STATES, ORDERSTATETAG_MODULE, TOASTER_CLEAR_TOASTS, TOASTER_MESSAGE, TOASTER_MODULE } from '../../store/types/types';
+import { 
+    COMMANDE_DETAIL_LOAD_POINTAGE, 
+    COMMANDE_DETAIL_MODULE, 
+    DEVIS_DETAIL_CREATE_FACTURATION, 
+    DEVIS_DETAIL_GET, 
+    DEVIS_DETAIL_GET_FACTURATION, 
+    DEVIS_DETAIL_LOAD, 
+    DEVIS_DETAIL_LOAD_FACTURATION, 
+    DEVIS_DETAIL_MODULE, 
+    DEVIS_DETAIL_NEW_FACTURATION, 
+    DEVIS_DETAIL_REMOVE_FACTURATION, 
+    DEVIS_DETAIL_SET, 
+    DEVIS_DETAIL_SET_FACTURATION, 
+    DEVIS_DETAIL_UPDATE_ORDER_STATE, 
+    ITEM_LIST_MODULE, 
+    ITEM_LIST_UPDATE_ROW, 
+    ORDERSTATETAG_GET_ORDER_STATES, 
+    ORDERSTATETAG_MODULE, 
+    TOASTER_CLEAR_TOASTS, 
+    TOASTER_MESSAGE, 
+    TOASTER_MODULE, 
+    GET_POINTAGE_TYPES,
+    GET_PERSONNEL_LIST,
+    LOADER_MODULE,
+    HIDE_LOADER,
+    DISPLAY_LOADER,
+    COMMANDE_CREATE_POINTAGE
+
+} from '../../store/types/types';
 import { formatPrice,formatDate,br,isFloat } from '../../components/helpers/helpers';
 import Swal from 'sweetalert2';
 import DatePicker from '../../components/miscellaneous/DatePicker.vue';
@@ -180,12 +283,18 @@ import { mask } from 'vue-the-mask';
 import Icon from '../../components/miscellaneous/Icon.vue';
 import OrderDocuments from '../../components/miscellaneous/OrderDocuments.vue'
 import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
+import pointageList from '../../components/Commande/pointage-list.vue'
 
     export default {
+
         name: "CommandeDetail",
-        components:{ItemDetailPanel,OrderStateTag, DatePicker,money3:Money3Component, Icon,OrderDocuments,MiniPanel},
-        directives:{mask},
+
+        components: { ItemDetailPanel, OrderStateTag, DatePicker, money3: Money3Component, Icon, OrderDocuments, MiniPanel, pointageList },
+        
+        directives: { mask },
+
         setup(){
+
             const route=useRoute();
             const router=useRouter();
             const store=useStore();
@@ -214,13 +323,14 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                             minimumNumberOfCharacters: 0,
                             });
         
-                        const facture=ref({
-                            invoice_type_id:1,
-                            description:'',
-                            taux:'',
-                            date:'',
-                            montant:0
-                        })    
+            const facture=ref({
+                invoice_type_id:1,
+                description:'',
+                taux:'',
+                date:'',
+                montant:0
+            }) 
+
             const showresteafacturer=ref(false);            
             const orderObj=ref({});                 
             const reste_a_facturer=ref(0);
@@ -228,6 +338,20 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
             const total_facture=ref(0);
             const total_taux_facture=ref(0);
             const order_total=ref(0);
+
+            const newPointage = reactive({
+                type: 0,
+                personnel: 0,
+                date: null,
+                numberh: null,
+                comment: null,
+            })
+
+            const modal = reactive({
+                show: false,
+                title: '',
+                type: 'facturation'
+            })
 
             watch(()=>orderObj.value,(current_val,previous_val)=>{
                 order_total.value=current_val.value.total;
@@ -266,13 +390,76 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                     }
               
                 });
+
+                getPointage(order_id)
                 
             })
             const order=computed(()=>store.getters[`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_GET}`]);
             orderObj.value=computed(()=>store.getters[`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_GET}`]);
             const facturations=computed(()=>store.getters[`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_GET_FACTURATION}`]);
 
-             const order_states=computed(()=>store.getters[`${ORDERSTATETAG_MODULE}${ORDERSTATETAG_GET_ORDER_STATES}`]);
+            const order_states=computed(()=>store.getters[`${ORDERSTATETAG_MODULE}${ORDERSTATETAG_GET_ORDER_STATES}`]);
+
+            const pointages = computed(() => store.getters[`${COMMANDE_DETAIL_MODULE}pointages`])
+
+            const pointageTotal = computed(() => {
+                return pointages.value.map(pointage => pointage.numberh)
+                                    .reduce((newValue, oldValue) => +newValue + +oldValue, 0)
+            })
+
+            const pointageTypes = computed(() => {
+                return store.getters[`${COMMANDE_DETAIL_MODULE}pointageTypes`]?.map(type => {
+                    return {
+                        value: type.id,
+                        display: type.name
+                    }
+                })
+            })
+
+            const personnelList = computed(() => {
+                return store.getters[`${COMMANDE_DETAIL_MODULE}personnelList`]?.map(person => {
+                    return {
+                        value: person.id,
+                        display: person.name
+                    }
+                })
+            })
+
+            const getPointage = async (id) => {
+
+                try {
+                    await store.dispatch(`${COMMANDE_DETAIL_MODULE}${COMMANDE_DETAIL_LOAD_POINTAGE}`, { id, take: 3 })
+                }
+                catch(e) {
+                    throw e
+                }
+                
+            }
+
+            const setPointageDate = (date) => {
+                newPointage.date = date.date
+            }
+
+            const getPersonnelList = () => {
+                try {
+                    store.dispatch(`${COMMANDE_DETAIL_MODULE}${GET_PERSONNEL_LIST}`, order.value.affiliate_id)
+                }
+                catch(e) {
+                    throw e
+                }
+            }
+
+            const getPointageTypes = () => {
+
+                try {
+                    store.dispatch(`${COMMANDE_DETAIL_MODULE}${GET_POINTAGE_TYPES}`)
+                }
+                catch(e) {
+                    throw e
+                }
+
+            }
+
 
             const changeOrderState = (order_state_id)=>{
                 const order_state=order_states.value.filter(obj=>obj.id==order_state_id);
@@ -298,7 +485,7 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                     }
                 });      
             }
-              watch(() =>facturations.value, (current_val, previous_val) => {
+            watch(() =>facturations.value, (current_val, previous_val) => {
 
                 //
                     total_facture.value=0;
@@ -338,9 +525,11 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
             },{
                 deep:true
             });
+            
             const goto=()=>{
                 router.push({ name: 'EditDevis', params: { id: order_id } })
             }
+
             const sumZoneH=(orderzone)=>{
                 let sum=0;
                 for(const i in orderzone.groupedOrderOuvrage){
@@ -355,24 +544,14 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                 }
                 return sum;
             }
-            const showmodal_facturation=ref(false);
-            const modal_facturation_title=ref('');
 
-           /* watch(()=>facture.value.montant,(current_val, previous_val)=>{
-                                if(facture.value.invoice_type_id==1){
-                                        let montant=parseFloat(current_val);
-                                        console.log(montant);
-                                }   
-    
-            },{deep:true});
-    */
-            const new_echeance=()=>{
-                modal_facturation_title.value='Nouvelle échéance';
+            const new_echeance = () => {
+                modal.title = 'Nouvelle échéance';
                 facture.value.description='';
                 facture.value.taux=0;
                 facture.value.montant=0;
                 facture.value.date='';
-                showmodal_facturation.value=true;
+                modal.show = true;
                 facture.value.invoice_type_id=1;
        
                 let taux=(100-facturation_total_taux.value);
@@ -381,14 +560,14 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                 facture.value.montant=Math.abs(montant);
                 
       
-                        }
-            const new_remise=()=>{
-                modal_facturation_title.value='Nouvelle remise';
+            }
+            const new_remise = ()=> {
+                modal.title='Nouvelle remise';
                 facture.value.description='';
                 facture.value.taux=0;
                 facture.value.montant=0;
                  facture.value.date='';
-                showmodal_facturation.value=true;
+                modal.show = true;
                 facture.value.invoice_type_id=2;
                 if(order.value.total>0){
                     let taux=(100-facturation_total_taux.value);
@@ -396,14 +575,15 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                    // facture.value.montant=Math.abs((order.value.total/100)*taux);
                 }
           
-                        }
+            }
+
             const new_avoir=()=>{
-                modal_facturation_title.value='Nouveau avoir';
+                modal.title='Nouveau avoir';
                 facture.value.description='';
                 facture.value.taux=0;
                 facture.value.montant=0;
                 facture.value.date='';
-                showmodal_facturation.value=true;
+                modal.show = true;
                 facture.value.invoice_type_id=3;
                 if(order.value.total>0){
                     let taux=(100-facturation_total_taux.value);
@@ -411,52 +591,58 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                    // facture.value.montant=Math.abs((order.value.total/100)*taux);
                 }
                
-                        }
-            const newOrderInvoice=()=>{
-            let valide=true;
-            store.commit(`${TOASTER_MODULE}${TOASTER_CLEAR_TOASTS}`);
-           if(facture.value.description.trim()==''){
-             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                            type: 'danger',
-                            message: 'Veuillez ajouter une description.',
-                            ttl: 8,
-                        });
-                        valide=false;
-           }
-             if(facture.value.date.trim()==''&&facture.value.invoice_type_id!=2){
-             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                            type: 'danger',
-                            message: 'Veuillez saisir une échéance.',
-                            ttl: 8,
-                        });
-                        valide=false;
-           }
-              if(facture.value.montant==''){
-             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                            type: 'danger',
-                            message: 'Veuillez saisir un montant.',
-                            ttl: 8,
-                        });
-                        valide=false;
-           }
-               if(facture.value.taux.trim()==''&&order.value.total>0){
-             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                            type: 'danger',
-                            message: 'Veuillez saisir un taux.',
-                            ttl: 8,
-                        });
-                    valide=false;
-           }else if(isNaN(parseFloat(facture.value.taux))){
-                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                            type: 'danger',
-                            message: 'Taux invalide.',
-                            ttl: 8,
-                        });
-                    valide=false;
-           }
-                if(valide){
+            }
+            
+            const newOrderInvoice = ()=> {
+
+                let valide=true
+                
+                store.commit(`${TOASTER_MODULE}${TOASTER_CLEAR_TOASTS}`)
+
+                if(facture.value.description.trim()=='') {
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                                    type: 'danger',
+                                    message: 'Veuillez ajouter une description.',
+                                    ttl: 8,
+                                });
+                                valide=false;
+                }
+                if(facture.value.date.trim()==''&&facture.value.invoice_type_id!=2) {
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                                    type: 'danger',
+                                    message: 'Veuillez saisir une échéance.',
+                                    ttl: 8,
+                                });
+                                valide=false;
+                }
+                if(facture.value.montant==''){
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                                    type: 'danger',
+                                    message: 'Veuillez saisir un montant.',
+                                    ttl: 8,
+                                });
+                                valide=false;
+                }
+                if(facture.value.taux.trim()==''&&order.value.total>0){
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                                    type: 'danger',
+                                    message: 'Veuillez saisir un taux.',
+                                    ttl: 8,
+                                });
+                            valide=false;
+                }
+                else if(isNaN(parseFloat(facture.value.taux))){
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                                    type: 'danger',
+                                    message: 'Taux invalide.',
+                                    ttl: 8,
+                                });
+                            valide=false;
+                }
+
+                if(valide) {
                       if(facture.value.invoice_type_id==1){
-                            showmodal_facturation.value=false;
+                            modal.show = false;
                             showloader.value=true;
                             store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_NEW_FACTURATION}`,facture.value).then(response=>{
                                 store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_LOAD_FACTURATION}`).then(response=>{
@@ -464,8 +650,8 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                                 });
                             
                             });
-                      }else   if(facture.value.invoice_type_id==2){
-                            showmodal_facturation.value=false;
+                      }else if(facture.value.invoice_type_id==2){
+                            modal.show = false;
                                 showloader.value=true;
                                 store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_NEW_FACTURATION}`,facture.value).then(response=>{
                                     store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_LOAD_FACTURATION}`).then(response=>{
@@ -473,7 +659,7 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                                     });
                                 
                                 });
-                      }else   if(facture.value.invoice_type_id==3){
+                      }else if(facture.value.invoice_type_id==3){
                         Swal.fire({
                                 title: 'Veuillez confirmer!',
                                 text: `Voulez-vous rajouter un avoir? Cette action est irréversible.`,
@@ -484,7 +670,7 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                                 cancelButtonText: 'Annuler',
                                 confirmButtonText: `Oui, s'il vous plaît.`
                             }).then((result) => {
-                                showmodal_facturation.value=false;
+                                modal.show = false;
                                  if (result.isConfirmed) {
                                 showloader.value=true;
                                 store.dispatch(`${DEVIS_DETAIL_MODULE}${DEVIS_DETAIL_NEW_FACTURATION}`,facture.value).then(response=>{
@@ -499,6 +685,7 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                       }
                 }
             }   
+
             const checktaux=(event)=>{
    
                 let allowedkey=['0','1','2','3','4','5','6','7','8','9','.','Enter','Backspace','Delete'].filter(key=>key==event.key);
@@ -615,7 +802,130 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                                     });
                 });
             }
+
+            const TriggerNewPointage = () => {
+                
+                try {
+                    
+                    getPersonnelList()
+                    getPointageTypes()
+
+                    modal.title = 'AJOUTER POINTAGE'
+                    modal.show = true
+                    modal.type = 'pointage'
+
+                }
+                catch(e) {
+                    throw e
+                }
+               
+            }
+
+            const commitAction = () => {
+
+                if(modal.type == 'facturation') {
+                    newOrderInvoice()
+                }
+
+                if(modal.type == 'pointage') {
+                    CreateNewPointage()
+                }
+
+            }
+
+
+            const CreateNewPointage = async () => {
+
+                try {
+                    
+                    let valid = true
+
+                    if(newPointage.type == 0) {
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez ajouter une type pointage.',
+                            ttl: 8,
+                        });
+                        valid = false
+                    }
+
+                    if(newPointage.personnel == 0) {
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez ajouter une personnel.',
+                            ttl: 8,
+                        });
+                        valid = false
+                    }
+
+                    if(newPointage.date == null) {
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez ajouter une date.',
+                            ttl: 8,
+                        });
+                        valid = false
+                    }
+
+                    if(newPointage.numberh == null) {
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: 'Veuillez ajouter une NOMRE.',
+                            ttl: 8,
+                        });
+                        valid = false
+                    }
+
+                    if(valid == false) return
+
+
+                    showloader.value = true
+                    store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Loading...'])
+                    await store.dispatch(`${COMMANDE_DETAIL_MODULE}${COMMANDE_CREATE_POINTAGE}`, {
+                        pointage: unref(newPointage),
+                        affiliate_id: order.value.affiliate_id,
+                        order_id: order.value.id,
+                        user_id: order.value.responsable_id
+                    })
+                    modal.show = false
+
+                    newPointage.type = 0
+                    newPointage.date = null
+                    newPointage.numberh = null
+                    newPointage.personnel = 0
+                    newPointage.comment = null
+
+                }
+                catch(e) {
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Something went wrong',
+                        ttl: 8,
+                    })
+                    throw e
+                }
+                finally {
+                    store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`)
+                    showloader.value = false
+                }
+
+            }
+
+
              return {
+                 TriggerNewPointage,
+                 personnelList,
+                 pointageTypes,
+                 getPointage,
+                 getPersonnelList,
+                 getPointageTypes,
+                 commitAction,
+                 newPointage,
+                 setPointageDate,
+                 pointages,
+                 modal,
+                 moment,
+                 pointageTotal,
                  show,
                  showloader,
                  order_id,
@@ -631,15 +941,12 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
                  new_echeance,
                  new_remise,
                  new_avoir,
-                 showmodal_facturation,
                  moneyconfig,
                  facture,
                  newOrderInvoice,
-                 modal_facturation_title,
                  disabledToDate,
                  facturation_total_taux,
                  showresteafacturer,
-               //  facturation_total,
                  reste_a_facturer,
                  checktaux,
                  checkmontant,
@@ -658,7 +965,37 @@ import MiniPanel from '../../components/miscellaneous/MiniPanel.vue'
     }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+
+.title-bold {
+    font-family: 'Almarai Regular';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 140%;
+    display: flex;
+    align-items: flex-end;
+    color: #000000;
+}
+
+.tag {
+    text-transform: capitalize;
+    background: #DDD;
+    border-radius: 70px;
+    text-align: center;
+    font-size: 12px;
+    height: 24px;
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 24px;
+    transition: all 0.5s ease-in;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 10px;
+}
+
 .facture_action{
     color:#E8581B;
     cursor: pointer;

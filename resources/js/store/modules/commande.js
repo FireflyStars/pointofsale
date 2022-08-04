@@ -1,3 +1,4 @@
+import axios from "axios";
 import {  COMMANDE_LOAD_TAB, COMMANDE_SET_LIST, COMMANDE_LIST_MODULE, GET_COMMANDE_LIST_DEF } from "../types/types";
 
 export const commande = {
@@ -193,12 +194,12 @@ export const commande = {
             ]
 
         },
-        
+
     },
 
     getters: {
 
-      commandeList: state => state.table_def,
+      commandeList: state => state.table_def
 
     },
 
@@ -206,7 +207,7 @@ export const commande = {
 
       [COMMANDE_SET_LIST]:(state,list)=>{
         state.list = list
-      }
+      },
 
     },
 
@@ -221,7 +222,7 @@ export const commande = {
           }).catch((error)=>{
             return  Promise.resolve(error);
           })
-        }
+        },
 
     },
     

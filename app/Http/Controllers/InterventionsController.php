@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pointage;
+use App\Models\Intervention;
+use App\Models\InterventionStatus;
+use App\Models\InterventionType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -12,25 +14,38 @@ class InterventionsController extends Controller
     public function get_data(Request $request) 
     {
 
-        $interventions = Pointage::query();
+        $interventions = Intervention::query();
 
         $interventions = $interventions->select(
-            'pointage.id',
+            'interventions.id',
+            'interventions.name as client_name',
             'orders.id as commande',
-            'customers.raisonsociale as client',
-            'users.name as personnel',
-            'numberh',
-            'pointage_type_id',
-            'pointage.comment',
-            DB::raw('DATE_FORMAT(pointage.datepointage, "%Y-%m-%d") as datepointage')
+            'users.name as affecte_a',
+            'intervention_types.name as intervention_type',
+            'intervention_statut_id',
+            DB::raw(
+                'TRIM(
+                    CONCAT(
+                        addresses.firstname, " ", addresses.lastname,
+                        addresses.address1,
+                        "<br>",
+                        IFNULL(addresses.address2, ""),
+                        IF(addresses.address2, "<br>", ""),
+                        addresses.postcode,
+                        "<br>", 
+                        addresses.city
+                    )
+                ) 
+            as address'),
+            DB::raw('DATE_FORMAT(interventions.datedebut, "%Y-%m-%d") as dateaction'),
         );
 
-        $interventions = $interventions->leftJoin('orders', 'orders.id', '=', 'pointage.order_id')
-                        ->leftJoin('order_states', 'order_states.id', '=', 'orders.order_state_id')
-                        ->leftJoin('customers', 'customers.id', '=', 'orders.customer_id')
-                        ->leftJoin('users', 'users.id', 'pointage.user_id');
+        $interventions = $interventions->leftJoin('orders', 'orders.id', '=', 'interventions.order_id')
+                        ->leftJoin('users', 'users.id', '=', 'interventions.user_id')
+                        ->leftJoin('intervention_types', 'intervention_types.id', '=', 'interventions.intervention_type_id')
+                        ->leftJoin('addresses', 'addresses.id', '=', 'orders.address_id');
 
-        $data = (new TableFiltersController)->sorts($request, $interventions, 'pointage.id');
+        $data = (new TableFiltersController)->sorts($request, $interventions, 'interventions.id');
         $data = (new TableFiltersController)->filters($request, $data);
 
         $data = $data->take($request->take ?? 15)
@@ -55,13 +70,34 @@ class InterventionsController extends Controller
 
         return response()->json(
             $this->get_data($request)
-            ->where('pointage.affiliate_id', $request->user()->affiliate_id)
+            ->where('interventions.affiliate_id', $request->user()->affiliate_id)
             ->get()
         );
 
     }
 
+    public function get_intervention_status_formatted() 
+    {
+        return response()->json(
+            InterventionStatus::select('id', 'name as value')
+                        ->get()
+        );    
+    }
 
+    public function get_intervention_status() 
+    {
+        return response()->json(
+            InterventionStatus::all()
+        );    
+    }
+
+    public function get_intervention_types() 
+    {
+        return response()->json(
+            InterventionType::select('id', 'name as value')
+                        ->get()       
+        );
+    }
 
 
 }
