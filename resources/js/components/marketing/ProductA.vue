@@ -198,7 +198,7 @@
                                                         />
                                                     </div>
         
-                                                    <div class="col-lg-12 group_input">
+                                                    <div class="col-lg-12 group_input" v-if="fields?.STATUS?.active == 1">
                                                         
                                                         <label class="fix_width">statut:</label>
                                                         <input
@@ -220,46 +220,77 @@
                                                     </div>
         
                                                     <div class="col-lg-12 group_input">
+
+                                                        <label 
+                                                            class="fix_width" 
+                                                            v-if="fields?.SIRET?.active == 1 || fields?.tva?.active ==1">
+                                                            sired & tva:
+                                                        </label>
+
+                                                        <template v-if="fields?.SIRET?.active == 1">
+                                                            
+                                                            <input
+                                                                type="text"
+                                                                placeholder="1 Rue Jean-Baptiste Colbert"
+                                                                name="adresse"
+                                                                :value="affiliate.siret"
+                                                                disabled
+                                                            />
                                                         
-                                                        <label class="fix_width">sired & tva:</label>
-                                                        <input
-                                                            type="text"
-                                                            placeholder="1 Rue Jean-Baptiste Colbert"
-                                                            name="adresse"
-                                                            :value="affiliate.siret"
-                                                            disabled
-                                                        />
+                                                        </template>
+
+                                                        <template v-if="fields?.tva?.active == 1">
+                                                            
+                                                            <label class="fix_width_tiret">-</label>
+                                                            <input
+                                                                type="text"
+                                                                id="inputPassword"
+                                                                name="adresse2"
+                                                                :value="affiliate.tva"
+                                                                disabled
+                                                            />
+                                                        
+                                                        </template>
+                                                        
         
-                                                        <label class="fix_width_tiret">-</label>
-                                                        <input
-                                                            type="text"
-                                                            id="inputPassword"
-                                                            name="adresse2"
-                                                            :value="affiliate.tva"
-                                                            disabled
-                                                        />
         
                                                     </div>
         
                                                     <div class="col-lg-12 group_input">
+
+                                                        <label 
+                                                            class="fix_width"
+                                                            v-if="fields?.APE?.active == 1 || fields?.RCS_agence?.active == 1"
+                                                        >
+                                                            ape & rcs:
+                                                        </label>
                                                         
-                                                        <label class="fix_width">ape & rcs:</label>
-                                                        <input
-                                                            type="text"
-                                                            placeholder="1 Rue Jean-Baptiste Colbert"
-                                                            name="adresse"
-                                                            :value="affiliate.ape"
-                                                            disabled
-                                                        />
+                                                        <template v-if="fields?.APE?.active == 1">
+                                                        
+                                                            <input
+                                                                type="text"
+                                                                placeholder="1 Rue Jean-Baptiste Colbert"
+                                                                name="adresse"
+                                                                :value="affiliate.ape"
+                                                                disabled
+                                                            />
+
+                                                        </template>
+
+                                                        <template v-if="fields?.RCS_agence?.active == 1">
+                                                        
+                                                            <label class="fix_width_tiret">-</label>
+                                                            <input
+                                                                type="text"
+                                                                id="inputPassword"
+                                                                name="adresse2"
+                                                                :value="affiliate.secteuragence"
+                                                                disabled
+                                                            />
+
+                                                        </template>
+                                                        
         
-                                                        <label class="fix_width_tiret">-</label>
-                                                        <input
-                                                            type="text"
-                                                            id="inputPassword"
-                                                            name="adresse2"
-                                                            :value="affiliate.secteuragence"
-                                                            disabled
-                                                        />
         
                                                     </div>
         

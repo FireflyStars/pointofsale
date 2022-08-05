@@ -29,6 +29,11 @@ class CompagneController extends Controller
 
     private $pdf;
 
+    public function __construct() 
+    {
+        $this->middleware(['auth']);
+    }
+
     public function get_card_quantity(Request $request) 
     {
         
