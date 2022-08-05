@@ -314,10 +314,7 @@ class CompagneController extends Controller
 
         $affiliate = $request->user()->affiliate;
         
-        // [$width, $height] = getimagesize($campagne->imageTemplateUrl);
-
-        $width = 0;
-        $height = 0;
+        [$width, $height] = getimagesize($campagne->imageTemplateUrl);
 
         return response()->json(
             ['data' => compact('affiliate', 'campagne', 'width', 'height')]
