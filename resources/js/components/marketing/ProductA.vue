@@ -106,10 +106,10 @@
                                                     <p class="fs-6" v-html="category.text"></p>
                                                 </div>
         
-                                                <hr v-if="!isPersonalizeAble && !loading" />
+                                                <hr v-if="!isPersonalizeAble && !loading && !productWithDownloadOnly" />
         
         
-                                                <div class="row" v-if="!isPersonalizeAble && !loading">
+                                                <div class="row" v-if="!isPersonalizeAble && !loading && !productWithDownloadOnly">
         
                                                     <div class="col">
                                                         <p class="p-title text-uppercase text-start">
@@ -297,7 +297,7 @@
                                                 </div>
         
                                                 <hr v-if="!productWithDownloadOnly && !loading" />
-    
+
                                                 <div class="footer" v-if="!productWithDownloadOnly && !loading">
 
                                                     <p class="p-title text-uppercase text-start">

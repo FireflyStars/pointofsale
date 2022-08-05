@@ -88,7 +88,7 @@ class CompagneController extends Controller
         $user = $request->user();
         $affiliate = $user->affiliate;
         
-        $card = optional(campagne_card::where('user_id', $user->id))->first();
+        $card = optional(campagne_card::where('user_id', $user->id)->where('status', 'NOUVEAU'))->first();
 
         $campagne = $this->create_card_campagne($card, $user, $affiliate);
 
@@ -135,12 +135,22 @@ class CompagneController extends Controller
         })->sum();
 
         $transport = $products->sum(function($product) use($product_poids) {
-            $poids = $product_poids($product);
-            $weight = $poids - 10;
-            $weight = (int) ceil($weight / 10);
-            $transportPrice = 17 + ($weight * 7);
-            return ($transportPrice) * 1;
+            return $product_poids($product);
         });
+
+        $weight = $transport - 10;
+        $weight = (int) ceil($weight / 10);
+        $transportPrice = 17 + ($weight * 7);
+
+        $transport = ($transportPrice) * 1;
+
+        // $transport = $products->sum(function($product) use($product_poids) {
+        //     $poids = $product_poids($product);
+        //     $weight = $poids - 10;
+        //     $weight = (int) ceil($weight / 10);
+        //     $transportPrice = 17 + ($weight * 7);
+        //     return ($transportPrice) * 1;
+        // });
 
         $cardPrice = $products->sum(function($product) use($product_price) {
             return $product_price($product);
@@ -235,16 +245,18 @@ class CompagneController extends Controller
         
         $user = $request->user();
 
-        if(!is_null($campagne->cardDetail)) 
+        $card = campagne_card::where('user_id', $user->id)->where('status', 'NOUVEAU')->first();
+
+        $detail = $card->details()->where('campagne_category_id', $campagne->id)->first();
+
+        if(!is_null($detail)) 
         {
-            $campagne->cardDetail()->update([
-                'qty' => $campagne->cardDetail->qty + $request->qty
+            $detail->update([
+                'qty' => $detail->qty + $request->qty
             ]);
         }
         else 
         {
-
-            $card = campagne_card::where('user_id', $user->id)->where('status', 'NOUVEAU')->first();
 
             if(is_null($card)) 
             {
@@ -301,9 +313,11 @@ class CompagneController extends Controller
     {
 
         $affiliate = $request->user()->affiliate;
-        $campagne = $campagne->load('cardDetail');
         
-        [$width, $height] = getimagesize($campagne->imageTemplateUrl);
+        // [$width, $height] = getimagesize($campagne->imageTemplateUrl);
+
+        $width = 0;
+        $height = 0;
 
         return response()->json(
             ['data' => compact('affiliate', 'campagne', 'width', 'height')]
@@ -1994,6 +2008,11 @@ class CompagneController extends Controller
         $fields->Ville_agence->value=$affiliate->city;
         $fields->Page_agence->value=$affiliate->urlagence;
         $fields->Linkedin_agence->value=$affiliate->linkedin;
+        $fields->RCS_agence->value = $affiliate->secteuragence;
+        $fields->APE->value = $affiliate->ape;
+        $fields->tva->value = $affiliate->tva;
+        $fields->SIRET->value = $affiliate->siret;
+        $fields->STATUS->value = $affiliate->statutagence;
         $filedepliant = json_decode($campagne->filedepliant);
         $fields->file_depliant=$filedepliant;
         $fields->personalize = true;

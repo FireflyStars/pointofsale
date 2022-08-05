@@ -451,7 +451,6 @@
         let weight = 0
 
         products.value.forEach(product => {
-            console.log(+weight + +productPoids(product))
             weight = +weight + +productPoids(product)
         })
 

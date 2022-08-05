@@ -74,7 +74,7 @@
                             left: {{ $item->x }}px;
                             z-index: 10;
                         ">
-                            {{ $item->value }}
+                            {{ optional($item)->value }}
                         </span>
 
                 </span>
