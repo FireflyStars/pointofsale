@@ -186,7 +186,7 @@
         
                                                     </div>
         
-                                                    <div class="col-lg-12 group_input" v-if="fields?.CP_agence?.active == 1 && fields?.Ville_agence?.active == 1">
+                                                    <div class="col-lg-12 group_input" v-if="fields?.CP_agence?.active == 1 || fields?.Ville_agence?.active == 1">
                                                         
                                                         <label class="fix_width">cp & ville:</label>
                                                         <input
@@ -359,7 +359,7 @@
                                         
                                         <div 
                                             class="col-6 apercu d-table position-relative" 
-                                            style="margin: 0; padding: 0;"
+                                            style="margin: 0; padding: 0; margin-right: 1rem;"
                                         >
 
                                             <div id="imagePortray"></div>
