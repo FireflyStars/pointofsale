@@ -278,7 +278,7 @@ vertical-align: middle;
                 <div class="modalPosDiv float-left" id="div_modal_{{ $dataTypeContent->getKey() }}" 
                     style="background-size: contain; background-repeat: no-repeat;">
 
-                    <div id="modalDraggable" style="background:rgba(0,0,0,0.5); position: relative;">
+                    <div id="modalDraggable" style="background:rgba(0,0,0,0.5); position: relative;z-index: 10;">
                    
                     </div>
                 </div>
