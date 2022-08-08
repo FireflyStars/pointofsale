@@ -369,19 +369,20 @@
                                                 style="
                                                 position: absolute; 
                                                 left: 1.5rem; 
-                                                transform-origin: top left;
                                                 min-width: 795px;
                                                 min-height: 1124px;
-                                                
                                                 "
                                                 :style="{ 
-                                                    transform: `scale(${transformedProductImageValue || 1})`,
                                                     'background-image': `url(${category.imageTemplateUrl})`,
                                                     'background-repeat': 'no-repeat',
                                                     'background-size': 'contain'
                                                 }"
                                             >
                                                 
+                                                <!-- 
+                                                    transform-origin: top left;
+                                                    transform: `scale(${transformedProductImageValue || 1})`, 
+                                                -->
                                                 <!-- <img 
                                                     :src="category.imageTemplateUrl" 
                                                     alt="Lcdt Logo" 
