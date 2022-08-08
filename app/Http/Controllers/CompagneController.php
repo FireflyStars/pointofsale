@@ -1998,11 +1998,11 @@ class CompagneController extends Controller
         $fields->Page_agence->value=$affiliate->urlagence;
         $fields->Linkedin_agence->value=$affiliate->linkedin;
 
-        if($fields->RCS_agence) $fields->RCS_agence->value = $affiliate->secteuragence;
-        if($fields->APE) $fields->APE->value = $affiliate->ape;
-        if($fields->tva) $fields->tva->value = $affiliate->tva;
-        if($fields->SIRET) $fields->SIRET->value = $affiliate->siret;
-        if($fields->STATUS) $fields->STATUS->value = $affiliate->statutagence;
+        if(optional($fields)->RCS_agence) $fields->RCS_agence->value = $affiliate->secteuragence;
+        if(optional($fields)->APE) $fields->APE->value = $affiliate->ape;
+        if(optional($fields)->tva) $fields->tva->value = $affiliate->tva;
+        if(optional($fields)->SIRET) $fields->SIRET->value = $affiliate->siret;
+        if(optional($fields)->STATUS) $fields->STATUS->value = $affiliate->statutagence;
         
         $filedepliant = json_decode($campagne->filedepliant);
         $fields->file_depliant=$filedepliant;
