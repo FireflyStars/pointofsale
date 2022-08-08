@@ -25,6 +25,9 @@ export const isFloat=x=>{
 }
 
 export const formatDate=(date_str,format)=>{
+    if(date_str=='0000-00-00')
+    return "--/--";
+ 
     if(date_str==null)
     return "--/--";
     if(typeof format==="undefined")
