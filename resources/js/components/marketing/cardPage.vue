@@ -555,6 +555,7 @@
             loading.value = true
             store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Loading...'])
             await store.dispatch(`${CIBLE_MODULE}${DELETE_CARD}`, product.id)
+            getCardQty()
         }
         catch(e) {
             throw e
