@@ -144,14 +144,6 @@ class CompagneController extends Controller
 
         $transport = ($transportPrice) * 1;
 
-        // $transport = $products->sum(function($product) use($product_poids) {
-        //     $poids = $product_poids($product);
-        //     $weight = $poids - 10;
-        //     $weight = (int) ceil($weight / 10);
-        //     $transportPrice = 17 + ($weight * 7);
-        //     return ($transportPrice) * 1;
-        // });
-
         $cardPrice = $products->sum(function($product) use($product_price) {
             return $product_price($product);
         });
@@ -2005,11 +1997,13 @@ class CompagneController extends Controller
         $fields->Ville_agence->value=$affiliate->city;
         $fields->Page_agence->value=$affiliate->urlagence;
         $fields->Linkedin_agence->value=$affiliate->linkedin;
-        $fields->RCS_agence->value = $affiliate->secteuragence;
-        $fields->APE->value = $affiliate->ape;
-        $fields->tva->value = $affiliate->tva;
-        $fields->SIRET->value = $affiliate->siret;
-        $fields->STATUS->value = $affiliate->statutagence;
+
+        if($fields->RCS_agence) $fields->RCS_agence->value = $affiliate->secteuragence;
+        if($fields->APE) $fields->APE->value = $affiliate->ape;
+        if($fields->tva) $fields->tva->value = $affiliate->tva;
+        if($fields->SIRET) $fields->SIRET->value = $affiliate->siret;
+        if($fields->STATUS) $fields->STATUS->value = $affiliate->statutagence;
+        
         $filedepliant = json_decode($campagne->filedepliant);
         $fields->file_depliant=$filedepliant;
         $fields->personalize = true;
