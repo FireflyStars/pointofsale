@@ -52,7 +52,16 @@ class CompagneController extends Controller
             'enable_php'           => true,
             'isRemoteEnabled'      => true, 
             'isHtml5ParserEnabled' => true, 
+            'defaultFont'          => 'Arial',
+            'fontDir'              => public_path('fonts/Arialn.ttf')  
         ]);
+
+        $width = $campagne->widthmm * 2.83465;
+        $height = $campagne->heightmm * 2.83465;
+
+        $customPaper = array(0, 0, $width, $height);
+
+        // $pdf->setPaper($customPaper);
 
         $fields = $this->fields_for_marketing($campagne, $request, $request->email, $request->phone);
     
@@ -62,6 +71,11 @@ class CompagneController extends Controller
             'image'            => $campagne->urlimageflyerpage1,
             'campagneCategory' => $campagne
         );
+
+        // return view('product', [
+        //     'builder' => (new page_builder),
+        //     'data'    => $data
+        // ]);
 
         $pdf->loadView(
             'product', [
@@ -306,7 +320,9 @@ class CompagneController extends Controller
 
         $affiliate = $request->user()->affiliate;
         
-        [$width, $height] = getimagesize($campagne->imageTemplateUrl);
+        // [$width, $height] = getimagesize($campagne->imageTemplateUrl);
+        $width = 0;
+        $height = 0;
 
         return response()->json(
             ['data' => compact('affiliate', 'campagne', 'width', 'height')]
@@ -1999,8 +2015,9 @@ class CompagneController extends Controller
         $fields->Linkedin_agence->value=$affiliate->linkedin;
 
         if(optional($fields)->RCS_agence) $fields->RCS_agence->value = $affiliate->secteuragence;
+        if(optional($fields)->Capital_agence) $fields->Capital_agence->value = $affiliate->capitalagence;
         if(optional($fields)->APE) $fields->APE->value = $affiliate->ape;
-        if(optional($fields)->tva) $fields->tva->value = $affiliate->tva;
+        if(optional($fields)->TVA) $fields->TVA->value = $affiliate->tva;
         if(optional($fields)->SIRET) $fields->SIRET->value = $affiliate->siret;
         if(optional($fields)->STATUS) $fields->STATUS->value = $affiliate->statutagence;
         
@@ -2035,13 +2052,22 @@ class CompagneController extends Controller
         $fields->Ville_agence->value=$affiliate->city;
         $fields->Page_agence->value=$affiliate->urlagence;
         $fields->Linkedin_agence->value=$affiliate->linkedin;
+
+        if(optional($fields)->RCS_agence) $fields->RCS_agence->value = $affiliate->secteuragence;
+        if(optional($fields)->Capital_agence) $fields->Capital_agence->value = $affiliate->capitalagence;
+        if(optional($fields)->APE) $fields->APE->value = $affiliate->ape;
+        if(optional($fields)->TVA) $fields->TVA->value = $affiliate->tva;
+        if(optional($fields)->SIRET) $fields->SIRET->value = $affiliate->siret;
+        if(optional($fields)->STATUS) $fields->STATUS->value = $affiliate->statutagence;
+
         $filedepliant=json_decode($cc->filedepliant);
         $fields->file_depliant=$filedepliant;
       
         return response()->json(
             array(
                 'fields' => $fields, 
-                'image' => $cc->imagetemplate,
+                'image'  => $cc->imagetemplate,
+                'image_full' => rtrim(config('app.url'), '/') .  '/' . 'storage/' . $cc->imagetemplate,
                 'campagneCategory' => $cc
             )
         );
