@@ -52,8 +52,6 @@ class CompagneController extends Controller
             'enable_php'           => true,
             'isRemoteEnabled'      => true, 
             'isHtml5ParserEnabled' => true, 
-            'defaultFont'          => 'Arial',
-            'fontDir'              => public_path('fonts/Arialn.ttf')  
         ]);
 
         $width = $campagne->widthmm * 2.83465;
@@ -71,11 +69,6 @@ class CompagneController extends Controller
             'image'            => $campagne->urlimageflyerpage1,
             'campagneCategory' => $campagne
         );
-
-        // return view('product', [
-        //     'builder' => (new page_builder),
-        //     'data'    => $data
-        // ]);
 
         $pdf->loadView(
             'product', [

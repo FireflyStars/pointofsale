@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Product</title>
     <style>
         * {
@@ -33,18 +34,18 @@
         }
 
         @font-face {
-            font-family: 'Arial';
-            src: url({{ rtrim(config('app.url'), '/') . '/storage/fonts/Arialn.ttf' }}) format('truetype');
+            font-family: 'arial';
+            src: url("/fonts/Arialn.ttf") format("truetype")
         }
 
         @font-face {
-            font-family: 'Helvetica';
-            src: url({{ rtrim(config('app.url'), '/') . '/storage/fonts/Helvetica.ttf' }} format("truetype");
+            font-family: 'helvetica';
+            src: url("/fonts/Helvetica.ttf") format("truetype")
         }
 
         @font-face {
-            font-family: 'Open sans';
-            src: url({{ rtrim(config('app.url'), '/') . 'storage/fonts/OpenSans-Regular.ttf' }}) format("truetype");
+            font-family: 'open sans';
+            src: url("/fonts/OpenSans-Regular.ttf") format("truetype")
         }
 
     </style>
@@ -81,7 +82,7 @@
                 style="
                     color: {{ $item->color }}; 
                     font-size: {{ $item->size }}px; 
-                    font-family: {{ ucFirst($item->font) }};
+                    font-family: {{ $item->font }};
                     top: {{ $item->y }}px;
                     left: {{ $item->x }}px;
                     z-index: 10;
