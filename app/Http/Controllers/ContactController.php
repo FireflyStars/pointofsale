@@ -58,7 +58,6 @@ class ContactController extends Controller
      */
     public function edit(Contact $contact){
         $customer = $contact->customer_id ? Customer::find($contact->customer_id) : null;
-        return response()->json($contact);
         return response()->json([
             'contact'=>[
                 'type'      => $contact->contact_type_id,
