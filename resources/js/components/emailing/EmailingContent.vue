@@ -15,8 +15,11 @@
         leave-active-class="animate__animated animate__fadeOut"
     >
         <form class="space-y-6"  v-if="showcontainer">
+
             <div class="container">
+                
                 <div class="row" style="height: calc(0.75 * 297mm);">
+
                     <div class="col-lg-6">
              
                         <h3 class="margin">
@@ -76,16 +79,47 @@
                             </div>
                                 
                         </div>
+
+                        <div class="row rigth">
+                            <button
+                                class="button-valider type"
+                                :class="{ 'cursor-not-allowed': loading }"
+                                type="button"
+                                v-on:click="saveCompany"
+                                :disabled="loading"
+                            >
+                                VALIDER
+                                <Icon name="spinner" v-show="loading" style="font-size: 10px;" />
+                            </button>
+                        
+                        </div>
+
+
                     </div>
+                    
                     <div
+                        v-if="showcontainer"
                         class="col-lg-6 apercu d-table position-relative"
                     >
                         <h6>APERÇU</h6>
-                        <div style="position: absolute;transform: scale(0.75);left: 1.5rem;transform-origin: top left;" class="bg-panel" >
-                            <img  style="width:210mm; height:297mm;"
+                        <!-- transform: scale(0.75);left: 1.5rem;transform-origin: top left; -->
+                        <div 
+                            class="bg-panel" 
+                            style="
+                            position: absolute; 
+                            min-width: 795px;
+                            min-height: 1124px;
+                            " 
+                            :style="{ 
+                                'background-image': `url(${imageurl})`,
+                                'background-repeat': 'no-repeat',
+                                'background-size': `contain`
+                            }"
+                        >
+                            <!-- <img style="width: auto; height: auto;"
                                 v-if="imageurl!=''"
                                 :src="`/storage/${imageurl}`" 
-                            />
+                            /> -->
                             <template v-for="item,index in fields" :key="index">
                                 <span 
                                     v-if="item.active==1" 
@@ -109,8 +143,10 @@
                         
                         </div>
                     </div>
+
                 </div>
-                <div class="row rigth">
+
+                <!-- <div class="row">
                     <button
                         class="button-valider type"
                         :class="{ 'cursor-not-allowed': loading }"
@@ -121,16 +157,9 @@
                         VALIDER
                         <Icon name="spinner" v-show="loading" style="font-size: 10px;" />
                     </button>
-                    <!-- 
-                    <button v-if="route.params.type.toLowerCase()!='email'"
-                        class="button-valider type extravalidbtn"
-                        type="button"
-                        @click.prevent="saveFlyerPdf"
-                    >
-                        VALIDER
-                        <Icon name="spinner" v-show="loading" style="font-size: 10px;" />
-                    </button> -->
-                </div>
+                   
+                </div> -->
+
             </div>
         </form>
            </transition>
@@ -282,7 +311,7 @@ export default {
                     fields.value=response.data.fields;
                     email_agence.value=response.data.fields.Email_agence.value;
                     phone_agence.value=response.data.fields.Telephone_agence.value;
-                    imageurl.value=response.data.image;
+                    imageurl.value=response.data.image_full;
                     subject.value=response.data.campagneCategory.objet;
                     sender.value+=`${response.data.fields.Nom_agence.value} - ${response.data.fields.Email_agence.value}`;
                     replyto.value+=`${response.data.fields.Nom_agence.value} - ${response.data.fields.Email_agence.value}`;

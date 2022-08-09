@@ -362,7 +362,6 @@
                                             style="margin: 0; padding: 0; margin-right: 1rem;"
                                         >
 
-                                            <div id="imagePortray"></div>
 
                                             <div 
                                                 class="text-center bg-panel" 
@@ -375,23 +374,10 @@
                                                 :style="{ 
                                                     'background-image': `url(${category.imageTemplateUrl})`,
                                                     'background-repeat': 'no-repeat',
-                                                    'background-size': 'contain'
+                                                    'background-size': `contain`
                                                 }"
                                             >
                                                 
-                                                <!-- 
-                                                    transform-origin: top left;
-                                                    transform: `scale(${transformedProductImageValue || 1})`, 
-                                                -->
-                                                <!-- <img 
-                                                    :src="category.imageTemplateUrl" 
-                                                    alt="Lcdt Logo" 
-                                                    style="width: auto; height: auto;"
-                                                    ref="productImage"
-                                                    id="productImage"
-                                                > -->
-
-
                                                 <template v-if="(!productWithDownloadOnly && !isPersonalizeAble) && !loading">
 
                                                     <template v-for="(item, index) in fields" :key="index">
@@ -403,12 +389,12 @@
                                                                 <span 
                                                                 v-if="index == 'Telephone_agence'"
                                                                 :style="{
-                                                                    color: item.color,
-                                                                    fontSize: item.size,
-                                                                    fontFamily: item.font,
-                                                                    top: item.y + 'px',
-                                                                    left: item.x + 'px',
-                                                                    position: 'absolute'
+                                                                    'color': `${item.color} !important`,
+                                                                    'font-family': `${lodash.upperFirst(item.font)} !important`,
+                                                                    'font-size': `${item.size}px !important`,
+                                                                    'top': `${item.y}px !important`,
+                                                                    'left': `${item.x}px !important`,
+                                                                    'position': 'absolute'
                                                                 }">
                                                                     {{ phone }}
                                                                 </span>
@@ -416,12 +402,12 @@
                                                                 <span 
                                                                 v-else-if="index == 'Email_agence'"
                                                                 :style="{
-                                                                    color: item.color,
-                                                                    fontSize: item.size,
-                                                                    fontFamily: item.font,
-                                                                    top: item.y + 'px',
-                                                                    left: item.x + 'px',
-                                                                    position: 'absolute'
+                                                                    'color': `${item.color} !important`,
+                                                                    'font-family': `${lodash.upperFirst(item.font)} !important`,
+                                                                    'font-size': `${item.size}px !important`,
+                                                                    'top': `${item.y}px !important`,
+                                                                    'left': `${item.x}px !important`,
+                                                                    'position': 'absolute'
                                                                 }">
                                                                     {{ email }}
                                                                 </span>
@@ -429,12 +415,12 @@
                                                                 <span 
                                                                 v-else
                                                                 :style="{
-                                                                    color: item.color,
-                                                                    fontSize: item.size,
-                                                                    fontFamily: item.font,
-                                                                    top: item.y + 'px',
-                                                                    left: item.x + 'px',
-                                                                    position: 'absolute'
+                                                                    'color': `${item.color} !important`,
+                                                                    'font-family': `${lodash.upperFirst(item.font)} !important`,
+                                                                    'font-size': `${item.size}px !important`,
+                                                                    'top': `${item.y}px !important`,
+                                                                    'left': `${item.x}px !important`,
+                                                                    'position': 'absolute'
                                                                 }">
                                                                     {{ item.value }}
                                                                 </span>
@@ -442,7 +428,7 @@
                                                                 
                                                             </span>
 
-                                                        </template> 
+                                                    </template> 
                                                 
                                                 </template>
 
@@ -511,6 +497,7 @@
 
 <script setup>
     
+    import lodash from 'lodash'
     import { ref, onMounted, computed, watch } from 'vue'
     import { useStore } from 'vuex'
     import {

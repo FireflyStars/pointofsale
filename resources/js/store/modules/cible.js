@@ -1,6 +1,6 @@
 
 import axios from 'axios'
-
+import moment from 'moment';
 import useReports from '../../composables/reports/useReports'
 
 const { generatePDF } = useReports()
@@ -220,7 +220,8 @@ export const cible= {
                 const { data } = await axios.post(`/generate-campagne-product-pdf/${id}`, formData, {
                     responseType: 'arraybuffer'
                 })
-                generatePDF(data, name = 'Product.pdf')
+                const time = moment().format('Ymd')
+                generatePDF(data, `Product_${id}_${time}.pdf`)
             }
             catch(e) {
                 throw e

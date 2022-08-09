@@ -26,11 +26,27 @@
             left: 52px;
             color: rgb(223, 0, 0);
             font-size: 12px;
-            font-family: arial;
+            font-family: "Arial";
         }
         .item {
             position: absolute !important;
         }
+
+        @font-face {
+            font-family: 'Arial';
+            src: url({{ rtrim(config('app.url'), '/') . '/storage/fonts/Arialn.ttf' }}) format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Helvetica';
+            src: url({{ rtrim(config('app.url'), '/') . '/storage/fonts/Helvetica.ttf' }} format("truetype");
+        }
+
+        @font-face {
+            font-family: 'Open sans';
+            src: url({{ rtrim(config('app.url'), '/') . 'storage/fonts/OpenSans-Regular.ttf' }}) format("truetype");
+        }
+
     </style>
 </head>
 
@@ -38,7 +54,6 @@
     style="min-width: 795px; min-height: 1124px;"
 >
 
-        
     @php
         $backgroundImage = $builder::convert_base64(public_path() . '/storage' . '/' . $data['image2']);
     @endphp
@@ -62,21 +77,22 @@
         @foreach ($data['fields'] as $key => $item)
 
             @if (isset($item->active) && $item->active == 1)
-                <span>
-
-                        <span 
-                        class="item"
-                        style="
-                            color: {{ $item->color }}; 
-                            font-size: {{ $item->size }}; 
-                            font-family: {{ $item->font }}; 
-                            top: {{ $item->y }}px;
-                            left: {{ $item->x }}px;
-                            z-index: 10;
-                        ">
-                            {{ optional($item)->value }}
-                        </span>
-
+                <span 
+                style="
+                    color: {{ $item->color }}; 
+                    font-size: {{ $item->size }}px; 
+                    font-family: {{ ucFirst($item->font) }};
+                    top: {{ $item->y }}px;
+                    left: {{ $item->x }}px;
+                    z-index: 10;
+                    position: absolute;
+                ">
+                    {{-- {{ $item->color }}<br>
+                    {{ $item->size }}px<br>
+                    {{ ucFirst($item->font) }}<br>
+                    {{ $item->y }}px<br>
+                    {{ $item->x }}px<br> --}}
+                    {{ optional($item)->value }}
                 </span>
 
             @endif
