@@ -270,8 +270,7 @@ export default {
         });
         onMounted(()=>{
             axios.post('/contact/edit/'+route.params.id).then((res)=>{
-                console.log(res.data);
-                var contactTmp = res.data.contact;
+                var contactTmp = res.data;
                 if(contactTmp.active){
                     contactTmp.active = true;
                 }else{
