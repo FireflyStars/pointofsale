@@ -1,86 +1,97 @@
 <template>
-    <div 
-        class="col-sm-1 side-bar-wrap d-flex flex-column align-items-center" 
-        :class="{ slidein:slidesidebar }" 
-        v-if="$route.name != 'Login'"
+
+    <transition
+        enter-active-class="animate__animated animate__fadeIn"
+        leave-active-class="animate__animated animate__fadeOut"
     >
 
-            
         <div 
-            class="d-flex flex-column align-items-center side-bar position-fixed"
-            :class="{ 'side-bar--visible': 0 }"
-            @mouseover="isSidebarVisible=true"
-            @mouseleave="isSidebarVisible=false"
+            class="col-sm-1 side-bar-wrap d-flex flex-column align-items-start"
+            style="padding-left: 0; margin-left: 0;" 
+            :class="{ slidein:slidesidebar }" 
+            v-if="$route.name != 'Login'"
         >
 
-            <template v-for="item in items" :key="item.id">
-
-                <div
-                    class="d-flex align-items-center justify-content-center cursor-pointer" 
-                    :class="{ 'first-child': item.id == 1 }"
-                    style="gap: .5rem"
-                    @click.prevent="navigateOrOpenMenu(item)"
-                >
-
-                    <Icon
-                        :name="item.icon" 
-                        width="24" 
-                        height="24" 
-                        class="side-icons"
-                        :class="{ 'active': highlight_current(item.urlname) }"
-                    />
-
-                    <span v-show="0">{{ lodash.upperFirst(item.title) }}</span>
-
-                    <Icon name="angle-down" width="8" height="16" style="margin-top: -.8rem" v-if="item.children.length" />
-                    <Icon name="angle-down" width="8" height="16" style="opacity: 0; visibility: hidden;" v-else />
-                    
-                </div>
-
-                <template v-if="activeItem.id == item.id && activeItem.show == true">
-                    
-                    <template v-for="child in item.children" :key="child.id"> 
-                        
-                        <div
-                            class="d-flex align-items-center justify-content-center cursor-pointer" 
-                            style="gap: .5rem"
-                        >
-                            <Icon 
-                                :name="child.icon" 
-                                width="24" 
-                                height="24" 
-                                class="side-icons"
-                                :class="{ 'active': highlight_current(child.urlname) }"
-                                @click="$router.push({ name: child.urlname })"
-                            />
-
-                            <span v-show="0">{{ lodash.upperFirst(item.title) }}</span>
-
-                        </div>
-
-                    </template>
                 
+            <div 
+                class="d-flex flex-column align-items-start side-bar position-fixed"
+                :class="{ 'side-bar--visible': isSidebarVisible }"
+                @mouseover="isSidebarVisible=true"
+                @mouseleave="hideSidebar"
+                style="padding-left: 1.2rem;"
+            >
+
+                <template v-for="item in items" :key="item.id">
+
+                    <div
+                        class="d-flex align-items-center justify-content-between cursor-pointer" 
+                        :class="{ 'first-child': item.id == 1 }"
+                        style="gap: .5rem; margin-bottom: 20px;"
+                        @click.prevent="navigateOrOpenMenu(item)"
+                    >
+
+                        <Icon
+                            :name="item.icon" 
+                            width="24" 
+                            height="24" 
+                            class="side-icons"
+                            :class="{ 'active': highlight_current(item.urlname) }"
+                        />
+
+                        <span class="list-title">{{ lodash.upperFirst(item.title) }}</span>
+
+                        <Icon name="angle-down" width="8" height="16" v-if="item.children.length" class="angle-down" />
+                        <Icon name="angle-down" width="8" height="16" style="opacity: 0; visibility: hidden;" v-else class="angle-down" />
+
+                        
+                    </div>
+
+                    <template v-if="activeItem.id == item.id && activeItem.show == true">
+                        
+                        <template v-for="child in item.children" :key="child.id"> 
+                            
+                            <div
+                                class="d-flex align-items-center justify-content-center cursor-pointer" 
+                                style="gap: .5rem; margin-bottom: 20px; margin-left: 2rem;"
+                            >
+                                <Icon 
+                                    :name="child.icon" 
+                                    width="24" 
+                                    height="24" 
+                                    class="side-icons"
+                                    :class="{ 'active': highlight_current(child.urlname) }"
+                                    @click="$router.push({ name: child.urlname })"
+                                />
+
+                                <span class="list-title">{{ lodash.upperFirst(child.title) }}</span>
+
+                            </div>
+
+                        </template>
+                    
+                    </template>
+
+
                 </template>
+                
 
-
-            </template>
-               
-
-        </div>
-
-        <div class="user_initials body_bold" @click="showmenu">
-            {{ initials }}
-        </div>
-
-        <transition name="usermenu" >
-            <div class="usermenu" v-if="dispmenu" >
-                  <button class="btn mb-3 btn-outline-success body_medium"  data-bs-toggle="tooltip" data-bs-placement="right" title="Réinitialiser toutes les listes" @click="reinit()">Réinitialiser liste</button>
-                <button class="btn mb-3 btn-outline-primary body_medium"  data-bs-toggle="tooltip" data-bs-placement="right" title="Librairie de composants pour développeurs" @click="router.push({name:'ComponentsTest'})">Développeur</button>
-                <button class="btn btn-outline-dark body_medium"  data-bs-toggle="tooltip" data-bs-placement="right" title="Déconnexion de l'utilisateur" @click="logout">Se déconnecter</button>
             </div>
-        </transition>
 
-    </div>
+            <div class="user_initials body_bold" @click="showmenu">
+                {{ initials }}
+            </div>
+
+            <transition name="usermenu" >
+                <div class="usermenu" v-if="dispmenu" >
+                    <button class="btn mb-3 btn-outline-success body_medium"  data-bs-toggle="tooltip" data-bs-placement="right" title="Réinitialiser toutes les listes" @click="reinit()">Réinitialiser liste</button>
+                    <button class="btn mb-3 btn-outline-primary body_medium"  data-bs-toggle="tooltip" data-bs-placement="right" title="Librairie de composants pour développeurs" @click="router.push({name:'ComponentsTest'})">Développeur</button>
+                    <button class="btn btn-outline-dark body_medium"  data-bs-toggle="tooltip" data-bs-placement="right" title="Déconnexion de l'utilisateur" @click="logout">Se déconnecter</button>
+                </div>
+            </transition>
+
+        </div>
+
+    </transition>
 
 </template>
 
@@ -215,6 +226,12 @@
         window.location.reload()
     }
 
+    const hideSidebar = () => {
+        isSidebarVisible.value=false
+        activeItem.show = false
+        activeItem.id = null
+    }
+
     onMounted(() => {
         getMenu()
     })
@@ -228,8 +245,20 @@
     margin-top: 90px;
 }
 
+.list-title {
+    font-family: 'Almarai Regular';
+    font-style: normal;
+    font-weight: 800;
+    font-size: 14px;
+    line-height: 110%;
+    display: flex;
+    align-items: center;
+    color: #000000;
+    display: none;
+}
+
 .user_initials{
-  z-index: 2;
+  z-index: 20;
   text-transform: uppercase;
   background-color:#868686;
   width: 40px;
@@ -243,14 +272,19 @@
   position: fixed;
   bottom:16px;
   color:#FFF;
+  left: .6rem;
   &:hover{
     background-color: #333;
     cursor:pointer;
   }
 }
 .side-bar-wrap {
-    width: 72px;
+    //width: 72px;
     transition: left ease-in-out 0.5s;
+}
+
+.angle-down {
+    display: none;
 }
 
 .side-bar {
@@ -258,10 +292,16 @@
     box-shadow: inset 0px 0px 6px rgba(0, 0, 0, 0.25);
     width: 72px;
     height: 100%;
-    z-index: 2;
-    transition: width .1s;
+    z-index: 8;
     &--visible {
-        width: 400px;
+        //transition: width .2s;
+        width: 300px;
+        .list-title {
+            display: inline-block;
+        }
+        .angle-down {
+            display: inline-block;
+        }
     }
     &--inner {
         display: grid;
@@ -271,80 +311,113 @@
 }
 
 .side-icons{
-    margin-bottom: 20px;
-    cursor: pointer !important
+    //margin-bottom: 20px;
+    //cursor: pointer !important
+}
+.usermenu{
+    background: #FFFFFF;
+
+    /* Drop shadow */
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.12);
+    border-radius: 4px;
+    min-width: 184px;
+    position: fixed;
+    left: 16px;
+    bottom: 79px;
+    z-index: 2;
+    padding:45px 1rem 37px 1rem;
+    transform-origin: left bottom;
+}
+.usermenu .btn{
+    min-width: 154px;
+    margin: 0 auto;
+    display: block;
 
 }
-    .usermenu{
-        background: #FFFFFF;
+.usermenu-enter-from{
+    opacity: 0;
+    transform: scale(0.6);
+}
+.usermenu-enter-to{
+    opacity: 1;
+    transform: scale(1);
+}
+.usermenu-enter-active{
+    transition: all ease 0.2s;
+}
+.usermenu-leave-from{
+    opacity: 1;
+    transform: scale(1);
+}
+.usermenu-leave-to{
+    opacity: 0;
+    transform: scale(0.6);
+}
+.usermenu-leave-active{
+    transition: all ease 0.2s;
+}
 
-        /* Drop shadow */
-        box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.12);
-        border-radius: 4px;
-        min-width: 184px;
-        position: fixed;
-        left: 16px;
-        bottom: 79px;
-        z-index: 2;
-        padding:45px 1rem 37px 1rem;
-        transform-origin: left bottom;
-    }
-    .usermenu .btn{
-        min-width: 154px;
-        margin: 0 auto;
-        display: block;
+rect {
+    transition: fill  .3s ease;
+}
 
-    }
-    .usermenu-enter-from{
-        opacity: 0;
-        transform: scale(0.6);
-    }
-    .usermenu-enter-to{
-        opacity: 1;
-        transform: scale(1);
-    }
-    .usermenu-enter-active{
-        transition: all ease 0.2s;
-    }
-    .usermenu-leave-from{
-        opacity: 1;
-        transform: scale(1);
-    }
-    .usermenu-leave-to{
-        opacity: 0;
-        transform: scale(0.6);
-    }
-    .usermenu-leave-active{
-        transition: all ease 0.2s;
-    }
+.side-icons.active rect {
+    fill:#FFA500 !important;
+}
 
-    rect {
-        transition: fill  .3s ease;
-    }
+.side-icons.active path,  .side-icons.active circle {
+    fill: #A23E13 !important;
+}
 
-    .side-icons.active rect {
-        fill:#FFA500 !important;
-    }
+.side-icons:not(.active):hover path, .side-icons:not(.active):hover circle {
+    fill: #fff !important;
+}
 
-    .side-icons.active path,  .side-icons.active circle {
-        fill: #A23E13 !important;
-    }
+.side-icons.stroke-able:not(.active):hover path {
+    stroke: #fff !important;
+}
+.side-icons.stroke-able.active path,  .side-icons.stroke-able.active circle {
+    fill: #A23E13 !important;
+    stroke: #A23E13 !important;
+}
+.side-icons rect {
+    fill:#FBFBFB !important;
+}
+.side-icons:not(.active):hover rect {
+    fill: #47454B !important;
+}
 
-    .side-icons:not(.active):hover path, .side-icons:not(.active):hover circle {
-        fill: #fff !important;
-    }
+.list-enter-from {
+    opacity: 0;
+    transform: scale(0.6);
+}
+.list-enter-to {
+    opacity: 1;
+    transform: scale(1);
+}
+.list-enter-active {
+    transition: all 1s ease;
+}
 
-    .side-icons.stroke-able:not(.active):hover path {
-        stroke: #fff !important;
-    }
-    .side-icons.stroke-able.active path,  .side-icons.stroke-able.active circle {
-        fill: #A23E13 !important;
-        stroke: #A23E13 !important;
-    }
-    .side-icons rect {
-        fill:#FBFBFB !important;
-    }
-    .side-icons:not(.active):hover rect {
-        fill: #47454B !important;
-    }
-    </style>
+.list-leave-from {
+    transform-origin: right center;
+    opacity: 1;
+    transform: scale(1);
+
+}
+.list-leave-to {
+    transform-origin: right center;
+    opacity: 0;
+    transform: scale(0.6);
+}
+.list-leave-active {
+            transition: all 1s ease;
+        transform-origin: right center;
+    position:absolute;     
+    width: 100%;
+}
+.list-move {
+    transition:all 0.3s ease;
+}
+
+</style>
