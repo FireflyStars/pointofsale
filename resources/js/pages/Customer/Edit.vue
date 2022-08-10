@@ -737,7 +737,7 @@ export default {
                 id: '',
                 addressType: 3,
                 firstName: '',
-                Nom: '',
+                nom: '',
                 address1: '',
                 address2: '',
                 address3: '',
@@ -1019,7 +1019,7 @@ export default {
                 id: '',
                 addressType: '',
                 firstName: '',
-                Nom: '',
+                nom: '',
                 address1: '',
                 address2: '',
                 address3: '',
@@ -1050,7 +1050,7 @@ export default {
                 id: '',
                 type: '',
                 actif: true,
-                quantite: '',
+                qualite: '',
                 gender: 'M',
                 firstName: '',
                 address: '',
@@ -1093,9 +1093,18 @@ export default {
             }
         })
         const submit = ()=>{
+            if(form.value.siretValidation == false){
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Vous devez vérifier le siret s\'il est valide ou non.',
+                    ttl: 5,
+                });
+                step.value = 'client-detail';
+                return;
+            }            
             let error = false;
             form.value.contacts.forEach((contact)=>{
-                if(contact.type != '' || contact.firstName != '' || contact.email == '' || contact.name == ''){
+                if(contact.type != '' || contact.firstName != '' || contact.email != '' || contact.name != ''){
                     if(contact.firstName == ''){
                         error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
@@ -1134,6 +1143,9 @@ export default {
                         router.push({ name: 'entite-details', params: { id: route.params.id } });
                     }else{
                         Object.values(res.data.errors).forEach(item => {
+                            if(item[0] == 'The siret has already been taken.'){
+                                form.value.siretValidation = false;
+                            }
                             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                                 type: 'danger',
                                 message: item[0],
@@ -1148,6 +1160,9 @@ export default {
             }
         }
         const formatPhone = (phoneNumber)=>{
+            if(phoneNumber == null){
+                return ['+33', ''];
+            }
             if(phoneNumber.split('|').length == 1){
                 return ['+33', phoneNumber];
             }else{
@@ -1185,6 +1200,9 @@ export default {
                     }else{
                         customer.addresses[index].longitude = 2.3491914978706396;
                     }
+                    let phone = formatPhone(customer.addresses[index].phoneNumber);
+                    customer.addresses[index].phoneCode = phone[0];
+                    customer.addresses[index].phoneNumber = phone[1];
                 }
                 for (let index = 0; index < customer.contacts.length; index++) {
                     var phone = formatPhone(customer.contacts[index].mobile);

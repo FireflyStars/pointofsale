@@ -69,20 +69,6 @@
                     <div class="cust-page-content client-detail m-auto pt-5">
                         <div class="page-section">
                             <h3 class="m-0 mulish-extrabold font-22">ENTITE</h3>
-                            <!-- <div class="d-flex mt-3">
-                                <div class="col-3">
-                                    <p class="m-0 mulish-light font-14 text-gray">N {{ form.id }}</p>
-                                </div>
-                                <div class="col-9 d-flex px-2">
-                                    <div class="col-4">
-                                    </div>
-                                    <div class="col-4"></div>
-                                    <div class="col-4">
-                                        <p class="m-0 mulish-light font-14 text-gray text-nowrap">Date Création :</p>
-                                        <p class="m-0 mulish-light font-14 text-gray text-nowrap">Date Modification :</p>
-                                    </div>
-                                </div>
-                            </div> -->
                             <div class="d-flex mt-3">
                                 <div class="col-6">
                                     <div class="form-group">
@@ -733,7 +719,7 @@ export default {
             addresses: [{
                 addressType: 3,
                 firstName: '',
-                Nom: '',
+                nom: '',
                 address1: '',
                 address2: '',
                 address3: '',
@@ -796,7 +782,6 @@ export default {
                             ttl: 5,
                         });                         
                     }
-                    console.log(res.data);
                 }).catch((error)=>{
                     console.log(error);
                 }).finally(()=>{
@@ -1045,7 +1030,7 @@ export default {
             form.value.addresses.push({
                 addressType: '',
                 firstName: '',
-                Nom: '',
+                nom: '',
                 address1: '',
                 address2: '',
                 address3: '',
@@ -1118,9 +1103,18 @@ export default {
             }
         })
         const submit = ()=>{
+            if(form.value.siretValidation == false){
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Vous devez vérifier le siret s\'il est valide ou non.',
+                    ttl: 5,
+                });
+                step.value = 'client-detail';
+                return;
+            }
             let error = false;
             form.value.contacts.forEach((contact)=>{
-                if(contact.type != '' || contact.firstName != '' || contact.email == '' || contact.name == ''){
+                if(contact.type != '' || contact.firstName != '' || contact.email != '' || contact.name != ''){
                     if(contact.firstName == ''){
                         error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
@@ -1166,6 +1160,9 @@ export default {
                         router.push({ name: 'entite-details', params: { id: res.data.id } });
                     }else{
                         Object.values(res.data.errors).forEach(item => {
+                            if(item[0] == 'The siret has already been taken.'){
+                                form.value.siretValidation = false;
+                            }
                             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                                 type: 'danger',
                                 message: item[0],

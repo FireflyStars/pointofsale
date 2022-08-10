@@ -222,6 +222,7 @@ import {
 import axios from 'axios';
 import { useStore } from 'vuex';
 import { useRouter, useRoute } from 'vue-router';
+import { isArray } from '@amcharts/amcharts5/.internal/core/util/Type';
 
 export default {
     components:{
@@ -270,7 +271,7 @@ export default {
         });
         onMounted(()=>{
             axios.post('/contact/edit/'+route.params.id).then((res)=>{
-                var contactTmp = res.data;
+                var contactTmp = res.data.contact;
                 if(contactTmp.active){
                     contactTmp.active = true;
                 }else{
@@ -291,18 +292,32 @@ export default {
                 }else{
                     contactTmp.acceptcourrier = false;
                 }
-                // let telephone = contactTmp.phoneCountryCode1.split("|");
-                // if(telephone.length >1){
-                //     contactTmp.phoneCountryCode1 = telephone[0];
-                // }else{
-                //     contactTmp.phoneNumber1 = telephone[1];
-                // }
-                // let mobile = contactTmp.phoneCountryCode2.split("|");
-                // if(mobile.length >1){
-                //     contactTmp.phoneCountryCode2 = mobile[0];
-                // }else{
-                //     contactTmp.phoneNumber2 = mobile[1];
-                // }
+                if(contactTmp.phoneNumber2 != ''){
+                    let phone = contactTmp.phoneNumber2.split("|");
+                    if(phone.length == 1){
+                        contactTmp.phoneCountryCode2 = phone[0];
+                        contactTmp.phoneNumber2 = '';
+                    }else if(phone.length == 2){
+                        contactTmp.phoneCountryCode2 = phone[0];
+                        contactTmp.phoneNumber2 = phone[1];
+                    }else{
+                        contactTmp.phoneCountryCode2 = '+33';
+                        contactTmp.phoneNumber2 = '';
+                    }
+                }
+                if(contactTmp.phoneNumber1 != ''){
+                    let phone = contactTmp.phoneNumber1.split("|");
+                    if(phone.length == 1){
+                        contactTmp.phoneCountryCode1 = phone[0];
+                        contactTmp.phoneNumber2 = '';
+                    }else if(phone.length == 2){
+                        contactTmp.phoneNumber1 = phone[1];
+                        contactTmp.phoneCountryCode1 = phone[0];
+                    }else{
+                        contactTmp.phoneCountryCode1 = '+33';
+                        contactTmp.phoneNumber2 = '';
+                    }
+                }
                 contact.value           = contactTmp;
                 contactTypes.value      = res.data.contactTypes;
                 contactQualites.value   = res.data.contactQualites;

@@ -122,7 +122,7 @@ class CustomerController extends Controller
                 'naf'                   => $request->naf,
                 'siret'                 => $request->siret,
                 'email'                 => $request->email,
-                'telephone'             => $request->phoneCountryCode.'|'.$request->phoneNumber,
+                'telephone'             => $request->phoneNumber != ''? $request->phoneCountryCode.'|'.$request->phoneNumber : '',
                 'company'               => $request->company,
                 'raisonsociale'         => $request->raisonsociale,
                 'raisonsociale2'        => $request->raisonsociale2,
@@ -169,6 +169,7 @@ class CustomerController extends Controller
                     'address3'              => $address['address3'],
                     'postcode'              => $address['postCode'],
                     'city'                  => $address['city'],
+                    'phone'                 => $address['phoneNumber'] != ''? $address['phoneCode'].'|'.$address['phoneNumber'] : '',
                     'latitude'              => $address['latitude'],
                     'longitude'             => $address['longitude'],
                     'pente'                 => $address['pente'],
@@ -210,8 +211,8 @@ class CustomerController extends Controller
                             'profillinedin'         => $contact['profilLinedin'],
                             'gender'                => $contact['gender'],
                             'email'                 => $contact['email'],
-                            'mobile'                => $contact['phoneCountryCode1'].'|'.$contact['phoneNumber1'],
-                            'telephone'             => $contact['phoneCountryCode2'].'|'.$contact['phoneNumber2'],
+                            'mobile'                => $contact['phoneNumber1'] != '' ? $contact['phoneCountryCode1'].'|'.$contact['phoneNumber1'] : '',
+                            'telephone'             => $contact['phoneNumber2'] != '' ? $contact['phoneCountryCode2'].'|'.$contact['phoneNumber2'] : '',
                             'type'                  => DB::table('contact_type')->find($contact['type'])->name,
                             'comment'               => $contact['note'],
                             'acceptsms'             => $contact['acceptSMS'],
@@ -258,7 +259,7 @@ class CustomerController extends Controller
                                     'postcode as postCode', 'city', 'latitude', 'longitude', 'pente', 
                                     'surfacetoiture', 'materiau', 'presenceamiante', 'presenceepc', 
                                     'accesexterieur', 'presenceapportlumiere', 'etattoiture', 'accesinterieur', 
-                                    'hauteurbatiment', 'typebatiment', 'comment as infoNote'
+                                    'hauteurbatiment', 'typebatiment', 'comment as infoNote', 'phone as phoneNumber'
                                 )->get();
         $customer->contacts = DB::table('contacts')
                                 ->where('customer_id', $id)
@@ -318,7 +319,7 @@ class CustomerController extends Controller
                 'naf'                   => $request->naf,
                 'siret'                 => $request->siret,
                 'email'                 => $request->email,
-                'telephone'             => $request->phoneCountryCode.'|'.$request->phoneNumber,
+                'telephone'             => $request->phoneNumber != ''? $request->phoneCountryCode.'|'.$request->phoneNumber : '',
                 'company'               => $request->company,
                 'raisonsociale'         => $request->raisonsociale,
                 'raisonsociale2'        => $request->raisonsociale2,
@@ -358,6 +359,7 @@ class CustomerController extends Controller
                     'address3'              => $address['address3'],
                     'postcode'              => $address['postCode'],
                     'city'                  => $address['city'],
+                    'phone'                 => $address['phoneNumber'] != ''? $address['phoneCode'].'|'.$address['phoneNumber'] : '',
                     'latitude'              => $address['latitude'],
                     'longitude'             => $address['longitude'],
                     'pente'                 => $address['pente'],
