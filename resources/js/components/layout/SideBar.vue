@@ -35,7 +35,7 @@
                             width="24" 
                             height="24" 
                             class="side-icons"
-                            :class="{ 'active': highlight_current(item.urlname) }"
+                            :class="{ 'active': highlight_current(item.urlname) || isChildActivated(item) }"
                         />
 
                         <span class="list-title">{{ lodash.upperFirst(item.title) }}</span>
@@ -53,6 +53,7 @@
                             <div
                                 class="d-flex align-items-center justify-content-center cursor-pointer" 
                                 style="gap: .5rem; margin-bottom: 20px; margin-left: 2rem;"
+                                @click.prevent="navigateOrOpenMenu(child)"
                             >
                                 <Icon 
                                     :name="child.icon" 
@@ -60,7 +61,6 @@
                                     height="24" 
                                     class="side-icons"
                                     :class="{ 'active': highlight_current(child.urlname) }"
-                                    @click="$router.push({ name: child.urlname })"
                                 />
 
                                 <span class="list-title">{{ lodash.upperFirst(child.title) }}</span>
@@ -146,9 +146,14 @@
 
     const items = computed(() => store.getters[`${MENU_ITEMS_MODULE}items`])
 
+    const isChildActivated = (item) => {
+        const childRoutes = item.children?.map(child => child.urlname)
+        return childRoutes.includes(route.name)
+    }
+
     const navigateOrOpenMenu = (item) => {
 
-        if(item.children.length) {
+        if(item?.children?.length) {
 
             if(item.id == activeItem.id) {
                 activeItem.show = !activeItem.show
@@ -160,7 +165,14 @@
             return   
         }
 
-        router.push({ name: item.urlname })
+        try {
+            router.push({ name: item.urlname })
+        }
+
+        catch(e) {
+            throw e
+        }
+
     }
 
     function logout(){
