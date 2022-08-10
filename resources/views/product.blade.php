@@ -35,17 +35,27 @@
 
         @font-face {
             font-family: 'arial';
-            src: url("/fonts/Arialn.ttf") format("truetype")
+            font-style: normal;
+	        font-weight: normal;
+            src: url({{ $base_path . '/fonts/Arialn.ttf' }}) format("truetype");
         }
 
         @font-face {
             font-family: 'helvetica';
-            src: url("/fonts/Helvetica.ttf") format("truetype")
+            font-style: normal;
+	        font-weight: normal;
+            src: url({{ $base_path . '/fonts/Helvetica.ttf' }}) format("truetype");
         }
 
         @font-face {
             font-family: 'open sans';
-            src: url("/fonts/OpenSans-Regular.ttf") format("truetype")
+            font-style: normal;
+	        font-weight: normal;
+            src: url({{ $base_path . '/fonts/OpenSans-Regular.ttf' }}) format("truetype");
+        }
+
+        body, .container {
+            font-family: 'arial' !important;
         }
 
     </style>
@@ -88,11 +98,6 @@
                     z-index: 10;
                     position: absolute;
                 ">
-                    {{-- {{ $item->color }}<br>
-                    {{ $item->size }}px<br>
-                    {{ ucFirst($item->font) }}<br>
-                    {{ $item->y }}px<br>
-                    {{ $item->x }}px<br> --}}
                     {{ optional($item)->value }}
                 </span>
 

@@ -46,12 +46,20 @@ class CompagneController extends Controller
     public function generate_pdf(CampagneCategory $campagne, Request $request) 
     {
 
+        $fontDirectory = rtrim(config('app.url'), '/') . '/public/fonts';
+
         $pdf = App::make('dompdf.wrapper');
 
         $pdf->setOptions([
             'enable_php'           => true,
             'isRemoteEnabled'      => true, 
             'isHtml5ParserEnabled' => true, 
+            // 'fontDir'              => public_path('fonts'),
+            // 'fontCache'            => public_path('fonts/cache'),
+            // 'setChroot'            => public_path('fonts'),
+            'defaultFont'          => 'sans-serif',
+            'defaultMediaType'     => 'all',
+            'isFontSubsettingEnabled' => true  
         ]);
 
         $width = $campagne->widthmm * 2.83465;
@@ -70,10 +78,16 @@ class CompagneController extends Controller
             'campagneCategory' => $campagne
         );
 
+        // return view('product', [
+        //     'builder' => (new page_builder),
+        //     'data'    => $data
+        // ]);
+
         $pdf->loadView(
             'product', [
                 'builder' => (new page_builder),
-                'data'    => $data
+                'data'    => $data,
+                'base_path' => rtrim(config('app.url'), '/')
             ]
         );
 
