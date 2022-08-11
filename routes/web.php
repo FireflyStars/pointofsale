@@ -38,6 +38,7 @@ use App\Http\Controllers\MenuController;
 use App\Models\Intervention;
 use App\Models\InterventionType;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\SupplierController;
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
@@ -335,6 +336,11 @@ Route::group([
     // statistique 
     Route::post('/statistique',   [StatisticController::class,'index'])->middleware('auth')->name('get.statis');
     Route::post('/homenews',   [HomeController::class,'index'])->middleware('auth')->name('get.home.news');
+
+    // supplier
+    Route::post('/supplier/create', [ SupplierController::class, 'store' ])->middleware('auth')->name('create.supplier');
+    Route::post('/get-supplier/{id}', [ SupplierController::class, 'edit' ])->middleware('auth')->name('edit.supplier');
+    Route::post('/supplier/update/{id}', [ SupplierController::class, 'update' ])->middleware('auth')->name('update.supplier');
 });
 // Route::get('/statistique',   [StatisticController::class,'index'])->middleware('auth')->name('get.statis');
 // Outlook Agenda
@@ -345,5 +351,3 @@ Route::get('/callback', [ ActionCommercialListController::class, 'outlookSyncCal
 Route::get('{any}', function () {
     return view('welcome'); 
 })->where('any', '.*');
-
-

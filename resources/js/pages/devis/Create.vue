@@ -2025,13 +2025,6 @@ export default {
   },
 }
 </script>
-<style>
-h1{
-    vertical-align: middle;
-    line-height: 45px !important;
-    margin-left: 0 !important;
-}
-</style>
 <style lang="scss" scoped>
   /* width */
   ::-webkit-scrollbar {

@@ -144,7 +144,8 @@
 }
 .customer-icon,
 .action-icon,
-.user-icon{
+.user-icon,
+.supplier-icon{
     display: block;
     cursor: pointer;
     width: 47px;
@@ -159,6 +160,9 @@
 }
 .user-icon{
     background-image: url(../js/images/user-icon.svg);
+}
+.supplier-icon{
+    background-image: url(../js/images/supplier-icon.svg);
 }
 .installation-icon,
 .securite-icon,

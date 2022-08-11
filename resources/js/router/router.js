@@ -215,7 +215,23 @@ const router = createRouter({
             meta: {
                 authenticated: true
             },
-        },        
+        },
+        {
+            path:'/fournisseur/create',
+            name:'CreateSupplier',
+            component: () => import('../pages/Supplier/Create'),
+            meta: {
+                authenticated: true
+            }
+        },
+        {
+            path:'/fournisseur/edit/:id',
+            name:'EditSupplier',
+            component: () => import('../pages/Supplier/Edit'),
+            meta: {
+                authenticated: true
+            },
+        },
         {
             path:'/ComponentsTest',
             name:'ComponentsTest',

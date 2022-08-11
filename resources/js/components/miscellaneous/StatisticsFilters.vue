@@ -111,12 +111,12 @@
             const compareDate = `${current.getFullYear()-1}-${current.getMonth()+1}-${current.getDate()}`;
             const showfilter=ref(false);
             const customFilter=ref(false);
-            const selectedValue =ref('Today');
+            const selectedValue =ref('Last Month');
             const startDate=ref(currentDate);
             const endDate=ref(currentDate);
             
             const compareCustomFilter=ref(false);
-            const selectedCompareMode =ref('year');
+            const selectedCompareMode =ref('month');
             
             const compareStartDate=ref(compareDate);
             const compareEndDate=ref(compareDate);
