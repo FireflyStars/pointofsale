@@ -13,7 +13,9 @@ import {
     PERSONNEL_REMOVE_DOCUMENT,
     PERSONNEL_GET_DOCUMENT_URL,
     PERSONNEL_UPLOAD_DOCUMENT,
-    DELETE_PERSONNEL
+    DELETE_PERSONNEL,
+    PERSONNEL_SAVE_PERMIS_LIST,
+    PERSONNEL_GET_PERMIS_LIST
 }
 from '../types/types'
 
@@ -178,7 +180,8 @@ export const personnel = {
 
         details: {},
 
-        userDocuments: []
+        userDocuments: [],
+        userPermisList: []
 
     },
 
@@ -187,6 +190,7 @@ export const personnel = {
         loading: state => state.loading,
         details: state => state.details,
         userDocuments: state => state.userDocuments,
+        userPermisList: state => state.userPermisList,
     },
 
     mutations: {
@@ -211,11 +215,30 @@ export const personnel = {
         [SET_LOADING](state, payload) {
             state.loading.id = payload.id
             state.loading.status = payload.status
+        },
+
+        [PERSONNEL_SAVE_PERMIS_LIST](state, data) {
+            state.userPermisList = data
         }
 
     },
 
     actions: {
+
+        async [PERSONNEL_GET_PERMIS_LIST]({ state, commit }) {
+
+            if(state.userPermisList.lengh) return 
+
+            try {   
+                const { data } = await axios.get('/get-user-permis-list')
+                commit(PERSONNEL_SAVE_PERMIS_LIST, data)
+            }
+
+            catch(e) {
+                throw e
+            }
+
+        },
 
         async [GET_PERSONNEL_LIST]({ commit }, params) {
 

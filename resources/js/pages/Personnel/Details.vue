@@ -61,11 +61,11 @@
 
     </div>
 
-    <hr />
+    <hr v-if="show" />
 
     <UserDocuments :id="details.id" v-if="show" @showloader="showloader=$event.value" />
 
-    <hr />
+    <hr v-if="show" />
 
     <div class="footer-section d-flex align-items-center gap-4" v-if="show">
 
