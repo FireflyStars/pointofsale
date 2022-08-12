@@ -34,6 +34,7 @@ use App\Http\Controllers\CampagneListController;
 use App\Http\Controllers\PageElementsController;
 use App\Http\Controllers\InterventionsController;
 use App\Http\Controllers\ActionCommercialListController;
+use App\Http\Controllers\FournisseurController;
 use App\Http\Controllers\MenuController;
 use App\Models\Intervention;
 use App\Models\InterventionType;
@@ -151,6 +152,7 @@ Route::post('/remove-user-document/{document}', [UsersController::class, 'remove
 Route::post('/get-user-document-url/{document}', [UsersController::class, 'get_document_url']);
 Route::post('/upload-user-document', [UsersController::class, 'upload_user_document']);
 Route::post('/delete-user/{user}', [UsersController::class, 'delete_user']);
+Route::get('/get-user-permis-list', [UsersController::class, 'permis_list']);
 
 Route::post('/get-ouvrage-list', [OuvragesController::class, 'index']);
 Route::post('/get-ouvrage-list-installation', [OuvragesController::class, 'get_ouvrages_installation']);
@@ -196,6 +198,13 @@ Route::post('/get-paiements-list-validar', [PaiementsController::class, 'paiemen
 Route::get('/get-paiement-details/{paiement}', [PaiementsController::class, 'get_paiement_details']);
 Route::get('/get-paiement-history/{paiement}', [PaiementsController::class, 'get_history']);
 Route::post('/valider-paiement', [PaiementsController::class, 'valider_paiement']);
+
+Route::get('/get-fournisseur-list', [FournisseurController::class, 'index']);
+Route::post('/get-fournisseur-list', [FournisseurController::class, 'index']);
+Route::post('/get-fournisseur-list-mes', [FournisseurController::class, 'fournisseur_mes']);
+Route::post('/get-fournisseur-supplier-type-formatted', [FournisseurController::class, 'fournisseur_types']);
+Route::post('/get-fournisseur-supplier-status-formatted', [FournisseurController::class, 'fournisseur_status']);
+Route::post('/get-fournisseur-statuses', [FournisseurController::class, 'fournisseur_status_all']);
 
 // create action
 Route::post('/get-action-info', [ActionCommercialListController::class, 'getActionInfo'])->name('get.action.info');

@@ -7,8 +7,7 @@
             <main-header />
 
             <div 
-                class="row d-flex align-content-stretch align-items-stretch flex-row hmax main-view-wrap" 
-                style="z-index:100"
+                class="row d-flex align-content-stretch align-items-stretch flex-row hmax main-view-wrap" style="z-index:100"
             >
 
                 <side-bar />
@@ -21,8 +20,8 @@
                     <div class="col main-view container">
                         
                         <page-title 
-                            icon="pointage" 
-                            name="Pointage" 
+                            icon="fournisseur" 
+                            name="FOURNISSEUR" 
                             class="almarai_extrabold_normal_normal"
                             style="height: 45px; width: 45px;"
                         />
@@ -35,30 +34,33 @@
 
                                     <template v-slot:tout>
                                         
-                                        <item-list-table :table_def="pointages">
-                                        
-                                            <template v-slot:pointage_type_id="{ row }">
-                                                <status-tag :id="row.pointage_type_id" />
+                                        <item-list-table :table_def="fournisseurList">
+
+                                            <template v-slot:supplier_status_id="{ row }">
+
+                                                <status-tag :id="row.supplier_status_id" />   
+
                                             </template>    
+
+                                            <template v-slot:actif="{ row }">
+                                                
+                                                <span v-if="row.actif"><Icon name="check" /></span>
+                                                <span v-else><Icon name="times" /></span>
+
+                                            </template>
 
                                         </item-list-table>
                                             
                                     </template>
 
-                                    <template v-slot:mes_pointages>
+                                    <template v-slot:mes_entities>
                                         
-                                        <item-list-table :table_def="pointagesMes">
+                                        <item-list-table :table_def="fournisseurUserList" />
 
-                                            <template v-slot:pointage_type_id="{ row }">
-                                                <status-tag :id="row.pointage_type_id" />
-                                            </template>           
-
-                                        </item-list-table>
-                                            
                                     </template>
                                     
                                 </tab-pane>
-
+                            
                             </div>
                             
                         </div>
@@ -81,31 +83,48 @@
 <script setup>
 
     import { useStore } from 'vuex'
-    import { ref, computed } from 'vue'
+    import { ref, computed, onMounted } from 'vue'
     import ItemListTable from '../../components/miscellaneous/ItemListTable/ItemListTable.vue'
-    import StatusTag from '../../components/Pointage/StatusTag'
+    import StatusTag from '../../components/Fournisseur/StatusTag'
 
+    
     import {
-        POINTAGE_LIST_MODULE,
+        FOURNISSEUR_LIST_MODULE
     }
     from '../../store/types/types'
 
-    const tabs = ref({
-        tout: 'Tout',
-        mes_pointages: 'Mes Pointages'
-    })
 
     const store = useStore()
 
-    const pointages = computed(() => store.getters[`${POINTAGE_LIST_MODULE}pointages`])
-    const pointagesMes = computed(() => store.getters[`${POINTAGE_LIST_MODULE}pointagesMes`])
+    const tabs = ref({
+        tout: 'Tout',
+        mes_entities: 'Mes Entités',
+    })
+
+    const fournisseurList = computed(() => store.getters[`${FOURNISSEUR_LIST_MODULE}list`])
+    const fournisseurUserList = computed(() => store.getters[`${FOURNISSEUR_LIST_MODULE}userList`])
 
 
 </script>
 
 <style lang="scss" scoped>
-.page-title {
-    margin-left: 0 !important;
+.tag {
+    text-transform: capitalize;
+    background: #DDD;
+    border-radius: 70px;
+    text-align: center;
+    font-size: 12px;
+    height: 24px;
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 24px;
+    transition: all 0.5s ease-in;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding:0 10px;
+    width: 120px;
 }
 
 </style>

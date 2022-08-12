@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\UsersResource;
 use App\Http\Controllers\TableFiltersController;
+use App\Models\UserDocPermis;
 use App\Models\UserDocument;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -20,7 +21,8 @@ class UsersController extends Controller
         $this->middleware(['auth']);
     }
 
-    public function index(Request $request) {
+    public function index(Request $request) 
+    {
         
         $users = User::query();
 
@@ -209,10 +211,21 @@ class UsersController extends Controller
             $document->user = $document->user;
             $document->strtotime = strtotime($document->created_at);
             $document->fullpath = rtrim(config('app.url'), '/') . '/storage' . '/' . $document->file_path;
+            $document->userPermis = $document->userPermis;
             $user_documents[] = $document;
         }
 
         return response()->json($user_documents); 
+
+    }
+
+    public function permis_list() 
+    {
+        
+        return response()->json(
+            UserDocPermis::select('id as value', 'name as display')
+            ->get()
+        );
 
     }
 
@@ -221,6 +234,8 @@ class UsersController extends Controller
     {
 
         $document->delete();
+
+        return response()->noContent();
 
     }
 
@@ -247,11 +262,14 @@ class UsersController extends Controller
 
         $user = User::find($request->userId);
 
+        $user_permis = UserDocPermis::find($request->name);
+
         $document = new UserDocument;
         
         $document->user_id = $user->id;
         $document->human_readable_filename = $file->getClientOriginalName();
-        $document->name = $request->name;
+        $document->user_doc_permi_id = $user_permis->id;
+        $document->name = $user_permis->name;
         $document->expires = $request->dateExpired;
         $document->dateofdocument = $request->dateDocument;
         $uuid_filename = DB::select('select UUID() AS uuid')[0]->uuid;

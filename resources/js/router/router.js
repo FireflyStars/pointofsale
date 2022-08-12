@@ -69,6 +69,27 @@ const router = createRouter({
         },
 
         {
+            path: '/fournisseur',
+            name: 'fournisseur',
+            props: true,
+            component: () => import('../pages/Fournisseur/Index'),
+            meta: {
+                authenticated: true
+            },
+            children: [
+                {
+                    path: '/fournisseur/details/:id',
+                    name: 'fournisseur-details',
+                    props: true,
+                    component: () => import('../pages/Fournisseur/Details'),
+                    meta: {
+                        authenticated: true
+                    }
+                }
+            ]
+        },
+
+        {
             path: '/articles',
             name: 'articles',
             component: () => import('../pages/Articles/Index.vue'),

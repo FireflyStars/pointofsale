@@ -33,7 +33,7 @@
                 <div 
                     class="col-4 documentline almarai_bold_normal font-14 d-flex align-items-center" 
                 >
-                    {{ document.name }}
+                    {{ document?.userPermis?.name }}
                 </div>
                 <div 
                     class="col-3 almarai-light d-flex font-14 align-items-center justify-content-center">
@@ -79,7 +79,7 @@
 
   </mini-panel>
 
-  <simple-modal-popup 
+    <simple-modal-popup 
         v-model="modal.show" 
         :title="modal.title" 
         confirmButtonTitle="Validé" 
@@ -93,7 +93,13 @@
                 <div class="col">
                     <div class="form-group">
                         <label for="nom" class="text-gray font-16 almarai-bold">Nom</label>
-                        <input type="text" id="nom" class="form-control" v-model="document.name">
+                        <select-box
+                            v-model="document.name" 
+                            :options="userPermisList" 
+                            name="userPermisList" 
+                            :disabled="!userPermisList.length"
+                            placeholder="Select Permis"
+                        />
                     </div>
                 </div>
                 
@@ -117,7 +123,9 @@
 
                 <div class="col">
                     <div class="form-group">
-                        <a href="#" class="link-upload text-gray font-16 almarai-bold" @click.prevent="addfile">Téléchargement le document en pdf</a>
+                        <a href="#" class="link-upload text-gray font-16 almarai-bold" @click.prevent="addfile">
+                            Téléchargement le document en pdf
+                        </a>
                     </div>
                 </div>
 
@@ -165,7 +173,8 @@ import {
     PERSONNEL_SET_USER_DOCUMENTS,
     PERSONNEL_UNSET_ORDER_DOCUMENT,
     PERSONNEL_REMOVE_DOCUMENT,
-    PERSONNEL_GET_DOCUMENT_URL
+    PERSONNEL_GET_DOCUMENT_URL,
+    PERSONNEL_GET_PERMIS_LIST
 } 
 from '../../store/types/types'
 
@@ -189,11 +198,14 @@ const pdfModal = ref(null)
             
 const documents = computed(() => store.getters[`${PERSONNEL_LIST_MODULE}userDocuments`])
 const loading = computed(() => store.getters[`${PERSONNEL_LIST_MODULE}loading`])
+const userPermisList = computed(() => store.getters[`${PERSONNEL_LIST_MODULE}userPermisList`])
+
+
 const disabledToDate = computed(() => new Date(new Date().getTime() - 24*60*60*1000).toJSON().slice(0,10))
 const fileUploadEl = ref(null)
 
 const document = reactive({
-    name: null,
+    name: 0,
     dateExpired: null,
     dateDocument: null,
 })
@@ -217,9 +229,15 @@ const editReport = (document) => {
 
 const addDocument = async () => {
 
+    getUserDocuments()
+
     modal.show = true
     modal.title = 'Ajout permis / Certification'
 
+}
+
+const getUserDocuments = () => {
+    store.dispatch(`${PERSONNEL_LIST_MODULE}${PERSONNEL_GET_PERMIS_LIST}`)
 }
 
 const removeReport = async (document) => {
@@ -328,7 +346,7 @@ const fileElUpdated = () => {
         return
     }
 
-    if(document.name == null || typeof document.name == 'undefined' || document.name == '') {
+    if(document.name == 0 || typeof document.name == 'undefined' || document.name == '') {
         
         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
             type: 'danger',
@@ -377,7 +395,7 @@ const fileElUpdated = () => {
             store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`)
 
             modal.show = false
-            document.name = null
+            document.name = 0
             document.dateExpired = null
             document.dateDocument = null
             fileUploadEl.value = null
