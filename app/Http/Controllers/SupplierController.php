@@ -36,7 +36,7 @@ class SupplierController extends Controller
             $supplier['email'] = $request->email;
             $supplier['comment'] = $request->comment;
     
-            $supplierId = DB::table('supplier')->insertGetId($supplier);
+            $supplierId = DB::table('suppliers')->insertGetId($supplier);
             return response()->json([
                 'success'   => true,
                 'id'        => $supplierId,
@@ -48,12 +48,12 @@ class SupplierController extends Controller
      * Get a supplier
      */
     public function edit(Request $request, $supplierId){
-        $supplier = DB::table('supplier')
+        $supplier = DB::table('suppliers')
                     ->where('id', $supplierId)
                     ->select( 'id', 'supplier_type_id as type', 'supplier_status_id as status', 'contactname as contact',
                     'name as nom', 'actif as active', 'phone as phoneNumber', 'email', 'comment',
-                    DB::raw('DATE_FORMAT(created_at, "%M/%d/%Y") as created'),
-                    DB::raw('DATE_FORMAT(updated_at, "%M/%d/%Y") as updated'),
+                    DB::raw('DATE_FORMAT(created_at, "%m/%d/%Y") as created'),
+                    DB::raw('DATE_FORMAT(updated_at, "%m/%d/%Y") as updated'),
                      )
                     ->first();
         return response()->json([
@@ -91,7 +91,7 @@ class SupplierController extends Controller
             $supplier['phone'] = $request->phoneNumber !='' ? $request->phoneCode.'|'.$request->phoneNumber : '';
             $supplier['email'] = $request->email;
             $supplier['comment'] = $request->comment;
-            DB::table('supplier')->where('id', $supplierId)->update($supplier);
+            DB::table('suppliers')->where('id', $supplierId)->update($supplier);
             return response()->json([
                 'success'   => true
             ]);

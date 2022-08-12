@@ -91,7 +91,7 @@
                                     <input type="text" v-model="supplier.nomNaf" class="form-control" readonly>                                    
                                 </div>
                             </div>                                           
-                            <div class="d-flex mt-3">
+                            <div class="d-flex mt-3 px-2">
                                 <div class="col-8">
                                     <div class="form-group">
                                         <label class="text-nowrap">NOTES / INFORMATIONS / COMMENTAIRES</label>
@@ -113,7 +113,7 @@
   </router-view>
 </template>
 <script>
-import { ref, onMounted, watchEffect } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import SelectBox from '../../components/miscellaneous/SelectBox';
 import CheckBox from '../../components/miscellaneous/CheckBox';
 import { phoneCountryCode as phoneCodes } from '../../static/PhoneCountryCodes';

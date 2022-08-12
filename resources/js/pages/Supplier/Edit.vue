@@ -105,7 +105,7 @@
                                     <input type="text" v-model="supplier.nomNaf" class="form-control" readonly>                                    
                                 </div>
                             </div>                                           
-                            <div class="d-flex mt-3">
+                            <div class="d-flex mt-3 px-2">
                                 <div class="col-8">
                                     <div class="form-group">
                                         <label class="text-nowrap">NOTES / INFORMATIONS / COMMENTAIRES</label>
@@ -127,7 +127,7 @@
   </router-view>
 </template>
 <script>
-import { ref, onMounted, watchEffect } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import SelectBox from '../../components/miscellaneous/SelectBox';
 import CheckBox from '../../components/miscellaneous/CheckBox';
 import { phoneCountryCode as phoneCodes } from '../../static/PhoneCountryCodes';
@@ -237,6 +237,11 @@ export default {
                 let phone = formatPhone(supplier.value.phoneNumber);
                 supplier.value.phoneCode = phone[0];
                 supplier.value.phoneNumber = phone[1];
+                if(supplier.value.active){
+                    supplier.value.active = true;
+                }else{
+                    supplier.value.active = false;
+                }
                 supplierStatus.value = res.data.status;
                 supplierType.value = res.data.type;
                 customerNafs.value = res.data.nafs;
@@ -287,7 +292,7 @@ export default {
             }
         }       
         watch(() => supplier.value.naf, (curVal, preVal)=>{
-            var selectedNaf = customerNafs.filter((item)=>{
+            var selectedNaf = customerNafs.value.filter((item)=>{
                 return item.code == curVal;
             })[0];
 
