@@ -8,7 +8,7 @@
             <div class="col main-view container">
                 <h1 class="d-flex align-items-center m-0">
                   <span class="supplier-icon"></span>
-                  <span class="ms-3 font-22 almarai_extrabold_normal_normal">CREATION FOURNISSEUR</span>
+                  <span class="ms-3 font-22 almarai_extrabold_normal_normal">EDITION FOURNISSEUR</span>
                 </h1>
                 <transition name="list" appear>
                     <div class="cust-page-content client-detail m-auto pt-5">
@@ -21,6 +21,20 @@
                                     <CheckBox v-model="supplier.active" :checked="supplier.active" :title="'ACTIF'"></CheckBox>
                                 </div>
                             </div>
+                            <div class="d-flex mt-3">
+                                <div class="col-3">
+                                    <p class="m-0 mulish-light font-14 text-gray">N {{ supplier.id }}</p>
+                                </div>
+                                <div class="col-9 d-flex px-2">
+                                    <div class="col-4">
+                                    </div>
+                                    <div class="col-4"></div>
+                                    <div class="col-4">
+                                        <p class="m-0 mulish-light font-14 text-gray text-nowrap">Date Création : {{ supplier.created }}</p>
+                                        <p class="m-0 mulish-light font-14 text-gray text-nowrap">Date Modification : {{ supplier.updated }}</p>
+                                    </div>
+                                </div>
+                            </div>                            
                             <div class="d-flex mt-3">
                                 <div class="col-4 px-2">
                                     <label class="mulish-medium font-16">NOM *</label>
@@ -145,6 +159,7 @@ export default {
         const route    = useRoute();
         const supplierStatus= ref([]);
         const supplierType  = ref([]);
+        const customerNafs  = ref([]);
         const supplier = ref({
             nom: '',
             contact: '',
@@ -158,7 +173,7 @@ export default {
             nomNaf: '',
             comment: '',
             active: true,
-            siretValidation: true,
+            siretValidation: false,
         });
         const cancel = ()=>{
 
@@ -217,12 +232,28 @@ export default {
             }
         }
         onMounted(()=>{
-            axios.post('/get-supplier/'+ route.params.id).then((res)=>{
-                supplier.value = res.data
+            axios.post('/get-supplier/' + route.params.id).then((res)=>{
+                supplier.value = res.data.supplier;
+                let phone = formatPhone(supplier.value.phoneNumber);
+                supplier.value.phoneCode = phone[0];
+                supplier.value.phoneNumber = phone[1];
+                supplierStatus.value = res.data.status;
+                supplierType.value = res.data.type;
+                customerNafs.value = res.data.nafs;
             }).catch((error)=>{
                 console.log(error);
             })
         })
+        const formatPhone = (phoneNumber)=>{
+            if(phoneNumber == null){
+                return ['+33', ''];
+            }
+            if(phoneNumber.split('|').length == 1){
+                return ['+33', phoneNumber];
+            }else{
+                return phoneNumber.split('|');
+            }
+        }        
         const phoneCodesSorted = [...new Map(phoneCodes.map(item =>
             [item.value, item])).values()].sort((a, b)=>{
             return parseInt(a.value.replace(/\D/g, '')) - parseInt(b.value.replace(/\D/g, ''));

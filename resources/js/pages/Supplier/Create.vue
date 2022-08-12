@@ -144,6 +144,7 @@ export default {
         const router    = useRouter();
         const supplierStatus= ref([]);
         const supplierType  = ref([]);
+        const customerNafs  = ref([]);
         const supplier = ref({
             nom: '',
             contact: '',
@@ -217,8 +218,9 @@ export default {
         }
         onMounted(()=>{
             axios.post('/get-supplier-status-type').then((res)=>{
-                supplierStatus.value = res.data.supplierStatus;
-                supplierType.value = res.data.supplierType;
+                supplierStatus.value = res.data.status;
+                supplierType.value = res.data.type;
+                customerNafs.value = res.data.nafs;
             }).catch((error)=>{
                 console.log(error);
             })

@@ -7,7 +7,7 @@
         <div class="col main-view container">
           <div class="d-flex">
             <div class="col-6">
-              <page-title icon="star" name="Nouveau Devis" class="almarai_extrabold_normal_normal"/>
+              <page-title icon="star" name="Nouveau Devis" class="almarai_extrabold_normal_normal m-0"/>
             </div>
             <div class="col-6 d-flex" v-if="devisCreateStep == 'create_devis'">
               <button class="btn btn-save me-3 text-white" @click="storeDevis">Sauvegarder</button>

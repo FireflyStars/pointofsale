@@ -341,6 +341,7 @@ Route::group([
     Route::post('/supplier/create', [ SupplierController::class, 'store' ])->middleware('auth')->name('create.supplier');
     Route::post('/get-supplier/{id}', [ SupplierController::class, 'edit' ])->middleware('auth')->name('edit.supplier');
     Route::post('/supplier/update/{id}', [ SupplierController::class, 'update' ])->middleware('auth')->name('update.supplier');
+    Route::post('/get-supplier-status-type', [ SupplierController::class, 'getSupplierStatusType' ])->middleware('auth')->name('get.supplier.status.type');
 });
 // Route::get('/statistique',   [StatisticController::class,'index'])->middleware('auth')->name('get.statis');
 // Outlook Agenda
