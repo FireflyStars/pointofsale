@@ -2,14 +2,9 @@
 import axios from 'axios'
 import {
     SET_LOADING,
-    FOURNISSEUR_LIST_MODULE,
-    FOURNISSEUR_GET_LIST,
-    FOURNISSEUR_GET_DETAILS,
-    FOURNISSEUR_SAVE_DETAILS,
-    FOURNISSEUR_GET_LIST_MES,
-    RESET_DETAILS,
-    FOURNISSEUR_APPEND_RESULTS,
-    FOURNISSEUR_SAVE_RESULTS
+    PERMIS_LIST_MODULE,
+    PERMIS_GET_LIST,
+    PERMIS_GET_DETAILS
 }
 from '../types/types'
 
@@ -218,48 +213,6 @@ export const fournisseur = {
 
         },
 
-        table_def_mes: {
-
-            column_filters: [],//required empty array
-            store: {
-              MODULE: FOURNISSEUR_LIST_MODULE,//required
-              INIT: FOURNISSEUR_GET_LIST_MES,//required
-            },
-            batch_actions: {
-                delete: {
-                    name: "Delete",
-                    route: "DeleteFournisseur",
-                    type: 'button'
-                },
-                status: {
-                    type: "component"
-                }
-
-            },
-            translations: {
-              group_item: 'Fournisseur',
-              group_items: 'Fournisseur',
-              footer_item: 'ITEM',
-              footer_items: 'ITEMS',
-              no_batch_action: "Aucune action par lot n'est disponible.",
-            },
-            highlight_row: {
-                  where: [
-                    // { col: 'id', value: 10 }, example
-                  ], 
-                  backgroundColor: '#f7c5af',
-                  color: '#fd3b35'
-                }
-            ,
-            item_route_name: "fournisseur-details",// the route to trigger when a line is click 
-            max_per_page: 10,//required          
-            identifier: "fournisseur_list_mes",//required
-            filter: true,// required boolean
-            rearrange_columns: true,// required boolean
-            columns_def
-
-        },
-
         loading: {
             id: null,
             status: false,
@@ -271,9 +224,7 @@ export const fournisseur = {
 
     getters: {
         list: state => state.table_def,
-        userList: state => state.table_def_mes,
         loading: state => state.loading,
-        details: state => state.details,
     },
 
     mutations: {
@@ -287,14 +238,6 @@ export const fournisseur = {
             state.loading.status = payload.status
         },
 
-        [FOURNISSEUR_SAVE_DETAILS](state, data) {
-            state.details = data
-        },
-
-        [FOURNISSEUR_SAVE_RESULTS](state, data) {
-            state.details.orders = data
-        }
-
     },
 
     actions: {
@@ -303,57 +246,15 @@ export const fournisseur = {
         async [FOURNISSEUR_GET_LIST]({ commit }, params) {
 
 
-            return axios.post(`/get-fournisseur-list`, params).then((response) => {
+            return axios.post(`/get-permis-list`, params).then((response) => {
                 return Promise.resolve(response)
                       
             }).catch((error)=>{
                 return  Promise.resolve(error)
             })
 
-
-        },
-
-        async [FOURNISSEUR_GET_LIST_MES]({ commit }, params) {
-
-
-            return axios.post(`/get-fournisseur-list-mes`, params).then((response) => {
-                return Promise.resolve(response)
-                      
-            }).catch((error)=>{
-                return  Promise.resolve(error)
-            })
-
-
-        },
-
-        async [FOURNISSEUR_GET_DETAILS]({ commit }, id) {
-
-            try {
-                const { data } = await axios.get(`/get-fournisseur-details/${id}`)
-                commit(FOURNISSEUR_SAVE_DETAILS, data)
-            }
-
-            catch(e) {
-                throw e
-            }
-
-        },
-
-        async [FOURNISSEUR_APPEND_RESULTS]({ commit }, data) {
-            
-            const { id, type } = data
-
-            try {
-                const { data } = await axios.get(`/get-fournisseur-history/${id}`)
-                commit(FOURNISSEUR_SAVE_RESULTS, data)
-            }
-
-            catch(e) {
-                throw e
-            }
 
         }
-
        
 
     }

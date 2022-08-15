@@ -9,6 +9,7 @@
         <div 
             class="popup-inner" 
             :class="['popup-inner' + sizeClasses, classes]"
+            :style="$attrs.style"
         >
             <div 
                 class="popup-content p-5" 

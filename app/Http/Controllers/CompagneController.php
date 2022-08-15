@@ -46,8 +46,6 @@ class CompagneController extends Controller
     public function generate_pdf(CampagneCategory $campagne, Request $request) 
     {
 
-        $fontDirectory = rtrim(config('app.url'), '/') . '/public/fonts';
-
         $pdf = App::make('dompdf.wrapper');
 
         $pdf->setOptions([
@@ -77,11 +75,6 @@ class CompagneController extends Controller
             'image'            => $campagne->urlimageflyerpage1,
             'campagneCategory' => $campagne
         );
-
-        // return view('product', [
-        //     'builder' => (new page_builder),
-        //     'data'    => $data
-        // ]);
 
         $pdf->loadView(
             'product', [
@@ -459,8 +452,9 @@ class CompagneController extends Controller
 
         $pdf->loadView(
             'product', [
-                'builder' => (new page_builder),
-                'data'    => $data
+                'builder'   => (new page_builder),
+                'data'      => $data,
+                'base_path' => rtrim(config('app.url'), '/')
             ]
         );
 

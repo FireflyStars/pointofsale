@@ -90,6 +90,27 @@ const router = createRouter({
         },
 
         {
+            path: '/permis',
+            name: 'permis',
+            props: true,
+            component: () => import('../pages/Permis/Index'),
+            meta: {
+                authenticated: true
+            },
+            children: [
+                {
+                    path: '/permis/details/:id',
+                    name: 'permis-details',
+                    props: true,
+                    component: () => import('../pages/Permis/Details'),
+                    meta: {
+                        authenticated: true
+                    }
+                }
+            ]
+        },
+
+        {
             path: '/articles',
             name: 'articles',
             component: () => import('../pages/Articles/Index.vue'),

@@ -73,6 +73,11 @@ import {
     BUILDER_MODULE, 
     SAVE_REPORT_PAGES,
     SAVE_REPORT_TEMPLATE,
+    LOADER_MODULE,
+    DISPLAY_LOADER,
+    HIDE_LOADER,
+    TOASTER_MODULE,
+    TOASTER_MESSAGE,
 } from '../../store/types/types'
 
 import adjouterZone from '../../components/reports/adjouter-zone'
@@ -142,10 +147,32 @@ export default {
             })
 
             if (name) {
-                store.dispatch(`${[BUILDER_MODULE]}/${[SAVE_REPORT_TEMPLATE]}`, {
-                    pages,
-                    name
-                })
+                try {
+                    store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [
+                        true,
+                        "Sauvegarde template en cours..",
+                    ])
+                    await store.dispatch(`${[BUILDER_MODULE]}/${[SAVE_REPORT_TEMPLATE]}`, {
+                        pages,
+                        name
+                    })
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'success',
+                        message: 'Template Saved',
+                        ttl: 5,
+                    })
+                }
+                catch(e) {
+                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        type: 'danger',
+                        message: 'Something went wrong',
+                        ttl: 5,
+                    })
+                    throw e
+                }
+                finally {
+                    store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`)
+                }
             }
 
         }

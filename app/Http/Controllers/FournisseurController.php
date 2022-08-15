@@ -9,6 +9,7 @@ use App\Models\SupplierOrder;
 use App\Models\SupplierStatus;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\TableFiltersController;
+use App\Http\Resources\SupplierResource;
 
 class FournisseurController extends Controller
 {
@@ -105,5 +106,20 @@ class FournisseurController extends Controller
             SupplierStatus::all()
         );
     }
+
+    public function fournisseur_details(Supplier $supplier) 
+    {
+        return response()->json(
+            new SupplierResource($supplier)
+        );
+    }
+
+    public function fournisseur_history(Supplier $supplier) 
+    {
+        return response()->json(
+            $supplier
+        );
+    }
+
 
 }
