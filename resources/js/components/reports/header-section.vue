@@ -39,6 +39,39 @@
             />
         </div>
 
+        <div class="d-flex gap-2" v-if="!(fetching && loading)">
+            <BaseButton 
+                title=""
+                htmlTitle="Previous"
+                size="sm"
+                style="gap: 0;"
+                :disabled="activePage == 0"
+                @click.prevent="decrementPage"
+                :class="{ 'disabled': activePage == 0 }"
+            >
+                <Icon 
+                    name="page-angle-left" 
+                    width="16" 
+                    height="16"
+                />
+            </BaseButton>
+            <BaseButton 
+                title=""
+                htmlTitle="Next"
+                style="gap: 0;"
+                size="sm"
+                :disabled="activePage == pages.length - 1"
+                @click.prevent="incrementPage"
+                :class="{ 'disabled': activePage == pages.length - 1 }"
+            >
+                <Icon 
+                    name="page-angle-right" 
+                    width="16" 
+                    height="16"
+                />
+            </BaseButton>
+        </div>
+
         <div class="d-flex align-items-center">
             
             <div>
@@ -172,6 +205,16 @@ export default {
             return 'Page ' + pageValue
         })
 
+        const incrementPage = () => {
+            if(activePage.value == pages.value.length - 1) return
+            activePage.value = +activePage.value + 1
+        }
+
+        const decrementPage = () => {
+            if(activePage.value == 0) return
+            activePage.value = activePage.value - 1
+        }
+
         const formattedPages = computed(() => {
             return pages.value.map((_, index) => {
                 const pageValue = +index + 1
@@ -240,6 +283,8 @@ export default {
             activeTemplate,
             formattedPages,
             formattedTemplates,
+            incrementPage,
+            decrementPage,
             assignTemplateToActivePage
         }
     }
@@ -247,6 +292,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.disabled {
+    background: #d9d4d4a3 !important;
+}
 
 .tile_h1 {
     font-family: 'Almarai Bold';
