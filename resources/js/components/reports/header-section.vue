@@ -109,7 +109,9 @@
                     :disabled="fetching"
                     :styles="{
                         background: '#C4C4C4',
-                        color: '#000'
+                        color: '#000',
+                        width: '115px',
+                        height: '40px'
                     }"
                     :selectStyles="{ 
                         maxHeight: '10rem', 
