@@ -16,13 +16,19 @@
                                     <div class="mt-3 action-commercial px-3">
                                         <h4 class="font-16 mulish_normal_600">Mes actions commerciales</h4>
                                         <div class="mt-3 bg-dark-gray rounded-3 p-3">
-                                            actions
+                                            <div class="d-flex justify-content-between mt-2" v-for="(event, index) in events" :key="index">
+                                                <div class="col-4">{{ event.status }}</div>
+                                                <div class="col-4 text-end">{{ event.countOfEvent }}</div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="mt-3 marketing px-3">
                                         <h4 class="font-16 mulish_normal_600">Marketing</h4>
                                         <div class="mt-3 bg-dark-gray rounded-3 p-3">
-                                            Marketing
+                                            <div class="d-flex justify-content-between mt-2" v-for="(camp, index) in campagne" :key="index">
+                                                <div class="col-4">{{ camp.name }}</div>
+                                                <div class="col-4 text-end">{{ camp.date }}</div>
+                                            </div>
                                         </div>
                                     </div>                                    
                                 </div>

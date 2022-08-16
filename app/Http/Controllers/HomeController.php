@@ -97,7 +97,7 @@ class HomeController extends Controller
                     ->whereBetween('datelancement', $this_week)
                     ->select(
                         'name', 
-                        DB::raw('DATE_FORMAT(datelancement, "%d/%m/%y")')
+                        DB::raw('DATE_FORMAT(datelancement, "%d/%m/%y") as date')
                     )->get();
         return response()->json([
             'content'           =>DB::table('homenews')->where('affiliat_id', auth()->user()->affiliate_id)->value('code'),
