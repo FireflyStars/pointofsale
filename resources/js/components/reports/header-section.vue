@@ -134,6 +134,7 @@ import { useStore } from 'vuex'
 import useModal from '../../composables/useModal'
 import { computed, watch, inject } from 'vue'
 import backgroundsModal from './backgrounds-modal'
+import useKeystrokes from '../../composables/useKeystrokes'
 
 import { 
     BUILDER_MODULE,
@@ -264,6 +265,11 @@ export default {
         watch(activeTemplate, (value) => {
             if(value) assignTemplateToActivePage(value)
         })
+
+        useKeystrokes([
+            { key: 'ArrowLeft', fn: decrementPage },
+            { key: 'ArrowRight', fn: incrementPage },
+        ])
         
         return {
             save,
