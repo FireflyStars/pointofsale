@@ -289,33 +289,51 @@ class UsersController extends Controller
      * Get permis by users
      */
     public function getPermisByUser(){
-        // $permis = UserDocPermis::select('id', 'name')->get();
-        // $users = User::where('user_status_id', 1)->select('id', 'name')->get();
-        $documents = UserDocument::leftJoin('users', 'users.id', '=', 'user_documents.user_id')
-                    ->join('user_doc_permis', 'user_doc_permis.id', '=', 'user_documents.user_doc_permi_id')
-                    ->select(
-                        'users.id as userId','users.name as userName', 'user_doc_permis.id as permisId', 
-                        'user_documents.expires as exp'
-                    )->get();
-        foreach ($documents as $document) {
-            $now = Carbon::now();
-            $exp_date = Carbon::parse($document->exp);
-            $diff = $now->diffInMonths($exp_date);
-            $document->diff = $diff;
-            if($diff >= 3 && $exp_date->gt($now)){
-                $document->bgColor = 'green';
+        $permis = UserDocPermis::select('id', 'name')->get();
+        $users = User::where('user_status_id', 1)->select('id', 'name')->get();
+        $data = [];
+        foreach ($users as $user) {
+            $user_permis = [];
+            foreach ($permis as $item) {
+                $user_permis[$item->id] = 
+                $user_doc = UserDocument::where('user_id', $user->id)->where('user_doc_permi_id', $item->id)->first();
+                if($user_doc){
+                    $bgColor = '';
+                    $color = '';
+                    $now = Carbon::now();
+                    $exp_date = Carbon::parse($user_doc->expires);
+                    $diff = $now->diffInMonths($exp_date);
+                    if($diff >= 3 && $exp_date->isAfter($now)){
+                        $bgColor = 'rgba(66, 167, 30, 0.2)';
+                        $color = '#42A71E';
+                    }else if($diff < 3 && $exp_date->isAfter($now)){
+                        $bgColor = 'rgba(241, 210, 164, 0.7)';
+                        $color = '#000000';
+                    }else if( $exp_date->isBefore($now) ){
+                        $bgColor = 'rgba(255, 0, 0, 0.7)';
+                        $color = '#000000';
+                    }                    
+                    $user_permis[$item->id] = [
+                        'expDate'   =>  Carbon::parse($user_doc->expires)->format('d/m/Y'),
+                        'bgColor'   =>  $bgColor,
+                        'color'     =>  $color
+                    ];
+                }else{
+                    $user_permis[$item->id] = [
+                        'expDate'   =>  '--',
+                        'bgColor'   =>  '#E0E0E0',
+                        'color'     =>  '#000000'
+                    ];
+                }
             }
-            if($diff < 3 && $exp_date->gt($now)){
-                $document->bgColor = 'orange';
-            }
-            if( $exp_date->lt($now) ){
-                $document->bgColor = 'red';
-            }
+            $data[$user->id] = [
+                'name'  => $user->name,
+                'permis'=>  $user_permis
+            ];
         }
         return response()->json([
-            // 'users' =>$users,
-            // 'permis'=>$permis,
-            'documents'=>$documents,
+            'permis'=>  $permis,
+            'matrixData'  =>  $data,
         ]);
     }
 }

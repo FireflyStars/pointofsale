@@ -145,7 +145,8 @@
 .customer-icon,
 .action-icon,
 .user-icon,
-.supplier-icon{
+.supplier-icon,
+.matrice-icon{
     display: block;
     cursor: pointer;
     width: 47px;
@@ -163,6 +164,9 @@
 }
 .supplier-icon{
     background-image: url(../js/images/supplier-icon.svg);
+}
+.matrice-icon{
+    background-image: url(../js/images/matrice-icon.svg);
 }
 .installation-icon,
 .securite-icon,
