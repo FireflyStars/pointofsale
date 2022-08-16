@@ -20,8 +20,8 @@
                     <div class="col main-view container">
                         
                         <page-title 
-                            icon="fournisseur" 
-                            name="FOURNISSEUR" 
+                            icon="permis" 
+                            name="PERMIS" 
                             class="almarai_extrabold_normal_normal"
                             style="height: 45px; width: 45px;"
                         />
@@ -34,7 +34,7 @@
 
                                     <template v-slot:tout>
                                         
-                                        <item-list-table :table_def="fournisseurList">
+                                        <item-list-table :table_def="permisList">
 
                                             <template v-slot:supplier_status_id="{ row }">
 
@@ -42,23 +42,10 @@
 
                                             </template>    
 
-                                            <template v-slot:actif="{ row }">
-                                                
-                                                <span v-if="row.actif"><Icon name="check" /></span>
-                                                <span v-else><Icon name="times" /></span>
-
-                                            </template>
-
                                         </item-list-table>
                                             
                                     </template>
 
-                                    <template v-slot:mes_fournisseur>
-                                        
-                                        <item-list-table :table_def="fournisseurUserList" />
-
-                                    </template>
-                                    
                                 </tab-pane>
                             
                             </div>
@@ -86,23 +73,19 @@
     import { ref, computed, onMounted } from 'vue'
     import ItemListTable from '../../components/miscellaneous/ItemListTable/ItemListTable.vue'
     import StatusTag from '../../components/Fournisseur/StatusTag'
-
     
     import {
-        FOURNISSEUR_LIST_MODULE
+        PERMIS_LIST_MODULE
     }
     from '../../store/types/types'
-
 
     const store = useStore()
 
     const tabs = ref({
         tout: 'Tout',
-        mes_fournisseur: 'Mes Fournisseur',
     })
 
-    const fournisseurList = computed(() => store.getters[`${FOURNISSEUR_LIST_MODULE}list`])
-    const fournisseurUserList = computed(() => store.getters[`${FOURNISSEUR_LIST_MODULE}userList`])
+    const permisList = computed(() => store.getters[`${PERMIS_LIST_MODULE}list`])
 
 
 </script>

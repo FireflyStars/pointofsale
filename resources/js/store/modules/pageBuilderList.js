@@ -21,7 +21,7 @@ export const pageBuilderList = {
             batch_actions: {
                 delete: {
                     name: "Delete",
-                    route: "DeleteDevis",
+                    route: "DeleteTemplate",
                     type: 'button'
                 },
                 status: {
@@ -30,8 +30,8 @@ export const pageBuilderList = {
 
             },
             translations: {
-              group_item: 'devis',
-              group_items: 'devis',
+              group_item: 'Template',
+              group_items: 'Template',
               footer_item: 'ITEM',
               footer_items: 'ITEMS',
               no_batch_action: "Aucune action par lot n'est disponible.",

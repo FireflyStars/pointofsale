@@ -205,6 +205,10 @@ Route::post('/get-fournisseur-list-mes', [FournisseurController::class, 'fournis
 Route::post('/get-fournisseur-supplier-type-formatted', [FournisseurController::class, 'fournisseur_types']);
 Route::post('/get-fournisseur-supplier-status-formatted', [FournisseurController::class, 'fournisseur_status']);
 Route::post('/get-fournisseur-statuses', [FournisseurController::class, 'fournisseur_status_all']);
+Route::get('/get-fournisseur-details/{supplier}', [FournisseurController::class, 'fournisseur_details']);
+Route::get('/get-fournisseur-history/{supplier}', [FournisseurController::class, 'fournisseur_history']);
+
+// Route::get('/get-permis-list', [PermisController::class, ]);
 
 // create action
 Route::post('/get-action-info', [ActionCommercialListController::class, 'getActionInfo'])->name('get.action.info');

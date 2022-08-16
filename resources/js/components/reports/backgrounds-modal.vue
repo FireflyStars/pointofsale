@@ -1,48 +1,62 @@
 <template>
     <Modal 
         id="change-fond"
-        size="md"
+        size="lg"
+        style="margin-top: 3rem;"
     >
         <div>
-            <h4 class="d-flex align-items-center gap-3">
-                <Icon name="report" width="32" height="32" />
-                Change Fond
-            </h4>
+            
+            <div class="d-flex align-items-center gap-5">
+                
+                <h4 class="d-flex align-items-center gap-3">
+                    <Icon name="report" width="32" height="32" />
+                    Change Fond
+                </h4>
+                
+                <BaseButton 
+                    title="Votre Image"
+                    @click="promptImage(true)"
+                />
+            
+            </div>
+
             <div class="mt-3"> 
 
                 <div class="background-container">
 
-                    <div class="left">
-                        <BaseButton 
-                            title="Votre Image"
-                            @click="promptImage(true)"
-                        />
-                    </div>
-
                     <div class="right">
-                        
-                        <div class="background-boxes">
+
+                        <div class="background-boxes mt-4">
                             <div 
-                                v-for="template in reportTemplates"
-                                :key="template"
+                                v-for="reportTemplate in reportTemplates"
+                                :key="reportTemplate"
                             >
 
                                 <div 
-                                    class="background-box"
-                                    :class="{ 'background-box--active': isActivePageBackground(template) }"
-                                    @click.prevent="generateElement('background', {
-                                        filename: `/images/${template}`,
-                                        classes: 'page-background',
-                                        image: `/images/${template}`
-                                    })"
+                                    v-for="template in reportTemplate" 
+                                    :key="template"
                                 >
-                                    <img 
-                                        :src="`/images/${template}`" 
-                                        alt="Report Template"
+
+                                    <div 
+                                        class="background-box"
+                                        :class="{ 'background-box--active': isActivePageBackground(template) }"
+                                        @click.prevent="generateElement('background', {
+                                            filename: `/images/${template}`,
+                                            classes: 'page-background',
+                                            image: `/images/${template}`
+                                        })"
                                     >
+                                        <img 
+                                            :src="`/images/${template}`" 
+                                            alt="Report Template"
+                                        >
+                                    </div>
+                                
                                 </div>
+
                             </div>
                         </div>
+
 
                     </div>
 
@@ -66,7 +80,7 @@
 
 </template>
 
-<script>
+<script setup>
 
 import { useStore } from 'vuex'
 import { computed, inject } from 'vue'
@@ -75,53 +89,118 @@ import {
     BUILDER_MODULE,
 } from '../../store/types/types'
 
-export default {
-    
-    setup () {
         
-        const store = useStore()
-        const generateElement = inject('generateElement')
-        const promptImage = inject('promptImage')
+const store = useStore()
+const generateElement = inject('generateElement')
+const promptImage = inject('promptImage')
 
-        const { toggleModal } = useModal()
-        
-        const page = computed(() => store.getters[`${BUILDER_MODULE}/page`])
+const { toggleModal } = useModal()
 
-        const reportTemplates = computed(() => {
-            return [
-                'page0.jpg',
-                'page1.jpg',
-                'page2.jpg',
-                'page3.jpg',
-                'page4.jpg',
-                'page5.jpg',
-                'page8.jpg',
-            ]
-        })
+const page = computed(() => store.getters[`${BUILDER_MODULE}/page`])
 
-        const isActivePageBackground = (template) => {
-            return page.value?.background?.dataFile == `/images/${template}`
-        }
+const reportTemplates = computed(() => {
+    return [
+        [
+            'page0.jpg',
+            'page1.jpg',
+            'page2.jpg',
+            'page3.jpg',
+            'page4.jpg',
+            'page5.jpg',
+            'page6.jpg',
+            'page7.jpg',
+            'page8.jpg',
+        ],
+        [
+            'page9.jpg',
+            'page10.jpg',
+            'page11.jpg',
+            'page12.jpg',
+            'page13.jpg',
+            'page14.jpg',
+            'page15.jpg',
+        ],
+        [
+            'page16.jpg',
+            'page17.jpg',
+            'page18.jpg',
+            'page19.jpg',
+            'page20.jpg',
+            'page21.jpg',
+            'page22.jpg',
+        ],
+        [
+            'page23.jpg',
+            'page24.jpg',
+            'page25.jpg',
+            'page26.jpg',
+            'page27.jpg',
+            'page28.jpg',
+            'page29.jpg',
+        ],
+        [
+            'page30.jpg',
+            'page31.jpg',
+            'page32.jpg',
+            'page33.jpg',
+            'page34.jpg',
+            'page35.jpg',
+            'page36.jpg',
+        ],
+        [
+            'page37.jpg',
+            'page38.jpg',
+            'page39.jpg',
+            'page40.jpg',
+            'page41.jpg',
+            'page42.jpg',
+            'page43.jpg',
+        ],
+        [
+            'page44.jpg',
+            'page45.jpg',
+            'page46.jpg',
+            'page47.jpg',
+            'page48.jpg',
+            'page49.jpg',
+            'page50.jpg',
+        ],
+        [
+            'page51.jpg',
+            'page52.jpg',
+            'page53.jpg',
+            'page54.jpg',
+            'page55.jpg',
+            'page56.jpg',
+            'page57.jpg',
+        ],
+        [
+            'page58.jpg',
+            'page59.jpg',
+            'page60.jpg',
+            'page61.jpg',
+            'page62.jpg',
+            'page63.jpg',
+            'page64.jpg',
+            'page65.jpg',
+            'page66.jpg',
+        ]
 
-        return {
-            page,
-            promptImage,
-            toggleModal,
-            generateElement,
-            reportTemplates,
-            isActivePageBackground
-        }
-    }
+    ]
+})
+
+const isActivePageBackground = (template) => {
+    return page.value?.background?.dataFile == `/images/${template}`
 }
+
+        
 </script>
 
 <style lang="scss" scoped>
 
 .background-container {
-    display: grid;
-    align-items: center;
-    justify-items: center;
-    grid-template-columns: 30% 70%; 
+    display: flex;
+    justify-content: center;
 }
 
 .background-boxes {
@@ -138,13 +217,14 @@ export default {
     color: #000000;
 
     .background-box {
-        width: 6rem;
-        height: 5.825rem;
+        width: 12rem;
+        height: 12rem;
         border-radius: 8px;
         padding: 4px;
         border: 1px solid #ccc;
         cursor: pointer;
-        transition: all .1s;
+        
+        margin: 10px 2px;
         &--active {
             border: 3px solid orange;
         }
@@ -154,6 +234,10 @@ export default {
         img {
             width: 100%;
             height: 100%;
+            transition: .4s all ease-in-out;
+            &:hover {
+                transform: scale(2);
+            }
         }
     }
 }

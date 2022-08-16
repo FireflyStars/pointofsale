@@ -70,7 +70,13 @@ import { onMounted, ref, nextTick, computed, provide } from 'vue'
 import { 
     BUILDER_MODULE, 
     UPDATE_REPORT_TEMPLATE,
-    GET_REPORT_TEMPLATE
+    GET_REPORT_TEMPLATE,
+    LOADER_MODULE,
+    DISPLAY_LOADER,
+    HIDE_LOADER,
+    TOASTER_MODULE,
+    TOASTER_MESSAGE,
+
 } from '../../store/types/types'
 
 import adjouterZone from '../../components/reports/adjouter-zone'
@@ -125,10 +131,32 @@ export default {
         })
     
         const saveTemplate = async () => {
-            store.dispatch(`${[BUILDER_MODULE]}/${[UPDATE_REPORT_TEMPLATE]}`, {
-                pages,
-                id: props.id
-            })
+            try {
+                store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [
+                    true,
+                    "Chargement template en cours..",
+                ])
+                await store.dispatch(`${[BUILDER_MODULE]}/${[UPDATE_REPORT_TEMPLATE]}`, {
+                    pages,
+                    id: props.id
+                })
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'success',
+                    message: 'Template Saved',
+                    ttl: 5,
+                })
+            }
+            catch(e) {
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: 'Something went wrong',
+                    ttl: 5,
+                })
+                throw e
+            }
+            finally {
+                store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`)
+            }
         }
 
         const getPageTemplate = () => {
@@ -152,9 +180,6 @@ export default {
             resetPages()
             resetOrder()
             nextTick(async () => {
-
-
-         
 
                 await getPageTemplate()
                 showcontainer.value = true

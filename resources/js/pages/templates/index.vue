@@ -88,8 +88,7 @@ const showcontainer = ref(false)
 const templatesList = computed(() => store.getters[`${BUILDER_MODULE_LIST}templateListDefinition`])
 
 const navigatePage = (id) => {
-
-
+    
     router.push({
         name: 'templates-edit',
         params: {

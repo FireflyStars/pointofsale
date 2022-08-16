@@ -30,11 +30,11 @@ class TemplatesController extends Controller
     {
 
         $data = Template::whereIn('templates.affiliate_id', [$request->user()->affiliate_id, 0])
-                ->join('users', 'users.id', '=', 'templates.affiliate_id')
+                ->leftJoin('affiliates', 'affiliates.id', '=', 'templates.affiliate_id')
                 ->select(
                     'templates.id',
                     'templates.name',
-                    'users.name as affiliate',
+                    'affiliates.name as affiliate',
                     'pages',
                     'page_files',
                     DB::raw('DATE_FORMAT(templates.created_at, "%Y-%m-%d") as created_at'),
@@ -59,7 +59,7 @@ class TemplatesController extends Controller
 
         Template::create([
             'name'         => $request->name, 
-            'affiliate_id' => Auth::user()->id,
+            'affiliate_id' => $request->user()->affiliate_id,
             'pages'        => $pages,
             'page_files'   => $page_files,
         ]);  
