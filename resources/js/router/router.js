@@ -111,6 +111,16 @@ const router = createRouter({
         },
 
         {
+            path: '/matricepermis',
+            name: 'MatricePermis',
+            props: true,
+            component: () => import('../pages/MatricePermis/Index'),
+            meta: {
+                authenticated: true
+            },
+        },
+
+        {
             path: '/articles',
             name: 'articles',
             component: () => import('../pages/Articles/Index.vue'),

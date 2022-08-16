@@ -153,6 +153,8 @@ Route::post('/get-user-document-url/{document}', [UsersController::class, 'get_d
 Route::post('/upload-user-document', [UsersController::class, 'upload_user_document']);
 Route::post('/delete-user/{user}', [UsersController::class, 'delete_user']);
 Route::get('/get-user-permis-list', [UsersController::class, 'permis_list']);
+// get user's permis
+Route::get('/get-user-permis', [UsersController::class, 'getPermisByUser'])->middleware('auth')->name('get.user.permis');
 
 Route::post('/get-ouvrage-list', [OuvragesController::class, 'index']);
 Route::post('/get-ouvrage-list-installation', [OuvragesController::class, 'get_ouvrages_installation']);

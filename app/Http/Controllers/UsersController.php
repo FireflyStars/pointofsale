@@ -276,7 +276,6 @@ class UsersController extends Controller
         $filename = $uuid_filename . '.' . $file->getClientOriginalExtension();
         $document->file_path = $file->storeAs('USERS/USER_' . $document->user_id . '/user_documents', $filename, 'public');
         $document->save();
-      
     }
 
     public function delete_user(User $user) 
@@ -285,5 +284,38 @@ class UsersController extends Controller
         return response()->json("User deleted");
     }
 
-
+    /**
+     * 
+     * Get permis by users
+     */
+    public function getPermisByUser(){
+        // $permis = UserDocPermis::select('id', 'name')->get();
+        // $users = User::where('user_status_id', 1)->select('id', 'name')->get();
+        $documents = UserDocument::leftJoin('users', 'users.id', '=', 'user_documents.user_id')
+                    ->join('user_doc_permis', 'user_doc_permis.id', '=', 'user_documents.user_doc_permi_id')
+                    ->select(
+                        'users.id as userId','users.name as userName', 'user_doc_permis.id as permisId', 
+                        'user_documents.expires as exp'
+                    )->get();
+        foreach ($documents as $document) {
+            $now = Carbon::now();
+            $exp_date = Carbon::parse($document->exp);
+            $diff = $now->diffInMonths($exp_date);
+            $document->diff = $diff;
+            if($diff >= 3 && $exp_date->gt($now)){
+                $document->bgColor = 'green';
+            }
+            if($diff < 3 && $exp_date->gt($now)){
+                $document->bgColor = 'orange';
+            }
+            if( $exp_date->lt($now) ){
+                $document->bgColor = 'red';
+            }
+        }
+        return response()->json([
+            // 'users' =>$users,
+            // 'permis'=>$permis,
+            'documents'=>$documents,
+        ]);
+    }
 }
