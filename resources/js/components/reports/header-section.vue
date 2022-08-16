@@ -109,7 +109,9 @@
                     :disabled="fetching"
                     :styles="{
                         background: '#C4C4C4',
-                        color: '#000'
+                        color: '#000',
+                        width: '115px',
+                        height: '40px'
                     }"
                     :selectStyles="{ 
                         maxHeight: '10rem', 
@@ -134,6 +136,7 @@ import { useStore } from 'vuex'
 import useModal from '../../composables/useModal'
 import { computed, watch, inject } from 'vue'
 import backgroundsModal from './backgrounds-modal'
+import useKeystrokes from '../../composables/useKeystrokes'
 
 import { 
     BUILDER_MODULE,
@@ -264,6 +267,11 @@ export default {
         watch(activeTemplate, (value) => {
             if(value) assignTemplateToActivePage(value)
         })
+
+        useKeystrokes([
+            { key: 'ArrowLeft', fn: decrementPage },
+            { key: 'ArrowRight', fn: incrementPage },
+        ])
         
         return {
             save,
