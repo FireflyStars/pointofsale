@@ -30,7 +30,7 @@
                                     <div class="d-flex justify-content-between">
                                         <h4 class="font-24 mulish_normal_600">Vente par mois</h4>
                                         <div class="me-3">
-                                            <TotalPercent :amount="totalOrder" :pastAmount="totalTotalOrder"></TotalPercent>
+                                            <TotalPercent :amount="totalOrder" :pastAmount="pastTotalOrder"></TotalPercent>
                                             <TotalPercent :amount="totalHour" :symbol="'Hr'" :pastAmount="pastTotalHour"></TotalPercent>
                                         </div>
                                     </div>
@@ -43,7 +43,7 @@
                                                     <p class="w-100 text-center font-20 mulish_600_normal align-self-end">{{ devisAFaire }}</p>
                                                 </div>
                                                 <div class="avg-sale-block py-3 px-2 mt-2 d-flex flex-wrap">
-                                                    <p class="w-100 text-center font-12">Devis Attente client</p>
+                                                    <p class="w-100 text-center font-12">Devis <span class="text-nowrap">Attente client</span></p>
                                                     <p class="w-100 text-center font-20 mulish_600_normal align-self-end">{{ devisAttenteClient }}</p>
                                                 </div>
                                             </div>

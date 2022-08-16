@@ -43,7 +43,7 @@ class HomeController extends Controller
                             $join->on('order_states.id', '=', 'orders.order_state_id')->where('order_states.order_type', 'COMMANDE');
                         })
                         ->whereBetween('orders.datecommande', $this_month)
-                        ->groupBy('order.id')
+                        ->groupBy('orders.id')
                         ->select(DB::raw('COUNT(*) as count'))
                         ->value('count') ?? 0;
         $factureToCompare = DB::table('orders')
