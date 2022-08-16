@@ -43,7 +43,7 @@ export default {
     setup(){
         const store = useStore();
         const tabs = ref({
-            sales:'Sales',
+            sales:'Ventes',
             // production:'Production',
         });        
         return {

@@ -30,8 +30,8 @@
                                     <div class="d-flex justify-content-between">
                                         <h4 class="font-24 mulish_normal_600">Vente par mois</h4>
                                         <div class="me-3">
-                                            <TotalPercent :amount="230" :pastAmount="380"></TotalPercent>
-                                            <TotalPercent :amount="360" :symbol="'Hr'" :pastAmount="200"></TotalPercent>
+                                            <TotalPercent :amount="totalOrder" :pastAmount="totalTotalOrder"></TotalPercent>
+                                            <TotalPercent :amount="totalHour" :symbol="'Hr'" :pastAmount="pastTotalHour"></TotalPercent>
                                         </div>
                                     </div>
                                     <div class="d-flex mt-3 px-3">
@@ -40,11 +40,11 @@
                                             <div class="d-flex flex-wrap">
                                                 <div class="avg-sale-block py-3 px-2 mt-2 me-2 d-flex flex-wrap">
                                                     <p class="w-100 text-center font-12">Devis A faire</p>
-                                                    <p class="w-100 text-center font-20 mulish_600_normal align-self-end">3,3 K€</p>
+                                                    <p class="w-100 text-center font-20 mulish_600_normal align-self-end">{{ devisAFaire }}</p>
                                                 </div>
                                                 <div class="avg-sale-block py-3 px-2 mt-2 d-flex flex-wrap">
                                                     <p class="w-100 text-center font-12">Devis Attente client</p>
-                                                    <p class="w-100 text-center font-20 mulish_600_normal align-self-end">5.3 K€</p>
+                                                    <p class="w-100 text-center font-20 mulish_600_normal align-self-end">{{ devisAttenteClient }}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -53,15 +53,13 @@
                                             <div class="d-flex flex-wrap">
                                                 <div class="avg-sale-block py-3 px-2 mt-2 me-2 d-flex flex-wrap">
                                                     <p class="w-100 text-center font-12">Paiement</p>
-                                                    <p class="w-100 text-center font-20 mulish_600_normal align-self-end">3,3 K€</p>
+                                                    <p class="w-100 text-center font-20 mulish_600_normal align-self-end" v-if="paiement != '--'">{{ paiement }} %</p>
+                                                    <p class="w-100 text-center font-20 mulish_600_normal align-self-end" v-else>--</p>                                                    
                                                 </div>
                                                 <div class="avg-sale-block py-3 px-2 me-2 mt-2 d-flex flex-wrap">
                                                     <p class="w-100 text-center font-12">Commande Facturé</p>
-                                                    <p class="w-100 text-center font-20 mulish_600_normal align-self-end">5.3 K€</p>
-                                                </div>
-                                                <div class="avg-sale-block py-3 px-2 mt-2 d-flex flex-wrap">
-                                                    <p class="w-100 text-center font-12">Rentabilité</p>
-                                                    <p class="w-100 text-center font-20 mulish_600_normal align-self-end">5.3 K€</p>
+                                                    <p class="w-100 text-center font-20 mulish_600_normal align-self-end" v-if="facture != '--'">{{ facture }} %</p>
+                                                    <p class="w-100 text-center font-20 mulish_600_normal align-self-end" v-else>--</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -93,11 +91,31 @@ export default {
     setup(){
         const store = useStore();
         const content = ref('');
+        const devisAFaire = ref(0);
+        const devisAttenteClient = ref(0);
+        const paiement = ref(0);
+        const facture = ref(0);
+        const totalOrder = ref(0);
+        const pastTotalOrder = ref(0);
+        const totalHour = ref(0);
+        const pastTotalHour = ref(0);
+        const events = ref([]);
+        const campagne = ref([]);
 
         onMounted(()=>{
             store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Loading home news...']);
             axios.post('/homenews').then((res)=>{
-                content.value = res.data;
+                content.value = res.data.content;
+                devisAFaire.value = res.data.devisAFaire;
+                devisAttenteClient.value = res.data.devisAttenteClient;
+                paiement.value = res.data.paiement;
+                facture.value = res.data.facture;
+                totalOrder.value = res.data.totalOrder;
+                pastTotalOrder.value = res.data.pastTotalOrder;
+                totalHour.value = res.data.totalHour;
+                pastTotalHour.value = res.data.pastTotalHour;
+                events.value = res.data.events;
+                campagne.value = res.data.campagne;
             }).catch((error)=>{
                 console.log(error);
             }).finally(()=>{
@@ -105,7 +123,17 @@ export default {
             })
         })
         return {
-            content
+            content,
+            devisAFaire,
+            devisAttenteClient,
+            paiement,
+            facture,
+            totalOrder,
+            pastTotalOrder,
+            totalHour,
+            pastTotalHour,
+            events,
+            campagne,
         }
     }
 }
