@@ -93,6 +93,7 @@ class SupplierController extends Controller
             $supplier['phone'] = $request->phoneNumber !='' ? $request->phoneCode.'|'.$request->phoneNumber : '';
             $supplier['email'] = $request->email;
             $supplier['comment'] = $request->comment;
+            $supplier['updated_at'] = now();
             DB::table('suppliers')->where('id', $supplierId)->update($supplier);
             return response()->json([
                 'success'   => true
