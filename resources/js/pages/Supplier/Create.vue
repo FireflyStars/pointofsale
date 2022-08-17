@@ -71,7 +71,7 @@
                                     <div class="d-flex col-8">
                                         <div class="form-group col-9">
                                             <label>SIRET *</label>
-                                            <input type="text" v-model="supplier.siret" class="form-control" v-mask="'#########'">
+                                            <input type="text" v-model="supplier.siret" class="form-control" max>
                                         </div>
                                         <div class="form-group col-3 px-2">
                                             <label>&nbsp;</label>
@@ -232,7 +232,7 @@ export default {
         const checkSiret = ()=>{
             if(supplier.value.siret.length == 9){
                 store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'checking siret ...']);
-                axios.post('/check-siret', { 'siret' : form.value.siret }).then((res)=>{
+                axios.post('/check-siret', { 'siret' : supplier.value.siret }).then((res)=>{
                     if(res.data.success){
                         supplier.value.siretValidation = true;
                         supplier.value.naf = res.data.data.activitePrincipaleUniteLegale.replace('.', '');
@@ -258,7 +258,7 @@ export default {
             }
         }       
         watch(() => supplier.value.naf, (curVal, preVal)=>{
-            var selectedNaf = customerNafs.filter((item)=>{
+            var selectedNaf = customerNafs.value.filter((item)=>{
                 return item.code == curVal;
             })[0];
 

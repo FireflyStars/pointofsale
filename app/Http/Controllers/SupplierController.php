@@ -35,6 +35,8 @@ class SupplierController extends Controller
             $supplier['phone'] = $request->phoneNumber !='' ? $request->phoneCode.'|'.$request->phoneNumber : '';
             $supplier['email'] = $request->email;
             $supplier['comment'] = $request->comment;
+            $supplier['created_at'] = now();
+            $supplier['updated_at'] = now();
     
             $supplierId = DB::table('suppliers')->insertGetId($supplier);
             return response()->json([
@@ -51,7 +53,7 @@ class SupplierController extends Controller
         $supplier = DB::table('suppliers')
                     ->where('id', $supplierId)
                     ->select( 'id', 'supplier_type_id as type', 'supplier_status_id as status', 'contactname as contact',
-                    'name as nom', 'actif as active', 'phone as phoneNumber', 'email', 'comment',
+                    'name as nom', 'actif as active', 'phone as phoneNumber', 'email', 'comment', 'naf', 'siret',
                     DB::raw('DATE_FORMAT(created_at, "%m/%d/%Y") as created'),
                     DB::raw('DATE_FORMAT(updated_at, "%m/%d/%Y") as updated'),
                      )

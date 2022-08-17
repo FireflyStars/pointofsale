@@ -173,7 +173,7 @@ export default {
             nomNaf: '',
             comment: '',
             active: true,
-            siretValidation: false,
+            siretValidation: true,
         });
         const cancel = ()=>{
 
@@ -212,9 +212,9 @@ export default {
             }
             if(!error){
                 store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Création d`un FOURNISSEUR...']);
-                axios.post('/supplier/create', supplier.value).then((res)=>{
+                axios.post('/supplier/update/'+ route.params.id, supplier.value).then((res)=>{
                     if(res.data.success){
-                        router.push({ name: 'EditSupplier', params: { id: res.data.id } });
+                        router.push({ name: 'EditSupplier', params: { id: route.params.id } });
                     }else{
                         Object.values(res.data.errors).forEach(item => {
                             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
@@ -242,6 +242,7 @@ export default {
                 }else{
                     supplier.value.active = false;
                 }
+                supplier.value.siretValidation = true;
                 supplierStatus.value = res.data.status;
                 supplierType.value = res.data.type;
                 customerNafs.value = res.data.nafs;
@@ -266,7 +267,7 @@ export default {
         const checkSiret = ()=>{
             if(supplier.value.siret.length == 9){
                 store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'checking siret ...']);
-                axios.post('/check-siret', { 'siret' : form.value.siret }).then((res)=>{
+                axios.post('/check-siret', { 'siret' : supplier.value.siret }).then((res)=>{
                     if(res.data.success){
                         supplier.value.siretValidation = true;
                         supplier.value.naf = res.data.data.activitePrincipaleUniteLegale.replace('.', '');
