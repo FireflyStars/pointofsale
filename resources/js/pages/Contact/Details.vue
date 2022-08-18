@@ -408,7 +408,7 @@ const confirmChangeStatus = async () => {
     try {
 
         if(!status.value) {
-             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                 type: 'danger',
                 message: 'Please enter a status',
                 ttl: 5,

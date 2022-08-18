@@ -21,28 +21,28 @@ class ReportsController extends Controller
 
         $affiliate_id = $request->user()->affiliate_id;
 
-        $orders = Order::query()->where('orders.affiliate_id', $affiliate_id)
-        ->leftJoin('reports', 'reports.order_id', '=', 'orders.id')
+        $reports = Report::query()->where('reports.affiliate_id', $affiliate_id)
         ->leftJoin('templates', 'templates.id', '=', 'reports.template_id')
-        ->leftJoin('affiliates', 'affiliates.id', '=', 'orders.affiliate_id')
+        ->leftJoin('affiliates', 'affiliates.id', '=', 'reports.affiliate_id')
         ->select(
-            'orders.id', 
+            'reports.id',
+            'order_id', 
             'templates.name as template_name',
             'reports.id as report_id',
             'affiliates.name as affiliate',
             DB::raw('reports.pages as pages'),
-            DB::raw('DATE_FORMAT(orders.created_at, "%Y-%m-%d") as created_at')
+            DB::raw('DATE_FORMAT(reports.created_at, "%Y-%m-%d") as created_at')
         );
 
-        $orders = (new TableFiltersController)->sorts($request, $orders, 'orders.id');
-        $orders = (new TableFiltersController)->filters($request, $orders);
+        $reports = (new TableFiltersController)->sorts($request, $reports, 'reports.id');
+        $reports = (new TableFiltersController)->filters($request, $reports);
         
-        $orders = $orders
+        $reports = $reports
                 ->skip($request->skip ?? 0)
                 ->take($request->take ?? 15);
 
         return response()->json(
-            $orders->get()
+            $reports->get()
         );
         
     }
@@ -89,4 +89,12 @@ class ReportsController extends Controller
         return response()->json($report, 201); 
 
     }
+
+
+    public function delete(Report $report) 
+    {
+        $report->delete();
+        return response()->noContent();
+    }
+
 }

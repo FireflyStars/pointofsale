@@ -22,6 +22,8 @@ class Report extends Model
         'page_files' => 'array'
     ];
 
+    protected $appends = ['page_count'];
+
     public function order() 
     {
         return $this->belongsTo(Order::class);
@@ -40,6 +42,12 @@ class Report extends Model
     public function affiliate() 
     {
         return $this->belongsTo(Affiliate::class);
+    }
+
+    public function getPageCountAttribute() 
+    {
+        if(is_null($this->pages)) return;
+        return gettype($this->pages) == 'string' ? count(json_decode($this->pages)) : count($this->pages);
     }
 
 }

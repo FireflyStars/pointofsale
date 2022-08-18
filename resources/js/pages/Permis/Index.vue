@@ -20,7 +20,7 @@
                     <div class="col main-view container">
                         
                         <page-title 
-                            icon="permis" 
+                            icon="paiement" 
                             name="PERMIS" 
                             class="almarai_extrabold_normal_normal"
                             style="height: 45px; width: 45px;"
@@ -36,11 +36,11 @@
                                         
                                         <item-list-table :table_def="permisList">
 
-                                            <template v-slot:supplier_status_id="{ row }">
+                                            <!-- <template v-slot:supplier_status_id="{ row }">
 
                                                 <status-tag :id="row.supplier_status_id" />   
 
-                                            </template>    
+                                            </template>     -->
 
                                         </item-list-table>
                                             

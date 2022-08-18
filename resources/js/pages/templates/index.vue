@@ -39,7 +39,7 @@
 
                         <div class="row m-0 ml-5 mr-5">
 
-                            <div class="col-12">
+                            <div class="col-12 d-flex align-items-center gap-3">
                                 
                                 <item-list-table 
                                     :table_def="templatesList" 
@@ -49,7 +49,12 @@
                                     </template>
                                     <template v-slot:id="{ row }">
 
-                                        <a href="#" class="link" @click.stop="navigatePage(row.id)">Edit</a>
+                                        <a href="#" class="link" @click.stop="navigatePage(row.id)">
+                                            <Icon name="edit" width="20" height="20" />
+                                        </a>
+                                        <a href="#" class="link" @click.stop="deleteTemplate(row.id)">
+                                            <Icon name="delete" width="20" height="20" />
+                                        </a>
                                         
                                     </template>
                                 </item-list-table>
@@ -71,6 +76,7 @@
 
 <script setup>
 
+import Swal from 'sweetalert2'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { onMounted, ref, nextTick, computed } from 'vue'
@@ -78,6 +84,14 @@ import ItemListTable from '../../components/miscellaneous/ItemListTable/ItemList
 
 import { 
     BUILDER_MODULE_LIST, 
+    BUILDER_DELETE_TEMPLATE,
+    ITEM_LIST_MODULE,
+    ITEM_LIST_REMOVE_ROW,
+    TOASTER_MODULE,
+    TOASTER_MESSAGE,
+    LOADER_MODULE,
+    DISPLAY_LOADER,
+    HIDE_LOADER,
 } from '../../store/types/types'
 
 const store = useStore()
@@ -95,6 +109,50 @@ const navigatePage = (id) => {
             id
         }
     })
+
+}
+
+const deleteTemplate = async (id) => {
+
+    try {
+
+        const result = await Swal.fire({
+            title: 'Veuillez confirmer!',
+            text: `Voulez-vous changer le statut en ?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#42A71E',
+            cancelButtonColor: 'var(--lcdtOrange)',
+            cancelButtonText: 'Annuler',
+            confirmButtonText: `Oui, s'il vous plaît.`
+        })
+
+        if(result.isConfirmed) {
+
+            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [
+                true,
+                "Delete template en cours..",
+            ])
+            await store.dispatch(`${BUILDER_MODULE_LIST}${BUILDER_DELETE_TEMPLATE}`, id)
+            store.commit(`${ITEM_LIST_MODULE}${ITEM_LIST_REMOVE_ROW}`, { id: 'id', idValue: id })
+
+        }
+
+    }
+
+    catch(e) {
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            type: 'danger',
+            message: 'Something went wrong',
+            ttl: 5,
+        })
+        throw e
+    }
+
+    finally {
+        store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`)
+    }
+
 
 }
 

@@ -129,7 +129,7 @@
                         leave-active-class="animate__animated animate__fadeOut"
                 >
                 
-     <order-documents v-if="typeof order!='undefined'&& typeof order.state!='undefined'&&order.state.order_type=='COMMANDE'"  :order_id="order.id"></order-documents>
+     <order-documents v-if="typeof order!='undefined'&& typeof order.state!='undefined'" :order_id="order.id"></order-documents>
  </transition>
      <div class="od_actions mb-3" v-if="show">
         <button class="btn btn-outline-dark almarai_700_normal" @click="goto()">Editer</button>

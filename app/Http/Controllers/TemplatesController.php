@@ -90,5 +90,11 @@ class TemplatesController extends Controller
 
     }
 
+    public function delete(Template $template) 
+    {
+        $template->delete();
+        return response()->noContent();
+    }
+
 
 }

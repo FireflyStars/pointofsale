@@ -39,6 +39,7 @@ use App\Http\Controllers\MenuController;
 use App\Models\Intervention;
 use App\Models\InterventionType;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PermisController;
 use App\Http\Controllers\SupplierController;
 
 Route::group(['prefix' => 'admin'], function () {
@@ -58,11 +59,14 @@ Route::get('/get-report-templates', [TemplatesController::class, 'report_templat
 Route::post('/report-template', [TemplatesController::class, 'store']);
 Route::get('/report-template/{template}', [TemplatesController::class, 'show']);
 Route::post('/report-template/{template}', [TemplatesController::class, 'update']);
+Route::post('/delete-template/{template}', [TemplatesController::class, 'delete']);
 
 Route::post('/page-reports', [ReportsController::class, 'index'])->middleware('auth');
+Route::get('/page-reports', [ReportsController::class, 'index'])->middleware('auth');
 Route::post('/page-report', [ReportsController::class, 'store']);
 Route::get('/page-report/{report}', [ReportsController::class, 'show']);
 Route::post('/page-report/{report}', [ReportsController::class, 'update']);
+Route::post('/delete-report/{report}', [ReportsController::class, 'delete']);
 
 
 Route::get('/get-page-order/{order}', [PageElementsController::class, 'get_page_order']);
@@ -210,7 +214,8 @@ Route::post('/get-fournisseur-statuses', [FournisseurController::class, 'fournis
 Route::get('/get-fournisseur-details/{supplier}', [FournisseurController::class, 'fournisseur_details']);
 Route::get('/get-fournisseur-history/{supplier}', [FournisseurController::class, 'fournisseur_history']);
 
-// Route::get('/get-permis-list', [PermisController::class, ]);
+Route::get('/get-permis-list', [PermisController::class, 'index']);
+Route::post('/get-permis-list', [PermisController::class, 'index']);
 
 // create action
 Route::post('/get-action-info', [ActionCommercialListController::class, 'getActionInfo'])->name('get.action.info');
