@@ -2,15 +2,20 @@
 
 use App\Models\User;
 use App\Models\Campagne;
+use App\Models\Intervention;
 use App\Models\page_builder;
+use App\Models\InterventionType;
 use TCG\Voyager\Facades\Voyager;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MenuController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\CibleController;
 use App\Http\Controllers\DevisController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\EntiteController;
+use App\Http\Controllers\PermisController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\InvoiceController;
@@ -21,6 +26,7 @@ use App\Http\Controllers\CompagneController;
 use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OuvragesController;
+use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\LcdtAdminController;
 use App\Http\Controllers\LcdtFrontController;
 use App\Http\Controllers\PaiementsController;
@@ -30,17 +36,12 @@ use App\Http\Controllers\StatisticController;
 use App\Http\Controllers\TemplatesController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\UnitStatesController;
+use App\Http\Controllers\FournisseurController;
 use App\Http\Controllers\CampagneListController;
 use App\Http\Controllers\PageElementsController;
 use App\Http\Controllers\InterventionsController;
+use App\Http\Controllers\CommandeFounisseurController;
 use App\Http\Controllers\ActionCommercialListController;
-use App\Http\Controllers\FournisseurController;
-use App\Http\Controllers\MenuController;
-use App\Models\Intervention;
-use App\Models\InterventionType;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\PermisController;
-use App\Http\Controllers\SupplierController;
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
@@ -216,6 +217,11 @@ Route::get('/get-fournisseur-history/{supplier}', [FournisseurController::class,
 
 Route::get('/get-permis-list', [PermisController::class, 'index']);
 Route::post('/get-permis-list', [PermisController::class, 'index']);
+
+Route::post('/get-commande-fournisseur-list', [CommandeFounisseurController::class, 'index']);
+Route::post('/get-commande-fournisseur-list-mes', [CommandeFounisseurController::class, 'mes_details']);
+Route::post('/get-commande-fournisseur-supplier-status-formatted', [CommandeFounisseurController::class, 'get_order_states']);
+Route::post('/get-commande-fournisseur-statuses', [CommandeFounisseurController::class, 'get_order_states_all']);
 
 // create action
 Route::post('/get-action-info', [ActionCommercialListController::class, 'getActionInfo'])->name('get.action.info');

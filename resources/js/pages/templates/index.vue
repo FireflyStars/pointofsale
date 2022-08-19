@@ -1,17 +1,21 @@
 <template>
 
     <router-view>
-        <transition
-            enter-active-class="animate__animated animate__fadeIn"
-        >
-            <div class="container-fluid h-100 bg-color" v-if="showcontainer">
-                <main-header />
+        
+        <div class="container-fluid h-100 bg-color" v-if="showcontainer">
 
-                <div 
-                class="row d-flex align-content-stretch align-items-stretch flex-row hmax main-view-wrap reports-page" 
-                style="z-index:100" >
-                    
-                    <side-bar />
+            <main-header />
+
+            <div 
+            class="row d-flex align-content-stretch align-items-stretch flex-row hmax main-view-wrap" 
+            style="z-index:100" >
+                
+                <side-bar />
+
+                <transition
+                    enter-active-class="animate__animated animate_fadeIn"
+                    leave-active-class="animate__animated animate_fadeOut"
+                >
 
                     <div class="col main-view container">
 
@@ -39,25 +43,42 @@
 
                         <div class="row m-0 ml-5 mr-5">
 
-                            <div class="col-12 d-flex align-items-center gap-3">
-                                
-                                <item-list-table 
-                                    :table_def="templatesList" 
-                                >
-                                    <template v-slot:pages="{ row }">
-                                        {{ row.pages.length }}
-                                    </template>
-                                    <template v-slot:id="{ row }">
+                            <div class="col">
 
-                                        <a href="#" class="link" @click.stop="navigatePage(row.id)">
-                                            <Icon name="edit" width="20" height="20" />
-                                        </a>
-                                        <a href="#" class="link" @click.stop="deleteTemplate(row.id)">
-                                            <Icon name="delete" width="20" height="20" />
-                                        </a>
-                                        
+                                <tab-pane :tabs="tabs" current='tout' class="almarai_700_normal">
+                                
+                                    <template v-slot:tout>
+
+                                        <item-list-table 
+                                            :table_def="templatesList" 
+                                        >
+                                            
+                                            <template v-slot:pages="{ row }">
+                                                {{ row.pages.length }}
+                                            </template>
+
+                                            <template v-slot:id="{ row }">
+
+                                                <div class="d-flex align-items-center gap-3">
+                                                
+                                                    <a href="#" class="link" @click.stop="navigatePage(row.id)">
+                                                        <Icon name="edit" width="20" height="20" />
+                                                    </a>
+                                                    <a href="#" class="link" @click.stop="deleteTemplate(row.id)">
+                                                        <Icon name="delete" width="20" height="20" />
+                                                    </a>
+                                                    
+                                                </div>
+
+                                                
+                                            </template>
+
+                                        </item-list-table>
+
                                     </template>
-                                </item-list-table>
+
+                                </tab-pane>
+
                             
                             </div>
 
@@ -66,9 +87,12 @@
 
                     </div>
 
-                </div>
+                </transition>
+
             </div>
-        </transition>
+
+        </div>
+
     </router-view>
 
 
@@ -100,6 +124,11 @@ const router = useRouter()
 const showcontainer = ref(false)
 
 const templatesList = computed(() => store.getters[`${BUILDER_MODULE_LIST}templateListDefinition`])
+
+const tabs = ref({
+    tout: 'Tout',
+})
+
 
 const navigatePage = (id) => {
     
@@ -133,6 +162,7 @@ const deleteTemplate = async (id) => {
                 true,
                 "Delete template en cours..",
             ])
+
             await store.dispatch(`${BUILDER_MODULE_LIST}${BUILDER_DELETE_TEMPLATE}`, id)
             store.commit(`${ITEM_LIST_MODULE}${ITEM_LIST_REMOVE_ROW}`, { id: 'id', idValue: id })
 

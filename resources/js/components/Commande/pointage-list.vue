@@ -3,7 +3,6 @@
         enter-active-class="animate__animated animate__fadeIn"
         leave-active-class="animate__animated animate__fadeOut"
     >
-
         <mini-panel v-if="pointages?.length">
 
             <div class="position-relative">
@@ -88,6 +87,12 @@
     </transition>
 </template>
 
+<script>
+export default {
+    name: 'pointage-list'
+}
+</script>
+
 <script setup>
 
     import moment from 'moment'
@@ -105,7 +110,7 @@
     const props = defineProps({
         orderId: {
             required: true,
-            type: Number
+            type: [Number, String]
         }
     })
 
