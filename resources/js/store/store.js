@@ -82,6 +82,7 @@ import { commandeFournisseurStatusTag as COMMANDE_FOURNISSEUR_STATUS_MODULE } fr
 import { commande_fournisseur as COMMANDE_FOURNISSEUR_LIST_MODULE } from "./modules/commande_fournisseur"
 
 import { permis as PERMIS_LIST_MODULE } from "./modules/permis"
+import { chat as CHAT_MODULE } from "./modules/chat"
 
 
 
@@ -129,6 +130,7 @@ export default createStore({
         FOURNISSEUR_LIST_MODULE,
         PERMIS_LIST_MODULE,
         COMMANDE_FOURNISSEUR_STATUS_MODULE,
-        COMMANDE_FOURNISSEUR_LIST_MODULE
+        COMMANDE_FOURNISSEUR_LIST_MODULE,
+        CHAT_MODULE
     }
 });

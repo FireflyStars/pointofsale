@@ -1,6 +1,6 @@
 <template>
     <!-- Card -->
-    <a href="javascript:;" class="card border-0 text-reset" @click="selectUserChannel" :class="{'active': active }">
+    <a href="javascript:;" class="card border-0 text-reset" @click="selectUser(id)" :class="{'active': getSelectedUser.id == id}">
         <div class="card-body">
             <div class="row gx-3">
                 <div class="col-auto">
@@ -12,7 +12,7 @@
                 <div class="col">
                     <div class="d-flex align-items-center mb-2">
                         <h5 class="me-auto mb-0 fw-bold">{{ name }}</h5>
-                        <span class="text-muted extra-small ms-2">08:45 PM</span>
+                        <span class="text-muted extra-small ms-2">{{ lastMessageTime }}</span>
                     </div>
 
                     <div class="d-flex align-items-center" v-if="isTyping == false">
@@ -34,7 +34,15 @@
     </a>
 </template>
 <script>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useStore } from 'vuex';
+import {
+    CHAT_MODULE,
+    SELECT_USER,
+    GET_SELECTED_USERINFO,
+    LOAD_USER_MESSAGE
+} from '../../store/types/types';
+
 export default {
     props:{
         id: {
@@ -57,6 +65,10 @@ export default {
             type: String,
             default: 'Hello! Yeah, I\'m going to meet friend of mine at the departments stores now.'
         },
+        lastMessageTime: {
+            type: String,
+            default: ''
+        },
         unReadCnt: {
             type: Number,
             default: 1,
@@ -67,13 +79,19 @@ export default {
         },
     },
     setup(props){
+        const store = useStore();
         const active = ref(false);
-        const selectUserChannel = ()=>{
-            active.value = !active.value;
+        const selectUser = (userId)=>{
+            store.dispatch(`${CHAT_MODULE}${SELECT_USER}`, userId);
+            store.dispatch(`${CHAT_MODULE}${LOAD_USER_MESSAGE}`, userId);
         }
+        const getSelectedUser = computed(()=>{
+            return store.getters[`${CHAT_MODULE}${GET_SELECTED_USERINFO}`];
+        })
         return{
             active,
-            selectUserChannel
+            selectUser,
+            getSelectedUser
         }
     }
 }
@@ -116,10 +134,10 @@ a {
     right: 5%;
 }
 .avatar-online::before {
-    background: #ffc107;
+    background:#4dd965;
 }
 .avatar-offline::before {
-    background: #adb5bd;
+    background: #ffba00;
 }
 .h5, h5 {
     font-size: .9375rem;

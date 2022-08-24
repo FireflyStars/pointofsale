@@ -81,10 +81,10 @@ export default {
     right: 5%;
 }
 .avatar-online::before {
-    background: #ffc107;
+    background:#4dd965;
 }
 .avatar-offline::before {
-    background: #adb5bd;
+    background: #ffba00;
 }
 .h5, h5 {
     font-size: .9375rem;

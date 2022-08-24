@@ -13,11 +13,12 @@
 
                         <!-- Chats -->
                         <div class="card-list">
-                            <chat-user v-for="(user, index) in users" :key="index" 
+                            <chat-user v-for="(user, index) in userList" :key="index" 
                                 :id="user.id" 
                                 :imgUrl="user.imgUrl" 
                                 :name="user.name"
                                 :lastMessage="user.lastMessage"
+                                :lastMessageTime="user.lastMessageTime"
                                 :unReadCnt="user.unReadCnt"
                                 :online="user.online"
                                 :isTyping="user.isTyping"
@@ -32,36 +33,25 @@
 </aside>    
 </template>
 <script>
-import { ref } from 'vue';
+import { computed } from 'vue';
 import ChatUser from './ChatUser';
+import {
+    CHAT_MODULE,
+    GET_USERS,
+} from '../../store/types/types';
+import { useStore } from 'vuex';
 
 export default {
     components:{
         ChatUser
     },
     setup(){
-        const users = ref([
-            {
-                id: 1,
-                name: 'William Wright',
-                imgUrl: '../../images/user-img.jpg',
-                lastMessage: 'Hey, Marshall! How are you? Can you please change the color theme of the website to pink and purple?',
-                unReadCnt: 3,
-                isTyping: false,
-                online: false,
-            },
-            {
-                id: 2,
-                name: 'Ollie Chandler',
-                imgUrl: '../../images/user-img2.jpg',
-                lastMessage: 'Hey, Marshall! How are you? Can you please change the color theme of the website to pink and purple?',
-                unReadCnt: 0,
-                isTyping: true,
-                online: true,
-            },
-        ])
+        const store = useStore();
+        const userList = computed(()=>{
+            return store.getters[`${CHAT_MODULE}${GET_USERS}`];
+        })
         return{
-            users
+            userList
         }
     }
 }
