@@ -676,6 +676,13 @@ const router = createRouter({
             },
         },
         {
+            path: "/chat",
+            name: "Chat",
+            component: () =>
+                import("../pages/Chat/Chat.vue"),
+            props: true,
+        },
+        {
             path: '/:pathMatch(.*)',
             name: 'not-found',
             component:NotFound
