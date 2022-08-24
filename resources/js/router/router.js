@@ -90,6 +90,16 @@ const router = createRouter({
         },
 
         {
+            path: '/commande-fournisseur',
+            name: 'commande-fournisseur',
+            props: true,
+            component: () => import('../pages/CommandeFournisseur/Index'),
+            meta: {
+                authenticated: true
+            },
+        },
+
+        {
             path: '/permis',
             name: 'permis',
             props: true,

@@ -1,17 +1,21 @@
 <template>
 
     <router-view>
-        <transition
-            enter-active-class="animate__animated animate__fadeIn"
-        >
-            <div class="container-fluid h-100 bg-color" v-if="showcontainer">
-                <main-header />
+        
+        <div class="container-fluid h-100 bg-color" v-if="showcontainer">
 
-                <div 
-                class="row d-flex align-content-stretch align-items-stretch flex-row hmax main-view-wrap reports-page" 
-                style="z-index:100" >
-                    
-                    <side-bar />
+            <main-header />
+
+            <div 
+            class="row d-flex align-content-stretch align-items-stretch flex-row hmax main-view-wrap" 
+            style="z-index:100" >
+                
+                <side-bar />
+
+                <transition
+                    enter-active-class="animate__animated animate_fadeIn"
+                    leave-active-class="animate__animated animate_fadeOut"
+                >
 
                     <div class="col main-view container">
 
@@ -39,20 +43,42 @@
 
                         <div class="row m-0 ml-5 mr-5">
 
-                            <div class="col-12">
-                                
-                                <item-list-table 
-                                    :table_def="templatesList" 
-                                >
-                                    <template v-slot:pages="{ row }">
-                                        {{ row.pages.length }}
-                                    </template>
-                                    <template v-slot:id="{ row }">
+                            <div class="col">
 
-                                        <a href="#" class="link" @click.stop="navigatePage(row.id)">Edit</a>
-                                        
+                                <tab-pane :tabs="tabs" current='tout' class="almarai_700_normal">
+                                
+                                    <template v-slot:tout>
+
+                                        <item-list-table 
+                                            :table_def="templatesList" 
+                                        >
+                                            
+                                            <template v-slot:pages="{ row }">
+                                                {{ row.pages.length }}
+                                            </template>
+
+                                            <template v-slot:id="{ row }">
+
+                                                <div class="d-flex align-items-center gap-3">
+                                                
+                                                    <a href="#" class="link" @click.stop="navigatePage(row.id)">
+                                                        <Icon name="edit" width="20" height="20" />
+                                                    </a>
+                                                    <a href="#" class="link" @click.stop="deleteTemplate(row.id)">
+                                                        <Icon name="delete" width="20" height="20" />
+                                                    </a>
+                                                    
+                                                </div>
+
+                                                
+                                            </template>
+
+                                        </item-list-table>
+
                                     </template>
-                                </item-list-table>
+
+                                </tab-pane>
+
                             
                             </div>
 
@@ -61,9 +87,12 @@
 
                     </div>
 
-                </div>
+                </transition>
+
             </div>
-        </transition>
+
+        </div>
+
     </router-view>
 
 
@@ -71,6 +100,7 @@
 
 <script setup>
 
+import Swal from 'sweetalert2'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { onMounted, ref, nextTick, computed } from 'vue'
@@ -78,6 +108,14 @@ import ItemListTable from '../../components/miscellaneous/ItemListTable/ItemList
 
 import { 
     BUILDER_MODULE_LIST, 
+    BUILDER_DELETE_TEMPLATE,
+    ITEM_LIST_MODULE,
+    ITEM_LIST_REMOVE_ROW,
+    TOASTER_MODULE,
+    TOASTER_MESSAGE,
+    LOADER_MODULE,
+    DISPLAY_LOADER,
+    HIDE_LOADER,
 } from '../../store/types/types'
 
 const store = useStore()
@@ -87,6 +125,11 @@ const showcontainer = ref(false)
 
 const templatesList = computed(() => store.getters[`${BUILDER_MODULE_LIST}templateListDefinition`])
 
+const tabs = ref({
+    tout: 'Tout',
+})
+
+
 const navigatePage = (id) => {
     
     router.push({
@@ -95,6 +138,51 @@ const navigatePage = (id) => {
             id
         }
     })
+
+}
+
+const deleteTemplate = async (id) => {
+
+    try {
+
+        const result = await Swal.fire({
+            title: 'Veuillez confirmer!',
+            text: `Voulez-vous changer le statut en ?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#42A71E',
+            cancelButtonColor: 'var(--lcdtOrange)',
+            cancelButtonText: 'Annuler',
+            confirmButtonText: `Oui, s'il vous plaît.`
+        })
+
+        if(result.isConfirmed) {
+
+            store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [
+                true,
+                "Delete template en cours..",
+            ])
+
+            await store.dispatch(`${BUILDER_MODULE_LIST}${BUILDER_DELETE_TEMPLATE}`, id)
+            store.commit(`${ITEM_LIST_MODULE}${ITEM_LIST_REMOVE_ROW}`, { id: 'id', idValue: id })
+
+        }
+
+    }
+
+    catch(e) {
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            type: 'danger',
+            message: 'Something went wrong',
+            ttl: 5,
+        })
+        throw e
+    }
+
+    finally {
+        store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`)
+    }
+
 
 }
 

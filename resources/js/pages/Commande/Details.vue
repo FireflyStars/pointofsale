@@ -129,7 +129,7 @@
         leave-active-class="animate__animated animate__fadeOut"
     >
                 
-        <order-documents v-if="typeof order!='undefined'&& typeof order.state!='undefined'&&order.state.order_type=='COMMANDE'"  :order_id="order.id"></order-documents>
+        <order-documents v-if="typeof order!='undefined'&& typeof order.state!='undefined'" :order_id="order.id"></order-documents>
     </transition>
 
     <pointage-list @trigger="TriggerNewPointage" :orderId="order_id" />

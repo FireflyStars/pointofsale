@@ -2,9 +2,9 @@
 import axios from 'axios'
 import {
     SET_LOADING,
+    RESET_DETAILS,
     PERMIS_LIST_MODULE,
     PERMIS_GET_LIST,
-    PERMIS_GET_DETAILS
 }
 from '../types/types'
 
@@ -33,9 +33,9 @@ const columns_def = [
         suffix: "",
     },
     {
-        id: "contact",
-        display_name: "Contact",
-        type: "html",
+        id: "user_id",
+        display_name: "Personnel",
+        type: "string",
         class: "",
         header_class: "",
         sort: true,
@@ -45,33 +45,20 @@ const columns_def = [
         suffix: "",
     },
     {
-        id: "email",
-        display_name: "Email",
+        id: "name",
+        display_name: "Permis",
         type: "string",
         class: "",
         header_class: "",
         sort: true,
         filter: true,   
-        having: false,
+        having: true,
         prefix: "",
         suffix: "",
     },
     {
-        id: "comment",
-        display_name: "Note",
-        type: "string",
-        class: "",
-        header_class: "",
-        sort: true,
-        filter: true, 
-        having: false,  
-        prefix: "",
-        suffix: "",
-    },
-    
-    {
-        id: "created_at",
-        display_name: "Date Creaction",
+        id: "dateofdocument",
+        display_name: "Date Document",
         type: "date",
         class: "",
         header_class: "",
@@ -80,92 +67,24 @@ const columns_def = [
         having: true,  
         prefix: "",
         suffix: "",
-        table: 'users',
         allow_groupby: true,
     },
-
     {
-        id: "supplier_type",
-        display_name: "TYPE",
-        type: "string",
+        id: "expires",
+        display_name: "Date Expiration",
+        type: "date",
         class: "",
         header_class: "",
         sort: true,
-        filter: true,   
-        having: true,
+        filter: true, 
+        having: true,  
         prefix: "",
         suffix: "",
-        allow_groupby: true,
-        filter_options: [{
-            id: 'PRODUIT MECANIQUE', value: 'PRODUIT MECANIQUE'
-        }, {
-            id: 'ORDINATEUR', value: 'ORDINATEUR'
-        }, {
-            id: 'INTERIM', value: 'INTERIM'
-        }]
-    },
-
-    {
-        id: "supplier_status_id",
-        display_name: "STATUT",
-        type: "component",
-        class: "",
-        header_class: "",
-        sort: true,
-        filter: true,   
-        having: true,
-        prefix: "",
-        suffix: "",
-        allow_groupby: true,
-        filter_options: '/get-fournisseur-supplier-status-formatted'
-    },
-    {
-        id: "actif",
-        display_name: "Actif",
-        type: "component",
-        class: "",
-        header_class: "",
-        sort: false,
-        filter: false,   
-        having: true,
-        prefix: "",
-        suffix: "",
-        allow_groupby: true,
-        filter_options: ''
-    },
-    {
-        id: "count_orders",
-        display_name: "NreCde",
-        type: "number",
-        class: "",
-        header_class: "",
-        sort: true,
-        filter: true,   
-        having: true,
-        prefix: "",
-        suffix: "",
-        group_total: true,
-        footer_total: true,
-    },
-
-    {
-        id: "montant",
-        display_name: "MONTANT CDE",
-        type: "price",
-        class: "",
-        header_class: "",
-        sort: true,
-        filter: true,   
-        having: true,
-        prefix: "",
-        suffix: "",
-        group_total: true,
-        footer_total: true,
-    },
+    }
 
 ]
 
-export const fournisseur = {
+export const permis = {
 
     namespaced: true,
 
@@ -175,13 +94,13 @@ export const fournisseur = {
 
             column_filters: [],//required empty array
             store: {
-              MODULE: FOURNISSEUR_LIST_MODULE,//required
-              INIT: FOURNISSEUR_GET_LIST,//required
+              MODULE: PERMIS_LIST_MODULE,//required
+              INIT: PERMIS_GET_LIST,//required
             },
             batch_actions: {
                 delete: {
                     name: "Delete",
-                    route: "DeleteFournisseur",
+                    route: "",
                     type: 'button'
                 },
                 status: {
@@ -190,8 +109,8 @@ export const fournisseur = {
 
             },
             translations: {
-              group_item: 'Fournisseur',
-              group_items: 'Fournisseur',
+              group_item: 'Permis',
+              group_items: 'Permis',
               footer_item: 'ITEM',
               footer_items: 'ITEMS',
               no_batch_action: "Aucune action par lot n'est disponible.",
@@ -204,9 +123,9 @@ export const fournisseur = {
                   color: '#fd3b35'
                 }
             ,
-            item_route_name: "fournisseur-details",// the route to trigger when a line is click 
+            item_route_name: "",// the route to trigger when a line is click 
             max_per_page: 10,//required          
-            identifier: "fournisseur_list_all",//required
+            identifier: "permis_list_all",//required
             filter: true,// required boolean
             rearrange_columns: true,// required boolean
             columns_def
@@ -243,7 +162,7 @@ export const fournisseur = {
     actions: {
 
 
-        async [FOURNISSEUR_GET_LIST]({ commit }, params) {
+        async [PERMIS_GET_LIST]({ commit }, params) {
 
 
             return axios.post(`/get-permis-list`, params).then((response) => {

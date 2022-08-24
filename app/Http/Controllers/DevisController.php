@@ -174,7 +174,9 @@ class DevisController extends Controller
         return response()->json($orderInvoices);
 
     }
-    public function loadOrderDocuments(Request $request){
+
+    public function loadOrderDocuments(Request $request)
+    {
             $order_id=$request->post('order_id');
             $order=Order::find($order_id);
             $order_documents=array();

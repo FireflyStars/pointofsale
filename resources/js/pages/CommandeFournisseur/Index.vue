@@ -20,8 +20,8 @@
                     <div class="col main-view container">
                         
                         <page-title 
-                            icon="paiement" 
-                            name="PERMIS" 
+                            icon="commande-fournisseur" 
+                            name="COMMANDE FOURNISSEUR" 
                             class="almarai_extrabold_normal_normal"
                             style="height: 45px; width: 45px;"
                         />
@@ -34,18 +34,28 @@
 
                                     <template v-slot:tout>
                                         
-                                        <item-list-table :table_def="permisList">
+                                        <item-list-table :table_def="fournisseurList">
 
-                                            <!-- <template v-slot:supplier_status_id="{ row }">
+                                            <template v-slot:supplier_order_state_id="{ row }">
 
-                                                <status-tag :id="row.supplier_status_id" />   
+                                                <status-tag :id="row.supplier_order_state_id" />   
 
-                                            </template>     -->
+                                            </template>    
 
                                         </item-list-table>
                                             
                                     </template>
 
+                                    <template v-slot:mes_commandes>
+                                        
+                                        <item-list-table :table_def="fournisseurUserList">
+                                            
+                                            <status-tag :id="row.supplier_order_state_id" /> 
+
+                                        </item-list-table>
+
+                                    </template>
+                                    
                                 </tab-pane>
                             
                             </div>
@@ -72,20 +82,24 @@
     import { useStore } from 'vuex'
     import { ref, computed, onMounted } from 'vue'
     import ItemListTable from '../../components/miscellaneous/ItemListTable/ItemListTable.vue'
-    import StatusTag from '../../components/Fournisseur/StatusTag'
+    import StatusTag from '../../components/CommandeFournisseur/StatusTag'
+
     
     import {
-        PERMIS_LIST_MODULE
+        COMMANDE_FOURNISSEUR_LIST_MODULE
     }
     from '../../store/types/types'
+
 
     const store = useStore()
 
     const tabs = ref({
         tout: 'Tout',
+        mes_commandes: 'Mes Commmandes',
     })
 
-    const permisList = computed(() => store.getters[`${PERMIS_LIST_MODULE}list`])
+    const fournisseurList = computed(() => store.getters[`${COMMANDE_FOURNISSEUR_LIST_MODULE}list`])
+    const fournisseurUserList = computed(() => store.getters[`${COMMANDE_FOURNISSEUR_LIST_MODULE}userList`])
 
 
 </script>

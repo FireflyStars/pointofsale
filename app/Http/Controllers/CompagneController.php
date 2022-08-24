@@ -39,6 +39,8 @@ class CompagneController extends Controller
         
         $card = campagne_card::where('user_id', $request->user()->id)->where('status', 'NOUVEAU')->first();
 
+        if(is_null($card)) return response()->json(0);
+
         return response()->json($card->details->sum('qty'));
 
     }
@@ -253,7 +255,12 @@ class CompagneController extends Controller
 
         $card = campagne_card::where('user_id', $user->id)->where('status', 'NOUVEAU')->first();
 
-        $detail = $card->details()->where('campagne_category_id', $campagne->id)->first();
+        $detail = null;
+
+        if(!is_null($card)) 
+        {
+            $detail = $card->details()->where('campagne_category_id', $campagne->id)->first();
+        }
 
         if(!is_null($detail)) 
         {

@@ -1,8 +1,10 @@
 
+import axios from 'axios';
 import {
     BUILDER_MODULE_LIST,
     GET_REPORT_TEMPLATES,
-    SAVE_REPORT_TEMPLATES
+    SAVE_REPORT_TEMPLATES,
+    BUILDER_DELETE_TEMPLATE
 }
 from '../types/types'
 
@@ -63,20 +65,8 @@ export const pageBuilderList = {
                     },
                 }, 
                 {
-                    id: "id",
-                    display_name: "No",
-                    type: "number",
-                    class: "",
-                    header_class: "",
-                    sort: true,
-                    filter: true,   
-                    prefix: "",
-                    suffix: "",
-                    table: 'templates',
-                },
-                {
                     id: "name",
-                    display_name: "Name",
+                    display_name: "Nom du template",
                     type: "string",
                     class: "",
                     header_class: "",
@@ -87,8 +77,19 @@ export const pageBuilderList = {
                     table: 'templates',
                 },
                 {
+                    id: "pages",
+                    display_name: "Nombre de page",
+                    type: "component",
+                    class: "",
+                    header_class: "",
+                    sort: false,
+                    filter: false,   
+                    prefix: "",
+                    suffix: "",
+                },
+                {
                     id: "affiliate",
-                    display_name: "Affiliate",
+                    display_name: "Affilié",
                     type: "string",
                     class: "",
                     header_class: "",
@@ -99,19 +100,8 @@ export const pageBuilderList = {
                     suffix: "",
                 },
                 {
-                    id: "pages",
-                    display_name: "Pages",
-                    type: "component",
-                    class: "",
-                    header_class: "",
-                    sort: false,
-                    filter: false,   
-                    prefix: "",
-                    suffix: "",
-                },
-                {
                     id: "created_at",
-                    display_name: "Created At",
+                    display_name: "Date Document",
                     type: "date",
                     class: "",
                     header_class: "",
@@ -132,7 +122,6 @@ export const pageBuilderList = {
                     prefix: "",
                     suffix: "",
                 },
-        
           
             ]
 
@@ -156,6 +145,22 @@ export const pageBuilderList = {
 
 
         },
+
+
+        async [BUILDER_DELETE_TEMPLATE]({ commit }, id) {
+
+            try {
+                await axios.post(`/delete-template/${id}`)
+            }
+
+            catch(e) {
+                throw e
+            }
+            
+
+
+        }
+
 
     }
 }

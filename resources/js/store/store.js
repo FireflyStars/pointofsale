@@ -78,6 +78,12 @@ import { menu as MENU_ITEMS_MODULE } from "./modules/menu"
 import { fournisseurStatusTag as FOURNISSEUR_STATUS_MODULE } from "./modules/component_store/FournisseurTag"
 import { fournisseur as FOURNISSEUR_LIST_MODULE } from "./modules/fournisseur"
 
+import { commandeFournisseurStatusTag as COMMANDE_FOURNISSEUR_STATUS_MODULE } from "./modules/component_store/CommandeFournisseurTag"
+import { commande_fournisseur as COMMANDE_FOURNISSEUR_LIST_MODULE } from "./modules/commande_fournisseur"
+
+import { permis as PERMIS_LIST_MODULE } from "./modules/permis"
+
+
 
 export default createStore({
     modules: {
@@ -120,6 +126,9 @@ export default createStore({
         POINTAGE_STATUS_MODULE,
         MENU_ITEMS_MODULE,
         FOURNISSEUR_STATUS_MODULE,
-        FOURNISSEUR_LIST_MODULE
+        FOURNISSEUR_LIST_MODULE,
+        PERMIS_LIST_MODULE,
+        COMMANDE_FOURNISSEUR_STATUS_MODULE,
+        COMMANDE_FOURNISSEUR_LIST_MODULE
     }
 });

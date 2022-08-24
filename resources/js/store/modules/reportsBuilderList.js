@@ -2,6 +2,7 @@
 import {
     REPORTS_BUILDER_MODULE,
     GET_REPORTS,
+    BUILDER_DELETE_REPORT
 }
 from '../types/types'
 
@@ -20,7 +21,7 @@ export const reportsBuilderList = {
             batch_actions: {
                 delete: {
                     name: "Delete",
-                    route: "DeleteDevis",
+                    route: "DeleteReport",
                     type: 'button'
                 },
                 status: {
@@ -29,8 +30,8 @@ export const reportsBuilderList = {
 
             },
             translations: {
-              group_item: 'devis',
-              group_items: 'devis',
+              group_item: 'Report',
+              group_items: 'Report',
               footer_item: 'ITEM',
               footer_items: 'ITEMS',
               no_batch_action: "Aucune action par lot n'est disponible.",
@@ -63,6 +64,17 @@ export const reportsBuilderList = {
                 }, 
                 {
                     id: "id",
+                    display_name: "No",
+                    type: "number",
+                    class: "",
+                    header_class: "",
+                    sort: true,
+                    filter: true,   
+                    prefix: "",
+                    suffix: "",
+                },
+                {
+                    id: "order_id",
                     display_name: "Order id",
                     type: "number",
                     class: "justify-content-start",
@@ -98,9 +110,9 @@ export const reportsBuilderList = {
                     suffix: "",
                 },
                 {
-                    id: "pages",
+                    id: "page_count",
                     display_name: "Pages",
-                    type: "component",
+                    type: "number",
                     class: "justify-content-start",
                     header_class: "",
                     sort: false,
@@ -117,7 +129,7 @@ export const reportsBuilderList = {
                     header_class: "",
                     sort: true,
                     filter: true,  
-                    having: false, 
+                    having: true, 
                     prefix: "",
                     suffix: "",
                     table: "orders"
@@ -154,6 +166,18 @@ export const reportsBuilderList = {
             })
 
         },
+
+        async [BUILDER_DELETE_REPORT]({ commit }, id) {
+
+            try {
+                await axios.post(`/delete-report/${id}`)
+            }
+
+            catch(e) {
+                throw e
+            }
+            
+        }
 
     }
 }
