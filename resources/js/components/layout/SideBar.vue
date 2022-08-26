@@ -7,7 +7,7 @@
 
         <div 
             class="col-sm-1 side-bar-wrap d-flex flex-column align-items-start"
-            style="padding-left: 0; margin-left: 0;" 
+            style="padding-left: 0; margin-left: 0;width:max-content;" 
             :class="{ slidein:slidesidebar }" 
             v-if="$route.name != 'Login'"
         >

@@ -1,0 +1,15 @@
+.paper {
+    font-family: arial;
+    & .red{
+    color:red;
+    }
+
+    & .tableheaderorange{
+        background-color: #EF682D;
+        color:#FFF;
+        font-size:9.74px;
+    }
+    & img{
+        max-width: 100%;
+    }
+}

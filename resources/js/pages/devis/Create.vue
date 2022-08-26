@@ -1751,7 +1751,7 @@ export default {
     // remove a zone
     const removeZone = (selectedIndex)=>{
       Swal.fire({
-        title: 'Es-tu sûr?',
+        title: 'Etes-vous sûr?',
         text: "Vous ne pourrez pas revenir en arrière !",
         icon: 'warning',
         showCancelButton: true,
@@ -1788,7 +1788,7 @@ export default {
     // remove ouvrage from ouvrages
     const removeOuvrage = (zoneIndex, ouvrageType, ouvrageIndex)=>{
       Swal.fire({
-        title: 'Es-tu sûr?',
+        title: 'Etes-vous sûr?',
         text: "Vous ne pourrez pas revenir en arrière !",
         icon: 'warning',
         showCancelButton: true,
@@ -1826,7 +1826,7 @@ export default {
     // remove detail from task
     const removeOuvrageDetail = (zoneIndex, ouvrageType, ouvrageIndex, taskIndex, detailIndex)=>{
       Swal.fire({
-        title: 'Es-tu sûr?',
+        title: 'Etes-vous sûr?',
         text: "Vous ne pourrez pas revenir en arrière !",
         icon: 'warning',
         showCancelButton: true,

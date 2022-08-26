@@ -37,7 +37,34 @@ const router = createRouter({
             },
 
         },
+        {
+            path:'/htmltemplate',
+            name:'GestionPDF',
+            component:()=> import('../pages/templatemanager/GestionPdf.vue'),//import('../Pages/Index'),
+            children:[
 
+            ],
+            meta:{
+                authenticated:true
+            },
+
+        },
+        {
+            path:'/htmltemplate/nouveau',
+            name:'HtmlTemplateNew',
+            component:()=> import('../pages/templatemanager/HtmlTemplate.vue'),
+            meta:{
+                authenticated:true
+            }
+        },
+        {
+            path:'/htmltemplate/editer/:id',
+            name:'HtmlTemplateEdit',
+            component:()=> import('../pages/templatemanager/HtmlTemplate.vue'),
+            meta:{
+                authenticated:true
+            }
+        },
         {
             path: '/parameters',
             name: 'parameters',

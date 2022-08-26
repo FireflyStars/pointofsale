@@ -1854,7 +1854,7 @@ export default {
     const removeZone = (selectedIndex)=>{
       if(form.value.orderStatus.type  != 'COMMANDE'){
         Swal.fire({
-          title: 'Es-tu sûr?',
+          title: 'Etes-vous sûr?',
           text: "Vous ne pourrez pas revenir en arrière !",
           icon: 'warning',
           showCancelButton: true,
@@ -1899,7 +1899,7 @@ export default {
     const removeOuvrage = (zoneIndex, ouvrageType, ouvrageIndex)=>{
       if(form.value.orderStatus.type  != 'COMMANDE'){
         Swal.fire({
-          title: 'Es-tu sûr?',
+          title: 'Etes-vous sûr?',
           text: "Vous ne pourrez pas revenir en arrière !",
           icon: 'warning',
           showCancelButton: true,
@@ -1945,7 +1945,7 @@ export default {
     const removeOuvrageDetail = (zoneIndex, ouvrageType, ouvrageIndex, taskIndex, detailIndex)=>{
       if(form.value.orderStatus.type  != 'COMMANDE'){
         Swal.fire({
-          title: 'Es-tu sûr?',
+          title: 'Etes-vous sûr?',
           text: "Vous ne pourrez pas revenir en arrière !",
           icon: 'warning',
           showCancelButton: true,

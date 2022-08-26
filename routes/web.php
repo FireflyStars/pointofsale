@@ -43,6 +43,15 @@ use App\Http\Controllers\InterventionsController;
 use App\Http\Controllers\CommandeFounisseurController;
 use App\Http\Controllers\ActionCommercialListController;
 
+
+
+
+
+use App\Http\Controllers\HtmlTemplateController;
+use App\Http\Controllers\PdfController;
+use TCG\Voyager\Models\Role;
+
+
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
     Route::post('/update-text-pos',[LcdtAdminController::class,'updateTextPos'])->name('update-text-pos');
@@ -98,6 +107,8 @@ Route::post('/generate-campagne-product-pdf/{campagne}', [CompagneController::cl
 Route::get('/generate-campagne-product-pdf/{campagne}', [CompagneController::class, 'generate_pdf']);
 Route::get('/get-card-quantity', [CompagneController::class, 'get_card_quantity']);
 
+Route::get('/snappypdf', [PdfController::class, 'index']);
+Route::get('/jsontohtml', [PdfController::class, 'jsonToHtml']);
 
 Route::get('/get-entite-list', [EntiteController::class, 'index']);
 Route::post('/get-entite-list', [EntiteController::class, 'index']);
@@ -284,7 +295,16 @@ Route::group([
     Route::post('/get-quick-links',[QuickLinkController::class,'getLinks'])->middleware('auth')->name('get-quick-links');
     Route::post('/remove-quick-link',[QuickLinkController::class,'removeLink'])->middleware('auth')->name('remove-quick-link');
     
-    
+    //htmltemplate
+   
+    Route::post('/save-htmltemplate-conf',[HtmlTemplateController::class,'saveHtmlTemplateConf'])->middleware('auth')->name('save-htmltemplate-conf');
+    Route::post('/get-htmltemplate-conf',[HtmlTemplateController::class,'getHtmlTemplateConf'])->middleware('auth')->name('get-htmltemplate-conf');
+    Route::post('/save-htmltemplate-element',[HtmlTemplateController::class,'saveHtmlTemplateElement'])->middleware('auth')->name('save-htmltemplate-element');
+    Route::post('/get-htmltemplate-elements',[HtmlTemplateController::class,'getHtmlTemplateElements'])->middleware('auth')->name('get-htmltemplate-elements');
+    Route::post('/remove-htmltemplate-element',[HtmlTemplateController::class,'removeHtmlTemplateElement'])->middleware('auth')->name('remove-htmltemplate-element');
+    Route::post('/reposition-htmltemplate-element',[HtmlTemplateController::class,'reposHtmlTemplateElement'])->middleware('auth')->name('reposition-htmltemplate-element');
+    Route::post('/save-hf',[HtmlTemplateController::class,'SaveHf'])->middleware('auth')->name('save-hf');
+    Route::get('/htmltemplate-generate-test',[HtmlTemplateController::class,'generateTest'])->middleware('auth')->name('htmltemplate-generate-test');
     
 
     // Devis

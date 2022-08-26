@@ -6,6 +6,10 @@ import {
 import {
     loader as LOADER_MODULE
 } from './modules/loader'
+
+import {
+    htmltemplate as HTMLTEMPLATE_MODULE
+} from './modules/htmltemplate'
 import {
     toaster as TOASTER_MODULE
 } from "./modules/toaster";
@@ -89,6 +93,7 @@ import { chat as CHAT_MODULE } from "./modules/chat"
 export default createStore({
     modules: {
         LOADER_MODULE,
+        HTMLTEMPLATE_MODULE,
         TOASTER_MODULE,
         CIBLE_MODULE,
         ITEM_LIST_MODULE,

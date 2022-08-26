@@ -253,7 +253,7 @@ export default {
     min-width: 100%;
     width: fit-content;
     left: 0;
-    top: 44px;
+    top: 41px;
     background: #fff;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, .4);
     max-height: 168px;
@@ -294,7 +294,7 @@ export default {
 }
 .hint {
     margin-bottom: 20px;
-    font-size: 16px;
+    font-size: 10px;
     color: #757575;
     font-weight: 300;
 }
