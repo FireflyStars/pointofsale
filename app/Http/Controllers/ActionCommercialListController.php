@@ -196,7 +196,6 @@ class ActionCommercialListController extends Controller
             'datefin'   => $datefin . ' ' . $request->datefinTime . ':00'
         ]);
 
-        ActionUpdated::dispatch($event);
         $status = EventStatus::where('name', 'Replanification')->first();
 
         $newDateDebut = Carbon::parse($event->datedebut)->format('Y-m-d');
