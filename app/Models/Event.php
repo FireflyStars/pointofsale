@@ -12,7 +12,10 @@ use Illuminate\Database\Eloquent\Model;
 use function PHPUnit\Framework\throwException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use App\TokenStore\TokenCache;
+use Microsoft\Graph\Graph;
+use Microsoft\Graph\Model as OutlookModel;
+use Carbon\Carbon;
 class Event extends Model
 {
     use HasFactory;
@@ -98,4 +101,85 @@ class Event extends Model
         return $this->hasMany(EventHistory::class);
    }
 
+   protected static function boot()
+   {
+       parent::boot();
+       Event::created(function ($event) {
+            $tokenCache = new TokenCache();
+            $graph = new Graph();
+            $graph->setAccessToken($tokenCache->getAccessToken());
+            // get user's email
+            $user_email = User::find($event->user_id)->email;
+            $user_email = 'jlchauvet@lacompagniedestoits.com';
+            // check user's email validation if it's lcdt or not
+            if(preg_match("/[a-zA-Z0-9_\.+]+@(lacompagniedestoits)(\.com)/", $user_email)){
+                $event_url = sprintf("/users/%s/calendar/events", $user_email);
+                $data = [
+                    'Subject' => $event->name,
+                    'Body' => [
+                        'ContentType' => 'HTML',
+                        'Content' => $event->description,
+                    ],
+                    'Start' => [
+                        'DateTime' => Carbon::parse($event->datedebut)->toDateTimeLocalString(),
+                        'TimeZone' => config('app.timezone'),
+                    ],
+                    'End' => [
+                        'DateTime' => Carbon::parse($event->datefin)->toDateTimeLocalString(),
+                        'TimeZone' => config('app.timezone'),
+                    ],
+                ];
+                $outlook_event = $graph->createRequest('POST', $event_url)
+                            ->attachBody($data)
+                            ->setReturnType(OutlookModel\Event::class)
+                            ->execute();
+                Event::where('id', $event->id)->update([
+                    'outlook_event_id'  => $outlook_event->getId()
+                ]);
+            }
+       });
+       Event::updated(function ($event) {
+            $tokenCache = new TokenCache();
+            $graph = new Graph();
+            $graph->setAccessToken($tokenCache->getAccessToken());
+            // get user's email
+            $user = User::find($event->user_id);
+            // check user's email validation if it's lcdt or not
+            if(preg_match("/[a-zA-Z0-9_\.+]+@(lacompagniedestoits)(\.com)/", $user->email)){
+                $event_url = sprintf("/users/%s/calendar/events/%s", $user->email, $user->outlook_event_id);
+                $data = [
+                    'Subject' => $event->name,
+                    'Body' => [
+                        'ContentType' => 'HTML',
+                        'Content' => $event->description,
+                    ],
+                    'Start' => [
+                        'DateTime' => Carbon::parse($event->datedebut)->toDateTimeLocalString(),
+                        'TimeZone' => config('app.timezone'),
+                    ],
+                    'End' => [
+                        'DateTime' => Carbon::parse($event->datefin)->toDateTimeLocalString(),
+                        'TimeZone' => config('app.timezone'),
+                    ],
+                ];
+                $graph->createRequest('PATCH', $event_url)
+                        ->attachBody($data)
+                        ->setReturnType(OutlookModel\Event::class)
+                        ->execute();
+            }
+       });
+       Event::deleted(function ($event) {
+            $tokenCache = new TokenCache();
+            $graph = new Graph();
+            $graph->setAccessToken($tokenCache->getAccessToken());
+            // get user's email
+            $user = User::find($event->user_id);
+            // check user's email validation if it's lcdt or not
+            if(preg_match("/[a-zA-Z0-9_\.+]+@(lacompagniedestoits)(\.com)/", $user->email)){
+                $event_url = sprintf("/users/%s/calendar/events/%s", $user->email, $user->outlook_event_id);
+                $graph->createRequest('DELETE', $event_url)
+                    ->execute();
+            }
+       });
+   }   
 }
