@@ -13,11 +13,12 @@
 <div class="row" v-if="generalconfig.name.trim()!=''"><span class="col mb-2 font-16 almarai_700_normal" >{{generalconfig.name}}</span></div>
 <div class="row align-items-center">
     <div class="col-2 mb-2" ><input type="range"  v-model.lazy="zoom" min="50" max="150" step="1"> {{zoom}}%</div>
-    <div class="col-2 mb-2"><switch-btn v-model="rendersql" labelLeft="Afficher données réelles"></switch-btn></div>
-    <div class="col-1 mb-2"  v-if="generalconfig.type=='pdf'"><button class="btn btn-default btn-animate-side btn-success">Test PDF</button></div>
-    <div class="col-1 mb-2" v-if="generalconfig.type=='email'"><button class="btn btn-default btn-animate-side btn-success" >Test Email</button></div>
+    <div class="col-2 mb-2" v-if="template_id>0"><switch-btn v-model="rendersql" labelLeft="Afficher données réelles"></switch-btn></div>
+    <div class="col-1 mb-2"  v-if="template_id>0&&generalconfig.type=='pdf'"><button class="btn btn-default btn-animate-side btn-success" @click="testPdf()">Test PDF</button></div>
+    <div class="col-1 mb-2" v-if="template_id>0&&generalconfig.type=='email'"><button class="btn btn-default btn-animate-side btn-success" @click="testEmail()">Test Email</button></div>
 </div>
 <div class="row align-items-center"></div>
+<div v-html="style()"></div>
                     <div class="row m-0 ml-5 mr-5 mb-5">
                                 <div class=" paper" :style="`transform:scale(${zoom/100});padding-top:${currentHeader!=null?currentHeader.height:papermargin.top}${papermargin.unit};padding-right:${papermargin.right}${papermargin.unit};padding-bottom:${currentFooter!=null?currentFooter.height:papermargin.bottom}${papermargin.unit};padding-left:${papermargin.left}${papermargin.unit};`" >
                                 <div class="margin-line" v-if="papermargin.top>0&&currentHeader==null" :style="`border-bottom: 1px dashed #3c3c3c;width: 100%;left:0;top:0;height:${papermargin.top}${papermargin.unit};`"></div>
@@ -113,7 +114,7 @@ import { ref, onMounted, nextTick, computed, watch } from 'vue';
 import { useStore } from 'vuex';
 import PaperEditor from './PaperEditor.vue';
 import { useRoute } from 'vue-router';
-import { HTMLTEMPLATE_GET_CURRENTFOOTER, HTMLTEMPLATE_GET_CURRENTHEADER, HTMLTEMPLATE_GET_ELEMENTS, HTMLTEMPLATE_GET_GLOBALCONF, HTMLTEMPLATE_LOAD_ELEMENTS, HTMLTEMPLATE_MODULE, HTMLTEMPLATE_REMOVE_ELEMENT, HTMLTEMPLATE_REPOSITION_ELEMENT, HTMLTEMPLATE_SET_ID, HTMLTEMPLATE_SET_RENDERSQL } from '../../store/types/types';
+import { HTMLTEMPLATE_GET_CURRENTFOOTER, HTMLTEMPLATE_GET_CURRENTHEADER, HTMLTEMPLATE_GET_ELEMENTS, HTMLTEMPLATE_GET_GLOBALCONF, HTMLTEMPLATE_GET_GLOBAL_CSS, HTMLTEMPLATE_GET_ID, HTMLTEMPLATE_LOAD_ELEMENTS, HTMLTEMPLATE_MODULE, HTMLTEMPLATE_REMOVE_ELEMENT, HTMLTEMPLATE_REPOSITION_ELEMENT, HTMLTEMPLATE_SET_ID, HTMLTEMPLATE_SET_RENDERSQL, HTMLTEMPLATE_TEST_EMAIL } from '../../store/types/types';
 import SwitchBtn from '../../components/miscellaneous/SwitchBtn.vue'
 import { displayError, displayLoader, hideLoader } from '../../components/helpers/helpers';
 import Swal from 'sweetalert2';
@@ -156,7 +157,9 @@ export default {
 
   const generalconfig=computed(()=>store.getters[`${HTMLTEMPLATE_MODULE}${HTMLTEMPLATE_GET_GLOBALCONF}`]);
   const currentHeader=computed(()=>store.getters[`${HTMLTEMPLATE_MODULE}${HTMLTEMPLATE_GET_CURRENTHEADER}`]);
-  const currentFooter=computed(()=>store.getters[`${HTMLTEMPLATE_MODULE}${HTMLTEMPLATE_GET_CURRENTFOOTER}`]);    
+  const currentFooter=computed(()=>store.getters[`${HTMLTEMPLATE_MODULE}${HTMLTEMPLATE_GET_CURRENTFOOTER}`]); 
+  const template_id=computed(()=>store.getters[`${HTMLTEMPLATE_MODULE}${HTMLTEMPLATE_GET_ID}`]);   
+  const global_css=computed(()=>store.getters[`${HTMLTEMPLATE_MODULE}${HTMLTEMPLATE_GET_GLOBAL_CSS }`]);
 
         const showcontainer = ref(false);
         const route=useRoute();
@@ -292,6 +295,19 @@ export default {
             headerFooterEditorType.value=type;
    
         }
+        const testPdf=()=>{
+            window.location=`/htmltemplate-generate-pdf-test/${template_id.value}`;
+        }
+        const testEmail=()=>{
+            displayLoader('Envoi email de test en cours...');
+            store.dispatch(`${HTMLTEMPLATE_MODULE}${HTMLTEMPLATE_TEST_EMAIL}`).then(()=>{
+                hideLoader();
+            });
+        }
+
+        const style=()=>{
+            return `<style>${global_css.value}</style>`;
+        }
         return {
 
             showcontainer,
@@ -318,7 +334,12 @@ export default {
             openHeaderFooterEditor,
             headerFooterEditorType,
             showHeaderFooterEditor,
-            hfObj
+            hfObj,
+            template_id,
+            testPdf,
+            testEmail,
+            global_css,
+            style
         }
 
   }

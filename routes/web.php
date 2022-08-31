@@ -48,9 +48,9 @@ use App\Http\Controllers\ActionCommercialListController;
 
 
 use App\Http\Controllers\HtmlTemplateController;
-use App\Http\Controllers\PdfController;
-use TCG\Voyager\Models\Role;
-
+use App\Mail\NotificationMail;
+use App\Models\Notification;
+use Illuminate\Support\Facades\Mail;
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
@@ -107,8 +107,7 @@ Route::post('/generate-campagne-product-pdf/{campagne}', [CompagneController::cl
 Route::get('/generate-campagne-product-pdf/{campagne}', [CompagneController::class, 'generate_pdf']);
 Route::get('/get-card-quantity', [CompagneController::class, 'get_card_quantity']);
 
-Route::get('/snappypdf', [PdfController::class, 'index']);
-Route::get('/jsontohtml', [PdfController::class, 'jsonToHtml']);
+
 
 Route::get('/get-entite-list', [EntiteController::class, 'index']);
 Route::post('/get-entite-list', [EntiteController::class, 'index']);
@@ -296,7 +295,7 @@ Route::group([
     Route::post('/remove-quick-link',[QuickLinkController::class,'removeLink'])->middleware('auth')->name('remove-quick-link');
     
     //htmltemplate
-   
+    //Route::get('/jsontohtml', [HtmlTemplateController::class, 'jsonToHtml']);//test table
     Route::post('/save-htmltemplate-conf',[HtmlTemplateController::class,'saveHtmlTemplateConf'])->middleware('auth')->name('save-htmltemplate-conf');
     Route::post('/get-htmltemplate-conf',[HtmlTemplateController::class,'getHtmlTemplateConf'])->middleware('auth')->name('get-htmltemplate-conf');
     Route::post('/save-htmltemplate-element',[HtmlTemplateController::class,'saveHtmlTemplateElement'])->middleware('auth')->name('save-htmltemplate-element');
@@ -304,7 +303,16 @@ Route::group([
     Route::post('/remove-htmltemplate-element',[HtmlTemplateController::class,'removeHtmlTemplateElement'])->middleware('auth')->name('remove-htmltemplate-element');
     Route::post('/reposition-htmltemplate-element',[HtmlTemplateController::class,'reposHtmlTemplateElement'])->middleware('auth')->name('reposition-htmltemplate-element');
     Route::post('/save-hf',[HtmlTemplateController::class,'SaveHf'])->middleware('auth')->name('save-hf');
-    Route::get('/htmltemplate-generate-test',[HtmlTemplateController::class,'generateTest'])->middleware('auth')->name('htmltemplate-generate-test');
+    Route::get('/htmltemplate-generate-pdf-test/{id}',[HtmlTemplateController::class,'generatePdfTest'])->middleware('auth')->name('htmltemplate-generate-pdf-test');
+    Route::post('/htmltemplate-generate-email-test',[HtmlTemplateController::class,'generateEmailTest'])->middleware('auth')->name('htmltemplate-generate-email-test');
+    Route::get('/generation-doc-pdf/{uuid}',[HtmlTemplateController::class,'generatePdf'])->name('generation-doc-pdf');
+    Route::post('/save-global-css',[HtmlTemplateController::class,'saveGlobalCss'])->middleware('auth')->name('save-global-css');
+    
+    // Route::get('/testemail',function(){
+    //     $notification=Notification::find(110);
+    //     Mail::to('reyewat@vpc-direct-services.com')->send(new NotificationMail($notification));
+    //     return new NotificationMail($notification);
+    // });
     
 
     // Devis

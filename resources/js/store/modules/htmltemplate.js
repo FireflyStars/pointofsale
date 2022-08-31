@@ -1,4 +1,4 @@
-import { HTMLTEMPLATE_GET_GLOBALCONF, HTMLTEMPLATE_GET_ID, HTMLTEMPLATE_LOAD_GLOBALCONF, HTMLTEMPLATE_SAVE_GLOBALCONF, HTMLTEMPLATE_SAVE_ELEMENT, HTMLTEMPLATE_SET_GLOBALCONF, HTMLTEMPLATE_SET_ID, HTMLTEMPLATE_LOAD_ELEMENTS, HTMLTEMPLATE_SET_ELEMENTS, HTMLTEMPLATE_GET_ELEMENTS, HTMLTEMPLATE_REMOVE_ELEMENT, HTMLTEMPLATE_UNSET_ELEMENT, HTMLTEMPLATE_REPOSITION_ELEMENT, HTMLTEMPLATE_SET_RENDERSQL, HTMLTEMPLATE_SET_FOOTERLIST, HTMLTEMPLATE_SET_HEADERLIST, HTMLTEMPLATE_GET_FOOTERLIST, HTMLTEMPLATE_GET_HEADERLIST, HTMLTEMPLATE_SET_CURRENTHEADER, HTMLTEMPLATE_SET_CURRENTFOOTER, HTMLTEMPLATE_GET_CURRENTHEADER, HTMLTEMPLATE_GET_CURRENTFOOTER, HTMLTEMPLATE_SAVE_HF } from "../types/types";
+import { HTMLTEMPLATE_GET_GLOBALCONF, HTMLTEMPLATE_GET_ID, HTMLTEMPLATE_LOAD_GLOBALCONF, HTMLTEMPLATE_SAVE_GLOBALCONF, HTMLTEMPLATE_SAVE_ELEMENT, HTMLTEMPLATE_SET_GLOBALCONF, HTMLTEMPLATE_SET_ID, HTMLTEMPLATE_LOAD_ELEMENTS, HTMLTEMPLATE_SET_ELEMENTS, HTMLTEMPLATE_GET_ELEMENTS, HTMLTEMPLATE_REMOVE_ELEMENT, HTMLTEMPLATE_UNSET_ELEMENT, HTMLTEMPLATE_REPOSITION_ELEMENT, HTMLTEMPLATE_SET_RENDERSQL, HTMLTEMPLATE_SET_FOOTERLIST, HTMLTEMPLATE_SET_HEADERLIST, HTMLTEMPLATE_GET_FOOTERLIST, HTMLTEMPLATE_GET_HEADERLIST, HTMLTEMPLATE_SET_CURRENTHEADER, HTMLTEMPLATE_SET_CURRENTFOOTER, HTMLTEMPLATE_GET_CURRENTHEADER, HTMLTEMPLATE_GET_CURRENTFOOTER, HTMLTEMPLATE_SAVE_HF, HTMLTEMPLATE_TEST_EMAIL, HTMLTEMPLATE_GET_GLOBAL_CSS, HTMLTEMPLATE_SET_GLOBAL_CSS, HTMLTEMPLATE_SAVE_GLOBAL_CSS } from "../types/types";
 
 
 export const htmltemplate= {
@@ -8,9 +8,11 @@ export const htmltemplate= {
         rendersql:false,
         example:'',
         elements:[],
+        globalcss:'.paper{}',
         generalconfig:{
             name:'',
             type:'',
+            pdf_filename_format:'',
             measuringunit:'px',
             htmltemplate_header_id:0,
             htmltemplate_footer_id:0,
@@ -33,6 +35,9 @@ export const htmltemplate= {
         [HTMLTEMPLATE_SET_GLOBALCONF]: (state, generalconfig) => {
             state.generalconfig.name = generalconfig.name;
             state.generalconfig.type = generalconfig.type;
+            state.generalconfig.pdf_filename_format=generalconfig.pdf_filename_format;
+            state.generalconfig.test_email=generalconfig.test_email;
+            state.generalconfig.email_subject_format=generalconfig.email_subject_format;
             state.generalconfig.measuringunit = generalconfig.measuringunit;
             state.generalconfig.htmltemplate_header_id = generalconfig.htmltemplate_header_id;
             state.generalconfig.htmltemplate_footer_id = generalconfig.htmltemplate_footer_id;
@@ -55,6 +60,7 @@ export const htmltemplate= {
         [HTMLTEMPLATE_SET_FOOTERLIST]:(state,footerList)=>state.footerList=footerList,
         [HTMLTEMPLATE_SET_CURRENTHEADER]:(state,currentHeader)=>state.currentHeader=currentHeader,
         [HTMLTEMPLATE_SET_CURRENTFOOTER]:(state,currentFooter)=>state.currentFooter=currentFooter,
+        [HTMLTEMPLATE_SET_GLOBAL_CSS]:(state,globalcss)=>state.globalcss=globalcss,
     },
     actions: {
         
@@ -72,12 +78,22 @@ export const htmltemplate= {
         
 
         },
+        [HTMLTEMPLATE_TEST_EMAIL]: async({commit,state}) => {
+          return axios.post(`/htmltemplate-generate-email-test`,{template_id:state.id}).then((response)=>{
+
+              return  Promise.resolve(response);
+                    
+            }).catch((error)=>{
+              return  Promise.resolve(error);
+            });
+
+      },
         [HTMLTEMPLATE_LOAD_GLOBALCONF]: async({commit,state}) => {
             return axios.post(`/get-htmltemplate-conf`,{template_id:state.id}).then((response)=>{
                 commit(HTMLTEMPLATE_SET_GLOBALCONF,response.data.conf);
                 commit(HTMLTEMPLATE_SET_FOOTERLIST,response.data.footerList);
                 commit(HTMLTEMPLATE_SET_HEADERLIST,response.data.headerList);
-      
+                commit(HTMLTEMPLATE_SET_GLOBAL_CSS,response.data.globalcss);
                 return  Promise.resolve(response);
                       
               }).catch((error)=>{
@@ -148,6 +164,18 @@ export const htmltemplate= {
             });
 
       },
+          [HTMLTEMPLATE_SAVE_GLOBAL_CSS]: async({commit,state}, globalcss) => {
+              
+            return axios.post(`/save-global-css`,{globalcss:globalcss}).then((response)=>{
+        
+              
+                return  Promise.resolve(response);
+                      
+              }).catch((error)=>{
+                return  Promise.resolve(error);
+              });
+
+        },
     },
     getters: {
         [HTMLTEMPLATE_GET_GLOBALCONF]: state => state.generalconfig,
@@ -157,5 +185,6 @@ export const htmltemplate= {
         [HTMLTEMPLATE_GET_HEADERLIST]: state => state.headerList,
         [HTMLTEMPLATE_GET_CURRENTHEADER]: state => state.currentHeader,
         [HTMLTEMPLATE_GET_CURRENTFOOTER]: state => state.currentFooter,
+        [HTMLTEMPLATE_GET_GLOBAL_CSS]: state => state.globalcss,
     }
 }

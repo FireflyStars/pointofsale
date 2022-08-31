@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use App\Mail\NotificationMail;
+use Exception;
+use Facade\FlareClient\Stacktrace\Stacktrace;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class Notification extends Model
 {
@@ -15,7 +19,7 @@ class Notification extends Model
         return $this->hasMany(NotificationAnnexedpdf::class);
     }
 
-    public static function add($template_name,$parameters=[],$test=0,$email='',$email_subject='',$phone='',$annexedpdfurls=[]){
+    public static function add($template_name,$parameters=[],$test=0,$email='',$phone='',$annexedpdfurls=[]){
             $ht=Htmltemplate::where('name','=',$template_name)->whereNull('deleted_at')->first();
             if($ht==null)
             throw new \Exception("Htmltemplate ".$template_name." not found.");
@@ -42,7 +46,8 @@ class Notification extends Model
             $notification->test=$test;
             $notification->Email=$email;
             $notification->Phone=$phone;
-            $notification->email_object=$email_subject;
+            $notification->pdf_filename=$notification->TypeNotification=='PDF'?Notification::compilePdfFilename($ht,$parameters):'';
+            $notification->email_object=$notification->TypeNotification=='EMAIL'?Notification::compileEmailSubject($ht,$parameters):'';
             $notification->qrcode='LCDT-'.$parameters['order_id'];
 
             //compile header
@@ -51,7 +56,7 @@ class Notification extends Model
                 if($h==null){
                     throw new \Exception("Htmltemplate header id: $ht->htmltemplate_header_id specfied but could not be loaded.");
                 }
-                $notification->html_header=Notification::compileHeaderFooter($h,$parameters);
+                $notification->html_header=Notification::compileHeaderFooter($ht,$h,$parameters, $notification->TypeNotification=='PDF');
             }
 
             //compile header
@@ -60,12 +65,12 @@ class Notification extends Model
                 if($f==null){
                     throw new \Exception("Htmltemplate footer id: $ht->htmltemplate_footer_id specfied but could not be loaded.");
                 }
-                $notification->html_footer=Notification::compileHeaderFooter($f,$parameters);
+                $notification->html_footer=Notification::compileHeaderFooter($ht,$f,$parameters,$notification->TypeNotification=='PDF');
             }
 
             //compile main content
 
-            $notification->html=Notification::htmlbody('<div></div>'.Notification::getQrCodeImg($notification->qrcode).Notification::compileHtml($ht,$parameters));
+            $notification->html=Notification::htmlbody('<div></div>'.Notification::getQrCodeImg($notification->qrcode).Notification::compileHtml($ht,$parameters),$notification->TypeNotification=='PDF');
 
             $notification->save();
             $notification->refresh();
@@ -75,9 +80,72 @@ class Notification extends Model
 
     }
 
-    
+    public static function compilePdfFilename($htmltemplate,$parameters){
 
-    public static function compileHeaderFooter($hfobj,$parameters){
+        $global_sql_vars=[];
+        $pdf_filename=$htmltemplate->pdf_filename_format;
+
+            
+        $global_sql=$htmltemplate->global_sql;
+        foreach($parameters as $k=>$v){
+         
+            $global_sql=str_replace('{'.$k.'}',$v,$global_sql);
+        }
+        
+        $global_sql_vars=DB::select($global_sql);
+   
+        
+        if(count($global_sql_vars)>0){
+            $global_sql_vars=$global_sql_vars[0];
+            
+            foreach($global_sql_vars as $k=>$v){
+           
+                $pdf_filename=str_replace('{'.$k.'}',$v,$pdf_filename);
+       
+            }
+        }
+  
+        foreach($parameters as $k=>$v){
+            $pdf_filename=str_replace('{'.$k.'}',$v,$pdf_filename);
+        }
+       
+        return $pdf_filename;
+
+    }
+
+    public static function compileEmailSubject($htmltemplate,$parameters){
+        $global_sql_vars=[];
+        $subject=$htmltemplate->email_subject_format;
+
+            
+        $global_sql=$htmltemplate->global_sql;
+        foreach($parameters as $k=>$v){
+         
+            $global_sql=str_replace('{'.$k.'}',$v,$global_sql);
+        }
+        
+        $global_sql_vars=DB::select($global_sql);
+   
+        
+        if(count($global_sql_vars)>0){
+            $global_sql_vars=$global_sql_vars[0];
+            
+            foreach($global_sql_vars as $k=>$v){
+           
+                $subject=str_replace('{'.$k.'}',$v,$subject);
+       
+            }
+        }
+  
+        foreach($parameters as $k=>$v){
+            $subject=str_replace('{'.$k.'}',$v,$subject);
+        }
+       
+        return $subject;
+
+    }
+
+    public static function compileHeaderFooter($ht,$hfobj,$parameters,$ispdf){
 
         $html=$hfobj->html;
 
@@ -102,7 +170,7 @@ class Notification extends Model
 
                 
         }
-        return Notification::htmlbody($html);
+        return Notification::htmlbody('<div style="display:block;height:'.$hfobj->height.$ht->measuringunit.'">'.$html.'</div>',$ispdf);
 
     }
 
@@ -182,24 +250,12 @@ class Notification extends Model
         return $html;
     }
 
-    public static function htmlbody($str){
-$localtest='.paper {
-    font-family: arial;
-  }
-  .paper .red {
-    color: red;
-  }
-  .paper .tableheaderorange {
-    background-color: #EF682D;
-    color: #FFF;
-    font-size: 10px;
-  }
-  .paper img{
-    max-width:100%;
-}
-  ';
+    public static function htmlbody($str,$ispdf=true){
+        if(!$ispdf)
+        return '<div style="position:relative;">'.str_replace('{APP_URL}',getenv('APP_URL'),$str).'<div>';
 
-        return '<!DOCTYPE  html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html><head><link rel="stylesheet" href="'.getenv('APP_URL').'/css/htmltemplate.css"></head><style>'.$localtest.'</style><body><div class="paper">'.str_replace('{APP_URL}',getenv('APP_URL'),$str).'</div></body></html>';
+
+        return '<!DOCTYPE  html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html><head><link rel="stylesheet" href="'.getenv('APP_URL').'/css/htmltemplate.css"></head><style>'.setting('lcdt.htmltemplate_global_css').'</style><body><div class="paper">'.str_replace('{APP_URL}',getenv('APP_URL'),$str).'</div></body></html>';
     }
 
 
@@ -279,7 +335,7 @@ $localtest='.paper {
                         if($th->type=='table'){
                             $html_table.='<td '.Notification::attrs($a->tbody->tr->td).'>'.Notification::htmltable($th->table,$global_sql_variables,$d).'</td>';
                         }else{
-                            $html_table.='<td '.Notification::attrs($a->tbody->tr->td).'>'.($th->type=="empty"?'':$d->{$th->identifier}).'</td>';
+                            $html_table.='<td '.Notification::attrs($a->tbody->tr->td).'>'.(property_exists($th,'prefix')?$th->prefix:'').($th->type=="empty"?'':$d->{$th->identifier}).(property_exists($th,'suffix')?$th->suffix:'').'</td>';
                         }
                     }
                 }else{
@@ -319,5 +375,29 @@ $localtest='.paper {
         if($str=='')return '';
         $qrcode=getenv('BARCODE_URL').'/barcode.php?s=qr&wq=0&d='.$str;
         return '<img  class="qrcode" src="'.$qrcode.'" style="position:absolute; right:20px;top:0px;"/>';
+    }
+
+    public static function getPdfLink($uuid){
+        return env('APP_URL').'/generation-doc-pdf/'.$uuid;
+    }
+
+    public function send(){
+        if($this->id>0&&$this->typeNotification=='EMAIL'){
+            try{
+                Mail::to($this->email)->send(new NotificationMail($this));
+                $this->error_msg=null;
+                $this->sent=1;
+                $this->sent_on=date('Y-m-d H:i:s');
+                $this->save();
+            }catch(Exception $e){
+                $this->error_msg=$e->getMessage();
+                $this->sent=0;
+                $this->sent_on=null;
+                $this->save();
+                return false;
+            }
+        }
+
+        return true;
     }
 }

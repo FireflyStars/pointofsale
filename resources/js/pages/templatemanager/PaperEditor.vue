@@ -84,7 +84,36 @@
                                       />
                               </div>
                             </div>
-                            <div class="row">
+                                     <transition enter-active-class="animate__animated animate__fadeIn"  leave-active-class="animate__animated animate__fadeOut">
+                                <div v-if="generalconfig.type=='pdf'" class="postion-absolute">
+                            <div class="row  w-100" >
+                              <div class="col-12" style="padding-right:5px;">
+                                  <label class="select-label body_medium" >Format du nom de téléchargement</label>
+                                  <input type="text" v-model.lazy="generalconfig.pdf_filename_format" class="input-text  p-2" placeholder="Ex: DEVIS-{order_id}"/>
+                                  <div class="hint">Spécifiez un format de nom de téléchargement pour le fichier pdf. Ex : Devis-{order_id} générera un fichier dont le nom sera Devis-XX.pdf.</div>
+                                </div>
+                            </div>
+                                </div>
+                                     </transition>
+                             <transition enter-active-class="animate__animated animate__fadeIn"  leave-active-class="animate__animated animate__fadeOut">
+                              <div v-if="generalconfig.type=='email'" class="postion-absolute">
+                            <div class="row  w-100" >
+                              <div class="col-12"  style="padding-right:5px;">
+                                  <label class="select-label body_medium" >Email test</label>
+                                  <input type="text" v-model.lazy="generalconfig.test_email" class="input-text  p-2" />
+                                  <div class="hint">Spécifiez une adresse e-mail pour les tests.</div>
+                                </div>
+                            </div>
+                             <div class="row  w-100"  >
+                              <div class="col-12"  style="padding-right:5px;">
+                                  <label class="select-label body_medium" >Sujet email</label>
+                                  <input type="text" v-model.lazy="generalconfig.email_subject_format" class="input-text  p-2" placeholder="Ex: Confirmation commande {order_id}"/>
+                                  <div class="hint">Spécifiez un format pour le sujet du mail.</div>
+                                </div>
+                            </div>
+                              </div>
+                             </transition>
+                            <div class="row " >
                               <div class="col">
                                   <label class="select-label body_medium" >Requête SQL globale</label>
                                   <textarea v-model.lazy="generalconfig.global_sql" class="input-text input-text-area p-2" placeholder="Ex: SELECT `name` FROM `user` WHERE id={user_id}"></textarea>
@@ -107,6 +136,22 @@
                           
                                 
                               </template>
+                                  <template v-slot:global_css>
+                                   <div class="pane py-4 px-2" >
+                                        <div class="row mb-2"><h3 class="almarai_700_normal col font-14"><span class="alert alert-danger">Attention!  Editeur CSS globale</span></h3></div>
+                                             <div class="row">
+                                          <div class="col">
+                                              <textarea v-model="globalcss" class="input-text input-text-area p-2"  rows="25"></textarea>
+                                              <div class="hint">Veuillez noter que le CSS suivant est utilisé par tous les templates. PDF et EMAIL</div>
+                                         
+                                            </div>
+                                        </div>
+                                              <div class="d-flex justify-content-end ">
+                                              <button class="btn btn-default btn-dark" @click="saveCss">Enregistrer CSS</button>
+                                            </div>
+                                   </div>
+                                  
+                                </template>
                              
                           </tab-pane>
                         </div>
@@ -176,7 +221,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import Swal from 'sweetalert2';
 import { useStore } from 'vuex';
-import { HTMLTEMPLATE_GET_FOOTERLIST, HTMLTEMPLATE_GET_GLOBALCONF, HTMLTEMPLATE_GET_HEADERLIST, HTMLTEMPLATE_GET_ID, HTMLTEMPLATE_LOAD_ELEMENTS, HTMLTEMPLATE_LOAD_GLOBALCONF, HTMLTEMPLATE_MODULE, HTMLTEMPLATE_SAVE_ELEMENT, HTMLTEMPLATE_SAVE_GLOBALCONF, TOASTER_MODULE } from '../../store/types/types';
+import { HTMLTEMPLATE_GET_FOOTERLIST, HTMLTEMPLATE_GET_GLOBALCONF, HTMLTEMPLATE_GET_GLOBAL_CSS, HTMLTEMPLATE_GET_HEADERLIST, HTMLTEMPLATE_GET_ID, HTMLTEMPLATE_LOAD_ELEMENTS, HTMLTEMPLATE_LOAD_GLOBALCONF, HTMLTEMPLATE_MODULE, HTMLTEMPLATE_SAVE_ELEMENT, HTMLTEMPLATE_SAVE_GLOBALCONF, HTMLTEMPLATE_SAVE_GLOBAL_CSS, HTMLTEMPLATE_SET_GLOBAL_CSS, TOASTER_MODULE } from '../../store/types/types';
 import {clearMsg, displayError, displayLoader, hideLoader} from '../../components/helpers/helpers';
 import { useRouter } from 'vue-router';
 import headerSectionVue from '../../components/reports/header-section.vue';
@@ -191,7 +236,17 @@ export default {
     const showmodal_table=ref(false);
         const showmodal_html=ref(false);
         const showmodal_address=ref(false);
+        const globalcss=ref('');
+        
     const store=useStore();
+    const global_css=computed(()=>store.getters[`${HTMLTEMPLATE_MODULE}${HTMLTEMPLATE_GET_GLOBAL_CSS}`]);
+        watch(global_css,(current_value,previous_value)=>{
+          globalcss.value=current_value;
+        });
+
+        watch(globalcss,(current_value,previous_value)=>{
+          store.commit(`${HTMLTEMPLATE_MODULE}${HTMLTEMPLATE_SET_GLOBAL_CSS}`,current_value);
+        })
     const modal_table_title=ref('Ajouter un tableau de données');
     const modal_html_title=ref('Ajouter un élément html ou text');
      const modal_address_title=ref('Ajouter un élément adresse');
@@ -207,7 +262,7 @@ export default {
     const tabs=ref({
             page_elements:'Éléments du template',
             general_config:'Configuration générale',
-           
+             global_css:'CSS globale',
            
         });
 
@@ -406,6 +461,9 @@ export default {
         const insertExample=()=>{
           element.value.data=generalconfig.value.example;
         }
+        const saveCss=()=>{
+          store.dispatch(`${HTMLTEMPLATE_MODULE}${HTMLTEMPLATE_SAVE_GLOBAL_CSS}`,globalcss.value);
+        }
       return {
             tabs,
             generalconfig,
@@ -429,7 +487,9 @@ export default {
             addPageBreak,
             showmodal_address,
             modal_address_title,
-            openElementModal
+            openElementModal,
+            globalcss,
+            saveCss
       }
    },
 
