@@ -23,10 +23,13 @@ import {
     filter as FILTER_MODULE
 } from "./modules/filter";
 
-import {cible as CIBLE_MODULE} from "./modules/cible";
-import {search as CUSTOMERLIST_MODULE } from "./modules/search";
+import { cible as CIBLE_MODULE } from "./modules/cible";
+import { search as CUSTOMERLIST_MODULE } from "./modules/search"
+import { searchInvoice as INVOICELIST_MODULE } from "./modules/searchInvoice"
 
-import { itemlist as ITEM_LIST_MODULE } from "./modules/component_store/itemlist";
+import { invoice as INVOICE_MODULE } from "./modules/invoice"
+
+import { itemlist as ITEM_LIST_MODULE } from "./modules/component_store/itemlist"
 
 import { itemlistquicklink as ITEMLISTQUICKLINK_MODULE } from "./modules/component_store/itemlistquicklink";
 
@@ -136,6 +139,8 @@ export default createStore({
         PERMIS_LIST_MODULE,
         COMMANDE_FOURNISSEUR_STATUS_MODULE,
         COMMANDE_FOURNISSEUR_LIST_MODULE,
-        CHAT_MODULE
+        CHAT_MODULE,
+        INVOICELIST_MODULE,
+        INVOICE_MODULE
     }
 });

@@ -19,7 +19,7 @@
 
                     <div class="col main-view container">
 
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-3">
                         
                             <page-title 
                                 icon="report" 

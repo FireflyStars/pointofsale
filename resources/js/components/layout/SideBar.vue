@@ -81,8 +81,8 @@
                 {{ initials }}
             </div>
 
-            <transition name="usermenu" >
-                <div class="usermenu" v-if="dispmenu" >
+            <transition name="usermenu">
+                <div class="usermenu" v-if="dispmenu" v-click-away="close">
                     <button class="btn mb-3 btn-outline-success body_medium"  data-bs-toggle="tooltip" data-bs-placement="right" title="Réinitialiser toutes les listes" @click="reinit()">Réinitialiser liste</button>
                     <button class="btn mb-3 btn-outline-primary body_medium"  data-bs-toggle="tooltip" data-bs-placement="right" title="Librairie de composants pour développeurs" @click="router.push({name:'ComponentsTest'})">Développeur</button>
                     <button class="btn btn-outline-dark body_medium"  data-bs-toggle="tooltip" data-bs-placement="right" title="Déconnexion de l'utilisateur" @click="logout">Se déconnecter</button>
@@ -198,6 +198,8 @@
             store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
         });
     }
+
+    const close = () => dispmenu.value = false
 
     function showmenu() {
         dispmenu.value = !dispmenu.value;
@@ -328,15 +330,13 @@
 }
 .usermenu{
     background: #FFFFFF;
-
-    /* Drop shadow */
     box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.12);
     border-radius: 4px;
     min-width: 184px;
     position: fixed;
     left: 16px;
     bottom: 79px;
-    z-index: 2;
+    z-index: 9999;
     padding:45px 1rem 37px 1rem;
     transform-origin: left bottom;
 }

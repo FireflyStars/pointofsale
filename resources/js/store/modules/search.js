@@ -38,6 +38,7 @@ export const search= {
 
             });
         },
+        
         [MASTER_SEARCH_LOAD_LIST]:async ({commit,state}, payload )=>{
             return axios.post('/search-master', payload)
             .then( (response)=>{

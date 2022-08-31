@@ -66,6 +66,15 @@ const router = createRouter({
             }
         },
         {
+            path: '/invoice/create',
+            name: 'invoice-create',
+            component: () => import('../pages/Invoice/Create.vue'),
+            meta: {
+                authenticated: true
+            }
+        },
+
+        {
             path: '/parameters',
             name: 'parameters',
             component: () => import('../pages/Parameters/Index.vue'),

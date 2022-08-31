@@ -1,36 +1,64 @@
 <template>
     <div class="dp noselect position-relative">
         
-        <label v-if="!showSearch && label" class="select-label" :class="{ disabled:disabled == true }">{{ label }}</label>
+        <label 
+            v-if="!showSearch && label" 
+            class="select-label" 
+            :class="{ disabled:disabled == true }"
+        >
+            {{ label }}
+        </label>
         
         <div  v-if="!showSearch" class="position-relative">
             <input type="text"  placeholder="Type name..." v-model="search" @keyup.prevent="submit"/> 
-             <span v-if="showbutton" @click='clearSearch' class="position-absolute"><i class="icon-close"></i></span>
+            <span v-if="showbutton" @click='clearSearch' class="position-absolute">
+                <i class="icon-close"></i>
+            </span>
         </div>
 
         <transition name="trans-search">
 
             <div class="row search" v-if="showSearch">
-                <label class="select-label" :class="{disabled:disabled==true}" v-if="label">{{label}}</label>
+                
+                <label class="select-label" :class="{ disabled: disabled == true }" v-if="label">
+                    {{ label }}
+                </label>
+                
                 <div class="input_search">
-                    <div  v-if="showSearch" class="position-relative input_search">
+                    
+                    <div v-if="showSearch" class="position-relative input_search">
                         <input type="text"  ref="inputsearch" placeholder="Type name..." v-model="search" @keyup.prevent="submit"/>
                         <span v-if="showbutton" @click='clearSearch' class="position-absolute"><i class="icon-close"></i></span>
                     </div>
-                    <section class="nodata p-2" v-if ="Customers.length == 0">
-                        <p >nous n'avons trouvé aucun client.</p>
+                    <section class="nodata p-2" v-if="invoices.length == 0">
+                        <p>nous n'avons trouvé aucun client.</p>
                     </section>
+
                 </div>
-                <ul  class="list-group list-group-flush" v-if ="Customers.length > 0" >
-                    <li v-for ="customer in Customers" :key="customer">
+
+                <ul class="list-group list-group-flush" v-if="invoices.length > 0">
+
+                    <li v-for="invoice in invoices" :key="invoice">
+                        
                         <div class="container">
-                            <div class="row" @click="selectCustomer(customer)">
+                            
+                            <div class="row" @click="selectInvoice(invoice)">
+                                
                                 <div class="col" style="padding:0">
-                                    <span class="body_medium text-capitalize">{{customer.contact.replace(',','').toLowerCase()}}</span>
+
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="body_medium text-capitalize">{{ invoice?.reference }}</span>
+                                        <span class="body_medium text-capitalize">{{ invoice?.montant }} &euro;</span>
+                                        <span class="body_medium text-capitalize">
+                                            {{ invoice?.dateecheance ? moment(invoice.dateecheance).format('DD/MM/YYYY') : '' }}
+                                        </span>
+                                    </div>
+
                                     <div>
-                                        <div v-if="customer.telephone !=''">
-                                            <div>
-                                                <b class ="body_regular">+ {{ customer.telephone.replace('|',' ')}}</b>
+                                        <div v-if="invoice.raisonsociale !=''">
+                                            <div class="d-flex align-items-center gap-4">
+                                                <b class ="body_regular">{{ invoice?.raisonsociale }}</b>
+                                                <b class ="body_regular">{{ invoice.email?.toLowerCase() }}</b>
                                             </div>
                                         </div>
                                         <div v-else>
@@ -38,126 +66,132 @@
                                         </div>
                                     </div>
                                 </div>   
-                                <div class="col-6" style="padding-top:24px">
-                                    <b class ="email body_regular">{{ customer.email ? customer.email.toLowerCase() : ''}}</b>
-                                </div>
-                                <div class="col-2" style="text-align: end; padding:0">
-                                </div>
+                                
+
                             </div>
+
                         </div>
+
                     </li>
+
                 </ul>
+
                 <div class="col">
-                    <span v-if="CountCustomer >0 " class="show-more body_medium" @click="loadMore()">{{CountCustomer}} more customers</span>
+                    
+                    <span 
+                        v-if="countInvoices > 0" 
+                        class="show-more body_medium" 
+                        @click="loadMore()"
+                    >
+                        {{ countInvoices }} more invoices
+                    </span>
+
                 </div>
+            
             </div>
         </transition>
     </div>
  
 </template>
 
-<script>
-    import {ref,nextTick,computed,watchEffect} from 'vue';
+<script setup>
+
+    import moment from 'moment'
+    import lodash from 'lodash'
+    import { ref, nextTick, computed, watchEffect } from 'vue'
     import {
-        CUSTOMERLIST_MODULE,
-        CUSTOMER_SEARCH_LOAD_LIST,
-        CUSTOMER_GET_SEARCH_LIST,
-        CUSTOMER_GET_SEARCH_COUNT,
+        INVOICELIST_MODULE,
+        INVOICE_SEARCH_LOAD_LIST,
         TOASTER_MODULE,
         TOASTER_MESSAGE
-    } from "../../store/types/types";
-import {useStore} from 'vuex';
-export default({
-    name: "SearchCustomer",
-    components:{ },
-    emit: ['selected'],
-    props:{
+    } from "../../store/types/types"
+    import { useStore } from 'vuex'
+    
+    const emit = defineEmits(["selected"])
+    
+    const props = defineProps({
         droppos: Object,
         label: String,
         disabled: Boolean,
         hint: String,
-    },
-    setup(props,context){
+        customerId: Number
+    })
 
-        const search =ref('');
-        const store =useStore();
-        const timeout =ref('');
-        const showSearch=ref(false);
-        const showbutton = ref(false);
-        const show_loader= ref(false);
-        const inputsearch=ref(null);
+    const search =ref('');
+    const store =useStore();
+    const timeout =ref('');
+    const showSearch=ref(false);
+    const showbutton = ref(false);
+    const show_loader= ref(false);
+    const inputsearch=ref(null);
      
-        function clearSearch() {
-            search.value = null;
-            showSearch.value = false;
-            showbutton.value = false;
-            show_loader.value= false;
-        }
+    function clearSearch() {
+        search.value = null;
+        showSearch.value = false;
+        showbutton.value = false;
+        show_loader.value= false;
+    }
+    
+    const featureunavailable = ((feature) => {
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, { message: feature + ' feature not yet implemented.', ttl: 5, type: 'success' })
+    })
+
+    function submit() { 
         
-        const featureunavailable=((feature) => {
-            store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, { message: feature+' feature not yet implemented.', ttl:5, type: 'success'});
-        })
+        show_loader.value = true;
 
-        function submit(e) { 
-            clearTimeout(timeout.value);
-            timeout.value = setTimeout(function() {
-                show_loader.value = true;
-                nextTick(() => {
-                    store.dispatch(`${CUSTOMERLIST_MODULE}${CUSTOMER_SEARCH_LOAD_LIST}`, { showmore: 1, search: e.target.value })
-                    .then((response)=>{
-                        if(e.target.value) {
-                            showSearch.value = true;
-                            showbutton.value = true;
-                        } else {
-                            showSearch.value = false;
-                            show_loader.value= false;
-                        }
-                    })
-                    .catch((error)=>{});
-                });
-            }  
-            , 300)
-        }
+        clearTimeout(timeout.value)
+
+        timeout.value = setTimeout(function() {
+        
+            store.dispatch(`${INVOICELIST_MODULE}${INVOICE_SEARCH_LOAD_LIST}`, { 
+                showmore: 1, 
+                search: search.value,
+                customer_id: props.customerId 
+            })
+            .then((response) => {
+                
+                if(search.value) {
+                    showSearch.value = true;
+                    showbutton.value = true;
+                } else {
+                    showSearch.value = false;
+                    show_loader.value= false;
+                }
+
+            })
+            .catch((error)=>{})
+
+        }, 300)
 
 
-        function loadMore(){
-            store.dispatch(`${CUSTOMERLIST_MODULE}${CUSTOMER_SEARCH_LOAD_LIST}`,{ showmore:1, search:search.value})
-            .finally(()=>{});
-        }
+    }
+ 
+    function loadMore() {
+        store.dispatch(`${INVOICELIST_MODULE}${INVOICE_SEARCH_LOAD_LIST}`,{ showmore:1, search:search.value})
+        .finally(()=>{});
+    }
 
-        const selectCustomer = (customer)=>{
-            context.emit("selected", customer);
-            showSearch.value = false;
-        }
+    const selectInvoice = (invoice) => {
+        emit("selected", invoice)
+        showSearch.value = false
+    }
 
-        const Customers=computed(()=>{
-            return store.getters[`${CUSTOMERLIST_MODULE}${CUSTOMER_GET_SEARCH_LIST}`];
-        });
-        const CountCustomer=computed(()=>{
-            return store.getters[`${CUSTOMERLIST_MODULE}${CUSTOMER_GET_SEARCH_COUNT}`];
-        });
-        watchEffect(() => {
-            if(inputsearch.value!=null)
-                inputsearch.value.focus();
-        },{
-            flush: 'post'
-        });
-        return {
-            search,
-            submit,
-            featureunavailable,
-            clearSearch,
-            Customers,
-            CountCustomer,
-            showSearch,
-            showbutton,
-            loadMore,
-            show_loader,
-            selectCustomer,
-            inputsearch
-        }
-    },
-})
+    const invoices = computed(() => {
+        return store.getters[`${INVOICELIST_MODULE}listsearchinvoices`];
+    })
+    
+    const countInvoices = computed(() => {
+        return store.getters[`${INVOICELIST_MODULE}countinvoices`];
+    })
+    
+    watchEffect(() => {
+        if(inputsearch.value!=null)
+            inputsearch.value.focus();
+    },{
+        flush: 'post'
+    })
+
 </script>
 
 <style scoped>

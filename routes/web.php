@@ -25,6 +25,7 @@ use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\CompagneController;
 use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\OuvragesController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\LcdtAdminController;
@@ -232,6 +233,14 @@ Route::post('/get-commande-fournisseur-list', [CommandeFounisseurController::cla
 Route::post('/get-commande-fournisseur-list-mes', [CommandeFounisseurController::class, 'mes_details']);
 Route::post('/get-commande-fournisseur-supplier-status-formatted', [CommandeFounisseurController::class, 'get_order_states']);
 Route::post('/get-commande-fournisseur-statuses', [CommandeFounisseurController::class, 'get_order_states_all']);
+
+//Invoices
+Route::post('/search-invoice', [InvoicesController::class, 'search']);
+Route::post('/create-invoice', [InvoicesController::class, 'create']);
+Route::get('/get-single-invoice-details', [InvoicesController::class, 'create']);
+Route::get('/get-tax-list', [InvoicesController::class, 'get_tax_list']);
+Route::post('/create-ligne/{invoice}', [InvoicesController::class, 'create_ligne']);
+Route::delete('/delete-ligne/{invoice}', [InvoicesController::class, 'delete_ligne']);
 
 // create action
 Route::post('/get-action-info', [ActionCommercialListController::class, 'getActionInfo'])->name('get.action.info');

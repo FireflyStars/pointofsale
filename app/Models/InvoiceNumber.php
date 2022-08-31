@@ -12,7 +12,8 @@ class InvoiceNumber extends Model
 {
     use HasFactory;
 
-    public static function getInvoiceNumber($invoice_id){
+    public static function getInvoiceNumber($invoice_id) {
+        
         $invoice_number=InvoiceNumber::where('invoice_id','=',$invoice_id)->first();
         if($invoice_number==null){//make a new invoice number
             $in=Invoice::find($invoice_id);
