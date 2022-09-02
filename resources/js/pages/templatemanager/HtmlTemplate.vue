@@ -114,7 +114,7 @@ import { ref, onMounted, nextTick, computed, watch } from 'vue';
 import { useStore } from 'vuex';
 import PaperEditor from './PaperEditor.vue';
 import { useRoute } from 'vue-router';
-import { HTMLTEMPLATE_GET_CURRENTFOOTER, HTMLTEMPLATE_GET_CURRENTHEADER, HTMLTEMPLATE_GET_ELEMENTS, HTMLTEMPLATE_GET_GLOBALCONF, HTMLTEMPLATE_GET_GLOBAL_CSS, HTMLTEMPLATE_GET_ID, HTMLTEMPLATE_LOAD_ELEMENTS, HTMLTEMPLATE_MODULE, HTMLTEMPLATE_REMOVE_ELEMENT, HTMLTEMPLATE_REPOSITION_ELEMENT, HTMLTEMPLATE_SET_ID, HTMLTEMPLATE_SET_RENDERSQL, HTMLTEMPLATE_TEST_EMAIL } from '../../store/types/types';
+import { HTMLTEMPLATE_GET_CURRENTFOOTER, HTMLTEMPLATE_GET_CURRENTHEADER, HTMLTEMPLATE_GET_ELEMENTS, HTMLTEMPLATE_GET_GLOBALCONF, HTMLTEMPLATE_GET_GLOBAL_CSS, HTMLTEMPLATE_GET_ID, HTMLTEMPLATE_LOAD_ELEMENTS, HTMLTEMPLATE_MODULE, HTMLTEMPLATE_REMOVE_ELEMENT, HTMLTEMPLATE_REPOSITION_ELEMENT, HTMLTEMPLATE_RESET_STATE, HTMLTEMPLATE_SET_ID, HTMLTEMPLATE_SET_RENDERSQL, HTMLTEMPLATE_TEST_EMAIL } from '../../store/types/types';
 import SwitchBtn from '../../components/miscellaneous/SwitchBtn.vue'
 import { displayError, displayLoader, hideLoader } from '../../components/helpers/helpers';
 import Swal from 'sweetalert2';
@@ -165,7 +165,7 @@ export default {
         const route=useRoute();
         const page_title=ref('Création template');
         onMounted(() => {
- 
+            store.commit(`${HTMLTEMPLATE_MODULE}${HTMLTEMPLATE_RESET_STATE}`);
             store.commit(`${HTMLTEMPLATE_MODULE}${HTMLTEMPLATE_SET_ID}`,route.params.id);
             nextTick(() => {
                 showcontainer.value=true

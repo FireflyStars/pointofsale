@@ -37,6 +37,10 @@ import { orderstatetag as ORDERSTATETAG_MODULE } from "./modules/component_store
 
 import { devislist as DEVIS_LIST_MODULE } from "./modules/devislist";
 
+import { htmltemplatelist as HTMLTEMPLATELIST_MODULE } from "./modules/htmltemplatelist";
+import { htmltemplateheaderlist as HTMLTEMPLATEHEADERLIST_MODULE } from "./modules/htmltemplateheaderlist";
+import { htmltemplatefooterlist as HTMLTEMPLATEFOOTERLIST_MODULE } from "./modules/htmltemplatefooterlist";
+
 import { facturelist as FACTURE_LIST_MODULE } from "./modules/facturelist";
 import { invoicestatetag as INVOICESTATETAG_MODULE } from "./modules/component_store/invoicestatetag";
 
@@ -103,6 +107,9 @@ export default createStore({
         ITEMLISTQUICKLINK_MODULE,
         ORDERSTATETAG_MODULE,
         DEVIS_LIST_MODULE,
+        HTMLTEMPLATELIST_MODULE,
+        HTMLTEMPLATEHEADERLIST_MODULE,
+        HTMLTEMPLATEFOOTERLIST_MODULE,
         FACTURE_LIST_MODULE,
         FACTURE_DETAIL_MODULE,
         INVOICESTATETAG_MODULE,

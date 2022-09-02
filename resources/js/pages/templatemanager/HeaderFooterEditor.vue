@@ -61,11 +61,14 @@ export default {
 
             }
         },
-
+        loadElements:{
+            type:Boolean,
+            default:true
+        }
       
     },
 
- emits: ['update:modelValue'],
+ emits: ['update:modelValue','onSaved'],
     
     setup(props,context) {
 
@@ -99,6 +102,7 @@ export default {
 
                 }else{
                     modal_title.value=`Ajouter ${props.type=='footer'?'un pied de page':'une en-tête de page'}`;
+                        hfobj.value.type=props.type;
                 }
                 console.log(props.obj.id);
             }else{
@@ -115,13 +119,16 @@ export default {
             displayLoader('Sauvgarde en cours...');
             let saved=false;
             store.dispatch(`${HTMLTEMPLATE_MODULE}${HTMLTEMPLATE_SAVE_HF}`,hfobj.value).then(()=>{
-               
+                        if(props.loadElements){
                         saved=true;
                         displayLoader('Rechargement des éléments en cours...');
                         store.dispatch(`${HTMLTEMPLATE_MODULE}${HTMLTEMPLATE_LOAD_ELEMENTS}`).then(()=>{
                             hideLoader();
+                        
                    
-                });
+                });}else{
+                    context.emit("onSaved",hfobj.value);
+                }
             }).finally(()=>{
                   if(!saved)
                   hideLoader();

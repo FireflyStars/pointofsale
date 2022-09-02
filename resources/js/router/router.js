@@ -39,7 +39,7 @@ const router = createRouter({
         },
         {
             path:'/htmltemplate',
-            name:'GestionPDF',
+            name:'htmltemplate',
             component:()=> import('../pages/templatemanager/GestionPdf.vue'),//import('../Pages/Index'),
             children:[
 

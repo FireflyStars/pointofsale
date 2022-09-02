@@ -180,7 +180,194 @@ class HtmlTemplateController extends Controller
         }';
 
    
+    public function getHtmlTemplateLists(Request $request){
+        $column_filters=$request->post('column_filters');
+        $column_sortby=$request->post('sortby');
+        $skip=$request->post('skip');
+        $take=$request->post('take');
+        $user=Auth::user();
 
+        $list=DB::table('htmltemplates')
+        ->select(['htmltemplates.*','htmltemplates.id as rowaction']);
+        $list=$list->where('htmltemplates.affiliate_id','=',$user->affiliate->id);
+        $list=$list->whereNull('htmltemplates.deleted_at');
+        //column filters
+        if($column_filters!=null)
+        foreach($column_filters as $column_filter){
+       
+            if($column_filter['type']=='date'){
+                if(isset($column_filter['having'])&&$column_filter['having']==true){
+                    if($column_filter['word']['from']!=''){
+                        $list=$list->having($column_filter['id'],'>=',$column_filter['word']['from']);
+                    }
+                    if($column_filter['word']['to']!=''){
+                        $list=$list->having($column_filter['id'],'<',$column_filter['word']['to']);
+                    }
+                }else{
+                   if($column_filter['word']['from']!=''){
+                        $list=$list->whereDate((isset($column_filter['table'])?$column_filter['table'].'.':'').$column_filter['id'],'>=',$column_filter['word']['from']);
+                    }
+                    if($column_filter['word']['to']!=''){
+                        $list=$list->whereDate((isset($column_filter['table'])?$column_filter['table'].'.':'').$column_filter['id'],'<',$column_filter['word']['to']);
+                    }
+                }
+            }elseif(isset($column_filter['filter_options'])&&count($column_filter['word'])>0){
+           
+                if(isset($column_filter['having'])&&$column_filter['having']==true){
+                   
+                    $list=$list->havingRaw($column_filter['id']." IN ('".implode("','",$column_filter['word'])."')");
+                }else{
+                    $list=$list->whereIn($column_filter['id'],$column_filter['word']);
+                }
+            
+            }else{
+                if(isset($column_filter['having'])&&$column_filter['having']==true){
+                    $list=$list->having($column_filter['id'],'LIKE','%'.$column_filter['word'].'%');
+                }else{
+                    $list=$list->where((isset($column_filter['table'])?$column_filter['table'].'.':'').$column_filter['id'],'LIKE','%'.$column_filter['word'].'%');
+                }
+            }
+        }
+
+        //sortby
+        if($column_sortby!=null){
+        foreach($column_sortby as $sortby){
+            $list=$list->orderBy($sortby['id'],$sortby['orderby']);
+        }
+        }else{//by default newest first
+            $list=$list->orderBy('htmltemplates.id','desc');
+        }
+
+        $list=$list->groupBy('htmltemplates.id')->skip($skip)->take($take)->get();
+
+        return response()->json($list);
+    }
+
+    public function getHtmlTemplateHeaderLists(Request $request){
+        $column_filters=$request->post('column_filters');
+        $column_sortby=$request->post('sortby');
+        $skip=$request->post('skip');
+        $take=$request->post('take');
+        $user=Auth::user();
+
+        $list=DB::table('htmltemplate_headers')
+        ->select(['htmltemplate_headers.*']);
+        $list=$list->where('htmltemplate_headers.affiliate_id','=',$user->affiliate->id);
+        $list=$list->whereNull('htmltemplate_headers.deleted_at');
+        //column filters
+        if($column_filters!=null)
+        foreach($column_filters as $column_filter){
+       
+            if($column_filter['type']=='date'){
+                if(isset($column_filter['having'])&&$column_filter['having']==true){
+                    if($column_filter['word']['from']!=''){
+                        $list=$list->having($column_filter['id'],'>=',$column_filter['word']['from']);
+                    }
+                    if($column_filter['word']['to']!=''){
+                        $list=$list->having($column_filter['id'],'<',$column_filter['word']['to']);
+                    }
+                }else{
+                   if($column_filter['word']['from']!=''){
+                        $list=$list->whereDate((isset($column_filter['table'])?$column_filter['table'].'.':'').$column_filter['id'],'>=',$column_filter['word']['from']);
+                    }
+                    if($column_filter['word']['to']!=''){
+                        $list=$list->whereDate((isset($column_filter['table'])?$column_filter['table'].'.':'').$column_filter['id'],'<',$column_filter['word']['to']);
+                    }
+                }
+            }elseif(isset($column_filter['filter_options'])&&count($column_filter['word'])>0){
+           
+                if(isset($column_filter['having'])&&$column_filter['having']==true){
+                   
+                    $list=$list->havingRaw($column_filter['id']." IN ('".implode("','",$column_filter['word'])."')");
+                }else{
+                    $list=$list->whereIn($column_filter['id'],$column_filter['word']);
+                }
+            
+            }else{
+                if(isset($column_filter['having'])&&$column_filter['having']==true){
+                    $list=$list->having($column_filter['id'],'LIKE','%'.$column_filter['word'].'%');
+                }else{
+                    $list=$list->where((isset($column_filter['table'])?$column_filter['table'].'.':'').$column_filter['id'],'LIKE','%'.$column_filter['word'].'%');
+                }
+            }
+        }
+
+        //sortby
+        if($column_sortby!=null){
+        foreach($column_sortby as $sortby){
+            $list=$list->orderBy($sortby['id'],$sortby['orderby']);
+        }
+        }else{//by default newest first
+            $list=$list->orderBy('htmltemplate_headers.id','desc');
+        }
+
+        $list=$list->groupBy('htmltemplate_headers.id')->skip($skip)->take($take)->get();
+
+        return response()->json($list);
+    }
+    public function getHtmlTemplateFooterLists(Request $request){
+        $column_filters=$request->post('column_filters');
+        $column_sortby=$request->post('sortby');
+        $skip=$request->post('skip');
+        $take=$request->post('take');
+        $user=Auth::user();
+
+        $list=DB::table('htmltemplate_footers')
+        ->select(['htmltemplate_footers.*']);
+        $list=$list->where('htmltemplate_footers.affiliate_id','=',$user->affiliate->id);
+        $list=$list->whereNull('htmltemplate_footers.deleted_at');
+        //column filters
+        if($column_filters!=null)
+        foreach($column_filters as $column_filter){
+       
+            if($column_filter['type']=='date'){
+                if(isset($column_filter['having'])&&$column_filter['having']==true){
+                    if($column_filter['word']['from']!=''){
+                        $list=$list->having($column_filter['id'],'>=',$column_filter['word']['from']);
+                    }
+                    if($column_filter['word']['to']!=''){
+                        $list=$list->having($column_filter['id'],'<',$column_filter['word']['to']);
+                    }
+                }else{
+                   if($column_filter['word']['from']!=''){
+                        $list=$list->whereDate((isset($column_filter['table'])?$column_filter['table'].'.':'').$column_filter['id'],'>=',$column_filter['word']['from']);
+                    }
+                    if($column_filter['word']['to']!=''){
+                        $list=$list->whereDate((isset($column_filter['table'])?$column_filter['table'].'.':'').$column_filter['id'],'<',$column_filter['word']['to']);
+                    }
+                }
+            }elseif(isset($column_filter['filter_options'])&&count($column_filter['word'])>0){
+           
+                if(isset($column_filter['having'])&&$column_filter['having']==true){
+                   
+                    $list=$list->havingRaw($column_filter['id']." IN ('".implode("','",$column_filter['word'])."')");
+                }else{
+                    $list=$list->whereIn($column_filter['id'],$column_filter['word']);
+                }
+            
+            }else{
+                if(isset($column_filter['having'])&&$column_filter['having']==true){
+                    $list=$list->having($column_filter['id'],'LIKE','%'.$column_filter['word'].'%');
+                }else{
+                    $list=$list->where((isset($column_filter['table'])?$column_filter['table'].'.':'').$column_filter['id'],'LIKE','%'.$column_filter['word'].'%');
+                }
+            }
+        }
+
+        //sortby
+        if($column_sortby!=null){
+        foreach($column_sortby as $sortby){
+            $list=$list->orderBy($sortby['id'],$sortby['orderby']);
+        }
+        }else{//by default newest first
+            $list=$list->orderBy('htmltemplate_footers.id','desc');
+        }
+
+        $list=$list->groupBy('htmltemplate_footers.id')->skip($skip)->take($take)->get();
+
+        return response()->json($list);
+    }
+    
 
     public function jsonToHtml(Request $request){
     echo json_encode(['user_id'=>1]);
@@ -564,16 +751,23 @@ class HtmlTemplateController extends Controller
 
     public function SaveHf(Request $request){
             $hf=$request->post('payload');
-        
+            $user=Auth::user();
             if($hf['type']=='header'){
                 $hfobj=HtmltemplateHeader::find($hf['id']);
+                if(  $hf['id']==null){
+                    $hfobj=new HtmltemplateHeader();
+                    $hfobj->affiliate_id=$user->affiliate_id;
+                }
             }else if($hf['type']=='footer'){
                 $hfobj=HtmltemplateFooter::find($hf['id']);
+                if(  $hf['id']==null){
+                    $hfobj=new HtmltemplateFooter();
+                    $hfobj->affiliate_id=$user->affiliate_id;
+                }
             }else{
                 return response('Impossible de sauvegarder. Type de l\'objet inconnu',509);
             }
-
-            $user=Auth::user();
+           
             if($user->affiliate_id!=$hfobj->affiliate_id&&$hfobj!=null)
             return response('Impossible de sauvegarder. '.($hf['type']=='header'?'L\'en-tête de page':$hf['type']=='footer'?'Le pied de page':'l\'object').' n\'est pas dans la même affiliée que l\'utilisateur',509);
 

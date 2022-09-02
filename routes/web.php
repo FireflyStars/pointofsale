@@ -316,6 +316,10 @@ Route::group([
     Route::post('/htmltemplate-generate-email-test',[HtmlTemplateController::class,'generateEmailTest'])->middleware('auth')->name('htmltemplate-generate-email-test');
     Route::get('/generation-doc-pdf/{uuid}',[HtmlTemplateController::class,'generatePdf'])->name('generation-doc-pdf');
     Route::post('/save-global-css',[HtmlTemplateController::class,'saveGlobalCss'])->middleware('auth')->name('save-global-css');
+    Route::post('/get-htmltemplate-list',[HtmlTemplateController::class,'getHtmlTemplateLists'])->middleware('auth')->name('get-htmltemplate-list');
+    Route::post('/get-htmltemplateheader-list',[HtmlTemplateController::class,'getHtmlTemplateHeaderLists'])->middleware('auth')->name('get-htmltemplateheader-list');
+    Route::post('/get-htmltemplatefooter-list',[HtmlTemplateController::class,'getHtmlTemplateFooterLists'])->middleware('auth')->name('get-htmltemplatefooter-list');
+    
     
     // Route::get('/testemail',function(){
     //     $notification=Notification::find(110);

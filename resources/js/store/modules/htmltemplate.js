@@ -1,4 +1,4 @@
-import { HTMLTEMPLATE_GET_GLOBALCONF, HTMLTEMPLATE_GET_ID, HTMLTEMPLATE_LOAD_GLOBALCONF, HTMLTEMPLATE_SAVE_GLOBALCONF, HTMLTEMPLATE_SAVE_ELEMENT, HTMLTEMPLATE_SET_GLOBALCONF, HTMLTEMPLATE_SET_ID, HTMLTEMPLATE_LOAD_ELEMENTS, HTMLTEMPLATE_SET_ELEMENTS, HTMLTEMPLATE_GET_ELEMENTS, HTMLTEMPLATE_REMOVE_ELEMENT, HTMLTEMPLATE_UNSET_ELEMENT, HTMLTEMPLATE_REPOSITION_ELEMENT, HTMLTEMPLATE_SET_RENDERSQL, HTMLTEMPLATE_SET_FOOTERLIST, HTMLTEMPLATE_SET_HEADERLIST, HTMLTEMPLATE_GET_FOOTERLIST, HTMLTEMPLATE_GET_HEADERLIST, HTMLTEMPLATE_SET_CURRENTHEADER, HTMLTEMPLATE_SET_CURRENTFOOTER, HTMLTEMPLATE_GET_CURRENTHEADER, HTMLTEMPLATE_GET_CURRENTFOOTER, HTMLTEMPLATE_SAVE_HF, HTMLTEMPLATE_TEST_EMAIL, HTMLTEMPLATE_GET_GLOBAL_CSS, HTMLTEMPLATE_SET_GLOBAL_CSS, HTMLTEMPLATE_SAVE_GLOBAL_CSS } from "../types/types";
+import { HTMLTEMPLATE_GET_GLOBALCONF, HTMLTEMPLATE_GET_ID, HTMLTEMPLATE_LOAD_GLOBALCONF, HTMLTEMPLATE_SAVE_GLOBALCONF, HTMLTEMPLATE_SAVE_ELEMENT, HTMLTEMPLATE_SET_GLOBALCONF, HTMLTEMPLATE_SET_ID, HTMLTEMPLATE_LOAD_ELEMENTS, HTMLTEMPLATE_SET_ELEMENTS, HTMLTEMPLATE_GET_ELEMENTS, HTMLTEMPLATE_REMOVE_ELEMENT, HTMLTEMPLATE_UNSET_ELEMENT, HTMLTEMPLATE_REPOSITION_ELEMENT, HTMLTEMPLATE_SET_RENDERSQL, HTMLTEMPLATE_SET_FOOTERLIST, HTMLTEMPLATE_SET_HEADERLIST, HTMLTEMPLATE_GET_FOOTERLIST, HTMLTEMPLATE_GET_HEADERLIST, HTMLTEMPLATE_SET_CURRENTHEADER, HTMLTEMPLATE_SET_CURRENTFOOTER, HTMLTEMPLATE_GET_CURRENTHEADER, HTMLTEMPLATE_GET_CURRENTFOOTER, HTMLTEMPLATE_SAVE_HF, HTMLTEMPLATE_TEST_EMAIL, HTMLTEMPLATE_GET_GLOBAL_CSS, HTMLTEMPLATE_SET_GLOBAL_CSS, HTMLTEMPLATE_SAVE_GLOBAL_CSS, HTMLTEMPLATE_RESET_STATE } from "../types/types";
 
 
 export const htmltemplate= {
@@ -32,6 +32,35 @@ export const htmltemplate= {
         footerList:[]
     },
     mutations: {
+        [HTMLTEMPLATE_RESET_STATE]:(state)=>{
+          state.id=null;
+          state.rendersql=false;
+          state.example='';
+          state.elements=[];
+          state.globalcss='.paper{}';
+          state.generalconfig={
+                name:'',
+                type:'',
+                pdf_filename_format:'',
+                measuringunit:'px',
+                htmltemplate_header_id:0,
+                htmltemplate_footer_id:0,
+                pagemargin:{
+                    top:10,
+                    right:10,
+                    bottom:10,
+                    left:10
+                },
+                global_sql:'',
+                global_test_vars:'',
+                qrcode:false,
+            };
+          state.currentHeader=null;
+          state.currentFooter=null;
+          state.headerList=[];
+          state.footerList=[];
+        
+        },
         [HTMLTEMPLATE_SET_GLOBALCONF]: (state, generalconfig) => {
             state.generalconfig.name = generalconfig.name;
             state.generalconfig.type = generalconfig.type;

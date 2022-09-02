@@ -109,8 +109,8 @@ export default {
             
         }
     },
-
-    setup(props) {
+     emits: ['onRowClicked'],
+    setup(props,context) {
         const router=useRouter();
         const store=useStore();
         const identifier=props.table_def.identifier;//table identifier
@@ -139,6 +139,7 @@ export default {
             ]);
 
         onMounted(()=>{
+                     store.dispatch(`${ITEM_LIST_MODULE}${ITEM_LIST_SELECT_CURRENT}`,{current:''});
             let table_def=props.table_def;
             let sortedcol=[];
              let hiddencols=window.localStorage.getItem(`hiddenCol_${identifier}`);
@@ -380,6 +381,9 @@ export default {
                 if(typeof CURRENT_SELECTED.value!="undefined"&&CURRENT_SELECTED.value==id){
                     store.dispatch(`${ITEM_LIST_MODULE}${ITEM_LIST_SELECT_CURRENT}`,{current:''});
                 }else{
+                  
+                    const curentrow=lists.value.filter(obj=>obj.id==id);
+                     context.emit("onRowClicked",{id:id,row:curentrow[0]});
                     store.dispatch(`${ITEM_LIST_MODULE}${ITEM_LIST_SELECT_CURRENT}`,{current:id});
                     router.push({
                         name:table.value.item_route_name,
