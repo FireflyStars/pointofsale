@@ -441,7 +441,8 @@ import pointageList from '../../components/Commande/pointage-list.vue'
                     }
                 });      
             }
-              watch(() =>facturations.value, (current_val, previous_val) => {
+
+            watch(() =>facturations.value, (current_val, previous_val) => {
 
                 //
                     total_facture.value=0;
@@ -482,9 +483,11 @@ import pointageList from '../../components/Commande/pointage-list.vue'
             },{
                 deep:true
             });
+            
             const goto=()=>{
                 router.push({ name: 'EditDevis', params: { id: order_id } })
             }
+
             const sumZoneH=(orderzone)=>{
                 let sum=0;
                 for(const i in orderzone.groupedOrderOuvrage){
@@ -492,6 +495,7 @@ import pointageList from '../../components/Commande/pointage-list.vue'
                 }
                 return sum;
             }
+
             const sumZoneTotal=(orderzone)=>{
                   let sum=0;
                 for(const i in orderzone.groupedOrderOuvrage){
@@ -499,6 +503,7 @@ import pointageList from '../../components/Commande/pointage-list.vue'
                 }
                 return sum;
             }
+            
             const showmodal_facturation=ref(false);
             const modal_facturation_title=ref('');
 

@@ -128,7 +128,6 @@ class EntiteController extends Controller
 
         return response()->json($data);            
 
-
     }
 
     public function get_details(Customer $customer) 
@@ -204,6 +203,46 @@ class EntiteController extends Controller
             ->latest('created_at')
             ->get()
             ->load('state');
+    }
+
+    public function get_customer_address(Customer $customer) 
+    {
+
+        if(is_null($customer->addresses) && !optional($customer->addresses)->count()) return (Object) [];
+
+        $address = $customer->addresses()->where('address_type_id', 1)
+        ->take(1)
+        ->latest('created_at')
+        ->first();
+
+        if(is_null($address)) 
+        {
+            $address = $customer->addresses()->where('address_type_id', 3)
+            ->take(1)
+            ->latest('created_at')
+            ->first();
+        }
+
+        if(is_null($address)) 
+        {
+            $address = $customer->addresses()
+            ->take(1)
+            ->latest('created_at')
+            ->first();
+        }
+
+        if(is_null($address)) return [];
+
+        return $address->only([
+            'firstname',
+            'lastname',
+            'address1',
+            'address2',
+            'postcode',
+            'city',
+            'address_type',
+        ]);
+
     }
 
 

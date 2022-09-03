@@ -30,7 +30,9 @@ const mix = require('laravel-mix');
 
  mix.copy('resources/js/images','public/images');
  mix.js('resources/js/app.js', 'public/js')
-     .sass('resources/css/app.scss', 'public/css').vue()
+     .sass('resources/css/app.scss', 'public/css')
+     .sass('resources/css/htmltemplate.scss', 'public/css')
+     .vue()
      .browserSync({
         proxy:'lcdt.local',
         files: [

@@ -1,7 +1,7 @@
 <template>
 <transition enter-active-class="animate__animated animate__fadeIn"
             leave-active-class="animate__animated animate__fadeOut">
-        <div class="simple-modal-overlay"  v-if="showmodalpopupoverlay" @click.self="closeSimpleModal">
+        <div class="simple-modal-overlay"  v-if="showmodalpopupoverlay" @click.self="overlayClick">
             <transition enter-active-class="sm-show"
             leave-active-class="sm-hide">
             <div v-if="showmodalpopup" class="simple-modal-popup" :style="style">
@@ -66,6 +66,11 @@ export default {
           default: null,
           type: String,
         },
+        onClickOverylayClose:{
+          required: false,
+          default: false,
+          type: Boolean,
+        }
     },
     
     emits: ['update:modelValue','modalconfirm','modalclose'],
@@ -83,7 +88,10 @@ export default {
             })  
             } 
         });
-
+        const overlayClick=()=>{
+          if(props.onClickOverylayClose)
+            closeSimpleModal();
+        }
         const closeSimpleModal=()=>{
           showmodalpopup.value=false;
             nextTick(()=>{
@@ -102,7 +110,7 @@ export default {
         return {
             showmodalpopupoverlay,
             showmodalpopup,
-            closeSimpleModal,
+            overlayClick,
             annuler,
             confirm
         }

@@ -37,6 +37,42 @@ const router = createRouter({
             },
 
         },
+        {
+            path:'/htmltemplate',
+            name:'htmltemplate',
+            component:()=> import('../pages/templatemanager/GestionPdf.vue'),//import('../Pages/Index'),
+            children:[
+
+            ],
+            meta:{
+                authenticated:true
+            },
+
+        },
+        {
+            path:'/htmltemplate/nouveau',
+            name:'HtmlTemplateNew',
+            component:()=> import('../pages/templatemanager/HtmlTemplate.vue'),
+            meta:{
+                authenticated:true
+            }
+        },
+        {
+            path:'/htmltemplate/editer/:id',
+            name:'HtmlTemplateEdit',
+            component:()=> import('../pages/templatemanager/HtmlTemplate.vue'),
+            meta:{
+                authenticated:true
+            }
+        },
+        {
+            path: '/invoice/create',
+            name: 'invoice-create',
+            component: () => import('../pages/Invoice/Create.vue'),
+            meta: {
+                authenticated: true
+            }
+        },
 
         {
             path: '/parameters',

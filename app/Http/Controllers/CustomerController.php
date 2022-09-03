@@ -420,7 +420,8 @@ class CustomerController extends Controller
     /**
      * search customers
      */
-    public function searchCustomer(Request $request){
+    public function searchCustomer(Request $request)
+    {
         $query = DB::table('customers')
                     ->leftJoin('group', 'customers.group_id', '=', 'group.id')
                     ->leftJoin('taxes', 'customers.taxe_id', '=', 'taxes.id')
@@ -428,7 +429,9 @@ class CustomerController extends Controller
                         DB::raw('CONCAT(customers.firstname, " ", customers.name) as contact'),
                         'customers.telephone', 'customers.email', 'customers.naf', 'customers.siret',
                         DB::raw('taxes.taux * 100 as tax'), 'customers.id', 'taxes.id as taxId'
-                    )->where('customers.firstname', 'like', '%'.$request->search.'%')->orWhere('customers.name', 'like', '%'.$request->search.'%');
+                    )
+                    ->where('customers.firstname', 'like', '%'.$request->search.'%')
+                    ->orWhere('customers.name', 'like', '%'.$request->search.'%');
 
         return response()->json([
             'data'  => $request->has('showmore') ? $query->get() : $query->take(5)->get(),

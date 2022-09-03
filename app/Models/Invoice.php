@@ -4,18 +4,22 @@ namespace App\Models;
 
 use Exception;
 use App\Traits\LcdtLog;
+use App\Models\Customer;
 use App\Models\InvoiceState;
+use App\Models\InvoiceDetail;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Facades\DB;
 
 class Invoice extends Model
 {
     use HasFactory;
     use LcdtLog;
     use SoftDeletes;
+
+    protected $guarded = ['id'];
 
 
     public function state() 
@@ -63,6 +67,21 @@ class Invoice extends Model
     }
     public function invoiceType(){
         return $this->belongsTo(InvoiceType::class);
+    }
+
+    public function customer() 
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function details() 
+    {
+        return $this->hasMany(InvoiceDetail::class, 'invoice_id');
+    }
+
+    public function order() 
+    {
+        return $this->belongsTo(Order::class, 'order_id');
     }
 
     public static function  totalPaid($invoice_id){

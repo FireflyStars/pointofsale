@@ -6,6 +6,10 @@ import {
 import {
     loader as LOADER_MODULE
 } from './modules/loader'
+
+import {
+    htmltemplate as HTMLTEMPLATE_MODULE
+} from './modules/htmltemplate'
 import {
     toaster as TOASTER_MODULE
 } from "./modules/toaster";
@@ -19,16 +23,23 @@ import {
     filter as FILTER_MODULE
 } from "./modules/filter";
 
-import {cible as CIBLE_MODULE} from "./modules/cible";
-import {search as CUSTOMERLIST_MODULE } from "./modules/search";
+import { cible as CIBLE_MODULE } from "./modules/cible";
+import { search as CUSTOMERLIST_MODULE } from "./modules/search"
+import { searchInvoice as INVOICELIST_MODULE } from "./modules/searchInvoice"
 
-import { itemlist as ITEM_LIST_MODULE } from "./modules/component_store/itemlist";
+import { invoice as INVOICE_MODULE } from "./modules/invoice"
+
+import { itemlist as ITEM_LIST_MODULE } from "./modules/component_store/itemlist"
 
 import { itemlistquicklink as ITEMLISTQUICKLINK_MODULE } from "./modules/component_store/itemlistquicklink";
 
 import { orderstatetag as ORDERSTATETAG_MODULE } from "./modules/component_store/orderstatetag";
 
 import { devislist as DEVIS_LIST_MODULE } from "./modules/devislist";
+
+import { htmltemplatelist as HTMLTEMPLATELIST_MODULE } from "./modules/htmltemplatelist";
+import { htmltemplateheaderlist as HTMLTEMPLATEHEADERLIST_MODULE } from "./modules/htmltemplateheaderlist";
+import { htmltemplatefooterlist as HTMLTEMPLATEFOOTERLIST_MODULE } from "./modules/htmltemplatefooterlist";
 
 import { facturelist as FACTURE_LIST_MODULE } from "./modules/facturelist";
 import { invoicestatetag as INVOICESTATETAG_MODULE } from "./modules/component_store/invoicestatetag";
@@ -89,12 +100,16 @@ import { chat as CHAT_MODULE } from "./modules/chat"
 export default createStore({
     modules: {
         LOADER_MODULE,
+        HTMLTEMPLATE_MODULE,
         TOASTER_MODULE,
         CIBLE_MODULE,
         ITEM_LIST_MODULE,
         ITEMLISTQUICKLINK_MODULE,
         ORDERSTATETAG_MODULE,
         DEVIS_LIST_MODULE,
+        HTMLTEMPLATELIST_MODULE,
+        HTMLTEMPLATEHEADERLIST_MODULE,
+        HTMLTEMPLATEFOOTERLIST_MODULE,
         FACTURE_LIST_MODULE,
         FACTURE_DETAIL_MODULE,
         INVOICESTATETAG_MODULE,
@@ -131,6 +146,8 @@ export default createStore({
         PERMIS_LIST_MODULE,
         COMMANDE_FOURNISSEUR_STATUS_MODULE,
         COMMANDE_FOURNISSEUR_LIST_MODULE,
-        CHAT_MODULE
+        CHAT_MODULE,
+        INVOICELIST_MODULE,
+        INVOICE_MODULE
     }
 });

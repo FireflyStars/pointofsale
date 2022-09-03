@@ -1,12 +1,26 @@
 import store from "../../store/store";
-import {TOASTER_MESSAGE, TOASTER_MODULE} from "../../store/types/types";
+import {DISPLAY_LOADER, HIDE_LOADER, LOADER_MODULE, SET_LOADER_MSG, TOASTER_CLEAR_TOASTS, TOASTER_MESSAGE, TOASTER_MODULE} from "../../store/types/types";
 
 
 
 export const featureUnavailable=((feature)=>{
     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`,{message:feature+' feature not yet implemented.',ttl:5,type:'success'});
 });
-
+export const displayError=((msg)=>{
+    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`,{message:msg,ttl:5,type:'danger'});
+});
+export const displaySuccess=((msg)=>{
+    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`,{message:msg,ttl:5,type:'success'});
+});
+export const clearMsg=(()=>{
+    store.commit(`${TOASTER_MODULE}${TOASTER_CLEAR_TOASTS}`);
+});
+export const displayLoader=((msg)=>{
+    store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`,[true,msg]);
+});
+export const hideLoader=((msg)=>{
+    store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+});
 export const formatPrice=price=>`${price !== 0 && typeof price != 'undefined' ? price?.toFixed(2) : 0} €`;
 
 export const isFloat=x=>{
