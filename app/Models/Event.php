@@ -110,7 +110,7 @@ class Event extends Model
             $graph->setAccessToken($tokenCache->getAccessToken());
             // get user's email
             $user_email = User::find($event->user_id)->email;
-            $user_email = 'jlchauvet@lacompagniedestoits.com';
+            // $user_email = 'jlchauvet@lacompagniedestoits.com';
             // check user's email validation if it's lcdt or not
             if(preg_match("/[a-zA-Z0-9_\.+]+@(lacompagniedestoits)(\.com)/", $user_email)){
                 $event_url = sprintf("/users/%s/calendar/events", $user_email);
