@@ -16,6 +16,7 @@ use App\TokenStore\TokenCache;
 use Microsoft\Graph\Graph;
 use Microsoft\Graph\Model as OutlookModel;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 class Event extends Model
 {
     use HasFactory;
@@ -146,7 +147,7 @@ class Event extends Model
             $user = User::find($event->user_id);
             // check user's email validation if it's lcdt or not
             if(preg_match("/[a-zA-Z0-9_\.+]+@(lacompagniedestoits)(\.com)/", $user->email)){
-                $event_url = sprintf("/users/%s/calendar/events/%s", $user->email, $user->outlook_event_id);
+                $event_url = sprintf("/users/%s/calendar/events/%s", $user->email, $event->outlook_event_id);
                 $data = [
                     'Subject' => $event->name,
                     'Body' => [
@@ -162,7 +163,7 @@ class Event extends Model
                         'TimeZone' => config('app.timezone'),
                     ],
                 ];
-                $graph->createRequest('PATCH', $event_url)
+                $response = $graph->createRequest('PATCH', $event_url)
                         ->attachBody($data)
                         ->setReturnType(OutlookModel\Event::class)
                         ->execute();
@@ -176,7 +177,7 @@ class Event extends Model
             $user = User::find($event->user_id);
             // check user's email validation if it's lcdt or not
             if(preg_match("/[a-zA-Z0-9_\.+]+@(lacompagniedestoits)(\.com)/", $user->email)){
-                $event_url = sprintf("/users/%s/calendar/events/%s", $user->email, $user->outlook_event_id);
+                $event_url = sprintf("/users/%s/calendar/events/%s", $user->email, $event->outlook_event_id);
                 $graph->createRequest('DELETE', $event_url)
                     ->execute();
             }
