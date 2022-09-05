@@ -105,6 +105,19 @@ export const htmltemplateheaderlist= {
               table:'orders',
               allow_groupby:true,
             },
+            {
+              id:"rowaction",
+              display_name:"",
+              type:"component",
+              class:"",
+              header_class:"",
+              sort:false,
+              filter:false,   
+              allow_groupby:false,
+              css:{
+                flex:0.5
+              },
+            },
           
           ]
 

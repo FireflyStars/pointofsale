@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 
 use Barryvdh\Snappy\Facades\SnappyPdf;
 use Beta\Microsoft\Graph\ManagedTenants\Model\Setting;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -251,7 +252,7 @@ class HtmlTemplateController extends Controller
         $user=Auth::user();
 
         $list=DB::table('htmltemplate_headers')
-        ->select(['htmltemplate_headers.*']);
+        ->select(['htmltemplate_headers.*','htmltemplate_headers.id as rowaction']);
         $list=$list->where('htmltemplate_headers.affiliate_id','=',$user->affiliate->id);
         $list=$list->whereNull('htmltemplate_headers.deleted_at');
         //column filters
@@ -313,7 +314,7 @@ class HtmlTemplateController extends Controller
         $user=Auth::user();
 
         $list=DB::table('htmltemplate_footers')
-        ->select(['htmltemplate_footers.*']);
+        ->select(['htmltemplate_footers.*','htmltemplate_footers.id as rowaction']);
         $list=$list->where('htmltemplate_footers.affiliate_id','=',$user->affiliate->id);
         $list=$list->whereNull('htmltemplate_footers.deleted_at');
         //column filters
@@ -866,7 +867,79 @@ class HtmlTemplateController extends Controller
         ->download($notification->pdf_filename.'.pdf');
     }
 
-    
+
+    public function duplicateRow(Request $request){
+            $type=$request->post('type');
+            $id=$request->post('id');
+            $name=$request->post('name');
+            $user=Auth::user();
+            $o=null;
+            if($type=="template")
+                $o=HtmlTemplate::find($id);
+            
+            if($type=="header")
+                $o=HtmltemplateHeader::find($id);
+            
+            if($type=="footer")
+                $o=HtmltemplateFooter::find($id);
+            
+                if($o==null)
+                    return response ('Erreur, objet non trouvé. Impossible de dupliquer',509);
+                
+                if($o->affiliate_id!=$user->affiliate_id)
+                    return response ('Erreur,L\'objet n\'est pas dans la même affiliée que l\'utilisateur. Impossible de dupliquer',509);
+
+        $new_o=$o->replicate();
+        $new_o->created_at = now();
+        $new_o->name=$name;
+        try{
+        $new_o->save();
+        }catch(Exception $e){
+            return response ($e->getMessage(),509);
+        }
+        $new_o->fresh();
+
+        //only if type is template
+
+        if($type=='template'){
+            $elements=$o->elements()->get();
+     
+            foreach($elements as $element){
+         
+                $new_element=$element->replicate();
+                $new_element->created_at = now();
+                $new_element->htmltemplate_id=$new_o->id;
+                $new_element->save();
+            }
+        }
+
+        return response()->json($new_o);
+
+    }
+    public function deleteRow(Request $request){
+        $type=$request->post('type');
+        $id=$request->post('id');
+        $user=Auth::user();
+        $o=null;
+        if($type=="template")
+            $o=HtmlTemplate::find($id);
+        
+        if($type=="header")
+            $o=HtmltemplateHeader::find($id);
+        
+        if($type=="footer")
+            $o=HtmltemplateFooter::find($id);
+        
+            if($o==null)
+                return response ('Erreur, objet non trouvé. Impossible de supprimer',509);
+            
+            if($o->affiliate_id!=$user->affiliate_id)
+                return response ('Erreur,L\'objet n\'est pas dans la même affiliée que l\'utilisateur. Impossible de supprimer',509);
+            $o->delete();
+            $o->refresh();
+            $o->delete=$o->deleted_at;
+            $o->save();
+    }
 }
 
 
