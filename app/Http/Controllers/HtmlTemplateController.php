@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\HtmlTemplate;
+use App\Models\Htmltemplate;
 use App\Models\HtmltemplateElement;
 use App\Models\HtmltemplateFooter;
 use App\Models\HtmltemplateHeader;
@@ -402,7 +402,7 @@ class HtmlTemplateController extends Controller
             $user=Auth::user();
        
             if($template_id>0){
-                $htmltemplate=HtmlTemplate::find($template_id);
+                $htmltemplate=Htmltemplate::find($template_id);
                 if($htmltemplate==null)
                 return response('Template non trouvée',509);
 
@@ -410,7 +410,7 @@ class HtmlTemplateController extends Controller
                 return response('Impossible de sauvegarder. Le template n\'est pas dans la même affiliée que l\'utilisateur',509);
 
             }else{
-                $htmltemplate=new HtmlTemplate();
+                $htmltemplate=new Htmltemplate();
                 $htmltemplate->affiliate_id=$user->affiliate_id;
             }
             $htmltemplate->name=$conf['name'];
@@ -439,7 +439,7 @@ class HtmlTemplateController extends Controller
         $user=Auth::user();
        
         if($template_id>0){
-            $htmltemplate=HtmlTemplate::find($template_id);
+            $htmltemplate=Htmltemplate::find($template_id);
             if($htmltemplate==null)
             return response('Template non trouvée',509);
             if($htmltemplate->affiliate_id!=$user->affiliate_id)
@@ -467,7 +467,7 @@ class HtmlTemplateController extends Controller
         $user=Auth::user();
         $el=HtmltemplateElement::find($element['id']);
         if($el->htmltemplate_id==$element['htmltemplate_id']){
-            $htmltemplate=HtmlTemplate::find($el->htmltemplate_id);
+            $htmltemplate=Htmltemplate::find($el->htmltemplate_id);
             if($htmltemplate==null)
             return response('Template non trouvée',509);
             if($htmltemplate->affiliate_id!=$user->affiliate_id)
@@ -487,7 +487,7 @@ class HtmlTemplateController extends Controller
         $user=Auth::user();
 
         if($template_id>0){
-            $htmltemplate=HtmlTemplate::find($template_id);
+            $htmltemplate=Htmltemplate::find($template_id);
             if($htmltemplate==null)
             return response('Template non trouvée',509);
             if($htmltemplate->affiliate_id!=$user->affiliate_id)
@@ -526,7 +526,7 @@ class HtmlTemplateController extends Controller
         $rendersql=$request->get('rendersql');
         $user=Auth::user();
         if($template_id>0){
-            $htmltemplate=HtmlTemplate::find($template_id);
+            $htmltemplate=Htmltemplate::find($template_id);
             if($htmltemplate==null)
             return response('Template non trouvée',509);
             if($htmltemplate->affiliate_id!=$user->affiliate_id)
@@ -693,7 +693,7 @@ class HtmlTemplateController extends Controller
 
         $user=Auth::user();
         if($template_id>0){
-            $htmltemplate=HtmlTemplate::find($template_id);
+            $htmltemplate=Htmltemplate::find($template_id);
             if($htmltemplate==null)
             return response('Template non trouvée',509);
             if($htmltemplate->affiliate_id!=$user->affiliate_id)
@@ -790,7 +790,7 @@ class HtmlTemplateController extends Controller
 
     public function generatePdfTest(Request $request){
 
-        $ht=HtmlTemplate::find($request->id);
+        $ht=Htmltemplate::find($request->id);
         if($ht->type!='pdf')
         return response ('Génération d\'un fichier pdf avec un type de template invalide. Le type de template actuel est "'.$ht->type."'",509);
         $user=Auth::user();
@@ -800,7 +800,7 @@ class HtmlTemplateController extends Controller
     }
 
     public function generateEmailTest(Request $request){
-        $ht=HtmlTemplate::find($request->post('template_id'));
+        $ht=Htmltemplate::find($request->post('template_id'));
         if($ht->type!='email')
         return response ('Envoie email avec un type de template invalide. Le type de template actuel est "'.$ht->type."'",509);
         $user=Auth::user();
@@ -839,7 +839,7 @@ class HtmlTemplateController extends Controller
 
 
     public function renderPDF(Notification $notification){
-        $ht=HtmlTemplate::find($notification->template);
+        $ht=Htmltemplate::find($notification->template);
         $headerH=$ht->margin_top;
         $footerH=$ht->margin_bottom;
         if($ht->htmltemplate_header_id>0){
@@ -875,7 +875,7 @@ class HtmlTemplateController extends Controller
             $user=Auth::user();
             $o=null;
             if($type=="template")
-                $o=HtmlTemplate::find($id);
+                $o=Htmltemplate::find($id);
             
             if($type=="header")
                 $o=HtmltemplateHeader::find($id);
@@ -922,7 +922,7 @@ class HtmlTemplateController extends Controller
         $user=Auth::user();
         $o=null;
         if($type=="template")
-            $o=HtmlTemplate::find($id);
+            $o=Htmltemplate::find($id);
         
         if($type=="header")
             $o=HtmltemplateHeader::find($id);
