@@ -940,6 +940,15 @@ class HtmlTemplateController extends Controller
             $o->delete=$o->deleted_at;
             $o->save();
     }
+
+
+    public function runNotificationCron(Request $request){
+        $unsentNotifcations=Notification::where('typeNotification','!=','PDF')->where('sent','=',0)->get();
+
+        foreach($unsentNotifcations  as $notification){
+            $notification->send();
+        }
+    }
 }
 
 

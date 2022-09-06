@@ -25,7 +25,7 @@
         </template>
     </div>
     <transition-group tag="div" class="list"  name="list" appear>
-        <template v-for="row,index in lists" :key="index">
+        <template v-for="row,index in lists" :key="row.id">
            <div>
         <div class="list-row list-row-group" v-if="grouped_by!=''&&showGroupHeader(ifnull(row[grouped_by]))" @click="toggleGroupVisible(row[grouped_by])" >
              <template v-for="col,indexcol in table_def.columns_def" :key="`${indexcol}_${grouped_by}`">

@@ -15,11 +15,9 @@ class Notification extends Model
 {
     use HasFactory;
 
-    public function annexedpdfs(){
-        return $this->hasMany(NotificationAnnexedpdf::class);
-    }
 
-    public static function add($template_name,$parameters=[],$test=0,$email='',$phone='',$annexedpdfurls=[]){
+
+    public static function add($template_name,$parameters=[],$test=0,$email='',$phone=''){
             $ht=Htmltemplate::where('name','=',$template_name)->whereNull('deleted_at')->first();
             if($ht==null)
             throw new \Exception("Htmltemplate ".$template_name." not found.");
