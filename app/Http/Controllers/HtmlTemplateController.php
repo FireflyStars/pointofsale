@@ -603,13 +603,13 @@ class HtmlTemplateController extends Controller
                             $el->rendered_data=str_replace('{'.$k.'}',$v,$el->rendered_data);
                         }
 
-                        foreach($global_sql_vars as $k=>$v){
-                            $el->rendered_data=str_replace('{'.$k.'}',$v,$el->rendered_data);
-                        }
-                        foreach($global_test_vars as $k=>$v){
-                            $el->rendered_data=str_replace('{'.$k.'}',$v,$el->rendered_data);
-                        }
-
+                 
+                    }
+                    foreach($global_sql_vars as $k=>$v){
+                        $el->rendered_data=str_replace('{'.$k.'}',$v,$el->rendered_data);
+                    }
+                    foreach($global_test_vars as $k=>$v){
+                        $el->rendered_data=str_replace('{'.$k.'}',$v,$el->rendered_data);
                     }
 
                     if($el->type=='table'){
@@ -654,13 +654,13 @@ class HtmlTemplateController extends Controller
                     }
 
                     foreach($global_sql_vars as $k=>$v){
-                    
                         $currentHeader->rendered_data=str_replace('{'.$k.'}',$v,$currentHeader->rendered_data);
-                        
                     }
+                    
                     foreach($global_test_vars as $k=>$v){
                         $currentHeader->rendered_data=str_replace('{'.$k.'}',$v,$currentHeader->rendered_data);
                     }
+
                 }
 
                 
@@ -705,8 +705,7 @@ class HtmlTemplateController extends Controller
                             $currentFooter->rendered_data=str_replace('{'.$k.'}',$v,$currentFooter->rendered_data);
                         }  
                 }
-            }
-        
+            } 
 
             return response()->json(array('elements'=>$elements,'currentHeader'=>$currentHeader,'currentFooter'=>$currentFooter));
         }else{
