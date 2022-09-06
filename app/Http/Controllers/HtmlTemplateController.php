@@ -526,6 +526,8 @@ class HtmlTemplateController extends Controller
         $rendersql=$request->get('rendersql');
         $user=Auth::user();
         if($template_id>0){
+
+            $global_sql_vars=[];
             $htmltemplate=Htmltemplate::find($template_id);
             if($htmltemplate==null)
             return response('Template non trouvée',509);
@@ -625,8 +627,13 @@ class HtmlTemplateController extends Controller
                    // $currentHeader->rendered_data=$currentHeader->html;
                     $currentHeaderSql=$currentHeader->sql;
                     if(trim($currentHeaderSql)!=''){
-                        foreach($global_test_vars as $k=>$v){
+                        foreach($global_sql_vars as $k=>$v){
                         
+                            $currentHeaderSql=str_replace('{'.$k.'}',$v,$currentHeaderSql);
+                            
+                        }
+                        foreach($global_test_vars as $k=>$v){
+                    
                             $currentHeaderSql=str_replace('{'.$k.'}',$v,$currentHeaderSql);
                             
                         }
@@ -638,14 +645,21 @@ class HtmlTemplateController extends Controller
                                         foreach($header_sql_vars as $k=>$v){
                                             $currentHeader->rendered_data=str_replace('{'.$k.'}',$v,$currentHeader->rendered_data);
                                         }
-                                        foreach($global_test_vars as $k=>$v){
-                                            $currentHeader->rendered_data=str_replace('{'.$k.'}',$v,$currentHeader->rendered_data);
-                                        }
+                                    
                                     }
-
+                                  
                             }catch(\Illuminate\Database\QueryException $q){
                                 return response($q->getMessage(),509);
                         }
+                    }
+
+                    foreach($global_sql_vars as $k=>$v){
+                    
+                        $currentHeader->rendered_data=str_replace('{'.$k.'}',$v,$currentHeader->rendered_data);
+                        
+                    }
+                    foreach($global_test_vars as $k=>$v){
+                        $currentHeader->rendered_data=str_replace('{'.$k.'}',$v,$currentHeader->rendered_data);
                     }
                 }
 
@@ -655,6 +669,11 @@ class HtmlTemplateController extends Controller
                 
                 $currentFooterSql=$currentFooter->sql;
                 if(trim($currentFooterSql)!=''){
+                    foreach($global_sql_vars as $k=>$v){
+                    
+                        $currentFooterSql=str_replace('{'.$k.'}',$v,$currentFooterSql);
+                        
+                    }
                     foreach($global_test_vars as $k=>$v){
                     
                         $currentFooterSql=str_replace('{'.$k.'}',$v,$currentFooterSql);
@@ -668,15 +687,23 @@ class HtmlTemplateController extends Controller
                                     foreach($footer_sql_vars as $k=>$v){
                                         $currentFooter->rendered_data=str_replace('{'.$k.'}',$v,$currentFooter->rendered_data);
                                     }
-                                    foreach($global_test_vars as $k=>$v){
-                                        $currentFooter->rendered_data=str_replace('{'.$k.'}',$v,$currentFooter->rendered_data);
-                                    }
+                                
                                 }
+                            
+                           
 
                         }catch(\Illuminate\Database\QueryException $q){
                             return response($q->getMessage(),509);
                         }
                         }
+                        foreach($global_sql_vars as $k=>$v){
+                    
+                            $currentFooter->rendered_data=str_replace('{'.$k.'}',$v,$currentFooter->rendered_data);
+                            
+                        }
+                        foreach($global_test_vars as $k=>$v){
+                            $currentFooter->rendered_data=str_replace('{'.$k.'}',$v,$currentFooter->rendered_data);
+                        }  
                 }
             }
         
