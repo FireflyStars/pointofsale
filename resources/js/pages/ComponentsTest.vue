@@ -143,6 +143,16 @@
 
                                 </div>
                             </div>
+                            <div class="d-flex align-items-center  mt-5 gap-2">
+                               
+                                <button class="btn btn-outline-dark almarai_700_normal">Editer</button>
+                                <button  class="btn btn-outline-success almarai_700_normal">Gagne</button>
+                                <button class="btn btn-outline-secondary almarai_700_normal" >Perdu</button>  
+                                <button  class="btn btn-outline-primary almarai_700_normal"  >Abandonne</button>  
+                                <button  class="btn btn-outline-warning almarai_700_normal"  >Attente client</button>
+                                <button  class="btn btn-outline-info almarai_700_normal">Envoye</button>
+                             
+                            </div>
 
                         </div>
 
