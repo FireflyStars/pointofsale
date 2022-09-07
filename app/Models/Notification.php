@@ -144,7 +144,15 @@ class Notification extends Model
         return $subject;
 
     }
-
+    public static function removeUnRenderedToken($html){
+        $output_array=[];
+        preg_match_all('/{(.*?)}/',$html, $output_array);
+        if(!empty($output_array))
+        foreach($output_array[0] as $token){
+            $html=str_replace($token,'',$html);
+        }
+        return $html;
+    }
     public static function compileHeaderFooter($ht,$hfobj,$parameters,$global_sql_vars,$ispdf){
 
         $html=$hfobj->html;
@@ -178,7 +186,7 @@ class Notification extends Model
             $html=str_replace('{'.$k.'}',$v,$html);
         }
 
-        return Notification::htmlbody('<div style="display:block;height:'.$hfobj->height.$ht->measuringunit.'">'.$html.'</div>',$ispdf);
+        return Notification::htmlbody('<div style="display:block;height:'.$hfobj->height.$ht->measuringunit.'">'.Notification::removeUnRenderedToken($html).'</div>',$ispdf);
 
     }
 
@@ -256,7 +264,7 @@ class Notification extends Model
         
 
 
-        return $html;
+        return Notification::removeUnRenderedToken($html);
     }
 
     public static function htmlbody($str,$ispdf=true){

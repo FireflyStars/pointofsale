@@ -448,6 +448,7 @@ export default {
     top:0;
     left: 0;
     opacity: 0;
+    z-index: 1;
     transition: opacity ease-in-out 0.2s;
 }
 .element:hover,.header-el:hover,.footer-el:hover{
