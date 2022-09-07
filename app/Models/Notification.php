@@ -149,6 +149,7 @@ class Notification extends Model
         preg_match_all('/{(.*?)}/',$html, $output_array);
         if(!empty($output_array))
         foreach($output_array[0] as $token){
+            if($token!='{APP_URL}')
             $html=str_replace($token,'',$html);
         }
         return $html;
