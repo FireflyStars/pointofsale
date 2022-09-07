@@ -1096,7 +1096,10 @@ class DevisController extends Controller
                     ->select('id', 'latitude as lat', 'longitude as lon', 'order_id', 'name', 'hauteur as height', 'moyenacces_id as roofAccess')
                     ->get();
         $devis = [];
-        $devis['orderStatus'] = DB::table('orders')->join('order_states', 'orders.order_state_id', '=', 'order_states.id')->where('orders.id', $order->id)->select('order_states.order_type as type', 'name', 'fontcolor', 'color')->first();
+        $devis['orderStatus'] = DB::table('orders')
+                                ->join('order_states', 'orders.order_state_id', '=', 'order_states.id')
+                                ->where('orders.id', $order->id)
+                                ->select('order_states.order_type as type', 'order_states.name', 'order_states.fontcolor', 'order_states.color')->first();
         $devis['totalHoursForInstall'] = 0;
         $devis['totalPriceForInstall'] = 0;
         $devis['totalHoursForSecurity'] = 0;
