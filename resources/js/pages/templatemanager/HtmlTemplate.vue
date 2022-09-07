@@ -448,6 +448,7 @@ export default {
     top:0;
     left: 0;
     opacity: 0;
+    z-index: 1;
     transition: opacity ease-in-out 0.2s;
 }
 .element:hover,.header-el:hover,.footer-el:hover{
@@ -459,11 +460,8 @@ export default {
 .addressblock{
     transition: all ease-in-out 500ms;
     background: rgba(138, 43, 226, $alpha: 0.6);
-    height: 78px;
-    width: 275px;
+    height: 68px;
+    width: 282px;
     display: block;
 }
-</style>
-<style lang="scss" >
-@import "../../../../resources/css/htmltemplate.scss"; //Here i add extra "./"(current directory)
 </style>

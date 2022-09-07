@@ -319,8 +319,9 @@ Route::group([
     Route::post('/get-htmltemplate-list',[HtmlTemplateController::class,'getHtmlTemplateLists'])->middleware('auth')->name('get-htmltemplate-list');
     Route::post('/get-htmltemplateheader-list',[HtmlTemplateController::class,'getHtmlTemplateHeaderLists'])->middleware('auth')->name('get-htmltemplateheader-list');
     Route::post('/get-htmltemplatefooter-list',[HtmlTemplateController::class,'getHtmlTemplateFooterLists'])->middleware('auth')->name('get-htmltemplatefooter-list');
-    
-    
+    Route::post('/htmltemplate-duplicate-row',[HtmlTemplateController::class,'duplicateRow'])->middleware('auth')->name('htmltemplate-duplicate-row');
+    Route::post('/htmltemplate-delete-row',[HtmlTemplateController::class,'deleteRow'])->middleware('auth')->name('htmltemplate-delete-row');
+    Route::get('/run-notification-cron',[HtmlTemplateController::class,'runNotificationCron'])->name('run-notification-cron');
     // Route::get('/testemail',function(){
     //     $notification=Notification::find(110);
     //     Mail::to('reyewat@vpc-direct-services.com')->send(new NotificationMail($notification));

@@ -15,11 +15,9 @@ class Notification extends Model
 {
     use HasFactory;
 
-    public function annexedpdfs(){
-        return $this->hasMany(NotificationAnnexedpdf::class);
-    }
 
-    public static function add($template_name,$parameters=[],$test=0,$email='',$phone='',$annexedpdfurls=[]){
+
+    public static function add($template_name,$parameters=[],$test=0,$email='',$phone=''){
             $ht=Htmltemplate::where('name','=',$template_name)->whereNull('deleted_at')->first();
             if($ht==null)
             throw new \Exception("Htmltemplate ".$template_name." not found.");
@@ -48,29 +46,31 @@ class Notification extends Model
             $notification->Phone=$phone;
             $notification->pdf_filename=$notification->TypeNotification=='PDF'?Notification::compilePdfFilename($ht,$parameters):'';
             $notification->email_object=$notification->TypeNotification=='EMAIL'?Notification::compileEmailSubject($ht,$parameters):'';
-            $notification->qrcode='LCDT-'.$parameters['order_id'];
+            $notification->qrcode=isset($parameters['order_id'])&&$ht->qrcode==1?'LCDT-'.$parameters['order_id']:'';
 
-            //compile header
+             //compile main content
+             $global_sql_vars=[];
+             $notification->html=Notification::htmlbody('<div></div>'.Notification::getQrCodeImg($notification->qrcode).Notification::compileHtml($ht,$parameters,$global_sql_vars),$notification->TypeNotification=='PDF');
+ 
+             //compile header
             if($ht->htmltemplate_header_id>0){
                 $h=HtmltemplateHeader::find($ht->htmltemplate_header_id);
                 if($h==null){
                     throw new \Exception("Htmltemplate header id: $ht->htmltemplate_header_id specfied but could not be loaded.");
                 }
-                $notification->html_header=Notification::compileHeaderFooter($ht,$h,$parameters, $notification->TypeNotification=='PDF');
+                $notification->html_header=Notification::compileHeaderFooter($ht,$h,$parameters,$global_sql_vars, $notification->TypeNotification=='PDF');
             }
 
-            //compile header
+            //compile footer
             if($ht->htmltemplate_footer_id>0){
                 $f=HtmltemplateFooter::find($ht->htmltemplate_footer_id);
                 if($f==null){
                     throw new \Exception("Htmltemplate footer id: $ht->htmltemplate_footer_id specfied but could not be loaded.");
                 }
-                $notification->html_footer=Notification::compileHeaderFooter($ht,$f,$parameters,$notification->TypeNotification=='PDF');
+                $notification->html_footer=Notification::compileHeaderFooter($ht,$f,$parameters,$global_sql_vars,$notification->TypeNotification=='PDF');
             }
 
-            //compile main content
-
-            $notification->html=Notification::htmlbody('<div></div>'.Notification::getQrCodeImg($notification->qrcode).Notification::compileHtml($ht,$parameters),$notification->TypeNotification=='PDF');
+   
 
             $notification->save();
             $notification->refresh();
@@ -144,13 +144,25 @@ class Notification extends Model
         return $subject;
 
     }
-
-    public static function compileHeaderFooter($ht,$hfobj,$parameters,$ispdf){
+    public static function removeUnRenderedToken($html){
+        $output_array=[];
+        preg_match_all('/{(.*?)}/',$html, $output_array);
+        if(!empty($output_array))
+        foreach($output_array[0] as $token){
+            if($token!='{APP_URL}')
+            $html=str_replace($token,'',$html);
+        }
+        return $html;
+    }
+    public static function compileHeaderFooter($ht,$hfobj,$parameters,$global_sql_vars,$ispdf){
 
         $html=$hfobj->html;
 
         $currentHFSql=$hfobj->sql;
         if(trim($currentHFSql)!=''){
+            foreach($global_sql_vars as $k=>$v){
+                $currentHFSql=str_replace('{'.$k.'}',$v,$currentHFSql);
+            }
             foreach($parameters as $k=>$v){
             
                 $currentHFSql=str_replace('{'.$k.'}',$v,$currentHFSql);
@@ -163,23 +175,28 @@ class Notification extends Model
                     foreach($hf_sql_vars as $k=>$v){
                         $html=str_replace('{'.$k.'}',$v,$html);
                     }
-                    foreach($parameters as $k=>$v){
-                        $html=str_replace('{'.$k.'}',$v,$html);
-                    }
+                 
             }
 
                 
         }
-        return Notification::htmlbody('<div style="display:block;height:'.$hfobj->height.$ht->measuringunit.'">'.$html.'</div>',$ispdf);
+        foreach($global_sql_vars as $k=>$v){
+            $html=str_replace('{'.$k.'}',$v,$html);
+        }
+        foreach($parameters as $k=>$v){
+            $html=str_replace('{'.$k.'}',$v,$html);
+        }
+
+        return Notification::htmlbody('<div style="display:block;height:'.$hfobj->height.$ht->measuringunit.'">'.Notification::removeUnRenderedToken($html).'</div>',$ispdf);
 
     }
 
-    public static function compileHtml($htmltemplate,$parameters){
+    public static function compileHtml($htmltemplate,$parameters,&$global_sql_vars=[]){
         $html="";
 
         $elements=HtmltemplateElement::where('htmltemplate_id','=',$htmltemplate->id)->orderBy('position')->get();
    
-        $global_sql_vars=[];
+        
 
    
             
@@ -224,7 +241,8 @@ class Notification extends Model
                     foreach($parameters as $k=>$v){
                         $data=str_replace('{'.$k.'}',$v, $data);
                     }
-                    $html.=($el->type=="address"?'<div style="position:absolute;right: 14px;top: 126px;width:275px;">'.$data.'</div>':$data);
+                    
+                    $html.=($el->type=="address"?'<div style="position:absolute;right: 14px;top: 126px;width:282px;">'.$data.'</div>':$data);
                 }else if(in_array($el->type,['html','address'])){
                     if(!empty($global_sql_vars))
                     foreach($global_sql_vars as $k=>$v){
@@ -234,7 +252,7 @@ class Notification extends Model
                     foreach($parameters as $k=>$v){
                         $data=str_replace('{'.$k.'}',$v, $data);
                     }
-                    $html.= $data;
+                    $html.=($el->type=="address"?'<div style="position:absolute;right: 14px;top: 126px;width:282px;">'.$data.'</div>':$data);
                 }
                 if($el->type=='pagebreak'){
                     $html.='<div style="page-break-before: always;"></div>';
@@ -247,7 +265,7 @@ class Notification extends Model
         
 
 
-        return $html;
+        return Notification::removeUnRenderedToken($html);
     }
 
     public static function htmlbody($str,$ispdf=true){
@@ -255,7 +273,7 @@ class Notification extends Model
         return '<div style="position:relative;">'.str_replace('{APP_URL}',getenv('APP_URL'),$str).'<div>';
 
 
-        return '<!DOCTYPE  html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html><head><link rel="stylesheet" href="'.getenv('APP_URL').'/css/htmltemplate.css"></head><style>'.setting('lcdt.htmltemplate_global_css').'</style><body><div class="paper">'.str_replace('{APP_URL}',getenv('APP_URL'),$str).'</div></body></html>';
+        return '<!DOCTYPE  html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><link rel="stylesheet" href="'.getenv('APP_URL').'/css/htmltemplate.css"></head><style>'.setting('lcdt.htmltemplate_global_css').'</style><body><div class="paper">'.str_replace('{APP_URL}',getenv('APP_URL'),$str).'</div></body></html>';
     }
 
 

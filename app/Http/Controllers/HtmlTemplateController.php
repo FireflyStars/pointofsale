@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\HtmlTemplate;
+use App\Models\Htmltemplate;
 use App\Models\HtmltemplateElement;
 use App\Models\HtmltemplateFooter;
 use App\Models\HtmltemplateHeader;
@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 
 use Barryvdh\Snappy\Facades\SnappyPdf;
 use Beta\Microsoft\Graph\ManagedTenants\Model\Setting;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -251,7 +252,7 @@ class HtmlTemplateController extends Controller
         $user=Auth::user();
 
         $list=DB::table('htmltemplate_headers')
-        ->select(['htmltemplate_headers.*']);
+        ->select(['htmltemplate_headers.*','htmltemplate_headers.id as rowaction']);
         $list=$list->where('htmltemplate_headers.affiliate_id','=',$user->affiliate->id);
         $list=$list->whereNull('htmltemplate_headers.deleted_at');
         //column filters
@@ -313,7 +314,7 @@ class HtmlTemplateController extends Controller
         $user=Auth::user();
 
         $list=DB::table('htmltemplate_footers')
-        ->select(['htmltemplate_footers.*']);
+        ->select(['htmltemplate_footers.*','htmltemplate_footers.id as rowaction']);
         $list=$list->where('htmltemplate_footers.affiliate_id','=',$user->affiliate->id);
         $list=$list->whereNull('htmltemplate_footers.deleted_at');
         //column filters
@@ -401,7 +402,7 @@ class HtmlTemplateController extends Controller
             $user=Auth::user();
        
             if($template_id>0){
-                $htmltemplate=HtmlTemplate::find($template_id);
+                $htmltemplate=Htmltemplate::find($template_id);
                 if($htmltemplate==null)
                 return response('Template non trouvée',509);
 
@@ -409,7 +410,7 @@ class HtmlTemplateController extends Controller
                 return response('Impossible de sauvegarder. Le template n\'est pas dans la même affiliée que l\'utilisateur',509);
 
             }else{
-                $htmltemplate=new HtmlTemplate();
+                $htmltemplate=new Htmltemplate();
                 $htmltemplate->affiliate_id=$user->affiliate_id;
             }
             $htmltemplate->name=$conf['name'];
@@ -438,7 +439,7 @@ class HtmlTemplateController extends Controller
         $user=Auth::user();
        
         if($template_id>0){
-            $htmltemplate=HtmlTemplate::find($template_id);
+            $htmltemplate=Htmltemplate::find($template_id);
             if($htmltemplate==null)
             return response('Template non trouvée',509);
             if($htmltemplate->affiliate_id!=$user->affiliate_id)
@@ -466,7 +467,7 @@ class HtmlTemplateController extends Controller
         $user=Auth::user();
         $el=HtmltemplateElement::find($element['id']);
         if($el->htmltemplate_id==$element['htmltemplate_id']){
-            $htmltemplate=HtmlTemplate::find($el->htmltemplate_id);
+            $htmltemplate=Htmltemplate::find($el->htmltemplate_id);
             if($htmltemplate==null)
             return response('Template non trouvée',509);
             if($htmltemplate->affiliate_id!=$user->affiliate_id)
@@ -486,7 +487,7 @@ class HtmlTemplateController extends Controller
         $user=Auth::user();
 
         if($template_id>0){
-            $htmltemplate=HtmlTemplate::find($template_id);
+            $htmltemplate=Htmltemplate::find($template_id);
             if($htmltemplate==null)
             return response('Template non trouvée',509);
             if($htmltemplate->affiliate_id!=$user->affiliate_id)
@@ -525,7 +526,9 @@ class HtmlTemplateController extends Controller
         $rendersql=$request->get('rendersql');
         $user=Auth::user();
         if($template_id>0){
-            $htmltemplate=HtmlTemplate::find($template_id);
+
+            $global_sql_vars=[];
+            $htmltemplate=Htmltemplate::find($template_id);
             if($htmltemplate==null)
             return response('Template non trouvée',509);
             if($htmltemplate->affiliate_id!=$user->affiliate_id)
@@ -600,13 +603,13 @@ class HtmlTemplateController extends Controller
                             $el->rendered_data=str_replace('{'.$k.'}',$v,$el->rendered_data);
                         }
 
-                        foreach($global_sql_vars as $k=>$v){
-                            $el->rendered_data=str_replace('{'.$k.'}',$v,$el->rendered_data);
-                        }
-                        foreach($global_test_vars as $k=>$v){
-                            $el->rendered_data=str_replace('{'.$k.'}',$v,$el->rendered_data);
-                        }
-
+                 
+                    }
+                    foreach($global_sql_vars as $k=>$v){
+                        $el->rendered_data=str_replace('{'.$k.'}',$v,$el->rendered_data);
+                    }
+                    foreach($global_test_vars as $k=>$v){
+                        $el->rendered_data=str_replace('{'.$k.'}',$v,$el->rendered_data);
                     }
 
                     if($el->type=='table'){
@@ -624,8 +627,13 @@ class HtmlTemplateController extends Controller
                    // $currentHeader->rendered_data=$currentHeader->html;
                     $currentHeaderSql=$currentHeader->sql;
                     if(trim($currentHeaderSql)!=''){
-                        foreach($global_test_vars as $k=>$v){
+                        foreach($global_sql_vars as $k=>$v){
                         
+                            $currentHeaderSql=str_replace('{'.$k.'}',$v,$currentHeaderSql);
+                            
+                        }
+                        foreach($global_test_vars as $k=>$v){
+                    
                             $currentHeaderSql=str_replace('{'.$k.'}',$v,$currentHeaderSql);
                             
                         }
@@ -637,15 +645,22 @@ class HtmlTemplateController extends Controller
                                         foreach($header_sql_vars as $k=>$v){
                                             $currentHeader->rendered_data=str_replace('{'.$k.'}',$v,$currentHeader->rendered_data);
                                         }
-                                        foreach($global_test_vars as $k=>$v){
-                                            $currentHeader->rendered_data=str_replace('{'.$k.'}',$v,$currentHeader->rendered_data);
-                                        }
+                                    
                                     }
-
+                                  
                             }catch(\Illuminate\Database\QueryException $q){
                                 return response($q->getMessage(),509);
                         }
                     }
+
+                    foreach($global_sql_vars as $k=>$v){
+                        $currentHeader->rendered_data=str_replace('{'.$k.'}',$v,$currentHeader->rendered_data);
+                    }
+                    
+                    foreach($global_test_vars as $k=>$v){
+                        $currentHeader->rendered_data=str_replace('{'.$k.'}',$v,$currentHeader->rendered_data);
+                    }
+
                 }
 
                 
@@ -654,6 +669,11 @@ class HtmlTemplateController extends Controller
                 
                 $currentFooterSql=$currentFooter->sql;
                 if(trim($currentFooterSql)!=''){
+                    foreach($global_sql_vars as $k=>$v){
+                    
+                        $currentFooterSql=str_replace('{'.$k.'}',$v,$currentFooterSql);
+                        
+                    }
                     foreach($global_test_vars as $k=>$v){
                     
                         $currentFooterSql=str_replace('{'.$k.'}',$v,$currentFooterSql);
@@ -667,18 +687,25 @@ class HtmlTemplateController extends Controller
                                     foreach($footer_sql_vars as $k=>$v){
                                         $currentFooter->rendered_data=str_replace('{'.$k.'}',$v,$currentFooter->rendered_data);
                                     }
-                                    foreach($global_test_vars as $k=>$v){
-                                        $currentFooter->rendered_data=str_replace('{'.$k.'}',$v,$currentFooter->rendered_data);
-                                    }
+                                
                                 }
+                            
+                           
 
                         }catch(\Illuminate\Database\QueryException $q){
                             return response($q->getMessage(),509);
                         }
                         }
+                        foreach($global_sql_vars as $k=>$v){
+                    
+                            $currentFooter->rendered_data=str_replace('{'.$k.'}',$v,$currentFooter->rendered_data);
+                            
+                        }
+                        foreach($global_test_vars as $k=>$v){
+                            $currentFooter->rendered_data=str_replace('{'.$k.'}',$v,$currentFooter->rendered_data);
+                        }  
                 }
-            }
-        
+            } 
 
             return response()->json(array('elements'=>$elements,'currentHeader'=>$currentHeader,'currentFooter'=>$currentFooter));
         }else{
@@ -692,7 +719,7 @@ class HtmlTemplateController extends Controller
 
         $user=Auth::user();
         if($template_id>0){
-            $htmltemplate=HtmlTemplate::find($template_id);
+            $htmltemplate=Htmltemplate::find($template_id);
             if($htmltemplate==null)
             return response('Template non trouvée',509);
             if($htmltemplate->affiliate_id!=$user->affiliate_id)
@@ -789,7 +816,7 @@ class HtmlTemplateController extends Controller
 
     public function generatePdfTest(Request $request){
 
-        $ht=HtmlTemplate::find($request->id);
+        $ht=Htmltemplate::find($request->id);
         if($ht->type!='pdf')
         return response ('Génération d\'un fichier pdf avec un type de template invalide. Le type de template actuel est "'.$ht->type."'",509);
         $user=Auth::user();
@@ -799,7 +826,7 @@ class HtmlTemplateController extends Controller
     }
 
     public function generateEmailTest(Request $request){
-        $ht=HtmlTemplate::find($request->post('template_id'));
+        $ht=Htmltemplate::find($request->post('template_id'));
         if($ht->type!='email')
         return response ('Envoie email avec un type de template invalide. Le type de template actuel est "'.$ht->type."'",509);
         $user=Auth::user();
@@ -838,7 +865,7 @@ class HtmlTemplateController extends Controller
 
 
     public function renderPDF(Notification $notification){
-        $ht=HtmlTemplate::find($notification->template);
+        $ht=Htmltemplate::find($notification->template);
         $headerH=$ht->margin_top;
         $footerH=$ht->margin_bottom;
         if($ht->htmltemplate_header_id>0){
@@ -866,7 +893,88 @@ class HtmlTemplateController extends Controller
         ->download($notification->pdf_filename.'.pdf');
     }
 
-    
+
+    public function duplicateRow(Request $request){
+            $type=$request->post('type');
+            $id=$request->post('id');
+            $name=$request->post('name');
+            $user=Auth::user();
+            $o=null;
+            if($type=="template")
+                $o=Htmltemplate::find($id);
+            
+            if($type=="header")
+                $o=HtmltemplateHeader::find($id);
+            
+            if($type=="footer")
+                $o=HtmltemplateFooter::find($id);
+            
+                if($o==null)
+                    return response ('Erreur, objet non trouvé. Impossible de dupliquer',509);
+                
+                if($o->affiliate_id!=$user->affiliate_id)
+                    return response ('Erreur,L\'objet n\'est pas dans la même affiliée que l\'utilisateur. Impossible de dupliquer',509);
+
+        $new_o=$o->replicate();
+        $new_o->created_at = now();
+        $new_o->name=$name;
+        try{
+        $new_o->save();
+        }catch(Exception $e){
+            return response ($e->getMessage(),509);
+        }
+        $new_o->fresh();
+
+        //only if type is template
+
+        if($type=='template'){
+            $elements=$o->elements()->get();
+     
+            foreach($elements as $element){
+         
+                $new_element=$element->replicate();
+                $new_element->created_at = now();
+                $new_element->htmltemplate_id=$new_o->id;
+                $new_element->save();
+            }
+        }
+
+        return response()->json($new_o);
+
+    }
+    public function deleteRow(Request $request){
+        $type=$request->post('type');
+        $id=$request->post('id');
+        $user=Auth::user();
+        $o=null;
+        if($type=="template")
+            $o=Htmltemplate::find($id);
+        
+        if($type=="header")
+            $o=HtmltemplateHeader::find($id);
+        
+        if($type=="footer")
+            $o=HtmltemplateFooter::find($id);
+        
+            if($o==null)
+                return response ('Erreur, objet non trouvé. Impossible de supprimer',509);
+            
+            if($o->affiliate_id!=$user->affiliate_id)
+                return response ('Erreur,L\'objet n\'est pas dans la même affiliée que l\'utilisateur. Impossible de supprimer',509);
+            $o->delete();
+            $o->refresh();
+            $o->delete=$o->deleted_at;
+            $o->save();
+    }
+
+
+    public function runNotificationCron(Request $request){
+        $unsentNotifcations=Notification::where('typeNotification','!=','PDF')->where('sent','=',0)->get();
+
+        foreach($unsentNotifcations  as $notification){
+            $notification->send();
+        }
+    }
 }
 
 

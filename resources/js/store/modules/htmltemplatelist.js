@@ -1,4 +1,4 @@
-import {  HTMLTEMPLATELIST_LIST_DEF, HTMLTEMPLATELIST_LOAD_TAB, HTMLTEMPLATELIST_MODULE } from "../types/types";
+import {  HTMLTEMPLATELIST_DELETE_ROW, HTMLTEMPLATELIST_DUPLICATE_ROW, HTMLTEMPLATELIST_LIST_DEF, HTMLTEMPLATELIST_LOAD_TAB, HTMLTEMPLATELIST_MODULE } from "../types/types";
 
 export const htmltemplatelist= {
     namespaced:true,
@@ -157,7 +157,25 @@ export const htmltemplatelist= {
           return  Promise.resolve(error);
         });
     },
-    },
+    [HTMLTEMPLATELIST_DELETE_ROW]:async({commit,state,dispatch},params)=>{
+ 
+      return axios.post(`/htmltemplate-delete-row`,params).then((response)=>{
+        return  Promise.resolve(response);
+              
+      }).catch((error)=>{
+        return  Promise.resolve(error);
+      });
+  },
+  [HTMLTEMPLATELIST_DUPLICATE_ROW]:async({commit,state,dispatch},params)=>{
+ 
+    return axios.post(`/htmltemplate-duplicate-row`,params).then((response)=>{
+      return  Promise.resolve(response);
+            
+    }).catch((error)=>{
+      return  Promise.resolve(error);
+    });
+},
+},
     getters: {
         [HTMLTEMPLATELIST_LIST_DEF]: state => state.table_def,
     }
