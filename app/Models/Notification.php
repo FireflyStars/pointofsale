@@ -232,7 +232,8 @@ class Notification extends Model
                     foreach($parameters as $k=>$v){
                         $data=str_replace('{'.$k.'}',$v, $data);
                     }
-                    $html.=($el->type=="address"?'<div style="position:absolute;right: 14px;top: 126px;width:275px;">'.$data.'</div>':$data);
+                    
+                    $html.=($el->type=="address"?'<div style="position:absolute;right: 14px;top: 126px;width:282px;">'.$data.'</div>':$data);
                 }else if(in_array($el->type,['html','address'])){
                     if(!empty($global_sql_vars))
                     foreach($global_sql_vars as $k=>$v){
@@ -242,7 +243,7 @@ class Notification extends Model
                     foreach($parameters as $k=>$v){
                         $data=str_replace('{'.$k.'}',$v, $data);
                     }
-                    $html.= $data;
+                    $html.=($el->type=="address"?'<div style="position:absolute;right: 14px;top: 126px;width:282px;">'.$data.'</div>':$data);
                 }
                 if($el->type=='pagebreak'){
                     $html.='<div style="page-break-before: always;"></div>';
