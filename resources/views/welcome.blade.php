@@ -26,6 +26,6 @@
         window.outlookSyncErrorDetail = '{{ session("outlookSyncErrorDetail") }}';
     </script>
     @endif
-    <script defer src="https://maps.googleapis.com/maps/api/js?&libraries=geometry,places&key=AIzaSyDPDKvButmMnw0VRFaY5mZIwDaEl5N9Xow"></script>
+    <script defer src="https://maps.googleapis.com/maps/api/js?&libraries=geometry,places&key= AIzaSyADM1OoIDe-K_AxYXWwGi8Lu41wMeYhLg0"></script>
     <script src="{{ mix('js/app.js') }}"></script>
 </html>
