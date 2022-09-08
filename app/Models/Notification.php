@@ -384,7 +384,27 @@ class Notification extends Model
 
         $html_table.='</tbody>';
         //end tbody
+        //tfoot
+        if(isset($a->tfoot)){
+        $html_table.='<tfoot  '.Notification::attrs($a->tfoot).'>';
+        if(isset($a->tfoot->tr))
+        foreach($a->tfoot->tr as $tr){
+            $tf=$tr;
+            foreach($local_variables as $k=>$v){
+                $tf=str_replace('{'.$k.'}',$v,$tf);
+            }
+            foreach($addtional_vars as $k=>$v){
+                $tf=str_replace('{'.$k.'}',$v,$tf);
+            }
 
+            foreach($global_sql_variables as $k=>$v){
+                $tf=str_replace('{'.$k.'}',$v,$tf);
+            }
+            $html_table.=$tf;
+        }
+        $html_table.='</tfoot>';
+        }
+            //end tfoot
         $html_table.='</table>';
         return $html_table;
     }
