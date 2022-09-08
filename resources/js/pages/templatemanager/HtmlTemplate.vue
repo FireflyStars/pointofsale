@@ -460,7 +460,7 @@ export default {
 .addressblock{
     transition: all ease-in-out 500ms;
     background: rgba(138, 43, 226, $alpha: 0.6);
-    height: 68px;
+    min-height: 68px;
     width: 282px;
     display: block;
 }

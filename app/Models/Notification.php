@@ -310,6 +310,10 @@ class Notification extends Model
         //tbody
         $html_table.='<tbody  '.Notification::attrs($a->tbody).'>';
         foreach($a->tbody->prefix as $prefix){
+          
+            foreach($addtional_vars as $k=>$v){
+                $prefix=str_replace('{'.$k.'}',$v,$prefix);
+            }
             foreach($global_sql_variables as $k=>$v){
                 $prefix=str_replace('{'.$k.'}',$v,$prefix);
             }
@@ -349,11 +353,11 @@ class Notification extends Model
 
               
                     foreach($a->thead->tr[0]->th as $th){
-              
+          
                         if($th->type=='table'){
                             $html_table.='<td '.Notification::attrs($a->tbody->tr->td).'>'.Notification::htmltable($th->table,$global_sql_variables,$d).'</td>';
                         }else{
-                            $html_table.='<td '.Notification::attrs($a->tbody->tr->td).'>'.(property_exists($th,'prefix')?$th->prefix:'').($th->type=="empty"?'':$d->{$th->identifier}).(property_exists($th,'suffix')?$th->suffix:'').'</td>';
+                            $html_table.='<td '.Notification::attrs_td($a->tbody->tr->td, $th).'>'.(property_exists($th,'prefix')?$th->prefix:'').($th->type=="empty"?'':$d->{$th->identifier}).(property_exists($th,'suffix')?$th->suffix:'').'</td>';
                         }
                     }
                 }else{
@@ -367,6 +371,13 @@ class Notification extends Model
             foreach($local_variables as $k=>$v){
                 $suffix=str_replace('{'.$k.'}',$v,$suffix);
             }
+            foreach($addtional_vars as $k=>$v){
+                $suffix=str_replace('{'.$k.'}',$v,$suffix);
+            }
+
+            foreach($global_sql_variables as $k=>$v){
+                $suffix=str_replace('{'.$k.'}',$v,$suffix);
+            }
             $html_table.=$suffix;
         }
 
@@ -377,7 +388,15 @@ class Notification extends Model
         $html_table.='</table>';
         return $html_table;
     }
+    public static function attrs_td($obj,$th){
+        return Notification::attr_td('colstyle',$th).' '.Notification::attr_td('colclass',$th);
+    }
+    public static function attr_td($attribute_name,$obj){
+        if(isset($obj->{$attribute_name})&&trim($obj->{$attribute_name})!='')
+        return ($attribute_name=='colstyle'?'style':($attribute_name=='colclass'?'class':$attribute_name)).'="'.$obj->{$attribute_name}.'"';
 
+        return '';
+    }
     public static function attrs($obj){
         return Notification::attr('style',$obj).' '.Notification::attr('class',$obj);
     }
