@@ -140,6 +140,9 @@ class InvoiceController extends Controller
         $invoice->order=null;
         if($invoice->order_invoice_id>0&&$order_invoice!=null){
         $invoice->orderInvoice;
+        $invoice->details;
+        foreach($invoice->details as &$detail)
+        $detail->tax;
         $invoice->invoiceTypes=InvoiceType::all();
         $invoice->orderInvoice->invoice_type_name=$invoice_type->name;
         $invoice->mode_paiements=Invoice::getModeDePaiementsByInvoiceId($invoice->id);

@@ -35,7 +35,25 @@
     </div>
        </transition>
      <hr v-if="show"/>
-      <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
+           <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
+   <mini-panel title="" v-if="typeof(invoice.details) !='undefined'&&invoice.details.length>0&&show">
+           <div class="row mt-3 mb-2">
+   
+            <div class="col-5"><h3 class="almarai_700_normal">Description</h3></div>
+            <div class="col-3"><h3 class="almarai_700_normal">Date</h3></div>
+            <div class="col-2"><h3 class="almarai_700_normal">TVA</h3></div>
+            <div class="col-2"><h3 class="almarai_700_normal">Montant</h3></div>
+        </div>
+       <div class="row mb-3 align-items-center" v-for="detail in invoice.details" :key="detail.id">
+            <div class="col-5">{{detail.description}}<span class="detail-comment" v-if="detail.comment!=null&&detail.comment.trim()!=''">{{detail.comment}}</span></div>
+            <div class="col-3">{{formatDate(detail.created_at)}}</div>
+            <div class="col-2">{{parseFloat(detail.tax.taux)*100}}%</div>
+            <div class="col-2">{{formatPrice(detail.montant)}}</div>
+        </div>
+
+   </mini-panel>
+       </transition>
+      <!--<transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
    <mini-panel title="" v-if="invoice.order_invoice!=null&&show">
            <div class="row mt-3 mb-2">
             <div class="col-4"></div>
@@ -51,7 +69,7 @@
         </div>
 
    </mini-panel>
-       </transition>
+       </transition>-->
       <!--<transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
         
     <mini-panel title=""  v-if="show">
@@ -274,4 +292,14 @@ hr{
     .list-move{
         transition:all 0.3s ease;
     }
+
+    .detail-comment{
+        background: #EEE;
+        padding: 2px 10px;
+        border-radius: 11px;
+        display: block;
+        font-size: 11px;
+        font-family: 'Mulish Regular'
+    }
+
 </style>
