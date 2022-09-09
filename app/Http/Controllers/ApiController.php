@@ -1555,6 +1555,7 @@ public function SaveEvent(Request $request){
         $order->lang_id= !isset($Parameters['lang_id']) ? 1: $Parameters['lang_id'];
         $order->customer_id =$event->customer_id;
       }
+      $order->contact_id=$event->contact_id;
       $order->save();
       $event->order()->associate($order->fresh())->save();
       //update state if necessary

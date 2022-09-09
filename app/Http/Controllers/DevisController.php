@@ -19,6 +19,7 @@ use App\Models\OrderZone;
 use App\Models\GedCategory;
 use App\Models\GedDetail;
 use App\Models\Invoice;
+use App\Models\InvoiceDetail;
 use App\Models\OrderDocument;
 use App\Models\OrderInvoice;
 use Exception;
@@ -290,7 +291,7 @@ class DevisController extends Controller
         $oi->order_id=$order_id;
         $oi->save();
         $oi->fresh();
-
+   
     
             $oi->facturer=0;
             $in=new Invoice();
@@ -311,7 +312,22 @@ class DevisController extends Controller
             $in->updateState(1);//creation
             $oi->invoice_id=$in->id;
             $oi->save();
-         
+              
+        if($invoice_type_id==1||$invoice_type_id==4||$invoice_type_id==3){
+            $inD=new InvoiceDetail();
+            $fdate=date('d/m/Y',strtotime($date));
+        if($invoice_type_id==1||$invoice_type_id==4){
+            $descr="Échéance: $description prévu pour $fdate";
+        }
+        if($invoice_type_id==3){
+            $descr="Avoir: $description prévu pour $fdate";
+        }
+        $inD->description=$descr;
+        $inD->montant=$montant;
+        $inD->invoice_id=$in->id;
+        $inD->tax_id=$order->customer->taxe_id;
+        $inD->save();
+        }
 
         
 
