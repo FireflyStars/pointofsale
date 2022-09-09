@@ -715,6 +715,7 @@ class DevisController extends Controller
             'nbheure'           => ($request->totalHoursForInstall + $request->totalHoursForSecurity + $request->totalHoursForPrestation),
             'address_id'        => $request->address['id'],
             'customer_id'       => $request->customer['id'],
+            'contact_id'        => $request->customer['contact_id'],
             'remise'            => $request->discount,
             'datecommande'      => Carbon::now(),
             'signed_by_customer'=> 0,
@@ -1113,10 +1114,11 @@ class DevisController extends Controller
         $devis['customer'] = DB::table('customers')
                                 ->join('group', 'group.id', '=', 'customers.group_id')
                                 ->join('taxes', 'taxes.id', '=', 'customers.taxe_id')
+                                ->join('contacts', 'contacts.customer_id', '=', 'customers.id')
                                 ->where('customers.id', $order->customer_id)
                                 ->select('customers.id', 'customers.company', 'customers.raisonsociale', 'group.Name as group'
                                     ,DB::raw('CONCAT(customers.firstname, " ",customers.name) as contact'),
-                                    'customers.telephone', 'taxes.Name as tax', 'taxes.id as taxId', 'customers.naf', 'customers.siret'
+                                    'customers.telephone', 'taxes.Name as tax', 'taxes.id as taxId', 'customers.naf', 'customers.siret', 'contacts.id as contact_id'
                                 )->first();
         $devis['address'] = DB::table('addresses')
                                 // ->join('group', 'group.id', '=', 'customers.group_id')

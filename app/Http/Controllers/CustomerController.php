@@ -425,13 +425,16 @@ class CustomerController extends Controller
         $query = DB::table('customers')
                     ->leftJoin('group', 'customers.group_id', '=', 'group.id')
                     ->leftJoin('taxes', 'customers.taxe_id', '=', 'taxes.id')
-                    ->select( 'customers.company', 'customers.raisonsociale', 'group.Name as group',
-                        DB::raw('CONCAT(customers.firstname, " ", customers.name) as contact'),
-                        'customers.telephone', 'customers.email', 'customers.naf', 'customers.siret',
-                        DB::raw('taxes.taux * 100 as tax'), 'customers.id', 'taxes.id as taxId'
+                    ->join('contacts', 'customers.id', '=', 'contacts.customer_id')
+                    ->select( 'customers.company', 'customers.raisonsociale', 'customers.raisonsociale2', 'group.Name as group',
+                        DB::raw('CONCAT(contacts.firstname, " ", contacts.name) as contact'),
+                        'customers.telephone', 'contacts.email', 'customers.naf', 'customers.siret',
+                        DB::raw('taxes.taux * 100 as tax'), 'customers.id', 'taxes.id as taxId',
+                        'contacts.id as contact_id'
                     )
-                    ->where('customers.firstname', 'like', '%'.$request->search.'%')
-                    ->orWhere('customers.name', 'like', '%'.$request->search.'%');
+                    ->where('customers.raisonsociale', 'like', '%'.$request->search.'%')
+                    ->orWhere('customers.raisonsociale2', 'like', '%'.$request->search.'%')
+                    ->orWhere('customers.company', 'like', '%'.$request->search.'%');
 
         return response()->json([
             'data'  => $request->has('showmore') ? $query->get() : $query->take(5)->get(),

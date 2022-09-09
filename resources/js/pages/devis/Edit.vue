@@ -1037,6 +1037,7 @@ export default {
         taxId: 0,
         naf: '',
         siret: '',
+        contact_id: '',
       },
       address: {
         id: 1,

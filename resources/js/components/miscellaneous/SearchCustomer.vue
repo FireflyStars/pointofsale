@@ -4,7 +4,7 @@
         <label v-if="!showSearch && label" class="select-label" :class="{ disabled:disabled == true }">{{ label }}</label>
         
         <div  v-if="!showSearch" class="position-relative">
-            <input type="text"  placeholder="Type name..." v-model="search" @keyup.prevent="submit"/> 
+            <input type="text"  placeholder="Type..." v-model="search" @keyup.prevent="submit"/> 
              <span v-if="showbutton" @click='clearSearch' class="position-absolute"><i class="icon-close"></i></span>
         </div>
 
@@ -23,26 +23,19 @@
                 </div>
                 <ul  class="list-group list-group-flush" v-if ="Customers.length > 0" >
                     <li v-for ="customer in Customers" :key="customer">
-                        <div class="container">
-                            <div class="row" @click="selectCustomer(customer)">
-                                <div class="col" style="padding:0">
-                                    <span class="body_medium text-capitalize">{{customer.contact.replace(',','').toLowerCase()}}</span>
-                                    <div>
-                                        <div v-if="customer.telephone !=''">
-                                            <div>
-                                                <b class ="body_regular">+ {{ customer.telephone.replace('|',' ')}}</b>
-                                            </div>
-                                        </div>
-                                        <div v-else>
-                                            <div class="phone body_small">--</div>
-                                        </div>
-                                    </div>
+                        <div class="container d-block" @click="selectCustomer(customer)">
+                            <div class="d-flex">
+                                <div class="col-6 body_medium text-capitalize text-nowrap">
+                                    {{ customer.contact.replace(',','').toLowerCase() }}
                                 </div>   
-                                <div class="col-6" style="padding-top:24px">
+                                <div class="col-6">
                                     <b class ="email body_regular">{{ customer.email ? customer.email.toLowerCase() : ''}}</b>
                                 </div>
-                                <div class="col-2" style="text-align: end; padding:0">
-                                </div>
+                            </div>
+                            <div class="d-flex mt-2">
+                                <div class="col-4">{{ customer.raisonsociale }}</div>
+                                <div class="col-4">{{ customer.raisonsociale2 }}</div>
+                                <div class="col-4">{{ customer.company }}</div>
                             </div>
                         </div>
                     </li>

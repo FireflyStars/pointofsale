@@ -1027,6 +1027,7 @@ export default {
         taxId: 0,
         naf: 'Boulangerie',
         siret: '4654654646546546',
+        contact_id: 0,
       },
       address: {
         id: 1,
