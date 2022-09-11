@@ -237,6 +237,7 @@ Route::post('/get-commande-fournisseur-statuses', [CommandeFounisseurController:
 //Invoices
 Route::post('/search-invoice', [InvoicesController::class, 'search']);
 Route::post('/create-invoice', [InvoicesController::class, 'create']);
+Route::post('/create-new-invoice', [InvoicesController::class, 'create_new_invoice']);
 Route::get('/get-single-invoice-details', [InvoicesController::class, 'create']);
 Route::get('/get-tax-list', [InvoicesController::class, 'get_tax_list']);
 Route::post('/create-ligne/{invoice}', [InvoicesController::class, 'create_ligne']);

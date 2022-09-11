@@ -176,8 +176,9 @@ import {
   TOASTER_MESSAGE,
   TOASTER_MODULE, 
   INVOICE_MODULE,
-  CREATE_INVOICE
-  } from '../../store/types/types';
+  CREATE_INVOICE,
+  CREATE_NEW_INVOICE
+} from '../../store/types/types';
   
 import axios from 'axios';
 import { useStore } from 'vuex';
@@ -262,7 +263,7 @@ export default {
 
         })            
         
-        const cancel = ()=>{
+        const cancel = ()=> {
 
         }
 
@@ -279,68 +280,6 @@ export default {
                 step.value = 'create_contact';
             }
         } 
-
-        const submit = () => {
-
-            var error = false;
-            if(contact.value.type == '') {
-                error = true;
-                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                    type: 'danger',
-                    message: 'Veuillez sélectionner le type de contact',
-                    ttl: 5,
-                });  
-            }else if(contact.value.firstName == '') {
-                error = true;
-                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                    type: 'danger',
-                    message: 'Veuillez entrer PRENOM',
-                    ttl: 5,
-                });                          
-            }else if(contact.value.email == '') {
-                error = true;
-                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                    type: 'danger',
-                    message: 'Veuillez saisir un e-mail',
-                    ttl: 5,
-                });
-            }else if(contact.value.name == '') {
-                error = true;
-                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                    type: 'danger',
-                    message: 'Veuillez entrer NOM',
-                    ttl: 5,
-                });                          
-            }            
-            // loading customer addresses
-            if(!error) {
-
-                store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'créer un contact..'])
-
-                axios.post('/contact/add', contact.value).then((res)=>{
-                    if(res.data.success){
-                        router.push({
-                            name: 'contact-details',
-                            params: { id: res.data.id } 
-                        })
-                    }else{
-                        Object.values(res.data.errors).forEach(item => {
-                            store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                                type: 'danger',
-                                message: item[0],
-                                ttl: 5,
-                            });
-                        });
-                    }
-                }).catch((error)=>{
-                    console.log(error);
-                }).finally(()=>{
-                    store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
-                })  
-
-            }
-
-        }
 
         const selectedCustomer = (data) => {
             
@@ -363,6 +302,31 @@ export default {
                     customerId: contact.value.customer.id,
                     invoiceId: data.invoice_id,
                     orderId: data.order_id,
+                    type: invoice.type
+                })
+
+            }
+
+            catch(e) {
+                throw e
+            }
+
+            finally {
+                store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`) 
+            }
+
+        }
+
+        const createNewInvoice = async () => {
+
+            step.value = 'invoice_creation'    
+
+            try {
+
+                store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'créer un invoice..'])  
+                
+                await store.dispatch(`${INVOICE_MODULE}${CREATE_NEW_INVOICE}`, {
+                    customerId: contact.value.customer.id,
                     type: invoice.type
                 })
 
@@ -403,9 +367,10 @@ export default {
             return parseInt(a.value.replace(/\D/g, '')) - parseInt(b.value.replace(/\D/g, ''));
         })
 
-        watch(invoice, (value) => {
-            if(value == 'facture') step.value = 'invoice_creation'
-            if(value == 'avoir') step.value = 'choose_invoice_type'
+        watch(invoice, (newInvoice) => {
+            console.log(newInvoice, " is value")
+            if(newInvoice.type == 'facture') createNewInvoice()
+            if(newInvoice.type == 'avoir') step.value = 'choose_invoice_type'
         })
 
         return {
