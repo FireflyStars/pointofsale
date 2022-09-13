@@ -307,7 +307,6 @@ export default {
             'ville',
             'num-commande',
             'total-commande',
-            'heure-commande',
             'date-de-fin-prevue-commande',
             'date-de-commande'
         ])

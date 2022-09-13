@@ -240,12 +240,16 @@ export default {
                     return 
                 }
 
-                if(generateTags(textValue)) {
-                    deleteAndRemove(index)
-                    openPopup.value = false
-                    return
-                }
-                else updateElementValue({ index, value: unref(textValue) })
+                textValue = generateTags(textValue)
+                updateElementValue({ index, value: textValue })
+                openPopup.value = false
+                return
+
+                // if(generateTags(textValue, index)) {
+                //     openPopup.value = false
+                //     return
+                // }
+                // else updateElementValue({ index, value: unref(textValue) })
             }
             if(!_.isEmpty(table) && name == 'table') {
                 updateElementTable({ 

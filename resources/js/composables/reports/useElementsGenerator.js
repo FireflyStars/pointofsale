@@ -19,11 +19,42 @@ const { generateId } = useHelpers()
 
 export default function useElementsGenerator() {
 
-    const generateTags = (textValue, action = 'generateElement') => {
+    const tags =  [
+        'société',
+        'raisonsocial',
+        'raisonsocial2',
+        'téléphone-client',
+        'prénom-contact',
+        'nom-contact',
+        'email-contact',
+        'mobile-contact',
+        'téléphone-contact',
+        'société-adresse',
+        'prénom-ou-batiment',
+        'nom-adresse',
+        'adresse1',
+        'adresse2',
+        'adresse3',
+        'code-postal',
+        'ville',
+        'num-commande',
+        'total-commande',
+        'date-de-fin-prevue-commande',
+        'date-de-commande',
+    ]
+
+    const generateTags = (textValue) => {
+
+        for(const tag of tags) {
+            textValue = textValue.replace(`[${tag}]`, getCustomerValue(tag))
+        }
+
+        return textValue
+
         var result = textValue.match(/\[(.*?)\]/g)
+
         if(result?.length) {
             result = result.map(function(val) {
-                console.log(val, " is the tag value")
                 return val.replace(/\[/g,'').replace(/\]/g, '')
             })
             if(result.length) {
@@ -213,6 +244,37 @@ export default function useElementsGenerator() {
         generateElement('textarea', {
             content: getCustomerInfo(tag)
         })
+    }
+
+    const getCustomerValue = (tag) => {
+
+        const order = store.getters[`${BUILDER_MODULE}/order`]
+        tag = tag?.toString()?.trim()
+
+        switch (tag) {
+            case 'société': return `${order?.customer?.company || ''}`
+            case 'raisonsocial': return `${order?.customer?.raisonsociale || ''}`
+            case 'raisonsocial2': return `${order?.customer?.raisonsociale2 || ''}`
+            case 'téléphone-client': return `${order?.customer?.telephone || ''}`
+            case 'prénom-contact': return `${order?.contact?.firstname || ''}`
+            case 'nom-contact': return `${order?.contact?.name || ''}`
+            case 'email-contact': return `${order?.contact?.email || ''}`
+            case 'mobile-contact': return `${order?.contact?.mobile || ''}`
+            case 'téléphone-contact': return `${order?.contact?.telephone || ''}`
+            case 'société-adresse': return `${order?.customer?.address?.company || ''}`
+            case 'prénom-ou-batiment': return `${order?.customer?.address?.firstname || ''}`
+            case 'nom-adresse': return `${order?.customer?.address?.name || ''}`
+            case 'adresse1': return `${order?.customer?.address?.address1 || ''}`
+            case 'adresse2': return `${order?.customer?.address?.address2 || ''}`
+            case 'adresse3': return `${order?.customer?.address?.address3 || ''}`
+            case 'code-postal': return `${order?.customer?.address?.postcode || ''}`
+            case 'ville': return `${order?.customer?.address?.city || ''}`
+            case 'num-commande': return `${order?.id || ''}`
+            case 'total-commande': return `${order?.total || ''}`
+            case 'date-de-fin-prevue-commande': return `${order?.datefinprevu || ''}`
+            case 'date-de-commande': return `${order?.datecommande || ''}`
+        }
+
     }
 
     const getCustomerInfo = (tag) => {

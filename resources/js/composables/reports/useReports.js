@@ -25,7 +25,7 @@ from '../../store/types/types'
 export default function useReports() {
 
     const { generateId } = useHelpers()
-    const { generateElement, generatePreRenderedTags } = useElementsGenerator()
+    const { generateElement, generatePreRenderedTags, generateTags } = useElementsGenerator()
 
     const pages = computed(() => store.getters[`${BUILDER_MODULE}/pages`])
 
@@ -108,6 +108,20 @@ export default function useReports() {
                             formattedPage.elements.push({ ...element })
                         }
                         else {
+
+                            const content = generateTags(element.content)
+                            formattedPage.elements.push({ 
+                                ...element,
+                                attributes: {
+                                    ...element.attributes,
+                                    id: generateId(),
+                                },
+                                content
+                            })
+
+                            return
+
+
                             const tags = generatePreRenderedTags(element.content)
                             if(tags.length) {
                                 tags.forEach((tag, i) => {
