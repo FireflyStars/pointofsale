@@ -426,7 +426,11 @@ class CustomerController extends Controller
                     ->leftJoin('group', 'customers.group_id', '=', 'group.id')
                     ->leftJoin('taxes', 'customers.taxe_id', '=', 'taxes.id')
                     ->join('contacts', 'customers.id', '=', 'contacts.customer_id')
-                    ->select( 'customers.company', 'customers.raisonsociale', 'customers.raisonsociale2', 'group.Name as group',
+                    ->select( 
+                        'customers.company', 
+                        'customers.raisonsociale', 
+                        'customers.raisonsociale2', 
+                        'group.Name as group',
                         DB::raw('CONCAT(contacts.firstname, " ", contacts.name) as contact'),
                         'customers.telephone', 'contacts.email', 'customers.naf', 'customers.siret',
                         DB::raw('taxes.taux * 100 as tax'), 'customers.id', 'taxes.id as taxId',

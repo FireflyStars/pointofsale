@@ -84,7 +84,7 @@
                             
                             <button 
                                 class="custom-btn btn-cancel me-3" 
-                                @click.prevent="goToStep(0)"
+                                @click.prevent="step='choose_customer'"
                             >
                                 Annuler
                             </button>
@@ -131,8 +131,8 @@
                         </div>
 
                         <div class="btns d-flex justify-content-end mt-3 mb-3">
-                            <button class="custom-btn btn-cancel me-3" @click="goToStep(0)">Annuler</button>
-                            <button class="custom-btn btn-ok text-uppercase" @click="submit">VALIDER</button>
+                            <button class="custom-btn btn-cancel me-3" @click.prevent="step='invoice_type'">Annuler</button>
+                            <button class="custom-btn btn-ok text-uppercase" @click.prevent="selectedInvoice">VALIDER</button>
                         </div>
 
                     </div>
@@ -256,30 +256,12 @@ export default {
                 breadcrumbs.value = ['Choix ENTITE', 'Type'];
             }
             else {
-                breadcrumbs.value = ['Choix ENTITE', 'Type', invoice.type?.toUpperCase()];
+                breadcrumbs.value = ['Choix ENTITE', 'Type', invoice.type?.toUpperCase()]
             }
 
             // if(step.value == 'invoice_creation') selectedInvoice()
 
         })            
-        
-        const cancel = ()=> {
-
-        }
-
-        const addNewCustomer = ()=>{
-            router.push({
-                name: "CreateCustomer"
-            })
-        }
-
-        const goToStep = (index)=>{
-            if(index == 0) {
-                step.value = 'choose_customer';
-            }else {
-                step.value = 'create_contact';
-            }
-        } 
 
         const selectedCustomer = (data) => {
             
@@ -368,9 +350,8 @@ export default {
         })
 
         watch(invoice, (newInvoice) => {
-            console.log(newInvoice, " is value")
-            if(newInvoice.type == 'facture') createNewInvoice()
-            if(newInvoice.type == 'avoir') step.value = 'choose_invoice_type'
+            if(newInvoice.type == 'facture' && step.value == 'invoice_type') createNewInvoice()
+            if(newInvoice.type == 'avoir' && step.value == 'invoice_type') step.value = 'choose_invoice_type'
         })
 
         return {
@@ -383,13 +364,9 @@ export default {
             contactQualites,
             customerAddresses,
             phoneCodesSorted,
-            goToStep,
             validationUniqueEmail,
-            addNewCustomer,
             selectedCustomer,
             selectedInvoice,
-            cancel,
-            submit
         }
 
     }

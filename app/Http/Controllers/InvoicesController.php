@@ -75,9 +75,9 @@ class InvoicesController extends Controller
             'lang_id' => 1,
         ]);
 
-        $invoice_number = (new InvoiceNumber)->getInvoiceNumber($new_invoice->id);
+        // $invoice_number = (new InvoiceNumber)->getInvoiceNumber($new_invoice->id);
 
-        $new_invoice->reference = $invoice_number;
+        $new_invoice->reference = 'PROV' . $new_invoice->id;
         $new_invoice->save();
 
         InvoiceHistory::create([

@@ -268,10 +268,10 @@ export default {
             if(value) assignTemplateToActivePage(value)
         })
 
-        useKeystrokes([
-            { key: 'ArrowLeft', fn: decrementPage },
-            { key: 'ArrowRight', fn: incrementPage },
-        ])
+        // useKeystrokes([
+        //     { key: 'ArrowLeft', fn: decrementPage },
+        //     { key: 'ArrowRight', fn: incrementPage },
+        // ])
         
         return {
             save,

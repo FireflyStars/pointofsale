@@ -22,7 +22,8 @@ export default function useElementsGenerator() {
     const generateTags = (textValue, action = 'generateElement') => {
         var result = textValue.match(/\[(.*?)\]/g)
         if(result?.length) {
-            result = result.map(function(val){
+            result = result.map(function(val) {
+                console.log(val, " is the tag value")
                 return val.replace(/\[/g,'').replace(/\]/g, '')
             })
             if(result.length) {
@@ -37,7 +38,8 @@ export default function useElementsGenerator() {
     const generatePreRenderedTags = (textValue, action = 'generateTextarea') => {
         var result = textValue.match(/\[(.*?)\]/g)
         if(result?.length) {
-            result = result.map(function(val){
+            result = result.map(function(val) {
+                console.log(val, " is the tag value")
                 return val.replace(/\[/g,'').replace(/\]/g, '')
             })
             if(result.length) {
