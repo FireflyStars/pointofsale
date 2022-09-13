@@ -1,0 +1,193 @@
+@import url(https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap);
+@font-face {
+  font-family: "myriad_probold";
+  src: url(/fonts/myriadpro-bold-webfont.ttf?5c5ff56f02310313d3eeaaf2f929ac5c) format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "myriad_proitalic";
+  src: url(/fonts/myriadpro-it-webfont.ttf?81b21b4418c12a5cbcb71c24a9da5782) format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "myriad_proregular";
+  src: url(/fonts/myriadpro-regular-webfont.ttf?4e3187f417ec6594bcf900217844aeff) format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "arialblack";
+  src: url(/fonts/ariblk-webfont.ttf?4ff3fbea772e3f938818e8d98702dbfc) format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "arialregular";
+  src: url(/fonts/arial-webfont.ttf?c0217a2b8948dc60c68cfe7357416186) format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "arialbold";
+  src: url(/fonts/arialbd-webfont.ttf?8cca00639a93c94d3c65601bcb5b6ebc) format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "arialbold_italic";
+  src: url(/fonts/arialbi-webfont.ttf?6cb60bb7eb22540bf51246a2ad98b279) format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "arialitalic";
+  src: url(/fonts/ariali-webfont.ttf?ee214a34e1ecef614264fde31c885b49) format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Almarai Bold";
+  font-style: normal;
+  font-weight: normal;
+  src: local("Almarai Book"), url(/fonts/Almarai-Bold.ttf?6950c5a6d2dcd9e29b5df6b70d2c6b4e) format("truetype");
+}
+.almarai-bold {
+  font-family: "Almarai Bold" !important;
+}
+
+@font-face {
+  font-family: "Almarai ExtraBold";
+  font-style: normal;
+  font-weight: normal;
+  src: local("Almarai ExtraBold"), url(/fonts/Almarai-Bold.ttf?6950c5a6d2dcd9e29b5df6b70d2c6b4e) format("truetype");
+}
+.almarai-extrabold {
+  font-family: "Almarai ExtraBold" !important;
+}
+
+@font-face {
+  font-family: "Almarai Light";
+  font-style: normal;
+  font-weight: normal;
+  src: local("Almarai Light"), url(/fonts/Almarai-Light.ttf?e91bfa6b2938b42559924876534363ed) format("truetype");
+}
+.almarai-light {
+  font-family: "Almarai Light" !important;
+}
+
+@font-face {
+  font-family: "Almarai Regular";
+  font-style: normal;
+  font-weight: normal;
+  src: local("Almarai Regular"), url(/fonts/Almarai-Regular.ttf?4d8fe12612ad34e16602aa735d84d282) format("truetype");
+}
+.almarai-regular {
+  font-family: "Almarai Regular" !important;
+}
+
+@font-face {
+  font-family: "Mulish Bold";
+  font-style: normal;
+  font-weight: bold;
+  src: local("Mulish Bold"), url(/fonts/Mulish-Bold.ttf?14efde3cf96011d61f010bf2dbc865d9) format("truetype");
+}
+.mulish-bold {
+  font-family: "Mulish Bold" !important;
+}
+
+@font-face {
+  font-family: "Mulish ExtraBold";
+  font-style: normal;
+  font-weight: bolder;
+  src: local("Mulish ExtraBold"), url(/fonts/Mulish-ExtraBold.ttf?b6e65dfc31587f1f4419f6e5133bac3c) format("truetype");
+}
+.mulish-extrabold {
+  font-family: "Mulish ExtraBold" !important;
+}
+
+@font-face {
+  font-family: "Mulish SemiBold";
+  font-style: normal;
+  font-weight: 600;
+  src: local("Mulish SemiBold"), url(/fonts/Mulish-SemiBold.ttf?b7a7ba116cfe02e9990f25f6bc715b73) format("truetype");
+}
+.mulish-semibold {
+  font-family: "Mulish SemiBold" !important;
+}
+
+@font-face {
+  font-family: "Mulish Regular";
+  font-style: normal;
+  font-weight: normal;
+  src: local("Mulish Regular"), url(/fonts/Mulish-Regular.ttf?18a0df44f5ffb1a651c6a4bc040dec70) format("truetype");
+}
+.mulish-regular {
+  font-family: "Mulish Regular" !important;
+}
+
+.mulish_400_normal {
+  font-family: "Mulish Regular" !important;
+  font-weight: 400 !important;
+  font-style: normal !important;
+}
+
+.mulish_600_normal {
+  font-family: "Mulish Regular" !important;
+  font-weight: 600 !important;
+  font-style: normal !important;
+}
+
+.almarai_700_normal {
+  font-family: "Almarai Regular" !important;
+  font-weight: 700 !important;
+  font-style: normal !important;
+}
+
+.almarai_extrabold_normal_normal {
+  font-family: "Almarai ExtraBold" !important;
+  font-weight: normal !important;
+  font-style: normal !important;
+}
+
+.font-light {
+  font-weight: 300 !important;
+}
+
+.font-10 {
+  font-size: 10px !important;
+  line-height: 13px;
+}
+
+.font-12 {
+  font-size: 12px !important;
+  line-height: 140%;
+}
+
+.font-14 {
+  font-size: 14px !important;
+  line-height: 140%;
+}
+
+.font-16 {
+  font-size: 16px !important;
+  line-height: 20px;
+}
+
+.font-18 {
+  font-size: 18px !important;
+  line-height: 23px;
+}
+
+.font-20 {
+  font-size: 20px !important;
+}
+
+.font-22 {
+  font-size: 22px !important;
+}
+
+.font-24 {
+  font-size: 24px !important;
+}

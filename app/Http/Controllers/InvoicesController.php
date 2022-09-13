@@ -10,6 +10,7 @@ use App\Models\InvoiceNumber;
 use App\Models\InvoiceHistory;
 use App\Http\Controllers\EntiteController;
 use App\Models\InvoiceDetail;
+use Illuminate\Support\Facades\Auth;
 
 class InvoicesController extends Controller
 {
@@ -121,14 +122,17 @@ class InvoicesController extends Controller
             'invoice_state_id' => 1,
             'montant' => 0,
             'pourcentage' => 0,
-            'dateecheance' => null,
+            'dateecheance' => date('Y-m-d'),
             'order_invoice_id' => 0,
             'lang_id' => 1,
         ]);
 
-        $invoice_number = (new InvoiceNumber)->getInvoiceNumber($new_invoice->id);
+    
 
-        $new_invoice->reference = $invoice_number;
+
+        $new_invoice->save();
+        $new_invoice->fresh();
+        $new_invoice->reference="PROV".$new_invoice->id;
         $new_invoice->save();
 
         InvoiceHistory::create([
@@ -184,18 +188,27 @@ class InvoicesController extends Controller
             'tax_id'  => $request->tax,
             'comment' => $request->comment 
         ]);
-
+        $invoice->montant= $invoice->montant+$request->montant;
+        $invoice->save();
         return response()->json($detail->load('tax'));
 
     }
 
-    public function delete_ligne(InvoiceDetail $invoice, Request $request) 
+    public function delete_ligne(Request $request) 
     {
-        
-        $invoice->delete();
+        $user=Auth::user();
+        $invoice_detail_id = $request->invoice_detail_id;
+        $invoiceDetail=InvoiceDetail::find($invoice_detail_id);
+        if($invoiceDetail==null)
+        return response('Impossible de supprimer, detail de la facture introuvable.',509);
+        $invoice = Invoice::find($invoiceDetail->invoice_id);
+        if($invoice->affiliate_id!=$user->affiliate_id)
+        return response('Impossible de supprimer, detail de la facture n\'est pas dans la même affiliée que l\'utilisateur.',509);
+        $invoice->montant=$invoice->montant-$invoiceDetail->montant;
+        $invoice->save();
+        $invoiceDetail->delete();
 
-        $invoice_id = $request->invoice_id;
-        $invoice = Invoice::find($invoice_id);
+        
 
         return response()->json(
             $invoice->details()

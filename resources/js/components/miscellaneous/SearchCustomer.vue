@@ -4,7 +4,7 @@
         <label v-if="!showSearch && label" class="select-label" :class="{ disabled:disabled == true }">{{ label }}</label>
         
         <div  v-if="!showSearch" class="position-relative">
-            <input type="text"  placeholder="Type..." v-model="search" @keyup.prevent="submit"/> 
+            <input type="text"  :placeholder="placeholder" v-model="search" @keyup.prevent="submit"/> 
              <span v-if="showbutton" @click='clearSearch' class="position-absolute"><i class="icon-close"></i></span>
         </div>
 
@@ -14,7 +14,7 @@
                 <label class="select-label" :class="{disabled:disabled==true}" v-if="label">{{label}}</label>
                 <div class="input_search">
                     <div  v-if="showSearch" class="position-relative input_search">
-                        <input type="text"  ref="inputsearch" placeholder="Type name..." v-model="search" @keyup.prevent="submit"/>
+                        <input type="text"  ref="inputsearch" :placeholder="placeholder" v-model="search" @keyup.prevent="submit"/>
                         <span v-if="showbutton" @click='clearSearch' class="position-absolute"><i class="icon-close"></i></span>
                     </div>
                     <section class="nodata p-2" v-if ="Customers.length == 0">
@@ -69,6 +69,11 @@ export default({
         label: String,
         disabled: Boolean,
         hint: String,
+           placeholder: {
+                required: false,
+                type: String,
+                default:"Recherche..."
+            },
     },
     setup(props,context){
 

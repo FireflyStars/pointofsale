@@ -120,7 +120,7 @@
                                         name="search" 
                                         @selected="selectedInvoice" 
                                         :droppos="{ top: 'auto', right: 'auto', bottom: 'auto', left: '0', transformOrigin: 'top right' }" 
-                                        label="Recherche commande"
+                                        label="Recherche facture"
                                         :customerId="contact.customer?.id" 
                                     ></SearchInvoice>
                                 

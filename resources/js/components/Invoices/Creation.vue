@@ -124,7 +124,7 @@
     
                 <div>{{ detail?.comment }}</div>
     
-                <div @click.prevent="deleteLigne(detail)" title="Delete Ligne">
+                <div @click.prevent="deleteLigne(detail)" title="Supprimer">
                     <Icon name="delete" style="cursor: pointer" />
                 </div>
     

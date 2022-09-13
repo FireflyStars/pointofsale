@@ -39,7 +39,8 @@ export const isFloat=x=>{
 }
 
 export const formatDate=(date_str,format)=>{
-    if(date_str=='0000-00-00' || date_str===null)
+    console.log(date_str,format);
+    if(date_str=='0000-00-00' || date_str===null||typeof(date_str)=="undefined")
     return "--/--";
     if(typeof format==="undefined")
         format='DD/MM/YY';

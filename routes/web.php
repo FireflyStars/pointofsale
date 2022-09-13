@@ -241,7 +241,7 @@ Route::post('/create-new-invoice', [InvoicesController::class, 'create_new_invoi
 Route::get('/get-single-invoice-details', [InvoicesController::class, 'create']);
 Route::get('/get-tax-list', [InvoicesController::class, 'get_tax_list']);
 Route::post('/create-ligne/{invoice}', [InvoicesController::class, 'create_ligne']);
-Route::delete('/delete-ligne/{invoice}', [InvoicesController::class, 'delete_ligne']);
+Route::delete('/delete-ligne/{invoice_detail_id}', [InvoicesController::class, 'delete_ligne'])->middleware('auth');
 
 // create action
 Route::post('/get-action-info', [ActionCommercialListController::class, 'getActionInfo'])->name('get.action.info');
