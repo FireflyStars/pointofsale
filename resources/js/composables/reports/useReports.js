@@ -19,6 +19,7 @@ import {
     HIDE_LOADER,
     GENERATE_PDF_BY_ID,
     DELETE_REPORT,
+    SET_ACTIVE_PAGE
 }
 from '../../store/types/types'
 
@@ -154,7 +155,6 @@ export default function useReports() {
 
     }
     
-
     const findFile = (files, id) => {
         return files.find(file => file.id == id)
     }
@@ -177,6 +177,7 @@ export default function useReports() {
             status: 'store' 
         })
         store.commit(`${BUILDER_MODULE}/${RESET_PAGES}`, [])
+        store.commit(`${BUILDER_MODULE}/${SET_ACTIVE_PAGE}`, 0)
     }
 
     const resetOrder = () => {

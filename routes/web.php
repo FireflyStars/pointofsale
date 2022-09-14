@@ -1,10 +1,5 @@
 <?php
 
-use App\Models\User;
-use App\Models\Campagne;
-use App\Models\Intervention;
-use App\Models\page_builder;
-use App\Models\InterventionType;
 use TCG\Voyager\Facades\Voyager;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiController;
@@ -43,15 +38,7 @@ use App\Http\Controllers\PageElementsController;
 use App\Http\Controllers\InterventionsController;
 use App\Http\Controllers\CommandeFounisseurController;
 use App\Http\Controllers\ActionCommercialListController;
-
-
-
-
-
 use App\Http\Controllers\HtmlTemplateController;
-use App\Mail\NotificationMail;
-use App\Models\Notification;
-use Illuminate\Support\Facades\Mail;
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
@@ -107,8 +94,6 @@ Route::post('/valider-card', [CompagneController::class, 'valider_card'])->middl
 Route::post('/generate-campagne-product-pdf/{campagne}', [CompagneController::class, 'generate_pdf'])->middleware('auth');
 Route::get('/generate-campagne-product-pdf/{campagne}', [CompagneController::class, 'generate_pdf'])->middleware('auth');
 Route::get('/get-card-quantity', [CompagneController::class, 'get_card_quantity'])->middleware('auth');
-
-
 
 Route::get('/get-entite-list', [EntiteController::class, 'index'])->middleware('auth');
 Route::post('/get-entite-list', [EntiteController::class, 'index'])->middleware('auth');
@@ -205,7 +190,6 @@ Route::post('/get-intervention-status', [InterventionsController::class, 'get_in
 Route::post('/get-intervention-types-formatted', [InterventionsController::class, 'get_intervention_types'])->middleware('auth');
 
 Route::get('/get-menu-items', [MenuController::class, 'index'])->middleware('auth');
-
 
 Route::get('/get-paiements-list', [PaiementsController::class, 'index'])->middleware('auth');
 Route::post('/get-paiements-list', [PaiementsController::class, 'index'])->middleware('auth');

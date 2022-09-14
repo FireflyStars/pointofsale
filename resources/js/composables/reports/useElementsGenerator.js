@@ -45,6 +45,8 @@ export default function useElementsGenerator() {
 
     const generateTags = (textValue) => {
 
+        var result = textValue.match(/\[(.*?)\]/g)
+
         for(const tag of tags) {
             textValue = textValue.replace(`[${tag}]`, getCustomerValue(tag))
         }

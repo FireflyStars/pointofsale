@@ -251,12 +251,12 @@ export default {
         }
 
         const getReport = async () => {
+            await getOrderDetails()
             await store.dispatch(`${BUILDER_MODULE}/${GET_REPORT}`, props.id)
             if(!pages.value.length) {
                 toggleModal('report-templates')
                 await getReportTemplates()
             }
-            getOrderDetails()
             return Promise.resolve()
         }
 
@@ -292,7 +292,6 @@ export default {
             resetOrder()
             nextTick(async () => {
                 showcontainer.value = true
-                // await getReport()
                 await getReportTemplates()
                 toggleModal('report-templates')
                 await getOrderDetails()

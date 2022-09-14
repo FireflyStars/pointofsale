@@ -237,8 +237,8 @@ export default {
         }
 
         const getReport = async () => {
+            await getOrderDetails()
             await store.dispatch(`${BUILDER_MODULE}/${GET_REPORT}`, props.id)
-            getOrderDetails()
             return Promise.resolve()
         }
 
@@ -264,7 +264,6 @@ export default {
                 nextTick(() => {
                     toggleModal('report-templates', false)
                     getReportTemplate(value)
-                    // getOrderDetails()
                 })
             }
         })

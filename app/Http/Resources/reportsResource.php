@@ -57,13 +57,13 @@ class ReportsResource extends JsonResource
             'raisonsociale' => $this->customer->raisonsociale,
             'raisonsociale2' => $this->customer->raisonsociale2,
             'telephone' => $this->customer->telephone,
-            'address' => $this->get_customer_address($this->events)
+            'address' => $this->get_customer_address($this)
         ];
     }
 
-    private function get_customer_address($events) 
+    private function get_customer_address($order) 
     {
-        $customer_address = optional($events->last())->address; 
+        $customer_address = $order->address; 
         if(!is_null($customer_address)) 
         {
             return $customer_address->only([

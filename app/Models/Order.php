@@ -22,27 +22,33 @@ class Order extends Model
     use LcdtLog;
 
 
-    public function events(){
+    public function events()
+    {
         return $this->hasMany(Event::class);
     }
 
-    public function customer(){
+    public function customer()
+    {
         return $this->belongsTo(Customer::class);
     }
 
-    public function orderZones(){
+    public function orderZones()
+    {
         return $this->hasMany(OrderZone::class);
     }
 
-    public function orderOuvrages(){
+    public function orderOuvrages()
+    {
         return $this->hasMany(OrderOuvrage::class);
     }
 
-    public function state(){
+    public function state()
+    {
         return $this->belongsTo(OrderState::class, 'order_state_id');
     }
 
-    public function geds(){
+    public function geds()
+    {
         return $this->hasMany(Ged::class);
     }
 
@@ -61,7 +67,8 @@ class Order extends Model
         return $this->belongsTo(Affiliate::class);
     }
 
-    public function updateState($order_state_id, $user_id=null){
+    public function updateState($order_state_id, $user_id=null)
+    {
         if($user_id==null)
             $user_id=Auth::user()->id;
         $user=User::find($user_id);
@@ -86,11 +93,13 @@ class Order extends Model
         }
     }
 
-    public function generateReference(){
+    public function generateReference()
+    {
         $this->reference= strtoupper($this->passwdGen(10,'NO_NUMERIC'));
     }
 
-    public function address(){
+    public function address()
+    {
         return $this->belongsTo(Address::class);
     }
 
