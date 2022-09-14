@@ -9,7 +9,7 @@
             <div class="col-6">
               <page-title icon="star" name="Nouveau Devis" class="almarai_extrabold_normal_normal m-0"/>
             </div>
-            <div class="col-6 d-flex" v-if="devisCreateStep == 'create_devis'">
+            <div class="col-6" v-if="devisCreateStep == 'create_devis'">
               <button class="btn btn-save me-3 text-white" @click="storeDevis">Sauvegarder</button>
               <button class="btn btn-pdf text-white rounded-3" @click="PDFDevis">PDF</button>
             </div>
@@ -90,6 +90,9 @@
           </div>
           <div class="devis-panel d-flex" v-if="devisCreateStep == 'create_devis'">
             <div class="left-panel">
+              <div class="devis-name-section p-2 bg-white">
+                <input type="text" v-model="form.orderName" placeholder="Devis nom" class="form-control"/>
+              </div>
               <div class="customer-section px-3 py-2 d-flex bg-white">
                 <div class="col-7 d-flex">
                   <div class="customer-pic rounded-circle bg-primary">
@@ -1016,6 +1019,7 @@ export default {
     const gedCats = ref([]);
     const roofAccesses = ref([]);
     const form = ref({
+      orderName: '',
       customer: {
         id: 1,
         company: 'La boulangerie',
@@ -1724,7 +1728,7 @@ export default {
             name: 'Installation',
             edit: false,
             totalHour: 0,
-            unitPrice: 0,
+            sumUnitPrice: 0,
             totalPrice: 0,
             ouvrages: []
           },
@@ -1732,7 +1736,7 @@ export default {
             name: 'Sécurité',
             edit: false,
             totalHour: 0,
-            unitPrice: 0,
+            sumUnitPrice: 0,
             totalPrice: 0,
             ouvrages: []
           },
@@ -1740,7 +1744,7 @@ export default {
             name: 'Prestations',
             edit: false,
             totalHour: 0,
-            unitPrice: 0,
+            sumUnitPrice: 0,
             totalPrice: 0,
             ouvrages: []
           },
@@ -1773,7 +1777,7 @@ export default {
           )          
           updateAllValues();
         }
-      });      
+      });
     }
 
     // activate the ouvrage
@@ -2039,6 +2043,10 @@ export default {
   ::-webkit-scrollbar-thumb {
     background: #47454B; 
     border-radius: 6px;
+  }
+  .page-title{
+    line-height: initial !important;
+    margin-left: 0 !important;
   }
   .bold-title{
     font-family: "Mulish ExtraBold";

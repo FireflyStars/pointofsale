@@ -100,10 +100,9 @@ class CustomerController extends Controller
      */
     public function storeCustomer(Request $request){
         $validator = Validator::make($request->all(), [
-            'naf'               => 'required',
             'customerStatus'    => 'required',
-            'siret'             => 'required|unique:customers,siret',
             'email'             => $request->email != '' ? 'email' : '',
+            'siret'             => $request->siret != '' ? 'required|unique:customers,siret,'.$request->id: "",
             'customerTax'       => 'required'
         ]);
  
@@ -253,6 +252,7 @@ class CustomerController extends Controller
                     ->first();
         $customer->addresses = DB::table('addresses')
                                 ->where('customer_id', $id)
+                                ->whereNull('deleted_at')
                                 ->select(
                                     'id', 'address_type_id as addressType', 'lastname as nom', 
                                     'firstname as firstName', 'address1', 'address2', 'address3', 
@@ -263,6 +263,7 @@ class CustomerController extends Controller
                                 )->get();
         $customer->contacts = DB::table('contacts')
                                 ->where('customer_id', $id)
+                                ->whereNull('deleted_at')
                                 ->select(
                                     'id', 'contact_type_id as type', 'contact_qualite_id as qualite', 'actif', 
                                     'num_contact_gx as numGx', 'name', 'firstname as firstName', 'profillinedin as profilLinedin', 
@@ -297,9 +298,8 @@ class CustomerController extends Controller
      */
     public function updateCustomer(Request $request){
         $validator = Validator::make($request->all(), [
-            'naf'               => 'required',
             'customerStatus'    => 'required',
-            'siret'             => 'required|unique:customers,siret,'.$request->id,
+            'siret'             => $request->siret != '' ? 'required|unique:customers,siret,'.$request->id: "",
             'email'             => $request->email != '' ? 'email' : '',
             'customerTax'       => 'required'
         ]);
@@ -346,6 +346,9 @@ class CustomerController extends Controller
                 'datecreationetablissement'=> Carbon::parse($request->dateCreated)->format('m/d/Y'),
             ];
             DB::table('customers')->where('id', $request->id)->update($customerData);
+            DB::table('addresses')->where('customer_id', $request->id)->update([
+                'deleted_at'=> now()
+            ]);
             foreach ($request->addresses as $address) {
                 $addressData = [
                     'address_type_id'       => $address['addressType'],
@@ -374,6 +377,7 @@ class CustomerController extends Controller
                     'hauteurbatiment'       => $address['hauteurbatiment'],
                     'typebatiment'          => $address['typebatiment'],
                     'comment'               => $address['infoNote'],
+                    'deleted_at'            => null,
                 ];
                 if($address['id'] == ''){
                     $addressData['country_id'] = 1;
@@ -385,6 +389,9 @@ class CustomerController extends Controller
                 }
             }
     
+            DB::table('contacts')->where('customer_id', $request->id)->update([
+                'deleted_at'=> now()
+            ]);
             foreach ($request->contacts as $contact) {
                 $contactData = [
                     'contact_type_id'       => $contact['type'],
@@ -404,6 +411,7 @@ class CustomerController extends Controller
                     'acceptsms'             => $contact['acceptSMS'],
                     'acceptmarketing'       => $contact['acceptmarketing'],
                     'acceptcourrier'        => $contact['acceptcourrier'],
+                    'deleted_at'            => null,
                 ];
                 if($contact['id'] == '' && $contact['name'] != '' && $contact['firstName'] !='' && $contact['type'] != '' && $contact['email']){
                     $contactData['address_id'] = 0;
@@ -432,6 +440,7 @@ class CustomerController extends Controller
                         DB::raw('taxes.taux * 100 as tax'), 'customers.id', 'taxes.id as taxId',
                         'contacts.id as contact_id'
                     )
+                    ->whereNull('contacts.deleted_at')
                     ->where('customers.raisonsociale', 'like', '%'.$request->search.'%')
                     ->orWhere('customers.raisonsociale2', 'like', '%'.$request->search.'%')
                     ->orWhere('customers.company', 'like', '%'.$request->search.'%');
@@ -489,7 +498,8 @@ class CustomerController extends Controller
                         'contact_qualite.name as qualite', 'contacts.mobile', 'contacts.email', 'contacts.name as nom',
                         'contacts.comment', 'contacts.id'
                     )
-                    ->where('customer_id', $request->customerId)
+                    ->whereNull('contacts.deleted_at')
+                    ->where('contacts.customer_id', $request->customerId)
                     ->get();
         return response()->json($contacts);
     }

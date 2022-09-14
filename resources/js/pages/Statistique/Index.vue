@@ -52,9 +52,9 @@ export default {
     }
 }
 </script>
-<style>
+<style scoped>
 .main-view{
-    margin: 64px 10px 0 10px;
+    margin: 64px 10px 0 72px;
 }
 .page-title{
     margin-left: 0 !important

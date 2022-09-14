@@ -87,8 +87,8 @@
                                 <div class="col-7 d-flex">
                                     <div class="d-flex col-8">
                                         <div class="form-group col-9">
-                                            <label>SIRET *</label>
-                                            <input type="text" v-model="form.siret" class="form-control" v-mask="'#########'">
+                                            <label>SIRET</label>
+                                            <input type="text" v-model="form.siret" class="form-control" v-mask="'##############'">
                                         </div>
                                         <div class="form-group col-3 px-2">
                                             <label>&nbsp;</label>
@@ -158,7 +158,7 @@
                                     </div>                                    
                                     <div class="col-1"></div>
                                     <div class="col-4 form-group">
-                                        <label>NAF *</label>
+                                        <label>NAF</label>
                                         <input v-model="form.naf" type="text" class="form-control" v-mask="'####A'">
                                     </div>
                                 </div>
@@ -568,7 +568,7 @@
                             <div class="d-flex mt-3">
                                 <div class="col-7">
                                     <div class="form-group">
-                                        <label class="mulish-medium font-16">EMAIL</label>
+                                        <label class="mulish-medium font-16">EMAIL*</label>
                                         <input type="text" v-model="contact.email" @change="validationUniqueEmail($event, 'contacts')" placeholder="email" class="form-control">
                                     </div>
                                 </div>                               
@@ -635,6 +635,7 @@ import GoogleAddress from '../../components/miscellaneous/GoogleAddress';
 import { phoneCountryCode as phoneCodes } from '../../static/PhoneCountryCodes';
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
+import Swal from 'sweetalert2';
 import {     
   DISPLAY_LOADER,
   HIDE_LOADER,
@@ -746,7 +747,7 @@ export default {
             }],
             // contacts
             contacts: [{
-                type: '',
+                type: 1,
                 actif: true,
                 qualite: '',
                 gender: 'M',
@@ -767,11 +768,10 @@ export default {
             }],            
         });
         const checkSiret = ()=>{
-            if(form.value.siret.length == 9){
+            if(form.value.siret.length == 14){
                 store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'checking siret ...']);
-                axios.post('/check-siret', { 'siret' : form.value.siret }).then((res)=>{
+                axios.post('/check-siret', { 'siret' : form.value.siret.substring(0, 9) }).then((res)=>{
                     if(res.data.success){
-                        form.value.siretValidation = true;
                         form.value.naf = res.data.data.activitePrincipaleUniteLegale.replace('.', '');
                         form.value.raisonsociale    = res.data.data.denominationUniteLegale;
                         form.value.raisonsociale2   = res.data.data.denominationUsuelle1UniteLegale;
@@ -790,7 +790,7 @@ export default {
             }else{
                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                     type: 'danger',
-                    message: 'Siret must be 9 digits',
+                    message: 'Siret must be 14 digits',
                     ttl: 5,
                 }); 
             }
@@ -816,18 +816,6 @@ export default {
                         message: 'Veuillez entrer RAISON SOCIALE',
                         ttl: 5,
                     });
-                }else if(form.value.siret == '' || form.value.siret.length != 9){
-                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                        type: 'danger',
-                        message: 'Veuillez entrer SIRET',
-                        ttl: 5,
-                    });                    
-                }else if(form.value.siretValidation == false){
-                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                        type: 'danger',
-                        message: 'Vous devez vérifier le siret s\'il est valide ou non.',
-                        ttl: 5,
-                    });                    
                 }else if(form.value.customerStatus == 0){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
@@ -846,12 +834,6 @@ export default {
                         message: 'Veuillez sélectionner la MODE DE PAIEMENT',
                         ttl: 5,
                     });           
-                }else if(form.value.naf == '' || form.value.naf.length != 5 || customerNafs.find((item)=>{ return item.code == form.value.naf }) == undefined){
-                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                        type: 'danger',
-                        message: 'Veuillez entrer NAF',
-                        ttl: 5,
-                    });                    
                 }else{
                     step.value = value;
                 }
@@ -935,19 +917,6 @@ export default {
                         message: 'Veuillez entrer RAISON SOCIALE',
                         ttl: 5,
                     });
-                }else if(form.value.siret == '' || form.value.siret.length != 9){
-                    form.value.siretValidation = false;
-                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                        type: 'danger',
-                        message: 'Veuillez entrer SIRET',
-                        ttl: 5,
-                    });
-                }else if(form.value.siretValidation == false){
-                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                        type: 'danger',
-                        message: 'Vous devez vérifier le siret s\'il est valide ou non.',
-                        ttl: 5,
-                    });
                 }else if(form.value.customerStatus == 0){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
@@ -966,12 +935,6 @@ export default {
                         message: 'Veuillez sélectionner la MODE DE PAIEMENT',
                         ttl: 5,
                     });               
-                }else if(form.value.naf == '' || form.value.naf.length != 5 || customerNafs.find((item)=>{ return item.code == form.value.naf }) == undefined){
-                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                        type: 'danger',
-                        message: 'merci de saisir un NAF valide',
-                        ttl: 5,
-                    });                    
                 }else{
                     step.value = 'address';
                 }
@@ -1058,7 +1021,7 @@ export default {
         }     
         const addContact = ()=>{
             form.value.contacts.push({
-                type: '',
+                type: 1,
                 actif: true,
                 quantite: '',
                 gender: 'M',
@@ -1079,15 +1042,43 @@ export default {
             });
         }     
         const removeAddress = (selectedIndex)=>{
-            form.value.addresses = form.value.addresses.filter((item, index)=>{
-                return index != selectedIndex
+            Swal.fire({
+                title: 'Etes-vous sûr?',
+                text: "Vous ne pourrez pas revenir en arrière !",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#42A71E',
+                // cancelButtonColor: '#E8581B',
+                cancelButtonColor: 'var(--lcdtOrange)',
+                cancelButtonText: 'Annuler',
+                confirmButtonText: `Oui, s'il vous plaît.`
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.value.addresses = form.value.addresses.filter((item, index)=>{
+                        return index != selectedIndex
+                    });
+                }
             });            
         }
 
         const removeContact = (selectedIndex)=>{
-            form.value.contacts = form.value.contacts.filter((item, index)=>{
-                return index != selectedIndex
-            });
+            Swal.fire({
+                title: 'Etes-vous sûr?',
+                text: "Vous ne pourrez pas revenir en arrière !",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#42A71E',
+                // cancelButtonColor: '#E8581B',
+                cancelButtonColor: 'var(--lcdtOrange)',
+                cancelButtonText: 'Annuler',
+                confirmButtonText: `Oui, s'il vous plaît.`
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.value.contacts = form.value.contacts.filter((item, index)=>{
+                        return index != selectedIndex
+                    });
+                }
+            });                 
         }
         watch(() => form.value.naf, (curVal, preVal)=>{
             var selectedNaf = customerNafs.filter((item)=>{
@@ -1103,15 +1094,15 @@ export default {
             }
         })
         const submit = ()=>{
-            if(form.value.siretValidation == false){
-                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                    type: 'danger',
-                    message: 'Vous devez vérifier le siret s\'il est valide ou non.',
-                    ttl: 5,
-                });
-                step.value = 'client-detail';
-                return;
-            }
+            // if(form.value.siretValidation == false){
+            //     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            //         type: 'danger',
+            //         message: 'Vous devez vérifier le siret s\'il est valide ou non.',
+            //         ttl: 5,
+            //     });
+            //     step.value = 'client-detail';
+            //     return;
+            // }
             let error = false;
             form.value.contacts.forEach((contact)=>{
                 if(contact.type != '' || contact.firstName != '' || contact.email != '' || contact.name != ''){
