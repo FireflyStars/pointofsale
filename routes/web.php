@@ -1,10 +1,5 @@
 <?php
 
-use App\Models\User;
-use App\Models\Campagne;
-use App\Models\Intervention;
-use App\Models\page_builder;
-use App\Models\InterventionType;
 use TCG\Voyager\Facades\Voyager;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiController;
@@ -43,15 +38,7 @@ use App\Http\Controllers\PageElementsController;
 use App\Http\Controllers\InterventionsController;
 use App\Http\Controllers\CommandeFounisseurController;
 use App\Http\Controllers\ActionCommercialListController;
-
-
-
-
-
 use App\Http\Controllers\HtmlTemplateController;
-use App\Mail\NotificationMail;
-use App\Models\Notification;
-use Illuminate\Support\Facades\Mail;
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
@@ -59,92 +46,90 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('/get-text-pos',[LcdtAdminController::class,'getTextPos'])->name('get-text-pos');
 });
 
-Route::post('/save-page-elements', [PageElementsController::class, 'generate_pdf']);
-Route::get('/generate-pdf/{report}', [PageElementsController::class, 'generate_pdf_by_id']);
-Route::post('/generate-pdf/{report}', [PageElementsController::class, 'generate_pdf_by_id']);
+Route::post('/save-page-elements', [PageElementsController::class, 'generate_pdf'])->middleware('auth');
+Route::get('/generate-pdf/{report}', [PageElementsController::class, 'generate_pdf_by_id'])->middleware('auth');
+Route::post('/generate-pdf/{report}', [PageElementsController::class, 'generate_pdf_by_id'])->middleware('auth');
 
-Route::delete('delete-report/{report}', [PageElementsController::class, 'delete_report']);
+Route::delete('delete-report/{report}', [PageElementsController::class, 'delete_report'])->middleware('auth');
 
-Route::post('/report-templates', [TemplatesController::class, 'index']);
-Route::get('/get-report-templates', [TemplatesController::class, 'report_templates']);
-Route::post('/report-template', [TemplatesController::class, 'store']);
-Route::get('/report-template/{template}', [TemplatesController::class, 'show']);
-Route::post('/report-template/{template}', [TemplatesController::class, 'update']);
-Route::post('/delete-template/{template}', [TemplatesController::class, 'delete']);
+Route::post('/report-templates', [TemplatesController::class, 'index'])->middleware('auth');
+Route::get('/get-report-templates', [TemplatesController::class, 'report_templates'])->middleware('auth');
+Route::post('/report-template', [TemplatesController::class, 'store'])->middleware('auth');
+Route::get('/report-template/{template}', [TemplatesController::class, 'show'])->middleware('auth');
+Route::post('/report-template/{template}', [TemplatesController::class, 'update'])->middleware('auth');
+Route::post('/delete-template/{template}', [TemplatesController::class, 'delete'])->middleware('auth');
 
 Route::post('/page-reports', [ReportsController::class, 'index'])->middleware('auth');
 Route::get('/page-reports', [ReportsController::class, 'index'])->middleware('auth');
-Route::post('/page-report', [ReportsController::class, 'store']);
-Route::get('/page-report/{report}', [ReportsController::class, 'show']);
-Route::post('/page-report/{report}', [ReportsController::class, 'update']);
-Route::post('/delete-report/{report}', [ReportsController::class, 'delete']);
+Route::post('/page-report', [ReportsController::class, 'store'])->middleware('auth');
+Route::get('/page-report/{report}', [ReportsController::class, 'show'])->middleware('auth');
+Route::post('/page-report/{report}', [ReportsController::class, 'update'])->middleware('auth');
+Route::post('/delete-report/{report}', [ReportsController::class, 'delete'])->middleware('auth');
 
 
-Route::get('/get-page-order/{order}', [PageElementsController::class, 'get_page_order']);
-Route::get('/get-templates', [PageElementsController::class, 'get_page_templates']);
+Route::get('/get-page-order/{order}', [PageElementsController::class, 'get_page_order'])->middleware('auth');
+Route::get('/get-templates', [PageElementsController::class, 'get_page_templates'])->middleware('auth');
 
-Route::get('/search', [SearchController::class, 'search']);
-Route::get('/search-append', [SearchController::class, 'search_append']);
+Route::get('/search', [SearchController::class, 'search'])->middleware('auth');
+Route::get('/search-append', [SearchController::class, 'search_append'])->middleware('auth');
 
-Route::post('/save-letter-pdf/{campagne}', [CompagneController::class, 'save_letter_pdf']);
-Route::post('/save-letter-settings/{campagne}', [CompagneController::class, 'save_letter_settings']);
-Route::get('/stream-letter-pdf/{campagne}', [CompagneController::class, 'stream_letter_pdf']);
-Route::post('/save-flyer-pdf/{campagne}', [CompagneController::class, 'save_flyer_pdf']);
-Route::get('/stream-flyer-pdf/{campagne}', [CompagneController::class, 'stream_flyer_pdf']);
-Route::post('/save-mail-csv/{campagne}', [CompagneController::class, 'generate_mail_csv_and_store']);
-Route::post('/validate-and-send-email/{campagne}', [CompagneController::class, 'validate_and_send_email']);
-Route::get('/download-resource-file', [CompagneController::class, 'download_resource_file']);
-Route::post('/get-campagne-list', [CampagneListController::class, 'index']);
-Route::get('/get-campagne-details/{campagne}', [CompagneController::class, 'campagne_details']);
-Route::post('/get-user-campagne-list', [CampagneListController::class, 'user_campagnes']);
-Route::get('/get-campagne-category/{campagne}', [CompagneController::class, 'get_campagne_category']);
-Route::post('/store-campagne-product/{campagne}', [CompagneController::class, 'store_campagne_product']);
+Route::post('/save-letter-pdf/{campagne}', [CompagneController::class, 'save_letter_pdf'])->middleware('auth');
+Route::post('/save-letter-settings/{campagne}', [CompagneController::class, 'save_letter_settings'])->middleware('auth');
+Route::get('/stream-letter-pdf/{campagne}', [CompagneController::class, 'stream_letter_pdf'])->middleware('auth');
+Route::post('/save-flyer-pdf/{campagne}', [CompagneController::class, 'save_flyer_pdf'])->middleware('auth');
+Route::get('/stream-flyer-pdf/{campagne}', [CompagneController::class, 'stream_flyer_pdf'])->middleware('auth');
+Route::post('/save-mail-csv/{campagne}', [CompagneController::class, 'generate_mail_csv_and_store'])->middleware('auth');
+Route::post('/validate-and-send-email/{campagne}', [CompagneController::class, 'validate_and_send_email'])->middleware('auth');
+Route::get('/download-resource-file', [CompagneController::class, 'download_resource_file'])->middleware('auth');
+Route::post('/get-campagne-list', [CampagneListController::class, 'index'])->middleware('auth');
+Route::get('/get-campagne-details/{campagne}', [CompagneController::class, 'campagne_details'])->middleware('auth');
+Route::post('/get-user-campagne-list', [CampagneListController::class, 'user_campagnes'])->middleware('auth');
+Route::get('/get-campagne-category/{campagne}', [CompagneController::class, 'get_campagne_category'])->middleware('auth');
+Route::post('/store-campagne-product/{campagne}', [CompagneController::class, 'store_campagne_product'])->middleware('auth');
 Route::get('/get-fields-marketing/{campagne}', [CompagneController::class, 'fields_for_marketing'])->middleware('auth')->name('fields_marketing');
-Route::get('/get-card-products', [CompagneController::class, 'get_card_products']);
+Route::get('/get-card-products', [CompagneController::class, 'get_card_products'])->middleware('auth');
 Route::put('/card-product/{card}', [CompagneController::class, 'update_card_product'])->middleware('auth');
 Route::delete('/card-product/{card}', [CompagneController::class, 'delete_card_product'])->middleware('auth');
 Route::post('/valider-card', [CompagneController::class, 'valider_card'])->middleware('auth');
-Route::post('/generate-campagne-product-pdf/{campagne}', [CompagneController::class, 'generate_pdf']);
-Route::get('/generate-campagne-product-pdf/{campagne}', [CompagneController::class, 'generate_pdf']);
-Route::get('/get-card-quantity', [CompagneController::class, 'get_card_quantity']);
+Route::post('/generate-campagne-product-pdf/{campagne}', [CompagneController::class, 'generate_pdf'])->middleware('auth');
+Route::get('/generate-campagne-product-pdf/{campagne}', [CompagneController::class, 'generate_pdf'])->middleware('auth');
+Route::get('/get-card-quantity', [CompagneController::class, 'get_card_quantity'])->middleware('auth');
 
+Route::get('/get-entite-list', [EntiteController::class, 'index'])->middleware('auth');
+Route::post('/get-entite-list', [EntiteController::class, 'index'])->middleware('auth');
+Route::post('/get-entite-list-user', [EntiteController::class, 'index'])->middleware('auth');
+Route::get('/get-entite-list-details/{customer}', [EntiteController::class, 'get_details'])->middleware('auth');
+Route::post('/change-entite-actif/{customer}', [EntiteController::class, 'change_entite_actif'])->middleware('auth');
+Route::post('/change-entite-litige/{customer}', [EntiteController::class, 'change_entite_litige'])->middleware('auth');
+Route::get('/get-entite-results/{customer}', [EntiteController::class, 'get_entite_results'])->middleware('auth');
 
+Route::get('/action-commercial-list', [ActionCommercialListController::class, 'index'])->middleware('auth');
+Route::post('/action-commercial-list', [ActionCommercialListController::class, 'index'])->middleware('auth');
+Route::get('/action-commercial-list-mes', [ActionCommercialListController::class, 'list_user'])->middleware('auth');
+Route::post('/action-commercial-list-mes', [ActionCommercialListController::class, 'list_user'])->middleware('auth');
+Route::get('/action-commercial-details/{id}', [ActionCommercialListController::class, 'get_details'])->middleware('auth');
+Route::post('/action-commercial-statuses', [ActionCommercialListController::class, 'statuses_formatted'])->middleware('auth');
+Route::post('/get-action-commercial-statuses', [ActionCommercialListController::class, 'statuses'])->middleware('auth');
+Route::post('/change-action-commercial-event-date/{event}', [ActionCommercialListController::class, 'change_event_date'])->middleware('auth');
+Route::post('/change-action-commercial-event-user/{event}', [ActionCommercialListController::class, 'change_event_user'])->middleware('auth');
+Route::get('/get-action-commercial-event-users/{event}', [ActionCommercialListController::class, 'get_event_users'])->middleware('auth');
+Route::get('/get-event-history/{event}', [ActionCommercialListController::class, 'get_event_history'])->middleware('auth');
+Route::get('/get-event-statuses-all', [ActionCommercialListController::class, 'get_event_statuses'])->middleware('auth');
+Route::post('/change-event-status/{event}', [ActionCommercialListController::class, 'change_event_status'])->middleware('auth');
 
-Route::get('/get-entite-list', [EntiteController::class, 'index']);
-Route::post('/get-entite-list', [EntiteController::class, 'index']);
-Route::post('/get-entite-list-user', [EntiteController::class, 'index']);
-Route::get('/get-entite-list-details/{customer}', [EntiteController::class, 'get_details']);
-Route::post('/change-entite-actif/{customer}', [EntiteController::class, 'change_entite_actif']);
-Route::post('/change-entite-litige/{customer}', [EntiteController::class, 'change_entite_litige']);
-Route::get('/get-entite-results/{customer}', [EntiteController::class, 'get_entite_results']);
+Route::post('/get-contact-list', [ContactsController::class, 'index'])->middleware('auth');
+Route::get('/get-contact-details/{contact}', [ContactsController::class, 'show'])->middleware('auth');
+Route::get('/get-contact-results/{contact}', [ContactsController::class, 'contact_results'])->middleware('auth');
 
-Route::get('/action-commercial-list', [ActionCommercialListController::class, 'index']);
-Route::post('/action-commercial-list', [ActionCommercialListController::class, 'index']);
-Route::get('/action-commercial-list-mes', [ActionCommercialListController::class, 'list_user']);
-Route::post('/action-commercial-list-mes', [ActionCommercialListController::class, 'list_user']);
-Route::get('/action-commercial-details/{id}', [ActionCommercialListController::class, 'get_details']);
-Route::post('/action-commercial-statuses', [ActionCommercialListController::class, 'statuses_formatted']);
-Route::post('/get-action-commercial-statuses', [ActionCommercialListController::class, 'statuses']);
-Route::post('/change-action-commercial-event-date/{event}', [ActionCommercialListController::class, 'change_event_date']);
-Route::post('/change-action-commercial-event-user/{event}', [ActionCommercialListController::class, 'change_event_user']);
-Route::get('/get-action-commercial-event-users/{event}', [ActionCommercialListController::class, 'get_event_users']);
-Route::get('/get-event-history/{event}', [ActionCommercialListController::class, 'get_event_history']);
-Route::get('/get-event-statuses-all', [ActionCommercialListController::class, 'get_event_statuses']);
-Route::post('/change-event-status/{event}', [ActionCommercialListController::class, 'change_event_status']);
-
-Route::post('/get-contact-list', [ContactsController::class, 'index']);
-Route::get('/get-contact-details/{contact}', [ContactsController::class, 'show']);
-Route::get('/get-contact-results/{contact}', [ContactsController::class, 'contact_results']);
-
-Route::get('/get-articles-list', [ArticlesController::class, 'index']);
-Route::post('/get-articles-list', [ArticlesController::class, 'index']);
-Route::get('/get-articles-details/{product}', [ArticlesController::class, 'show']);
-Route::post('/validate-articles-product/{product}', [ArticlesController::class, 'valider']);
-Route::post('/load-product-documents/{product}', [ArticlesController::class, 'load_product_documents']);
-Route::post('/remove-product-document/{document}', [ArticlesController::class, 'remove_product_document']);
-Route::post('/get-product-document-url/{document}', [ArticlesController::class, 'get_document_url']);
-Route::post('/upload-product-document', [ArticlesController::class, 'upload_product_document']);
-Route::get('/get-product-document-types', [ArticlesController::class, 'product_document_types']);
+Route::get('/get-articles-list', [ArticlesController::class, 'index'])->middleware('auth');
+Route::post('/get-articles-list', [ArticlesController::class, 'index'])->middleware('auth');
+Route::get('/get-articles-details/{product}', [ArticlesController::class, 'show'])->middleware('auth');
+Route::post('/validate-articles-product/{product}', [ArticlesController::class, 'valider'])->middleware('auth');
+Route::post('/load-product-documents/{product}', [ArticlesController::class, 'load_product_documents'])->middleware('auth');
+Route::post('/remove-product-document/{document}', [ArticlesController::class, 'remove_product_document'])->middleware('auth');
+Route::post('/get-product-document-url/{document}', [ArticlesController::class, 'get_document_url'])->middleware('auth');
+Route::post('/upload-product-document', [ArticlesController::class, 'upload_product_document'])->middleware('auth');
+Route::get('/get-product-document-types', [ArticlesController::class, 'product_document_types'])->middleware('auth');
 
 // contact
 Route::post('/contact/add', [ ContactController::class, 'create' ])->middleware('auth')->name('add.contact');
@@ -152,95 +137,95 @@ Route::post('/contact/edit/{contact}', [ ContactController::class, 'edit' ])->mi
 Route::post('/contact/update/{contact}', [ ContactController::class, 'update' ])->middleware('auth')->name('update.contact');
 Route::post('/contact/delete/{contact}', [ ContactController::class, 'destroy' ])->middleware('auth')->name('delete.contact');
     
-Route::get('/get-contact-statuses-all', [ContactsController::class, 'get_contact_statuses']);
-Route::post('/change-contact-status/{contact}', [ContactsController::class, 'change_contact_status']);
+Route::get('/get-contact-statuses-all', [ContactsController::class, 'get_contact_statuses'])->middleware('auth');
+Route::post('/change-contact-status/{contact}', [ContactsController::class, 'change_contact_status'])->middleware('auth');
 
-Route::post('/get-user-list', [UsersController::class, 'index']);
-Route::get('/get-user-details/{user}', [UsersController::class, 'get_details']);
-Route::post('/get-user-info', [UsersController::class, 'getUserInfo']);
-Route::post('/user/create', [UsersController::class, 'store']);
-Route::post('/get-user-info/{user}', [UsersController::class, 'edit']);
-Route::post('/user/update/{user}', [UsersController::class, 'update']);
+Route::post('/get-user-list', [UsersController::class, 'index'])->middleware('auth');
+Route::get('/get-user-details/{user}', [UsersController::class, 'get_details'])->middleware('auth');
+Route::post('/get-user-info', [UsersController::class, 'getUserInfo'])->middleware('auth');
+Route::post('/user/create', [UsersController::class, 'store'])->middleware('auth');
+Route::post('/get-user-info/{user}', [UsersController::class, 'edit'])->middleware('auth');
+Route::post('/user/update/{user}', [UsersController::class, 'update'])->middleware('auth');
 
-Route::get('/load-user-documents/{user}', [UsersController::class, 'load_user_documents']);
-Route::post('/load-user-documents/{user}', [UsersController::class, 'load_user_documents']);
-Route::post('/remove-user-document/{document}', [UsersController::class, 'remove_user_document']);
-Route::post('/get-user-document-url/{document}', [UsersController::class, 'get_document_url']);
-Route::post('/upload-user-document', [UsersController::class, 'upload_user_document']);
-Route::post('/delete-user/{user}', [UsersController::class, 'delete_user']);
-Route::get('/get-user-permis-list', [UsersController::class, 'permis_list']);
+Route::get('/load-user-documents/{user}', [UsersController::class, 'load_user_documents'])->middleware('auth');
+Route::post('/load-user-documents/{user}', [UsersController::class, 'load_user_documents'])->middleware('auth');
+Route::post('/remove-user-document/{document}', [UsersController::class, 'remove_user_document'])->middleware('auth');
+Route::post('/get-user-document-url/{document}', [UsersController::class, 'get_document_url'])->middleware('auth');
+Route::post('/upload-user-document', [UsersController::class, 'upload_user_document'])->middleware('auth');
+Route::post('/delete-user/{user}', [UsersController::class, 'delete_user'])->middleware('auth');
+Route::get('/get-user-permis-list', [UsersController::class, 'permis_list'])->middleware('auth');
 // get user's permis
 Route::post('/get-user-permis', [UsersController::class, 'getPermisByUser'])->middleware('auth')->name('get.user.permis');
 
-Route::post('/get-ouvrage-list', [OuvragesController::class, 'index']);
-Route::post('/get-ouvrage-list-installation', [OuvragesController::class, 'get_ouvrages_installation']);
-Route::post('/get-ouvrage-list-prestation', [OuvragesController::class, 'get_ouvrages_prestation']);
-Route::post('/get-ouvrage-list-securite', [OuvragesController::class, 'get_ouvrages_securite']);
-Route::get('/get-ouvrage-list', [OuvragesController::class, 'index']);
-Route::post('/get-unit-states', [UnitStatesController::class, 'index']);
-Route::get('/get-ouvrage-details/{ouvrage}', [OuvragesController::class, 'show']);
-Route::post('/valider-ouvrage/{ouvrage}', [OuvragesController::class, 'valider']);
+Route::post('/get-ouvrage-list', [OuvragesController::class, 'index'])->middleware('auth');
+Route::post('/get-ouvrage-list-installation', [OuvragesController::class, 'get_ouvrages_installation'])->middleware('auth');
+Route::post('/get-ouvrage-list-prestation', [OuvragesController::class, 'get_ouvrages_prestation'])->middleware('auth');
+Route::post('/get-ouvrage-list-securite', [OuvragesController::class, 'get_ouvrages_securite'])->middleware('auth');
+Route::get('/get-ouvrage-list', [OuvragesController::class, 'index'])->middleware('auth');
+Route::post('/get-unit-states', [UnitStatesController::class, 'index'])->middleware('auth');
+Route::get('/get-ouvrage-details/{ouvrage}', [OuvragesController::class, 'show'])->middleware('auth');
+Route::post('/valider-ouvrage/{ouvrage}', [OuvragesController::class, 'valider'])->middleware('auth');
 
-Route::post('/get-commande-list', [CommandeController::class, 'index']);
-Route::get('/get-commande-list', [CommandeController::class, 'index']);
-Route::get('/get-commande-details/{order}', [CommandeController::class, 'show']);
-Route::post('/get-commande-details/{order}', [CommandeController::class, 'show']);
-Route::post('/get-order-detail-pointage/{order}', [CommandeController::class, 'get_pointage']);
-Route::get('/get-order-detail-pointage/{order}', [CommandeController::class, 'get_pointage']);
-Route::get('/get-personnel-list', [CommandeController::class, 'get_personnel_list']);
-Route::get('/get-pointage-types', [CommandeController::class, 'get_pointage_types']);
-Route::post('/get-pointage-types', [CommandeController::class, 'get_pointage_types']);
-Route::post('/get-pointage-types-formatted', [CommandeController::class, 'get_pointage_types_formatted']);
-Route::post('/create-pointage/{order}', [CommandeController::class, 'create_pointage']);
+Route::post('/get-commande-list', [CommandeController::class, 'index'])->middleware('auth');
+Route::get('/get-commande-list', [CommandeController::class, 'index'])->middleware('auth');
+Route::get('/get-commande-details/{order}', [CommandeController::class, 'show'])->middleware('auth');
+Route::post('/get-commande-details/{order}', [CommandeController::class, 'show'])->middleware('auth');
+Route::post('/get-order-detail-pointage/{order}', [CommandeController::class, 'get_pointage'])->middleware('auth');
+Route::get('/get-order-detail-pointage/{order}', [CommandeController::class, 'get_pointage'])->middleware('auth');
+Route::get('/get-personnel-list', [CommandeController::class, 'get_personnel_list'])->middleware('auth');
+Route::get('/get-pointage-types', [CommandeController::class, 'get_pointage_types'])->middleware('auth');
+Route::post('/get-pointage-types', [CommandeController::class, 'get_pointage_types'])->middleware('auth');
+Route::post('/get-pointage-types-formatted', [CommandeController::class, 'get_pointage_types_formatted'])->middleware('auth');
+Route::post('/create-pointage/{order}', [CommandeController::class, 'create_pointage'])->middleware('auth');
 
-Route::post('/get-pointages-list', [PointagesController::class, 'index']);
-Route::get('/get-pointages-list', [PointagesController::class, 'index']);
-Route::post('/get-pointages-list-mes', [PointagesController::class, 'pointages_mes']);
+Route::post('/get-pointages-list', [PointagesController::class, 'index'])->middleware('auth');
+Route::get('/get-pointages-list', [PointagesController::class, 'index'])->middleware('auth');
+Route::post('/get-pointages-list-mes', [PointagesController::class, 'pointages_mes'])->middleware('auth');
 
-Route::post('/get-interventions-list', [InterventionsController::class, 'index']);
-Route::get('/get-interventions-list', [InterventionsController::class, 'index']);
-Route::post('/get-interventions-list-mes', [InterventionsController::class, 'interventions_mes']);
-Route::post('/get-intervention-status-formatted', [InterventionsController::class, 'get_intervention_status_formatted']);
-Route::post('/get-intervention-status', [InterventionsController::class, 'get_intervention_status']);
-Route::post('/get-intervention-types-formatted', [InterventionsController::class, 'get_intervention_types']);
+Route::post('/get-interventions-list', [InterventionsController::class, 'index'])->middleware('auth');
+Route::get('/get-interventions-list', [InterventionsController::class, 'index'])->middleware('auth');
+Route::post('/get-interventions-list-mes', [InterventionsController::class, 'interventions_mes'])->middleware('auth');
+Route::post('/get-intervention-status-formatted', [InterventionsController::class, 'get_intervention_status_formatted'])->middleware('auth');
+Route::post('/get-intervention-status', [InterventionsController::class, 'get_intervention_status'])->middleware('auth');
+Route::post('/get-intervention-types-formatted', [InterventionsController::class, 'get_intervention_types'])->middleware('auth');
 
-Route::get('/get-menu-items', [MenuController::class, 'index']);
+Route::get('/get-menu-items', [MenuController::class, 'index'])->middleware('auth');
 
+Route::get('/get-paiements-list', [PaiementsController::class, 'index'])->middleware('auth');
+Route::post('/get-paiements-list', [PaiementsController::class, 'index'])->middleware('auth');
+Route::post('/get-paiements-types-formatted', [PaiementsController::class, 'paiement_types_formatted'])->middleware('auth');
+Route::post('/get-paiements-types', [PaiementsController::class, 'paiement_types'])->middleware('auth');
+Route::post('/get-paiements-list-mes', [PaiementsController::class, 'paiements_mes'])->middleware('auth');
+Route::post('/get-paiements-list-validar', [PaiementsController::class, 'paiements_validar'])->middleware('auth');
+Route::get('/get-paiement-details/{paiement}', [PaiementsController::class, 'get_paiement_details'])->middleware('auth');
+Route::get('/get-paiement-history/{paiement}', [PaiementsController::class, 'get_history'])->middleware('auth');
+Route::post('/valider-paiement', [PaiementsController::class, 'valider_paiement'])->middleware('auth');
 
-Route::get('/get-paiements-list', [PaiementsController::class, 'index']);
-Route::post('/get-paiements-list', [PaiementsController::class, 'index']);
-Route::post('/get-paiements-types-formatted', [PaiementsController::class, 'paiement_types_formatted']);
-Route::post('/get-paiements-types', [PaiementsController::class, 'paiement_types']);
-Route::post('/get-paiements-list-mes', [PaiementsController::class, 'paiements_mes']);
-Route::post('/get-paiements-list-validar', [PaiementsController::class, 'paiements_validar']);
-Route::get('/get-paiement-details/{paiement}', [PaiementsController::class, 'get_paiement_details']);
-Route::get('/get-paiement-history/{paiement}', [PaiementsController::class, 'get_history']);
-Route::post('/valider-paiement', [PaiementsController::class, 'valider_paiement']);
+Route::get('/get-fournisseur-list', [FournisseurController::class, 'index'])->middleware('auth');
+Route::post('/get-fournisseur-list', [FournisseurController::class, 'index'])->middleware('auth');
+Route::post('/get-fournisseur-list-mes', [FournisseurController::class, 'fournisseur_mes'])->middleware('auth');
+Route::post('/get-fournisseur-supplier-type-formatted', [FournisseurController::class, 'fournisseur_types'])->middleware('auth');
+Route::post('/get-fournisseur-supplier-status-formatted', [FournisseurController::class, 'fournisseur_status'])->middleware('auth');
+Route::post('/get-fournisseur-statuses', [FournisseurController::class, 'fournisseur_status_all'])->middleware('auth');
+Route::get('/get-fournisseur-details/{supplier}', [FournisseurController::class, 'fournisseur_details'])->middleware('auth');
+Route::get('/get-fournisseur-history/{supplier}', [FournisseurController::class, 'fournisseur_history'])->middleware('auth');
 
-Route::get('/get-fournisseur-list', [FournisseurController::class, 'index']);
-Route::post('/get-fournisseur-list', [FournisseurController::class, 'index']);
-Route::post('/get-fournisseur-list-mes', [FournisseurController::class, 'fournisseur_mes']);
-Route::post('/get-fournisseur-supplier-type-formatted', [FournisseurController::class, 'fournisseur_types']);
-Route::post('/get-fournisseur-supplier-status-formatted', [FournisseurController::class, 'fournisseur_status']);
-Route::post('/get-fournisseur-statuses', [FournisseurController::class, 'fournisseur_status_all']);
-Route::get('/get-fournisseur-details/{supplier}', [FournisseurController::class, 'fournisseur_details']);
-Route::get('/get-fournisseur-history/{supplier}', [FournisseurController::class, 'fournisseur_history']);
+Route::get('/get-permis-list', [PermisController::class, 'index'])->middleware('auth');
+Route::post('/get-permis-list', [PermisController::class, 'index'])->middleware('auth');
 
-Route::get('/get-permis-list', [PermisController::class, 'index']);
-Route::post('/get-permis-list', [PermisController::class, 'index']);
-
-Route::post('/get-commande-fournisseur-list', [CommandeFounisseurController::class, 'index']);
-Route::post('/get-commande-fournisseur-list-mes', [CommandeFounisseurController::class, 'mes_details']);
-Route::post('/get-commande-fournisseur-supplier-status-formatted', [CommandeFounisseurController::class, 'get_order_states']);
-Route::post('/get-commande-fournisseur-statuses', [CommandeFounisseurController::class, 'get_order_states_all']);
+Route::post('/get-commande-fournisseur-list', [CommandeFounisseurController::class, 'index'])->middleware('auth');
+Route::post('/get-commande-fournisseur-list-mes', [CommandeFounisseurController::class, 'mes_details'])->middleware('auth');
+Route::post('/get-commande-fournisseur-supplier-status-formatted', [CommandeFounisseurController::class, 'get_order_states'])->middleware('auth');
+Route::post('/get-commande-fournisseur-statuses', [CommandeFounisseurController::class, 'get_order_states_all'])->middleware('auth');
 
 //Invoices
-Route::post('/search-invoice', [InvoicesController::class, 'search']);
-Route::post('/create-invoice', [InvoicesController::class, 'create']);
-Route::get('/get-single-invoice-details', [InvoicesController::class, 'create']);
-Route::get('/get-tax-list', [InvoicesController::class, 'get_tax_list']);
-Route::post('/create-ligne/{invoice}', [InvoicesController::class, 'create_ligne']);
-Route::delete('/delete-ligne/{invoice}', [InvoicesController::class, 'delete_ligne']);
+Route::post('/search-invoice', [InvoicesController::class, 'search'])->middleware('auth');
+Route::post('/create-invoice', [InvoicesController::class, 'create'])->middleware('auth');
+Route::post('/create-new-invoice', [InvoicesController::class, 'create_new_invoice'])->middleware('auth');
+Route::get('/get-single-invoice-details', [InvoicesController::class, 'create'])->middleware('auth');
+Route::get('/get-tax-list', [InvoicesController::class, 'get_tax_list'])->middleware('auth');
+Route::post('/create-ligne/{invoice}', [InvoicesController::class, 'create_ligne'])->middleware('auth');
+Route::delete('/delete-ligne/{invoice_detail_id}', [InvoicesController::class, 'delete_ligne'])->middleware('auth');
 
 // create action
 Route::post('/get-action-info', [ActionCommercialListController::class, 'getActionInfo'])->name('get.action.info');

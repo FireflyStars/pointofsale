@@ -531,6 +531,7 @@ export const INVOICE_SET_LOADER = 'INVOICE_SET_LOADER'
 //invoice module
 export const INVOICE_MODULE = 'INVOICE_MODULE/'
 export const CREATE_INVOICE = 'CREATE_INVOICE'
+export const CREATE_NEW_INVOICE = 'CREATE_NEW_INVOICE'
 export const SAVE_INVOICE = 'SAVE_INVOICE'
 export const GET_TAX_LIST = 'GET_TAX_LIST'
 export const SAVE_TAX_LIST = 'SAVE_TAX_LIST'

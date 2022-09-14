@@ -19,13 +19,14 @@ import {
     HIDE_LOADER,
     GENERATE_PDF_BY_ID,
     DELETE_REPORT,
+    SET_ACTIVE_PAGE
 }
 from '../../store/types/types'
 
 export default function useReports() {
 
     const { generateId } = useHelpers()
-    const { generateElement, generatePreRenderedTags } = useElementsGenerator()
+    const { generateElement, generatePreRenderedTags, generateTags } = useElementsGenerator()
 
     const pages = computed(() => store.getters[`${BUILDER_MODULE}/pages`])
 
@@ -108,6 +109,20 @@ export default function useReports() {
                             formattedPage.elements.push({ ...element })
                         }
                         else {
+
+                            const content = generateTags(element.content)
+                            formattedPage.elements.push({ 
+                                ...element,
+                                attributes: {
+                                    ...element.attributes,
+                                    id: generateId(),
+                                },
+                                content
+                            })
+
+                            return
+
+
                             const tags = generatePreRenderedTags(element.content)
                             if(tags.length) {
                                 tags.forEach((tag, i) => {
@@ -140,7 +155,6 @@ export default function useReports() {
 
     }
     
-
     const findFile = (files, id) => {
         return files.find(file => file.id == id)
     }
@@ -163,6 +177,7 @@ export default function useReports() {
             status: 'store' 
         })
         store.commit(`${BUILDER_MODULE}/${RESET_PAGES}`, [])
+        store.commit(`${BUILDER_MODULE}/${SET_ACTIVE_PAGE}`, 0)
     }
 
     const resetOrder = () => {

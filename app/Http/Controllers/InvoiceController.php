@@ -166,7 +166,14 @@ class InvoiceController extends Controller
            $invoice->contact=null;
            $facturation_address=Address::getFacturationAddress($invoice->customer_id);
            $invoice->order->formatted_facturation_address=$facturation_address==null?'Pas d\'adresse de facturation':$facturation_address->getformattedAddress();
-
+           $invoice->order->customer=$invoice->customer;
+           $invoice->orderInvoice;
+           $invoice->details;
+           foreach($invoice->details as &$detail)
+           $detail->tax;
+           $invoice->invoiceTypes=InvoiceType::all();
+           $invoice->mode_paiements=Invoice::getModeDePaiementsByInvoiceId($invoice->id);
+         //  $invoice->orderInvoice->invoice_type_name=$invoice_type->name;
         }
       
         return response()->json($invoice);

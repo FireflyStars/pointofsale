@@ -256,7 +256,7 @@ $orange: orange;
 
 .main-view {
     margin-top: 7rem;
-    margin-left: 0 !important;
+    margin-left: 4rem !important;
     margin-right: 0 !important;
 }
 

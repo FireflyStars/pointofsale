@@ -1,5 +1,6 @@
 import {
     CREATE_INVOICE,
+    CREATE_NEW_INVOICE,
     SAVE_INVOICE,
     GET_TAX_LIST,
     SAVE_TAX_LIST,
@@ -109,6 +110,28 @@ export const invoice = {
                     customer_id: customerId,
                     invoice_id: invoiceId,
                     order_id: orderId,
+                    invoice_type: type
+                })
+
+                commit(SAVE_INVOICE, data)
+
+            }
+
+            catch(e) {
+                throw e
+            }
+
+
+        },
+
+        async [CREATE_NEW_INVOICE]({ commit,state }, payload) {
+
+            const { customerId, invoiceId, orderId, type } = payload
+
+            try {
+
+                const { data } = await axios.post('/create-new-invoice', {
+                    customer_id: customerId,
                     invoice_type: type
                 })
 

@@ -15,6 +15,11 @@ use App\Http\Resources\ReportsCollectionResource;
 class ReportsController extends Controller
 {
     use TemplateFormattedFiles;
+
+    public function __construct() 
+    {
+        $this->middleware(['auth']);
+    }
     
     public function index(Request $request) 
     {

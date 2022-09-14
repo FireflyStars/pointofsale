@@ -12,8 +12,8 @@
      </transition>
  <transition enter-active-class="animate__animated animate__fadeIn" leave-active-class="animate__animated animate__fadeOut">
     <div class="row"  v-if="show" style="margin:40px 0 0 8px;">
-        <div class="col-3" v-if="invoice.order!=null" ><h2 class="almarai_700_normal">Commande<br/>N° <span class="btn-link cursor-pointer" @click=" router.push({name:'commande-details', params: { id:invoice.order.id }});">{{invoice.order.id}}</span></h2></div>
-        <div class="col-3" v-if="invoice.order!=null" ><h2 class="almarai_700_normal">Date Commande<br/>{{formatDate(invoice.order.datecommande)}}</h2></div>
+        <div class="col-3" v-if="invoice.order!=null&&invoice.order_id!=0" ><h2 class="almarai_700_normal">Commande<br/>N° <span class="btn-link cursor-pointer" @click=" router.push({name:'commande-details', params: { id:invoice.order.id }});">{{invoice.order.id}}</span></h2></div>
+        <div class="col-3" v-if="invoice.order!=null&&invoice.order_id!=0" ><h2 class="almarai_700_normal">Date Commande<br/>{{formatDate(invoice.order.datecommande)}}</h2></div>
         <div class="col-3"  ><h2 class="almarai_700_normal">Date Facture<br/>{{formatDate(invoice.dateecheance)}}</h2></div>
         <div class="col-3"><state-tag :id="invoice.invoice_type_id" :states="invoice.invoiceTypes" classes="almarai_700_normal" width="auto"></state-tag></div>
     </div>

@@ -14,6 +14,11 @@ class TemplatesController extends Controller
 {
     use TemplateFormattedFiles;
 
+    public function __construct() 
+    {
+        $this->middleware(['auth']);
+    }
+
     public function report_templates(Request $request) 
     {
 
