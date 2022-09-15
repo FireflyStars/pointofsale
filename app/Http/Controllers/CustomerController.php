@@ -541,9 +541,15 @@ class CustomerController extends Controller
      * 
      */
     public function checkEmailExists(Request $request){
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email|unique:'.$request->table,
-        ]);
+        if($request->id != 0){
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email|unique:'.$request->table,
+            ]);
+        }else{
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email|unique:'.$request->table.','.$request->id,
+            ]);
+        }
  
         if ($validator->fails()) {
             return response()->json( ['success'=> false, 'errors'=> $validator->errors()] );

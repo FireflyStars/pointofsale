@@ -583,7 +583,7 @@
                                 <div class="col-7">
                                     <div class="form-group">
                                         <label class="mulish-medium font-16">EMAIL *</label>
-                                        <input type="text" v-model="contact.email" placeholder="email" class="form-control">
+                                        <input type="text" v-model="contact.email" @change="validationUniqueEmail($event, 'contacts', contact.id)" placeholder="email" class="form-control">
                                     </div>
                                 </div>                               
                                 <div class="col-5 ps-4">
@@ -679,6 +679,7 @@ export default {
         const router = useRouter();
         const route = useRoute();
         const step = ref('client-detail');
+        const uniqueEmail = ref({ status: true, msg: '' });
         // const step = ref('address');
         const customerStatuses  = ref([]);
         const customerOrigins  = ref([]);
@@ -1047,6 +1048,7 @@ export default {
         }     
         const addContact = ()=>{
             form.value.contacts.push({
+                id: 0,
                 id: 1,
                 type: '',
                 actif: true,
@@ -1120,16 +1122,36 @@ export default {
                 form.value.nomNaf = '';
             }
         })
+        const validationUniqueEmail = (event, tableName, contactId)=>{
+            uniqueEmail.value.status = false;
+            axios.post('/check-email-exists', { table: tableName, email:  event.target.value, id: contactId })
+            .then((res)=>{
+                if( !res.data.success ){
+                    uniqueEmail.value.status = false;
+                    Object.values(res.data.errors).forEach(item => {
+                        uniqueEmail.value.msg = item[0];
+                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                            type: 'danger',
+                            message: item[0],
+                            ttl: 5,
+                        });
+                    });                    
+                }else{
+                    uniqueEmail.value.status = true;
+                    uniqueEmail.value.msg = '';
+                }
+            }).catch((error)=>{
+                console.log(error);
+            })
+        }        
         const submit = ()=>{
-            // if(form.value.siretValidation == false){
-            //     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-            //         type: 'danger',
-            //         message: 'Vous devez vérifier le siret s\'il est valide ou non.',
-            //         ttl: 5,
-            //     });
-            //     step.value = 'client-detail';
-            //     return;
-            // }            
+            if(uniqueEmail.value.status == false){
+                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    type: 'danger',
+                    message: uniqueEmail.value.msg == '' ? 'Validating email' : uniqueEmail.value.msg,
+                    ttl: 5,
+                });  
+            }
             let error = false;
             form.value.contacts.forEach((contact)=>{
                 if(contact.type != '' || contact.firstName != '' || contact.email != '' || contact.name != ''){
@@ -1239,6 +1261,11 @@ export default {
                     phone = formatPhone(customer.contacts[index].telephone);
                     customer.contacts[index].phoneCountryCode2 = phone[0];
                     customer.contacts[index].phoneNumber2 = phone[1];
+                    if(customer.contacts[index].actif == 1){
+                        customer.contacts[index].actif = true;
+                    }else{
+                        customer.contacts[index].actif = false;
+                    }
                 }
                 if(customer.active)
                     customer.active = true;
@@ -1291,6 +1318,7 @@ export default {
             cancel,
             nextStep,
             updateAddressInfo,
+            validationUniqueEmail,
             submit
         }
   },

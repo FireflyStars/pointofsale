@@ -569,7 +569,7 @@
                                 <div class="col-7">
                                     <div class="form-group">
                                         <label class="mulish-medium font-16">EMAIL*</label>
-                                        <input type="text" v-model="contact.email" @change="validationUniqueEmail($event, 'contacts')" placeholder="email" class="form-control">
+                                        <input type="text" v-model="contact.email" @change="validationUniqueEmail($event, 'contacts', contact.id)" placeholder="email" class="form-control">
                                     </div>
                                 </div>                               
                                 <div class="col-5 ps-4">
@@ -721,7 +721,7 @@ export default {
                 addressType: 3,
                 firstName: '',
                 nom: '',
-                address1: '',
+                address1: 'cddd',
                 address2: '',
                 address3: '',
                 postCode: '',
@@ -747,6 +747,7 @@ export default {
             }],
             // contacts
             contacts: [{
+                id: 0,
                 type: 1,
                 actif: true,
                 qualite: '',
@@ -888,8 +889,9 @@ export default {
         }
         const cancel = ()=>{
         }
-        const validationUniqueEmail = (event, tableName)=>{
-            axios.post('/check-email-exists', { table: tableName, email:  event.target.value })
+        const validationUniqueEmail = (event, tableName, contactId)=>{
+            uniqueEmail.value.status = false;
+            axios.post('/check-email-exists', { table: tableName, email:  event.target.value, id: contactId })
             .then((res)=>{
                 if( !res.data.success ){
                     uniqueEmail.value.status = false;
@@ -1021,6 +1023,7 @@ export default {
         }     
         const addContact = ()=>{
             form.value.contacts.push({
+                id: 0,
                 type: 1,
                 actif: true,
                 quantite: '',
@@ -1141,7 +1144,7 @@ export default {
             if(uniqueEmail.value.status == false){
                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                     type: 'danger',
-                    message: uniqueEmail.value.message,
+                    message: uniqueEmail.value.msg == '' ? 'Validating email' : uniqueEmail.value.msg,
                     ttl: 5,
                 });  
             }else{
