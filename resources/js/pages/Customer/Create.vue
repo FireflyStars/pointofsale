@@ -495,9 +495,9 @@
                                     <div class="col-2 form-group">
                                         <select-box v-model="contact.gender" 
                                             :options="[
-                                                { value: 'M', display: 'M' },
-                                                { value: 'Mme', display: 'Mme' },
-                                                { value: 'Mlle', display: 'Mlle' },
+                                                { value: 'MADAME', display: 'Madame' },
+                                                { value: 'MONSIEUR', display: 'Monsieur' },
+                                                { value: 'Mademoiselle', display: 'Mademoiselle' },
                                             ]" 
                                             :name="'customerGender'+index"
                                             :label="'&nbsp;'"
@@ -688,14 +688,14 @@ export default {
             siretValidation: false,
             numLCDT: '',
             company: '',
-            customerOrigin: 0,
+            customerOrigin: 2,
             customerStatus: 0,
             segmentation: '',
             customerCat: 0,
             customerPaiement: 0,
             naf: '',
             nomNaf: '',
-            gender: 'M',
+            gender: 'MADAME',
             firstName: '',
             lastName: '',
             phoneCountryCode: '+33',
@@ -718,10 +718,10 @@ export default {
             zpe: '',
             // address tab
             addresses: [{
-                addressType: 3,
+                addressType: 1,
                 firstName: '',
                 nom: '',
-                address1: 'cddd',
+                address1: '',
                 address2: '',
                 address3: '',
                 postCode: '',
@@ -751,7 +751,7 @@ export default {
                 type: 1,
                 actif: true,
                 qualite: '',
-                gender: 'M',
+                gender: 'MADAME',
                 firstName: '',
                 address: '',
                 profilLinedin: '',

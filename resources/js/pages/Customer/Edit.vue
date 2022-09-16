@@ -94,9 +94,9 @@
                                     <div class="form-group">
                                         <label class="mulish-medium font-16 text-nowrap">NOM COMMERCIAL</label>
                                         <input type="text" v-model="form.raisonsociale2" placeholder="Raison2 sociale" class="form-control">
-                                    </div>                                        
+                                    </div>
                                 </div>
-                            </div>    
+                            </div>
                             <div class="d-flex mt-3">
                                 <div class="col-7 d-flex">
                                     <div class="d-flex col-8">
@@ -114,14 +114,14 @@
                                         <div class="form-group">
                                             <label class="text-nowrap">NUM LCDT</label>
                                             <input type="text" v-model="form.numLCDT" class="form-control" placeholder="GX-LCDT">
-                                        </div>                                 
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-1"></div>
                                 <div class="col-4">
                                     <select-box v-model="form.customerTax" :options="customerTaxes" :label="'TVA'" :name="'customerTax'"></select-box>
                                 </div>
-                            </div>                                           
+                            </div>
                         </div>
                         <div class="page-section mt-3">
                             <h3 class="m-0 mulish-extrabold font-22">SITUATION</h3>
@@ -135,15 +135,15 @@
                             </div>
                             <div class="d-flex mt-3">
                                 <div class="col-4 pe-3">
-                                    <select-box v-model="form.customerOrigin" 
-                                        :options="customerOrigins" 
+                                    <select-box v-model="form.customerOrigin"
+                                        :options="customerOrigins"
                                         :name="'customerOrigin'"
                                         :label="'ORIGINE ENTITE'"
                                         ></select-box>
                                 </div>
                                 <div class="col-4 pe-3">
-                                    <select-box v-model="form.customerStatus" 
-                                        :options="customerStatuses" 
+                                    <select-box v-model="form.customerStatus"
+                                        :options="customerStatuses"
                                         :name="'customerStatus'"
                                         :label="'STATUT'"
                                         ></select-box>
@@ -152,7 +152,7 @@
                                     <div class="form-group">
                                         <label>ENTITE RATTACHEE</label>
                                         <SearchMaster v-model="form.masterId" name="search" :droppos="{top:'auto',right:'auto',bottom:'auto',left:'0',transformOrigin:'top right'}"></SearchMaster>
-                                    </div>                                      
+                                    </div>
                                 </div>
                             </div>
                             <div class="d-flex mt-3">
@@ -169,7 +169,7 @@
                                     <div class="col-7 form-group">
                                         <label>SEGMENTATION</label>
                                         <input v-model="form.segmentation" type="text" class="form-control" readonly>
-                                    </div>                                    
+                                    </div>
                                     <div class="col-1"></div>
                                     <div class="col-4 form-group">
                                         <label>NAF</label>
@@ -212,12 +212,12 @@
                                     <div class="form-group">
                                         <select-box v-model="form.customerCat" :options="customerCats" :name="'customerCat'" :label="'CATEGORIE JURIDIQUE*'"></select-box>
                                     </div>
-                                </div>                                
+                                </div>
                                 <div class="col-6 ps-3">
                                     <div class="form-group">
                                         <select-box v-model="form.customerPaiement" :options="customerPaiements" :name="'customerPaiement'" :label="'MODE DE PAIEMENT *'"></select-box>
                                     </div>
-                                </div>                               
+                                </div>
                             </div>
                             <div class="d-flex mt-3">
                                 <div class="col-4 pe-3">
@@ -329,7 +329,7 @@
                                     <div class="form-group">
                                         <label>EMAIL GENERIQUE</label>
                                         <input type="text" v-model="address.receiptEmail" placeholder="E-receipt email" class="form-control">
-                                    </div>                                    
+                                    </div>
                                 </div>
                                 <div class="customer-phone col-5 ps-3">
                                     <div>
@@ -337,8 +337,8 @@
                                     </div>
                                     <div class="d-flex">
                                         <div class="phone-country-code">
-                                            <select-box 
-                                                v-model="address.phoneCode" 
+                                            <select-box
+                                                v-model="address.phoneCode"
                                                 :options="phoneCodesSorted"
                                                 :styles="{ width: '100px'}"
                                                 :name="'phoneCountryCode'">
@@ -361,7 +361,7 @@
                                     <div class="form-group">
                                         <label>PENTE (o)</label>
                                         <input v-model="address.pente" type="text" class="form-control" v-mask="'##.##'">
-                                    </div>                                    
+                                    </div>
                                 </div>
                                 <div class="col-4 pe-3">
                                     <div class="form-group">
@@ -370,102 +370,102 @@
                                     </div>
                                 </div>
                                 <div class="col-4">
-                                    <select-box 
-                                        v-model="address.materiau" 
-                                        :options="customerMateriaus" 
-                                    :label="'MATERIAU (X)'" 
+                                    <select-box
+                                        v-model="address.materiau"
+                                        :options="customerMateriaus"
+                                    :label="'MATERIAU (X)'"
                                     :name="'materiau'"></select-box>
                                 </div>
                             </div>
                             <div class="d-flex mt-3">
                                 <div class="col-4 pe-3">
-                                    <select-box 
-                                        v-model="address.presenceamiante" 
+                                    <select-box
+                                        v-model="address.presenceamiante"
                                         :options="[
                                             { value: 'OUI', display: 'OUI' },
                                             { value: 'NON', display: 'NON' },
                                             { value: 'PAS CONNU', display: 'PAS CONNU' },
-                                        ]" 
-                                    :label="'PRESENTE D AMIANTE'" 
+                                        ]"
+                                    :label="'PRESENTE D AMIANTE'"
                                     :name="'amiante'"></select-box>
                                 </div>
                                 <div class="col-4 pe-3">
-                                    <select-box 
-                                        v-model="address.accesinterieur" 
+                                    <select-box
+                                        v-model="address.accesinterieur"
                                         :options="[
                                             { value: 'OUI', display: 'OUI' },
                                             { value: 'NON', display: 'NON' },
                                             { value: 'PAS CONNU', display: 'PAS CONNU' },
-                                        ]" 
-                                    :label="'ACCES SECURISE PAR L INTERIEUR'" 
-                                    :name="'interieur'"></select-box>                                    
+                                        ]"
+                                    :label="'ACCES SECURISE PAR L INTERIEUR'"
+                                    :name="'interieur'"></select-box>
                                 </div>
                                 <div class="col-4">
-                                    <select-box 
-                                        v-model="address.accesexterieur" 
+                                    <select-box
+                                        v-model="address.accesexterieur"
                                         :options="[
                                             { value: 'OUI', display: 'OUI' },
                                             { value: 'NON', display: 'NON' },
                                             { value: 'PAS CONNU', display: 'PAS CONNU' },
-                                        ]" 
-                                    :label="'ACCES SECURISER PAR L EXTERIEUR'" 
-                                    :name="'exterieur'"></select-box>                                       
+                                        ]"
+                                    :label="'ACCES SECURISER PAR L EXTERIEUR'"
+                                    :name="'exterieur'"></select-box>
                                 </div>
                             </div>
                             <div class="d-flex mt-3">
                                 <div class="col-4 pe-3">
-                                    <select-box 
-                                        v-model="address.presenceepc" 
+                                    <select-box
+                                        v-model="address.presenceepc"
                                         :options="[
                                             { value: 'OUI', display: 'OUI' },
                                             { value: 'NON', display: 'NON' },
                                             { value: 'PAS CONNU', display: 'PAS CONNU' },
-                                        ]" 
-                                    :label="'PRESENCE EPC'" 
+                                        ]"
+                                    :label="'PRESENCE EPC'"
                                     :name="'epc'"></select-box>
                                 </div>
                                 <div class="col-4 pe-3">
-                                    <select-box 
-                                        v-model="address.etattoiture" 
+                                    <select-box
+                                        v-model="address.etattoiture"
                                         :options="[
                                             { value: 'Neuf', display: 'Neuf' },
                                             { value: 'Bon', display: 'Bon' },
                                             { value: 'Vétuste', display: 'Vétuste' },
                                             { value: 'Ne Sait pas', display: 'Ne Sait pas' },
-                                        ]" 
-                                    :label="'ETAT TOITURE'" 
+                                        ]"
+                                    :label="'ETAT TOITURE'"
                                     :name="'ETAT TOITURE'"></select-box>
                                 </div>
                                 <div class="col-4 pe-3">
-                                    <select-box 
-                                        v-model="address.hauteurbatiment" 
+                                    <select-box
+                                        v-model="address.hauteurbatiment"
                                         :options="[
                                             { value: '1 à 5M', display: '1 à 5M' },
                                             { value: '6 à 10M', display: '6 à 10M' },
                                             { value: '10 à Plus', display: '10 à Plus' },
                                             { value: 'Ne Sait pas', display: 'Ne Sait pas' },
-                                        ]" 
-                                    :label="'HAUTEUR BATIMENT'" 
+                                        ]"
+                                    :label="'HAUTEUR BATIMENT'"
                                     :name="'HAUTEUR BATIMENT'"></select-box>
                                 </div>
                             </div>
                             <div class="d-flex mt-3">
                                 <div class="col-4 pe-3">
-                                    <select-box 
-                                        v-model="address.typebatiment" 
-                                        :options="customerTypeBatiments" 
-                                    :label="'TYPE BATIMENT'" 
+                                    <select-box
+                                        v-model="address.typebatiment"
+                                        :options="customerTypeBatiments"
+                                    :label="'TYPE BATIMENT'"
                                     :name="'BATIMENT'"></select-box>
                                 </div>
                                 <div class="col-4 pe-3">
-                                    <select-box 
-                                        v-model="address.presenceapportlumiere" 
+                                    <select-box
+                                        v-model="address.presenceapportlumiere"
                                         :options="[
                                             { value: 'OUI', display: 'OUI' },
                                             { value: 'NON', display: 'NON' },
                                             { value: 'PAS CONNU', display: 'PAS CONNU' },
-                                        ]" 
-                                    :label="'PRESENCE APPORT LUMIERE'" 
+                                        ]"
+                                    :label="'PRESENCE APPORT LUMIERE'"
                                     :name="'PRESENCE APPORT LUMIERE'"></select-box>
                                 </div>
                             </div>
@@ -475,11 +475,11 @@
                                 <div class="form-group">
                                     <label class="text-nowrap">NOTES / INFORMATIONS / COMMENTAIRES</label>
                                     <textarea rows="4" class="form-control" v-model="address.infoNote"></textarea>
-                                </div>                                    
+                                </div>
                             </div>
                             <div class="col-4 d-flex align-items-end justify-content-end">
                                 <button @click="removeAddress(index)" class="custom-btn btn-danger text-nowrap">SUPPRIMER ADRESSE</button>
-                            </div>                            
+                            </div>
                         </div>
                         </div>
                         <div class="btns d-flex justify-content-end mb-3">
@@ -492,7 +492,7 @@
                     <div class="cust-page-content client-detail m-auto pt-5">
                         <div class="btns d-flex justify-content-end my-3">
                             <button class="custom-btn btn-ok text-uppercase" @click="addContact">AJOUTER CONTACT</button>
-                        </div>                        
+                        </div>
                         <div class="page-section" v-for="(contact, index) in form.contacts" :key="index">
                             <h3 class="m-0 mulish-extrabold font-22">CONTACT</h3>
                             <div class="d-flex mt-3">
@@ -507,11 +507,11 @@
                                 </div>
                                 <div class="col-8 d-flex ps-3">
                                     <div class="col-2 form-group">
-                                        <select-box v-model="contact.gender" 
+                                        <select-box v-model="contact.gender"
                                             :options="[
-                                                { value: 'M', display: 'M' },
-                                                { value: 'Mme', display: 'Mme' },
-                                                { value: 'Mlle', display: 'Mlle' },
+                                                { value: 'MADAME', display: 'Madame' },
+                                                { value: 'MONSIEUR', display: 'Monsieur' },
+                                                { value: 'Mademoiselle', display: 'Mademoiselle' },
                                             ]" 
                                             :name="'customerGender'+index"
                                             :label="'&nbsp;'"
@@ -529,17 +529,17 @@
                             </div>
                             <div class="d-flex mt-3">
                                 <div class="col-7">
-                                    <select-box v-model="contact.qualite" 
-                                        :options="contactQualites" 
+                                    <select-box v-model="contact.qualite"
+                                        :options="contactQualites"
                                         :name="'QUANTITE'+index"
                                         :label="'QUANTITE'"
-                                        ></select-box>                                    
+                                        ></select-box>
                                 </div>
                                 <div class="col-5 ps-4">
                                     <div class="d-flex justify-content-between">
                                         <div class="phone-country-code">
-                                            <select-box 
-                                                v-model="contact.phoneCountryCode1" 
+                                            <select-box
+                                                v-model="contact.phoneCountryCode1"
                                                 :options="phoneCodesSorted"
                                                 :styles="{ width: '100px'}"
                                                 :label="'&nbsp;'"
@@ -555,17 +555,17 @@
                             </div>
                             <div class="d-flex mt-3">
                                 <div class="col-7">
-                                    <select-box v-model="contact.address" 
-                                        :options="customerAddresses" 
+                                    <select-box v-model="contact.address"
+                                        :options="customerAddresses"
                                         :name="'ADRESSE_BATIMENTS'+index"
                                         :label="'ADRESSE / BATIMENTS'"
-                                        ></select-box>                                    
-                                </div>                                
+                                        ></select-box>
+                                </div>
                                 <div class="col-5 ps-4">
                                     <div class="d-flex justify-content-between">
                                         <div class="phone-country-code">
-                                            <select-box 
-                                                v-model="contact.phoneCountryCode2" 
+                                            <select-box
+                                                v-model="contact.phoneCountryCode2"
                                                 :options="phoneCodesSorted"
                                                 :styles="{ width: '100px'}"
                                                 :label="'&nbsp;'"
@@ -585,7 +585,7 @@
                                         <label class="mulish-medium font-16">EMAIL *</label>
                                         <input type="text" v-model="contact.email" @change="validationUniqueEmail($event, 'contacts', contact.id)" placeholder="email" class="form-control">
                                     </div>
-                                </div>                               
+                                </div>
                                 <div class="col-5 ps-4">
                                     <div class="form-group">
                                         <label class="mulish-medium font-16">PROFIL LINKEDIN</label>
@@ -593,7 +593,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="d-flex mt-3">       
+                            <div class="d-flex mt-3">
                                 <div class="col-9">
                                     <div class="d-flex">
                                         <div class="col-7">
@@ -601,13 +601,13 @@
                                                 <label>COMMENTAIRES</label>
                                                 <input type="text" v-model="contact.note" placeholder="comment" class="form-control">
                                             </div>
-                                        </div>                                
+                                        </div>
                                         <div class="col-5 ps-3 d-flex">
                                             <div class="form-group">
                                                 <label>NUM-GX</label>
                                                 <input type="text" v-model="contact.numGx" class="form-control">
                                             </div>
-                                        </div>                                
+                                        </div>
                                     </div>
                                     <div class="d-flex mt-3">
                                         <div class="col-4">
@@ -631,7 +631,7 @@
                             <button class="custom-btn btn-ok text-uppercase" @click="submit">VALIDATION</button>
                         </div>
                     </div>
-                </transition>                
+                </transition>
             </div>
         </div>
       </div>
@@ -649,14 +649,14 @@ import { phoneCountryCode as phoneCodes } from '../../static/PhoneCountryCodes';
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 import Swal from 'sweetalert2';
-import {     
+import {
   DISPLAY_LOADER,
   HIDE_LOADER,
-  LOADER_MODULE, 
-  TOASTER_MESSAGE, 
+  LOADER_MODULE,
+  TOASTER_MESSAGE,
   TOASTER_MODULE
   } from '../../store/types/types';
-  
+
 import axios from 'axios';
 import { useStore } from 'vuex';
 import { useRouter, useRoute } from 'vue-router';
@@ -712,7 +712,7 @@ export default {
             customerPaiement: 0,
             naf: '',
             nomNaf: '',
-            gender: 'M',
+            gender: 'MADAME',
             firstName: '',
             lastName: '',
             phoneCountryCode: '+33',
@@ -769,7 +769,7 @@ export default {
                 type: '',
                 actif: true,
                 qualite: '',
-                gender: 'M',
+                gender: 'MADAME',
                 firstName: '',
                 address: '',
                 profilLinedin: '',
@@ -791,7 +791,7 @@ export default {
             const month = date.getMonth() + 1;
             const year = date.getFullYear();
             return `${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}/${year}`;
-        }                
+        }
         const updateAddressInfo = (data)=>{
             form.value.addresses[data.index].address1 = data.street;
             form.value.addresses[data.index].latitude = data.lat;
@@ -813,7 +813,7 @@ export default {
                             type: 'danger',
                             message: res.data.error,
                             ttl: 5,
-                        });                         
+                        });
                     }
                     console.log(res.data);
                 }).catch((error)=>{
@@ -826,9 +826,9 @@ export default {
                     type: 'danger',
                     message: 'Siret must be 9 digits',
                     ttl: 5,
-                }); 
+                });
             }
-        }        
+        }
         const selectNav = (value)=>{
             if(step.value == 'client-detail'){
                 if(form.value.raisonsociale == ''){
@@ -842,31 +842,31 @@ export default {
                 //         type: 'danger',
                 //         message: 'Veuillez entrer SIRET',
                 //         ttl: 5,
-                //     });                    
+                //     });
                 }else if(form.value.customerStatus == 0){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
                         message: 'Veuillez sélectionner le statut',
                         ttl: 5,
-                    });                    
+                    });
                 }else if(form.value.customerCat == 0){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
                         message: 'Veuillez sélectionner la catégorie',
                         ttl: 5,
-                    });        
+                    });
                 }else if(form.value.customerPaiement == 0){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
                         message: 'Veuillez sélectionner la MODE DE PAIEMENT',
                         ttl: 5,
-                    });          
+                    });
                 // }else if(form.value.naf == '' || form.value.naf.length != 5 || customerNafs.find((item)=>{ return item.code == form.value.naf }) == undefined){
                 //     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                 //         type: 'danger',
                 //         message: 'Veuillez entrer NAF',
                 //         ttl: 5,
-                //     });                    
+                //     });
                 }else{
                     step.value = value;
                 }
@@ -880,28 +880,28 @@ export default {
                             type: 'danger',
                             message: 'Veuillez sélectionner le type d`adresse',
                             ttl: 5,
-                        });  
+                        });
                     // }else if(address.address1 == ''){
                     //     error = true;
                     //     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                     //         type: 'danger',
                     //         message: 'Veuillez entrer l`adresse1',
                     //         ttl: 5,
-                    //     });                          
+                    //     });
                     }else if(address.postCode == ''){
                         error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
                             message: 'Veuillez entrer le CODE POSTAL',
                             ttl: 5,
-                        });                          
+                        });
                     }else if(address.city == ''){
                         error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
                             message: 'Veuillez saisir VILLE',
                             ttl: 5,
-                        });                                                  
+                        });
                     }else if(address.firstName == ''){
                         error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
@@ -914,11 +914,11 @@ export default {
                 if(!error){
                     step.value = value;
                 }
-            } 
+            }
             if(step.value == 'contact'){
                 step.value = value;
-            }            
-            
+            }
+
         }
         const cancel = ()=>{
 
@@ -936,31 +936,31 @@ export default {
                 //         type: 'danger',
                 //         message: 'Veuillez entrer SIRET',
                 //         ttl: 5,
-                //     });                    
+                //     });
                 }else if(form.value.customerStatus == 0){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
                         message: 'Veuillez sélectionner le statut',
                         ttl: 5,
-                    });                    
+                    });
                 }else if(form.value.customerCat == 0){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
                         message: 'Veuillez sélectionner la catégorie',
                         ttl: 5,
-                    });        
+                    });
                 }else if(form.value.customerPaiement == 0){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
                         message: 'Veuillez sélectionner la MODE DE PAIEMENT',
                         ttl: 5,
-                    });                    
+                    });
                 // }else if(form.value.naf == '' || form.value.naf.length != 5 || customerNafs.find((item)=>{ return item.code == form.value.naf }) == undefined){
                 //     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                 //         type: 'danger',
                 //         message: 'Veuillez entrer NAF',
                 //         ttl: 5,
-                //     });                    
+                //     });
                 }else{
                     step.value = 'address';
                 }
@@ -973,28 +973,28 @@ export default {
                             type: 'danger',
                             message: 'Veuillez sélectionner le type d`adresse',
                             ttl: 5,
-                        });  
+                        });
                     // }else if(address.address1 == ''){
                     //     error = true;
                     //     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                     //         type: 'danger',
                     //         message: 'Veuillez entrer l`adresse1',
                     //         ttl: 5,
-                    //     });                          
+                    //     });
                     }else if(address.postCode == ''){
                         error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
                             message: 'Veuillez entrer le CODE POSTAL',
                             ttl: 5,
-                        });                          
+                        });
                     }else if(address.city == ''){
                         error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
                             message: 'Veuillez saisir VILLE',
                             ttl: 5,
-                        });                                                  
+                        });
                     }else if(address.firstName == ''){
                         error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
@@ -1014,7 +1014,7 @@ export default {
         const phoneCodesSorted = [...new Map(phoneCodes.map(item =>
             [item.value, item])).values()].sort((a, b)=>{
             return parseInt(a.value.replace(/\D/g, '')) - parseInt(b.value.replace(/\D/g, ''));
-        }); 
+        });
         const addAddress = ()=>{
             form.value.addresses.push({
                 id: '',
@@ -1029,7 +1029,7 @@ export default {
                 state: '',
                 receiptEmail: '',
                 phoneCode: '',
-                phoneNumber: '',     
+                phoneNumber: '',
                 latitude: 48.85560142492883,
                 longitude: 2.3491914978706396,
                 pente: '',
@@ -1043,9 +1043,9 @@ export default {
                 accesinterieur: '',
                 hauteurbatiment: '',
                 typebatiment: '',
-                infoNote: '',                
+                infoNote: '',
             });
-        }     
+        }
         const addContact = ()=>{
             form.value.contacts.push({
                 id: 0,
@@ -1067,9 +1067,9 @@ export default {
                 phoneNumber2: '',
                 acceptSMS: true,
                 acceptmarketing: true,
-                acceptcourrier: true,             
+                acceptcourrier: true,
             });
-        }     
+        }
         const removeAddress = (selectedIndex)=>{
             Swal.fire({
                 title: 'Etes-vous sûr?',
@@ -1087,7 +1087,7 @@ export default {
                         return index != selectedIndex
                     });
                 }
-            });            
+            });
         }
 
         const removeContact = (selectedIndex)=>{
@@ -1107,7 +1107,7 @@ export default {
                         return index != selectedIndex
                     });
                 }
-            });                 
+            });
         }
         watch(() => form.value.naf, (curVal, preVal)=>{
             var selectedNaf = customerNafs.filter((item)=>{
@@ -1122,8 +1122,8 @@ export default {
                 form.value.nomNaf = '';
             }
         })
+        uniqueEmail.value.status = false;
         const validationUniqueEmail = (event, tableName, contactId)=>{
-            uniqueEmail.value.status = false;
             axios.post('/check-email-exists', { table: tableName, email:  event.target.value, id: contactId })
             .then((res)=>{
                 if( !res.data.success ){
@@ -1135,7 +1135,7 @@ export default {
                             message: item[0],
                             ttl: 5,
                         });
-                    });                    
+                    });
                 }else{
                     uniqueEmail.value.status = true;
                     uniqueEmail.value.msg = '';
@@ -1143,14 +1143,14 @@ export default {
             }).catch((error)=>{
                 console.log(error);
             })
-        }        
+        }
         const submit = ()=>{
             if(uniqueEmail.value.status == false){
                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                     type: 'danger',
                     message: uniqueEmail.value.msg == '' ? 'Validating email' : uniqueEmail.value.msg,
                     ttl: 5,
-                });  
+                });
             }
             let error = false;
             form.value.contacts.forEach((contact)=>{
@@ -1175,14 +1175,14 @@ export default {
                             type: 'danger',
                             message: 'Veuillez entrer NOM',
                             ttl: 5,
-                        });                          
+                        });
                     }else if(contact.type == ''){
                         error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
                             message: 'Veuillez sélectionner le type d`adresse',
                             ttl: 5,
-                        });                          
+                        });
                     }
                 }
             })
@@ -1364,7 +1364,7 @@ export default {
   .border-right{
       border-right: 1px solid #C3C3C3;
   }
-}  
+}
 .cust-page-content{
   width: 1000px;
   margin-top: 3.125rem;

@@ -296,7 +296,7 @@
                             </ul>
                             <!-- Ouvrage Task -->
                             <div class="ouvrage-task" v-for="(task, taskIndex) in ouvrage.tasks" :key="taskIndex">
-                              <div class="task-header d-flex align-items-center custom-option cursor-pointer" :class="{ 'active': taskIndex == 0}" :data-id="'zone-'+ zoneIndex +'-installation-ouvrage-'+ouvrageIndex+'-task-'+taskIndex" @click="activeOuvrageTask">
+                              <div class="task-header mt-3 d-flex align-items-center custom-option cursor-pointer" :class="{ 'active': taskIndex == 0}" :data-id="'zone-'+ zoneIndex +'-installation-ouvrage-'+ouvrageIndex+'-task-'+taskIndex" @click="activeOuvrageTask">
                                 <span class="option-icon me-2"><span class="option-icon-dot"></span></span> {{ task.name }}
                               </div>
                               <div class="task-body ps-3" :class="{ 'show': taskIndex == 0}" :id="'zone-'+ zoneIndex +'-installation-ouvrage-'+ouvrageIndex+'-task-'+taskIndex">
@@ -503,7 +503,7 @@
                             </ul>
                             <!-- Ouvrage Task -->
                             <div class="ouvrage-task" v-for="(task, taskIndex) in ouvrage.tasks" :key="taskIndex">
-                              <div class="task-header d-flex align-items-center custom-option cursor-pointer" :class="{ 'active': taskIndex == 0}" :data-id="'zone-'+ zoneIndex +'-security-ouvrage-'+ouvrageIndex+'-task-'+taskIndex" @click="activeOuvrageTask">
+                              <div class="task-header mt-3 d-flex align-items-center custom-option cursor-pointer" :class="{ 'active': taskIndex == 0}" :data-id="'zone-'+ zoneIndex +'-security-ouvrage-'+ouvrageIndex+'-task-'+taskIndex" @click="activeOuvrageTask">
                                 <span class="option-icon me-2"><span class="option-icon-dot"></span></span> {{ task.name }}
                               </div>
                               <div class="task-body ps-3" :class="{ 'show': taskIndex == 0}" :id="'zone-'+ zoneIndex +'-security-ouvrage-'+ouvrageIndex+'-task-'+taskIndex">
@@ -710,7 +710,7 @@
                             </ul>
                             <!-- Ouvrage Task -->
                             <div class="ouvrage-task" v-for="(task, taskIndex) in ouvrage.tasks" :key="taskIndex">
-                              <div class="task-header d-flex align-items-center custom-option cursor-pointer" :class="{ 'active': taskIndex == 0}" :data-id="'zone-'+ zoneIndex +'-prestation-ouvrage-'+ouvrageIndex+'-task-'+taskIndex" @click="activeOuvrageTask">
+                              <div class="task-header mt-3 d-flex align-items-center custom-option cursor-pointer" :class="{ 'active': taskIndex == 0}" :data-id="'zone-'+ zoneIndex +'-prestation-ouvrage-'+ouvrageIndex+'-task-'+taskIndex" @click="activeOuvrageTask">
                                 <span class="option-icon me-2"><span class="option-icon-dot"></span></span> {{ task.name }}
                               </div>
                               <div class="task-body ps-3" :class="{ 'show': taskIndex == 0}" :id="'zone-'+ zoneIndex +'-prestation-ouvrage-'+ouvrageIndex+'-task-'+taskIndex">

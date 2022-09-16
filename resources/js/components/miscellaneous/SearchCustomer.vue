@@ -1,10 +1,10 @@
 <template>
     <div class="dp noselect position-relative">
-        
+
         <label v-if="!showSearch && label" class="select-label" :class="{ disabled:disabled == true }">{{ label }}</label>
-        
+
         <div  v-if="!showSearch" class="position-relative">
-            <input type="text"  :placeholder="placeholder" v-model="search" @keyup.prevent="submit"/> 
+            <input type="text"  :placeholder="placeholder" v-model="search" @keyup.prevent="submit"/>
              <span v-if="showbutton" @click='clearSearch' class="position-absolute"><i class="icon-close"></i></span>
         </div>
 
@@ -21,13 +21,13 @@
                         <p >nous n'avons trouvé aucun client.</p>
                     </section>
                 </div>
-                <ul  class="list-group list-group-flush" v-if ="Customers.length > 0" >
+                <ul  class="" v-if="Customers.length > 0" >
                     <li v-for ="customer in Customers" :key="customer">
                         <div class="container d-block" @click="selectCustomer(customer)">
                             <div class="d-flex">
                                 <div class="col-6 body_medium text-capitalize text-nowrap">
                                     {{ customer.contact.replace(',','').toLowerCase() }}
-                                </div>   
+                                </div>
                                 <div class="col-6">
                                     <b class ="email body_regular">{{ customer.email ? customer.email.toLowerCase() : ''}}</b>
                                 </div>
@@ -46,7 +46,7 @@
             </div>
         </transition>
     </div>
- 
+
 </template>
 
 <script>
@@ -84,19 +84,19 @@ export default({
         const showbutton = ref(false);
         const show_loader= ref(false);
         const inputsearch=ref(null);
-     
+
         function clearSearch() {
             search.value = null;
             showSearch.value = false;
             showbutton.value = false;
             show_loader.value= false;
         }
-        
+
         const featureunavailable=((feature) => {
             store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, { message: feature+' feature not yet implemented.', ttl:5, type: 'success'});
         })
 
-        function submit(e) { 
+        function submit(e) {
             clearTimeout(timeout.value);
             timeout.value = setTimeout(function() {
                 show_loader.value = true;
@@ -113,7 +113,7 @@ export default({
                     })
                     .catch((error)=>{});
                 });
-            }  
+            }
             , 300)
         }
 
@@ -199,7 +199,7 @@ export default({
     border-radius: 5px;
     padding: 20px 32px 40px 32px !important;
     margin: 0;
-      top:-10px;
+    top:-10px;
   }
   .input_search{
       padding:0 !important;
@@ -240,14 +240,14 @@ export default({
     input:focus-visible{
        outline:2px #000000 solid;
     }
-    ul{ 
+    ul{
         border-radius: 5px;
         list-style-type:none;
         padding:0px;
-        height: fit-content;
+        height: 550px;
+        overflow: auto;
     }
     li{
-        height: 79px;
         margin-bottom: 6px;
         position: relative;
     }
@@ -279,7 +279,8 @@ export default({
         display: flex;
         align-items: flex-start;
         cursor: pointer;
-        line-height: 22px;
+        font-size: 12px;
+        line-height: 14px;
     }
 
     input::placeholder {
@@ -305,29 +306,9 @@ export default({
         right: 20px;
         top: 10px;
     }
-    title{
-        padding-bottom: 58px;
-        padding-top: 18px;
-        padding-left: 15px;
-        width: 271px;
-    }
-    .tag.b2c{
-    color: #9E44F2;
-    background: rgba(234, 214, 247, 0.7);
-    border-radius: 70px;
-    height: 22px;
-    width: 77px !important;
-    }
-    .tag.b2b {
-    color: #4E58E7;
-    background: rgba(212, 221, 247, 0.7);
-    border-radius: 70px;
-    height: 22px;
-    width: 77px !important;
-    }
     .nodata{
     display: flex;
     justify-content: center;
     }
-  
+
 </style>

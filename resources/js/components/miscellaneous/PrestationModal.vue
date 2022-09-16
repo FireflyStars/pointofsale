@@ -24,7 +24,7 @@
                         </div>
                         <div class="result-panel mt-4">
                             <div class="first-step" v-if="step == 1">
-                                <div class="border-top border-bottom p-2">
+                                <div class="border-top border-bottom p-2 toit-pannel">
                                     <div class="roof-types p-3">
                                         <div class="header mulish-extrabold font-16 d-flex align-items-center mb-2">
                                             <span class="prestation-icon me-3"></span> Type de toit
@@ -32,7 +32,7 @@
                                         <div class="d-flex flex-wrap justify-content-between align-items-center px-4">
                                             <div class="roof mt-3 p-1 cursor-pointer" v-for="(toit, index) in toits" :key="index" @click="selectRoof($event, toit)">
                                                 <div class="roof-image rounded" :style="{ 'backgroundImage': 'url(https://lcdt-dev.vpc-direct-service.com/storage/'+ toit.image+')'}"></div>
-                                                <div class="roof-desc almarai-light font-14 mt-2 text-nowrap text-center">{{ toit.name }}</div>
+                                                <div class="roof-desc almarai-light font-14 mt-2 text-center">{{ toit.name }}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -331,6 +331,10 @@
         }
         .result-panel{
             height: 600px;
+            .toit-pannel{
+                height: 500px;
+                overflow-y: auto;                
+            }
             .second-step{
                 height: 575px;
                 overflow-y: auto;

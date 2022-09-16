@@ -724,6 +724,7 @@ class DevisController extends Controller
     public function storeDevis(Request $request){
         $orderData = [
             'lang_id'           => 1,
+            'name'              => $request->orderName,
             'affiliate_id'      => Auth::user()->affiliate->id,
             'responsable_id'    => Auth::id(),
             'order_state_id'    => 2,
@@ -1117,6 +1118,7 @@ class DevisController extends Controller
                                 ->join('order_states', 'orders.order_state_id', '=', 'order_states.id')
                                 ->where('orders.id', $order->id)
                                 ->select('order_states.order_type as type', 'order_states.name', 'order_states.fontcolor', 'order_states.color')->first();
+        $devis['orderName'] = $order->name;
         $devis['totalHoursForInstall'] = 0;
         $devis['totalPriceForInstall'] = 0;
         $devis['totalHoursForSecurity'] = 0;
@@ -1399,6 +1401,7 @@ class DevisController extends Controller
      */
     public function updateDevis(Request $request, $orderId){
         $orderData = [
+            'name'              => $request->orderName,
             'affiliate_id'      => Auth::user()->affiliate->id,
             'responsable_id'    => Auth::id(),
             'total'             => ($request->totalPriceForInstall + $request->totalPriceForSecurity + $request->totalPriceForPrestation),
