@@ -35,7 +35,13 @@
                                     <template v-slot:tout>
                                         
                                         <item-list-table :table_def="userList">
+                                            <template v-slot:type_name="{ row }">
 
+                                                <span>
+                                                    {{ row.type_name }}
+                                                </span>
+
+                                            </template>    
                                             <template v-slot:status_name="{ row }">
 
                                                 <span 
@@ -48,6 +54,7 @@
                                                 </span>
 
                                             </template>    
+
 
                                         </item-list-table>
                                             

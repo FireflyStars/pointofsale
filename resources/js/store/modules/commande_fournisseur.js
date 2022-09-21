@@ -23,14 +23,15 @@ const columns_def = [
     }, 
     {
         id: "id",
-        display_name: "No",
-        type: "number",
+        display_name: "No Commande",
+        type: "string",
         class: "",
         header_class: "",
         sort: true,
         filter: true,   
         prefix: "",
         suffix: "",
+        table: "supplier_orders"
     },
     {
         id: "name",

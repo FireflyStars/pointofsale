@@ -14,11 +14,11 @@
         ></table-filter>  
 <div :id="table_def.identifier">
     <div class="list-header">
-        <template v-for="item,index in table_def.columns_def" :key="index">
+        <template v-for="(item, index) in table_def.columns_def" :key="index">
             <div v-if="item.visible==true" class="list-header-col almarai_700_normal" @drop="onDrop($event,item)" @dragover="onDragOver($event,item)"  @dragleave="onDragLeave($event,item)" @dragenter="onDragEnter($event,item)" @dragover.prevent  :draggable="isDraggable(item)" @dragstart="startDrag($event,item)" @dragend="endDrag($event,item)" :class="headerClasses(item,sortings)" :style="item.css">
                 <span  @click.exact="sortby(item,false)" @click.shift="sortby(item,true)" >{{item.display_name.toLowerCase()}}</span>
                 <check-box v-if="item.type=='checkbox'" name="checkall" id="checkall" :checked="lists.length==MULTI_CHECKED.length" @change="checkboxallclicked"/>
-                <input  class="mulish_400_normal" v-if="(item.type=='string'||item.type=='html'||item.type=='price')&&item.filter&&typeof item.filter_options=='undefined'" :value="getFilterValue(item)" type="text" @keyup.enter="filterColumn(item,$event.target.value)"/>
+                <input  class="mulish_400_normal" v-if="((item.type=='string'||item.type=='html'||item.type=='price') && item.filter&&typeof item.filter_options=='undefined')" :value="getFilterValue(item)" type="text" @keyup.enter="filterColumn(item, $event.target.value)"/>
                 <item-list-date-filter v-if="item.type=='date'" :col="item" :name="item.id" @onDateFiltered="filterdate" :value="getFilterValue(item)"></item-list-date-filter>
                 <item-list-multi-filter  :value="getFilterMValue(item)" v-if="typeof item.filter_options!='undefined'" :id="item.id" @onMultiFiltered="multifilter" :col="item" :filteroptions="item.filter_options" :identifier="table_def.identifier"/>
             </div>

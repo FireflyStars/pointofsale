@@ -78,14 +78,34 @@ export const personnel = {
                 }, 
                 {
                     id: "id",
-                    display_name: "No",
-                    type: "number",
+                    display_name: "No Personnel",
+                    type: "string",
                     class: "",
                     header_class: "",
                     sort: true,
                     filter: true,   
                     prefix: "",
                     suffix: "",
+                    table: "users"
+                },
+                {
+                    id: "type_name",
+                    display_name: "Type Contact",
+                    type: "component",
+                    class: "",
+                    header_class: "",
+                    sort: true,
+                    filter: true,   
+                    having: true,
+                    prefix: "",
+                    suffix: "",
+                    allow_groupby: true,
+                    filter_options: [{
+                        id: "CDD", value: "CDD"
+                    }, {
+                        id: "CDI", value: "CDI"
+                    }],
+                    table: "user_type"
                 },
                 {
                     id: "prenom",

@@ -36,14 +36,15 @@ const table = {
         }, 
         {
             id: "id",
-            display_name: "No",
-            type: "number",
+            display_name: "No Article",
+            type: "string",
             class: "justify-content-start",
             header_class: "",
             sort: true,
             filter: true,
             prefix: "",
             suffix: "",
+            table: "products",
         },     
         {
             id: "name",

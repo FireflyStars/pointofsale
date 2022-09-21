@@ -33,14 +33,15 @@ const table = {
         }, 
         {
             id: "id",
-            display_name: "No",
-            type: "number",
+            display_name: "No Ouvrage",
+            type: "string",
             class: "justify-content-start",
             header_class: "",
             sort: true,
             filter: true,
             prefix: "",
             suffix: "",
+            table: "ouvrages"
         },     
         {
             id: "name",

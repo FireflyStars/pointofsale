@@ -32,14 +32,15 @@ const table = {
         }, 
         {
             id: "id",
-            display_name: "No",
-            type: "number",
+            display_name: "No Contact",
+            type: "string",
             class: "justify-content-start",
             header_class: "",
             sort: true,
             filter: true,
             prefix: "",
             suffix: "",
+            table: "contacts"
         },     
         {
             id: "firstname",

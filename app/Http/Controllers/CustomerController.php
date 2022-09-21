@@ -103,7 +103,8 @@ class CustomerController extends Controller
             'customerStatus'    => 'required',
             'email'             => $request->email != '' ? 'email' : '',
             'siret'             => $request->siret != '' ? 'required|unique:customers,siret,'.$request->id: "",
-            'customerTax'       => 'required'
+            'customerTax'       => 'required',
+            'numtva'            => $request->numtva != '' ? 'unique:customers,numtva' : '',
         ]);
  
         if ($validator->fails()) {
@@ -301,7 +302,8 @@ class CustomerController extends Controller
             'customerStatus'    => 'required',
             'siret'             => $request->siret != '' ? 'required|unique:customers,siret,'.$request->id: "",
             'email'             => $request->email != '' ? 'email' : '',
-            'customerTax'       => 'required'
+            'customerTax'       => 'required',
+            'numtva'            => $request->numtva != '' ? 'unique:customers,numtva,'.$request->id : '',
         ]);
         if($validator->fails()){
             return response()->json([

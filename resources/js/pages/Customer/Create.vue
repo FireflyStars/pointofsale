@@ -70,17 +70,20 @@
                         <div class="page-section">
                             <h3 class="m-0 mulish-extrabold font-22">ENTITE</h3>
                             <div class="d-flex mt-3">
-                                <div class="col-6">
+                                <div class="col-4">
                                     <div class="form-group">
                                         <label class="mulish-medium font-16 text-nowrap">RAISON SOCIALE *</label>
                                         <input type="text" v-model="form.raisonsociale" placeholder="Raison sociale" class="form-control">
                                     </div>
                                 </div>
-                                <div class="col-6 ps-2">
+                                <div class="col-4 ps-2">
                                     <div class="form-group">
                                         <label class="mulish-medium font-16 text-nowrap">NOM COMMERCIAL</label>
                                         <input type="text" v-model="form.raisonsociale2" placeholder="Raison2 sociale" class="form-control">
                                     </div>                                        
+                                </div>
+                                <div class="col-4 ps-2">
+                                    <select-box v-model="form.customerTax" :options="customerTaxes" :label="'TVA'" :name="'customerTax'"></select-box>
                                 </div>
                             </div>    
                             <div class="d-flex mt-3">
@@ -104,8 +107,11 @@
                                     </div>
                                 </div>
                                 <div class="col-1"></div>
-                                <div class="col-4">
-                                    <select-box v-model="form.customerTax" :options="customerTaxes" :label="'TVA'" :name="'customerTax'"></select-box>
+                                <div class="col-4 ps-2">
+                                    <div class="form-group">
+                                        <label class="mulish-medium font-16 text-nowrap">NUM TVA</label>
+                                        <input type="text" v-model="form.numtva" placeholder="" class="form-control">
+                                    </div>                                        
                                 </div>
                             </div>                                           
                         </div>
@@ -702,6 +708,7 @@ export default {
             phoneNumber: '',
             email: '',
             customerTax: 0,
+            numtva: '',
             litige: false,
             active: true,
             descision: true,
