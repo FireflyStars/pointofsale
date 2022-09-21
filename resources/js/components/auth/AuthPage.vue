@@ -6,7 +6,7 @@
     <div class="container-fluid h-100" v-if="showimg">
         <div class="row auth-logo">
             <div class="col-12 p-lg-0 d-flex align-items-center">
-                    <img src="../../images/logolcdt.png" height="55">
+                    <img :src="logoUrl" height="55">
 
             </div>
         </div>
@@ -21,19 +21,27 @@
 
 <script>
     import {ref,onMounted,nextTick} from 'vue';
-
+    import axios from 'axios';
     export default {
         name: "AuthPage",
         setup(props,context){
             const showimg=ref(false);
+            const logoUrl = ref('../../images/logolcdt.png');
             onMounted(()=>{
+                // axios.post('/get-logo').then((res)=>{
+                //     if(res.data != '')
+                //         logoUrl.value = res.data;
+                // }).catch((error)=>{
+                //     console.log(error);
+                // }).finally(()=>{
+
+                // });                
                  nextTick(()=>{
-                    console.log('mounted');
                     showimg.value=true;
                 });
-
             });
             return {
+                logoUrl,
                 showimg
             }
         }

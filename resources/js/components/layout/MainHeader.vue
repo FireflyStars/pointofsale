@@ -59,7 +59,7 @@
 
             const store=useStore();
             const router=useRouter();
-            const logoUrl = ref('./../../images/logolcdt.png');
+            const logoUrl = ref('../../images/logolcdt.png');
             const featureunavailable=((feature)=>{
                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`,{message:feature+' feature not yet implemented.',ttl:5,type:'danger'});
             });
@@ -82,14 +82,14 @@
                 })
             }
             onMounted(()=>{
-                axios.post('/get-logo').then((res)=>{
-                    if(res.data != '')
-                        logoUrl.value = res.data;
-                }).catch((error)=>{
-                    console.log(error);
-                }).finally(()=>{
+                // axios.post('/get-logo').then((res)=>{
+                //     if(res.data != '')
+                //         logoUrl.value = res.data;
+                // }).catch((error)=>{
+                //     console.log(error);
+                // }).finally(()=>{
 
-                })
+                // })
             });
            return {
                neworder,
