@@ -33,9 +33,9 @@
                                 </div>
                             </div>
                             <div class="d-flex mt-2">
-                                <div class="col-4">{{ customer.raisonsociale }}</div>
-                                <div class="col-4">{{ customer.raisonsociale2 }}</div>
-                                <div class="col-4">{{ customer.company }}</div>
+                                <div class="col-4 pe-2 eclipe-item">{{ customer.raisonsociale }}</div>
+                                <div class="col-4 pe-2 eclipe-item">{{ customer.raisonsociale2 }}</div>
+                                <div class="col-4 eclipe-item">{{ customer.company }}</div>
                             </div>
                         </div>
                     </li>
@@ -282,7 +282,11 @@ export default({
         font-size: 12px;
         line-height: 14px;
     }
-
+    .eclipe-item{
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;        
+    }
     input::placeholder {
     position: static;
     width: 316px;

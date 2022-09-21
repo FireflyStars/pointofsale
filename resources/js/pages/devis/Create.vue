@@ -279,7 +279,7 @@
                             </div>
                           </div>
                         </div>
-                        <div class="tab-content">
+                        <div class="tab-content mb-3">
                           <div class="tab-pane ps-3" :class="{ 'active': ouvrageIndex == 0}" :id="'zone-'+ zoneIndex +'-installation-ouvrage-'+ouvrageIndex">
                             <h3 class="mulish-light fw-light custom-text-danger font-14">TEXTE COMMENTAIRE TECHNIQUE</h3>
                             <!-- ouvrage description -->
@@ -486,7 +486,7 @@
                             </div>
                           </div>
                         </div>
-                        <div class="tab-content">
+                        <div class="tab-content mb-3">
                           <div class="tab-pane ps-3" :class="{ 'active': ouvrageIndex == 0}" :id="'zone-'+ zoneIndex +'-security-ouvrage-'+ouvrageIndex">
                             <h3 class="mulish-light fw-light custom-text-danger font-14">TEXTE COMMENTAIRE TECHNIQUE</h3>
                             <!-- ouvrage description -->
@@ -693,7 +693,7 @@
                             </div>
                           </div>
                         </div>
-                        <div class="tab-content">
+                        <div class="tab-content mb-3">
                           <div class="tab-pane ps-3" :class="{ 'active': ouvrageIndex == 0}" :id="'zone-'+ zoneIndex +'-prestation-ouvrage-'+ouvrageIndex">
                             <h3 class="mulish-light fw-light custom-text-danger font-14">TEXTE COMMENTAIRE TECHNIQUE</h3>
                             <!-- ouvrage description -->

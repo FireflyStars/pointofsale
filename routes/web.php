@@ -39,12 +39,15 @@ use App\Http\Controllers\InterventionsController;
 use App\Http\Controllers\CommandeFounisseurController;
 use App\Http\Controllers\ActionCommercialListController;
 use App\Http\Controllers\HtmlTemplateController;
+use App\Http\Controllers\SettingController;
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
     Route::post('/update-text-pos',[LcdtAdminController::class,'updateTextPos'])->name('update-text-pos');
     Route::post('/get-text-pos',[LcdtAdminController::class,'getTextPos'])->name('get-text-pos');
 });
+// Get logo image
+Route::post('/get-logo', [ SettingController::class, 'getLogo'])->name('get.logo');
 
 Route::post('/save-page-elements', [PageElementsController::class, 'generate_pdf'])->middleware('auth');
 Route::get('/generate-pdf/{report}', [PageElementsController::class, 'generate_pdf_by_id'])->middleware('auth');

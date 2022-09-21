@@ -2,7 +2,7 @@
     <div class="row main-logo" >
         <div class="col-12 p-0">
             <img @click="slideinMenu"
-                src="./../../images/logolcdt.png"
+                :src="logoUrl"
                 alt="Lcdt logo"
                 class="logo img-fluid"
             
@@ -46,10 +46,11 @@
 
 <script>
 
+    import { onMounted, ref } from 'vue';
     import { useStore } from 'vuex'
     import { SIDEBAR_MODULE, SIDEBAR_SET_SLIDEIN, TOASTER_MESSAGE, TOASTER_MODULE } from "../../store/types/types";
     import Search from '../miscellaneous/Search.vue';
-
+    import axios from 'axios';
     import { useRouter } from 'vue-router'
     export default {
         name: "MainHeader",
@@ -58,6 +59,7 @@
 
             const store=useStore();
             const router=useRouter();
+            const logoUrl = ref('./../../images/logolcdt.png');
             const featureunavailable=((feature)=>{
                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`,{message:feature+' feature not yet implemented.',ttl:5,type:'danger'});
             });
@@ -79,12 +81,23 @@
                     },
                 })
             }
+            onMounted(()=>{
+                axios.post('/get-logo').then((res)=>{
+                    if(res.data != '')
+                        logoUrl.value = res.data;
+                }).catch((error)=>{
+                    console.log(error);
+                }).finally(()=>{
+
+                })
+            });
            return {
                neworder,
                slideinMenu,
                featureunavailable,
                createDevis,
-               router
+               router,
+               logoUrl
            }
         }
     }
