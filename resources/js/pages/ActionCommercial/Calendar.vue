@@ -20,7 +20,7 @@
   </router-view>
 </template>
 <script>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import {     
   DISPLAY_LOADER,
   HIDE_LOADER,
@@ -29,14 +29,14 @@ import {
   TOASTER_MODULE, 
 } from '../../store/types/types';
   
-import axios from 'axios';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
-import '@fullcalendar/core/vdom' // solves problem with Vite
+// import '@fullcalendar/core/vdom' // solves problem with Vite
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin  from '@fullcalendar/daygrid'
 import timeGridPlugin  from '@fullcalendar/timegrid'
 import bootstrap5Plugin from '@fullcalendar/bootstrap5';
+import interactionPlugin from '@fullcalendar/interaction';
 import frLocale from '@fullcalendar/core/locales/fr';
 import tippy from 'tippy.js';
 import 'tippy.js/dist/tippy.css'; // optional for styling
@@ -56,9 +56,10 @@ export default {
                 center: 'title',
                 end: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
-            plugins: [ dayGridPlugin, timeGridPlugin, bootstrap5Plugin ],
+            plugins: [ dayGridPlugin, timeGridPlugin, bootstrap5Plugin, interactionPlugin ],
             locale: frLocale, // Franch
             initialView: 'dayGridMonth',
+            selectable: true,
             views: {
                 dayGridMonth: {
                     titleFormat: { year: 'numeric', month: 'long' },
@@ -160,7 +161,11 @@ export default {
                 duration: [250, 0]
               });
               info.el
-            },            
+            },   
+            dateClick: function(info){
+              
+              alert('Clicked on: ' + info.dateStr);
+            }
                        
         })
         return {
