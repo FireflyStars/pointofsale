@@ -11,7 +11,7 @@
             </div>
         </div>
         <div class="row d-flex align-content-stretch align-items-stretch flex-row hmax">
-           <div class="col-lg-6 col-sm-3 auth-bg" ></div>
+           <div class="col-lg-6 col-sm-3 auth-bg" :style="{ 'backgroundImage': 'url('+loginImageUrl+')' }"></div>
             <div class="col-lg-6 auth-form col-sm-9"><Component :is="Component" /></div>
         </div>
     </div>
@@ -27,21 +27,24 @@
         setup(props,context){
             const showimg=ref(false);
             const logoUrl = ref('../../images/logolcdt.png');
+            const loginImageUrl = ref('../../images/login.jpg');
             onMounted(()=>{
-                // axios.post('/get-logo').then((res)=>{
-                //     if(res.data != '')
-                //         logoUrl.value = res.data;
-                // }).catch((error)=>{
-                //     console.log(error);
-                // }).finally(()=>{
+                axios.post('/get-login-setting').then((res)=>{
+                    if(res.data != '')
+                        logoUrl.value = res.data.logoUrl;
+                        loginImageUrl.value = res.data.loginImage;
+                }).catch((error)=>{
+                    console.log(error);
+                }).finally(()=>{
 
-                // });                
+                });                
                  nextTick(()=>{
                     showimg.value=true;
                 });
             });
             return {
                 logoUrl,
+                loginImageUrl,
                 showimg
             }
         }
@@ -58,8 +61,8 @@
     height: var(--authlogoheight);
 }
 .auth-bg{
-    background: #EEEEEE url('/images/login.jpg') no-repeat  right bottom;
-    background-size: cover ;
+    background: #EEEEEE no-repeat  right bottom;
+    background-size: cover;
 }
 .auth-form{
 

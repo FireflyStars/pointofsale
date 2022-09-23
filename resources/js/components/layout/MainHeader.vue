@@ -1,6 +1,6 @@
 <template>
-    <div class="row main-logo" >
-        <div class="col-12 p-0">
+    <div class="row main-logo" :style="{ 'background-color': headerColor }">
+        <div class="col-12 p-0 d-flex align-items-center">
             <img @click="slideinMenu"
                 :src="logoUrl"
                 alt="Lcdt logo"
@@ -10,7 +10,7 @@
            <div>
                
                 <search></search>  
-                <base-button
+                <!-- <base-button
                     prepend
                     @click="router.push( { name: 'CreateCustomer' });"
                     class="btn btn-newcustomer body_medium"
@@ -37,8 +37,7 @@
                     title="Nouveau Devis"
                 >
                     <icon name="clipboard" />
-                </base-button>
-
+                </base-button> -->
            </div>
         </div>
     </div>
@@ -60,6 +59,7 @@
             const store=useStore();
             const router=useRouter();
             const logoUrl = ref('../../images/logolcdt.png');
+            const headerColor = ref('#070113');
             const featureunavailable=((feature)=>{
                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`,{message:feature+' feature not yet implemented.',ttl:5,type:'danger'});
             });
@@ -82,14 +82,22 @@
                 })
             }
             onMounted(()=>{
-                // axios.post('/get-logo').then((res)=>{
-                //     if(res.data != '')
-                //         logoUrl.value = res.data;
-                // }).catch((error)=>{
-                //     console.log(error);
-                // }).finally(()=>{
+                axios.post('/get-header-setting').then((res)=>{
+                    if(res.data.logoUrl != ''){
+                        logoUrl.value = res.data.logoUrl;
+                    }
+                    if(res.data.faviconUrl != ''){
+                        const favicon = document.querySelector("link[rel~='icon']")
+                        favicon.href = res.data.faviconUrl;
+                    }
+                    if(res.data.faviconUrl != ''){
+                        headerColor.value = res.data.headerColor;
+                    }
+                }).catch((error)=>{
+                    console.log(error);
+                }).finally(()=>{
 
-                // })
+                })
             });
            return {
                neworder,
@@ -97,7 +105,8 @@
                featureunavailable,
                createDevis,
                router,
-               logoUrl
+               logoUrl,
+               headerColor
            }
         }
     }
@@ -105,7 +114,6 @@
 
 <style scoped>
     .main-logo {
-        background-color:#070113;
         position: fixed;
         width: 100%;
         z-index: 10;

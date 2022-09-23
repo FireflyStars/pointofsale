@@ -47,7 +47,10 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('/get-text-pos',[LcdtAdminController::class,'getTextPos'])->name('get-text-pos');
 });
 // Get logo image
-Route::post('/get-logo', [ SettingController::class, 'getLogo'])->name('get.logo');
+Route::post('/get-header-setting', [ SettingController::class, 'getHeaderSetting'])->name('get.header.setting');
+Route::post('/get-sidebar-setting', [ SettingController::class, 'getSidebarSetting'])->name('get.sidebar.setting');
+Route::post('/get-404-setting', [ SettingController::class, 'get404Setting'])->name('get.404.setting');
+Route::post('/get-login-setting', [ SettingController::class, 'getLoginSetting'])->name('get.login.setting');
 
 Route::post('/save-page-elements', [PageElementsController::class, 'generate_pdf'])->middleware('auth');
 Route::get('/generate-pdf/{report}', [PageElementsController::class, 'generate_pdf_by_id'])->middleware('auth');

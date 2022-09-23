@@ -83,7 +83,6 @@ export default {
 
     float: left;
     margin-right: 19px;
-    margin-top: 18px;
     width: 217px;
     position: relative;
 

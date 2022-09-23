@@ -150,7 +150,17 @@
         const childRoutes = item.children?.map(child => child.urlname)
         return childRoutes.includes(route.name)
     }
+    onMounted(()=>{
+        // axios.post('/get-sidebar-setting').then((res)=>{
+        //     if(res.data.sidebarActiveColor != ''){
+        //         document.querySelector('.side-icons.active rect').style.fill = res.data.sidebarActiveColor + '! important';
+        //     }
+        // }).catch((error)=>{
+        //     console.log(error);
+        // }).finally(()=>{
 
+        // })        
+    })
     const navigateOrOpenMenu = (item) => {
 
         if(item?.children?.length) {
@@ -322,11 +332,6 @@
         grid-template-columns: 20% 70% 10%;
         justify-content: center;
     }
-}
-
-.side-icons{
-    //margin-bottom: 20px;
-    //cursor: pointer !important
 }
 .usermenu{
     background: #FFFFFF;
