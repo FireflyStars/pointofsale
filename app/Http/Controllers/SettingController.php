@@ -25,16 +25,20 @@ class SettingController extends Controller
     }
     public function get404Image(){
         $imageUrl = asset('storage/'.DB::table('settings')->where('key', 'site.logo_page')->value('value'));
+        $faviconUrl = asset('storage/'.json_decode(DB::table('settings')->where('key', 'site.favicon')->value('value'))[0]->download_link);
         return response()->json([
-            'imageUrl'   =>   $imageUrl
+            'imageUrl'   =>   $imageUrl,
+            'faviconUrl'   =>   $faviconUrl,
         ]);
     }
     public function getLoginSetting(){
         $logoUrl = asset('storage/'.DB::table('settings')->where('key', 'site.logo_page')->value('value'));
         $loginImage = asset('storage/'.DB::table('settings')->where('key', 'site.image_login')->value('value'));
+        $faviconUrl = asset('storage/'.json_decode(DB::table('settings')->where('key', 'site.favicon')->value('value'))[0]->download_link);
         return response()->json([
             'logoUrl'   =>   $logoUrl,
             'loginImage'   =>   $loginImage,
+            'faviconUrl'   =>   $faviconUrl,
         ]);
     }
 }

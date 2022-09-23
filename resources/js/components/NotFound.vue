@@ -24,6 +24,10 @@
                     if(res.data.imageUrl != ''){
                         imageUrl.value = res.data.imageUrl;
                     }
+                    if(res.data.faviconUrl != ''){
+                        const favicon = document.querySelector("link[rel~='icon']")
+                        favicon.href = res.data.faviconUrl;
+                    }                    
                 }).catch((error)=>{
                     console.log(error);
                 }).finally(()=>{

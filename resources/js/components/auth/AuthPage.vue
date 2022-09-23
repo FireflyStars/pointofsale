@@ -6,8 +6,7 @@
     <div class="container-fluid h-100" v-if="showimg">
         <div class="row auth-logo">
             <div class="col-12 p-lg-0 d-flex align-items-center">
-                    <img :src="logoUrl" height="55">
-
+                <img :src="logoUrl" height="55">
             </div>
         </div>
         <div class="row d-flex align-content-stretch align-items-stretch flex-row hmax">
@@ -30,9 +29,16 @@
             const loginImageUrl = ref('../../images/login.jpg');
             onMounted(()=>{
                 axios.post('/get-login-setting').then((res)=>{
-                    if(res.data != '')
+                    if(res.data.logoUrl != ''){
                         logoUrl.value = res.data.logoUrl;
+                    }
+                    if(res.data.loginImage != ''){
                         loginImageUrl.value = res.data.loginImage;
+                    }
+                    if(res.data.faviconUrl != ''){
+                        const favicon = document.querySelector("link[rel~='icon']")
+                        favicon.href = res.data.faviconUrl;
+                    }                    
                 }).catch((error)=>{
                     console.log(error);
                 }).finally(()=>{
