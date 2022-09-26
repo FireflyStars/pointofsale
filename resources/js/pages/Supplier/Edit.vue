@@ -179,14 +179,14 @@ export default {
 
         }
         const submit = ()=>{
-            if( !supplier.value.siretValidation){
-                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                    type: 'danger',
-                    message: 'Vous devez vérifier le siret s\'il est valide ou non.',
-                    ttl: 5,
-                });                     
-                return;
-            }
+            // if( !supplier.value.siretValidation){
+            //     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            //         type: 'danger',
+            //         message: 'Vous devez vérifier le siret s\'il est valide ou non.',
+            //         ttl: 5,
+            //     });                     
+            //     return;
+            // }
             let error = false;
             if( supplier.value.nom == '' ){
                 error = true;
@@ -195,20 +195,20 @@ export default {
                     message: 'You have to enter a nom',
                     ttl: 5,
                 });    
-            }else if( supplier.value.siret == '' ){
-                error = true;
-                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                    type: 'danger',
-                    message: 'Veuillez entrer SIRET',
-                    ttl: 5,
-                });                       
-            }else if( supplier.value.naf == '' ){
-                error = true;
-                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                    type: 'danger',
-                    message: 'Veuillez entrer NAF',
-                    ttl: 5,
-                });                       
+            // }else if( supplier.value.siret == '' ){
+            //     error = true;
+            //     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            //         type: 'danger',
+            //         message: 'Veuillez entrer SIRET',
+            //         ttl: 5,
+            //     });                       
+            // }else if( supplier.value.naf == '' ){
+            //     error = true;
+            //     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            //         type: 'danger',
+            //         message: 'Veuillez entrer NAF',
+            //         ttl: 5,
+            //     });                       
             }
             if(!error){
                 store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Création d`un FOURNISSEUR...']);
@@ -269,7 +269,7 @@ export default {
                 store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'checking siret ...']);
                 axios.post('/check-siret', { 'siret' : supplier.value.siret }).then((res)=>{
                     if(res.data.success){
-                        supplier.value.siretValidation = true;
+                        // supplier.value.siretValidation = true;
                         supplier.value.naf = res.data.data.activitePrincipaleUniteLegale.replace('.', '');
                         supplier.value.nom    = res.data.data.denominationUniteLegale;
                     }else{

@@ -550,13 +550,13 @@ export default {
                     message: 'Veuillez saisir TYPE D ACTION',
                     ttl: 5,
                 });                    
-            }else if( action.value.originId == 0 ){
-                error = true;
-                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                    type: 'danger',
-                    message: 'Veuillez saisir ORIGINE ACTION',
-                    ttl: 5,
-                });                    
+            // }else if( action.value.originId == 0 ){
+            //     error = true;
+            //     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            //         type: 'danger',
+            //         message: 'Veuillez saisir ORIGINE ACTION',
+            //         ttl: 5,
+            //     });                    
             }else if( action.value.statusId == 0 ){
                 error = true;
                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {

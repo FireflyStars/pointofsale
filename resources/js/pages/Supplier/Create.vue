@@ -158,7 +158,7 @@ export default {
             nomNaf: '',
             comment: '',
             active: true,
-            siretValidation: false,
+            siretValidation: true,
         });
         const cancel = ()=>{
 
