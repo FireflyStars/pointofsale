@@ -202,7 +202,7 @@
                             <div class="d-flex mt-3">
                                 <div class="col-6 pe-3">
                                     <div class="form-group">
-                                        <select-box v-model="form.customerCat" :options="customerCats" :name="'customerCat'" :label="'CATEGORIE JURIDIQUE*'"></select-box>
+                                        <select-box v-model="form.customerCat" :options="customerCats" :name="'customerCat'" :label="'CATEGORIE JURIDIQUE'"></select-box>
                                     </div>
                                 </div>
                                 <div class="col-6 ps-3">
@@ -701,7 +701,7 @@ export default {
             customerStatus: 0,
             segmentation: '',
             customerCat: 0,
-            customerPaiement: 0,
+            customerPaiement: 1,
             naf: '',
             nomNaf: '',
             gender: 'MADAME',
@@ -842,12 +842,12 @@ export default {
                         message: 'Veuillez sélectionner le statut',
                         ttl: 5,
                     });
-                }else if(form.value.customerCat == 0){
-                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                        type: 'danger',
-                        message: 'Veuillez sélectionner la catégorie',
-                        ttl: 5,
-                    });
+                // }else if(form.value.customerCat == 0){
+                //     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                //         type: 'danger',
+                //         message: 'Veuillez sélectionner la catégorie',
+                //         ttl: 5,
+                //     });
                 }else if(form.value.customerPaiement == 0){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
@@ -936,12 +936,12 @@ export default {
                         message: 'Veuillez sélectionner le statut',
                         ttl: 5,
                     });
-                }else if(form.value.customerCat == 0){
-                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                        type: 'danger',
-                        message: 'Veuillez sélectionner la catégorie',
-                        ttl: 5,
-                    });
+                // }else if(form.value.customerCat == 0){
+                //     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                //         type: 'danger',
+                //         message: 'Veuillez sélectionner la catégorie',
+                //         ttl: 5,
+                //     });
                 }else if(form.value.customerPaiement == 0){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',

@@ -84,8 +84,8 @@
                                 <div class="col-7 d-flex px-2">
                                     <div class="d-flex col-8">
                                         <div class="form-group col-9">
-                                            <label>SIRET *</label>
-                                            <input type="text" v-model="supplier.siret" class="form-control" v-mask="'#########'">
+                                            <label>SIRET</label>
+                                            <input type="text" v-model="supplier.siret" class="form-control">
                                         </div>
                                         <div class="form-group col-3 px-2">
                                             <label>&nbsp;</label>
@@ -95,7 +95,7 @@
                                     <div class="col-1"></div>
                                     <div class="col-3">
                                         <div class="form-group">
-                                            <label class="text-nowrap">NAF *</label>
+                                            <label class="text-nowrap">NAF</label>
                                             <input type="text" v-model="supplier.naf" class="form-control" placeholder="">
                                         </div>                                 
                                     </div>

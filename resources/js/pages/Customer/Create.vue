@@ -202,7 +202,7 @@
                             <div class="d-flex mt-3">
                                 <div class="col-6 pe-3">
                                     <div class="form-group">
-                                        <select-box v-model="form.customerCat" :options="customerCats" :name="'customerCat'" :label="'CATEGORIE JURIDIQUE*'"></select-box>
+                                        <select-box v-model="form.customerCat" :options="customerCats" :name="'customerCat'" :label="'CATEGORIE JURIDIQUE'"></select-box>
                                     </div>
                                 </div>                                
                                 <div class="col-6 ps-3">
@@ -694,7 +694,7 @@ export default {
             siretValidation: false,
             numLCDT: '',
             company: '',
-            customerOrigin: 2,
+            customerOrigin: 0,
             customerStatus: 0,
             segmentation: '',
             customerCat: 0,
@@ -755,7 +755,7 @@ export default {
             // contacts
             contacts: [{
                 id: 0,
-                type: 1,
+                type: 0,
                 actif: true,
                 qualite: '',
                 gender: 'MADAME',
@@ -830,12 +830,12 @@ export default {
                         message: 'Veuillez sélectionner le statut',
                         ttl: 5,
                     });                    
-                }else if(form.value.customerCat == 0){
-                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                        type: 'danger',
-                        message: 'Veuillez sélectionner la catégorie',
-                        ttl: 5,
-                    });        
+                // }else if(form.value.customerCat == 0){
+                //     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                //         type: 'danger',
+                //         message: 'Veuillez sélectionner la catégorie',
+                //         ttl: 5,
+                //     });        
                 }else if(form.value.customerPaiement == 0){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
@@ -932,12 +932,12 @@ export default {
                         message: 'Veuillez sélectionner le statut',
                         ttl: 5,
                     });                    
-                }else if(form.value.customerCat == 0){
-                    store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                        type: 'danger',
-                        message: 'Veuillez sélectionner la catégorie',
-                        ttl: 5,
-                    });        
+                // }else if(form.value.customerCat == 0){
+                //     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                //         type: 'danger',
+                //         message: 'Veuillez sélectionner la catégorie',
+                //         ttl: 5,
+                //     });        
                 }else if(form.value.customerPaiement == 0){
                     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                         type: 'danger',
@@ -1117,19 +1117,19 @@ export default {
             form.value.contacts.forEach((contact)=>{
                 if(contact.type != '' || contact.firstName != '' || contact.email != '' || contact.name != ''){
                     if(contact.firstName == ''){
-                        error = true;
-                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                            type: 'danger',
-                            message: 'Veuillez entrer PRENOM',
-                            ttl: 5,
-                        });
-                    }else if(contact.email == ''){
-                        error = true;
-                        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                            type: 'danger',
-                            message: 'Veuillez saisir un e-mail',
-                            ttl: 5,
-                        });
+                        // error = true;
+                        // store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                        //     type: 'danger',
+                        //     message: 'Veuillez entrer PRENOM',
+                        //     ttl: 5,
+                        // });
+                    // }else if(contact.email == ''){
+                    //     error = true;
+                    //     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+                    //         type: 'danger',
+                    //         message: 'Veuillez saisir un e-mail',
+                    //         ttl: 5,
+                    //     });
                     }else if(contact.name == ''){
                         error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
@@ -1137,7 +1137,7 @@ export default {
                             message: 'Veuillez entrer NOM',
                             ttl: 5,
                         });                          
-                    }else if(contact.type == ''){
+                    }else if(contact.type == 0){
                         error = true;
                         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
                             type: 'danger',
@@ -1195,7 +1195,9 @@ export default {
                 customerPaiements.value    = res.data.customerPaiements;
                 form.value.customerOrigin = 2;
                 form.value.customerStatus = 1;
+                form.value.customerPaiement = 1;
                 form.value.customerTax = 3;
+                form.value.contacts[0].type    = 1;
             }).catch((errors)=>{
                 console.log(errors);
             }).finally(()=>{

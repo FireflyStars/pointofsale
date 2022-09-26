@@ -70,8 +70,8 @@
                                 <div class="col-7 d-flex px-2">
                                     <div class="d-flex col-8">
                                         <div class="form-group col-9">
-                                            <label>SIRET *</label>
-                                            <input type="text" v-model="supplier.siret" class="form-control" max>
+                                            <label>SIRET</label>
+                                            <input type="text" v-model="supplier.siret" class="form-control">
                                         </div>
                                         <div class="form-group col-3 px-2">
                                             <label>&nbsp;</label>
@@ -81,7 +81,7 @@
                                     <div class="col-1"></div>
                                     <div class="col-3">
                                         <div class="form-group">
-                                            <label class="text-nowrap">NAF *</label>
+                                            <label class="text-nowrap">NAF</label>
                                             <input type="text" v-model="supplier.naf" class="form-control" placeholder="">
                                         </div>                                 
                                     </div>
@@ -164,14 +164,14 @@ export default {
 
         }
         const submit = ()=>{
-            if( !supplier.value.siretValidation){
-                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                    type: 'danger',
-                    message: 'Vous devez vérifier le siret s\'il est valide ou non.',
-                    ttl: 5,
-                });                     
-                return;
-            }
+            // if( !supplier.value.siretValidation){
+            //     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            //         type: 'danger',
+            //         message: 'Vous devez vérifier le siret s\'il est valide ou non.',
+            //         ttl: 5,
+            //     });                     
+            //     return;
+            // }
             let error = false;
             if( supplier.value.nom == '' ){
                 error = true;
@@ -180,20 +180,20 @@ export default {
                     message: 'You have to enter a nom',
                     ttl: 5,
                 });    
-            }else if( supplier.value.siret == '' ){
-                error = true;
-                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                    type: 'danger',
-                    message: 'Veuillez entrer SIRET',
-                    ttl: 5,
-                });                       
-            }else if( supplier.value.naf == '' ){
-                error = true;
-                store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
-                    type: 'danger',
-                    message: 'Veuillez entrer NAF',
-                    ttl: 5,
-                });                       
+            // }else if( supplier.value.siret == '' ){
+            //     error = true;
+            //     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            //         type: 'danger',
+            //         message: 'Veuillez entrer SIRET',
+            //         ttl: 5,
+            //     });                       
+            // }else if( supplier.value.naf == '' ){
+            //     error = true;
+            //     store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            //         type: 'danger',
+            //         message: 'Veuillez entrer NAF',
+            //         ttl: 5,
+            //     });                       
             }
             if(!error){
                 store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Création d`un FOURNISSEUR...']);

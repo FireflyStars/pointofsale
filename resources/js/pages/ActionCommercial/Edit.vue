@@ -346,7 +346,7 @@
                             </div>                                           
                             <div class="d-flex mt-3">
                                 <div class="col-5">
-                                    <select-box v-model="action.typeId" :options="actionType" :label="'TYPE D ACTION *'" :name="'actionType'"></select-box>
+                                    <select-box v-model="action.typeId" :options="actionType" :label="'TYPE D ACTION'" :name="'actionType'"></select-box>
                                 </div>
                                 <div class="col-2"></div>
                                 <div class="col-5">
@@ -355,7 +355,7 @@
                             </div>                                           
                             <div class="d-flex mt-3">
                                 <div class="col-5">
-                                    <select-box v-model="action.originId" :options="actionOrigin" :label="'ORIGINE ACTION *'" :name="'actionOrigin'"></select-box>
+                                    <select-box v-model="action.originId" :options="actionOrigin" :label="'ORIGINE ACTION'" :name="'actionOrigin'"></select-box>
                                 </div>
                                 <div class="col-2"></div>
                                 <div class="col-5">
