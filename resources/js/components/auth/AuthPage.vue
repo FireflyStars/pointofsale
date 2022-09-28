@@ -25,8 +25,10 @@
         name: "AuthPage",
         setup(props,context){
             const showimg=ref(false);
-            const logoUrl = ref('../../images/logolcdt.png');
-            const loginImageUrl = ref('../../images/login.jpg');
+            // const logoUrl = ref('../../images/logolcdt.png');
+            const logoUrl = ref('');
+            // const loginImageUrl = ref('../../images/login.jpg');
+            const loginImageUrl = ref('');
             onMounted(()=>{
                 axios.post('/get-login-setting').then((res)=>{
                     if(res.data.logoUrl != ''){
@@ -38,7 +40,11 @@
                     if(res.data.faviconUrl != ''){
                         const favicon = document.querySelector("link[rel~='icon']")
                         favicon.href = res.data.faviconUrl;
-                    }                    
+                    }
+                    if(res.data.title != ''){
+                        const title = document.querySelector("title")
+                        title.innerHTML = res.data.title;
+                    }
                 }).catch((error)=>{
                     console.log(error);
                 }).finally(()=>{

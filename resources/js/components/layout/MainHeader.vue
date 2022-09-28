@@ -58,7 +58,8 @@
 
             const store=useStore();
             const router=useRouter();
-            const logoUrl = ref('../../images/logolcdt.png');
+            // const logoUrl = ref('../../images/logolcdt.png');
+            const logoUrl = ref('');
             const headerColor = ref('#070113');
             const featureunavailable=((feature)=>{
                 store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`,{message:feature+' feature not yet implemented.',ttl:5,type:'danger'});
@@ -93,6 +94,10 @@
                     if(res.data.faviconUrl != ''){
                         headerColor.value = res.data.headerColor;
                     }
+                    if(res.data.title != ''){
+                        const title = document.querySelector("title")
+                        title.innerHTML = res.data.title;
+                    }                    
                 }).catch((error)=>{
                     console.log(error);
                 }).finally(()=>{

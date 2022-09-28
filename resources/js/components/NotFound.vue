@@ -18,7 +18,8 @@
     export default {
         name: "NotFound",
         setup(){
-            const imageUrl = ref('../images/logolcdt.png');
+            // const imageUrl = ref('../images/logolcdt.png');
+            const imageUrl = ref('');
             onMounted(()=>{
                 axios.post('/get-404-setting').then((res)=>{
                     if(res.data.imageUrl != ''){
@@ -27,6 +28,10 @@
                     if(res.data.faviconUrl != ''){
                         const favicon = document.querySelector("link[rel~='icon']")
                         favicon.href = res.data.faviconUrl;
+                    }                    
+                    if(res.data.title != ''){
+                        const title = document.querySelector("title")
+                        title.innerHTML = res.data.title;
                     }                    
                 }).catch((error)=>{
                     console.log(error);
