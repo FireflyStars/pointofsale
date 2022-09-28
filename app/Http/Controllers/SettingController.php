@@ -25,7 +25,7 @@ class SettingController extends Controller
             'sidebarActiveColor'   =>   $sidebarActiveColor
         ]);
     }
-    public function get404Image(){
+    public function get404Setting(){
         $imageUrl = asset('storage/'.DB::table('settings')->where('key', 'site.logo_page')->value('value'));
         $title = DB::table('settings')->where('key', 'site.title')->value('value');
         $faviconUrl = asset('storage/'.json_decode(DB::table('settings')->where('key', 'site.favicon')->value('value'))[0]->download_link);
