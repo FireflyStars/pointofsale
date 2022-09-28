@@ -25,8 +25,8 @@
         name: "AuthPage",
         setup(props,context){
             const showimg=ref(false);
-            // const logoUrl = ref('../../images/logolcdt.png');
             const logoUrl = ref('');
+            // const logoUrl = ref('../../images/logolcdt.png');
             // const loginImageUrl = ref('../../images/login.jpg');
             const loginImageUrl = ref('');
             onMounted(()=>{
