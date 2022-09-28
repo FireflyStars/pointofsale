@@ -76,7 +76,4 @@
     background: #EEEEEE no-repeat  right bottom;
     background-size: cover;
 }
-.auth-form{
-
-}
 </style>
