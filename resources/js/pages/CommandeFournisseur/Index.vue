@@ -23,7 +23,7 @@
                             icon="commande-fournisseur" 
                             name="COMMANDE FOURNISSEUR" 
                             class="almarai_extrabold_normal_normal"
-                            style="height: 45px; width: 45px;"
+                            style="height: 45px; width: 45px; margin-left: 0"
                         />
 
                         <div class="row m-0 ml-5 mr-5">

@@ -18,7 +18,7 @@ class ActionCommercialListResource extends JsonResource
     {
         return [
             'id'                 => $this->id,
-            'client_name'        => $this->user->name,
+            'client_name'        => optional($this->user)->name,
             'event_name'         => $this->name,
             'event_description'  => $this->description,
             'event_type'         => optional($this->eventType)->name,
@@ -31,7 +31,6 @@ class ActionCommercialListResource extends JsonResource
             'contact'            => $this->get_contact($this),
             'address'            => $this->get_address($this),
             'customer'           => $this->get_customer($this),
-            'query'              => DB::getQueryLog()
         ];
     }
 

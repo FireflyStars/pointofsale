@@ -19,6 +19,15 @@ const router = createRouter({
         },
 
         {
+            path: '/product/create',
+            name: 'create-product',
+            component: () => import('../pages/Product/Create'),
+            meta: {
+                authenticated: true
+            }
+        },
+
+        {
             path:'/devis',
             name:'Devis',
             component:()=> import('../pages/devis/Devis.vue'),//import('../Pages/Index'),
@@ -133,6 +142,17 @@ const router = createRouter({
             meta: {
                 authenticated: true
             },
+            children: [
+                {
+                    path: '/commande-fournisseur/details/:id',
+                    name: 'commande-fournisseur-details',
+                    props: true,
+                    component: () => import('../pages/CommandeFournisseur/Details'),
+                    meta: {
+                        authenticated: true
+                    }
+                }
+            ]
         },
 
         {
@@ -260,6 +280,15 @@ const router = createRouter({
                     }
                 },
             ],
+        },
+
+        {
+            path: '/commande-fournisseur/create',
+            name: 'commande-fournisseur-create',
+            component: () => import('../Pages/CommandeFournisseur/Create-and-search'),
+            meta: {
+                authenticated: true,
+            },
         },
 
         {
