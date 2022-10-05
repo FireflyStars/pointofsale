@@ -122,15 +122,16 @@ class DevisController extends Controller
         $order->contact=null;
         $chantier_address=null;
         if($lastevent!=null){
-        $order->contact=$lastevent->contact;
-        $chantier_address=$lastevent->address()->where('address_type_id','=',2)->first();
+            $order->contact=$lastevent->contact;
+            $chantier_address=$lastevent->address()->where('address_type_id','=',2)->first();
         }
         $order->formatted_chantier_address=$chantier_address==null?'Pas d\'adresse de chantier':$chantier_address->getformattedAddress();
         $order->customer;
         $order->orderZones;
         $order->mode_paiements=Invoice::getModeDePaiementsByOrderId($order->id);
     
-        foreach($order->orderZones as &$orderzone){
+        foreach($order->orderZones as &$orderzone)
+        {
             $orderzone->orderOuvrage;
             $groupOrderOuvrage=[];
             foreach( $orderzone->orderOuvrage as $order_ouvrage){

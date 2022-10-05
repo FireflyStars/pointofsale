@@ -95,6 +95,8 @@ import { commande_fournisseur as COMMANDE_FOURNISSEUR_LIST_MODULE } from "./modu
 import { permis as PERMIS_LIST_MODULE } from "./modules/permis"
 import { chat as CHAT_MODULE } from "./modules/chat"
 
+import { product as PRODUCT_MODULE } from './modules/product'
+
 
 
 export default createStore({
@@ -148,6 +150,7 @@ export default createStore({
         COMMANDE_FOURNISSEUR_LIST_MODULE,
         CHAT_MODULE,
         INVOICELIST_MODULE,
-        INVOICE_MODULE
+        INVOICE_MODULE,
+        PRODUCT_MODULE
     }
 });

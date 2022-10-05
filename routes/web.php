@@ -15,6 +15,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ArticlesController;
 use App\Http\Controllers\CommandeController;
 use App\Http\Controllers\CompagneController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\OuvragesController;
+use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\LcdtAdminController;
 use App\Http\Controllers\LcdtFrontController;
@@ -34,13 +36,15 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\UnitStatesController;
 use App\Http\Controllers\FournisseurController;
 use App\Http\Controllers\CampagneListController;
+use App\Http\Controllers\HtmlTemplateController;
 use App\Http\Controllers\PageElementsController;
 use App\Http\Controllers\InterventionsController;
+use App\Http\Controllers\ProductsSearchController;
+use App\Http\Controllers\FournisseurSearchController;
 use App\Http\Controllers\CommandeFounisseurController;
+use App\Http\Controllers\CommandeFournisseurController;
 use App\Http\Controllers\ActionCommercialListController;
-use App\Http\Controllers\HtmlTemplateController;
 use App\Http\Controllers\SettingController;
-use Illuminate\Support\Facades\DB;
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
@@ -216,6 +220,16 @@ Route::post('/get-fournisseur-supplier-status-formatted', [FournisseurController
 Route::post('/get-fournisseur-statuses', [FournisseurController::class, 'fournisseur_status_all'])->middleware('auth');
 Route::get('/get-fournisseur-details/{supplier}', [FournisseurController::class, 'fournisseur_details'])->middleware('auth');
 Route::get('/get-fournisseur-history/{supplier}', [FournisseurController::class, 'fournisseur_history'])->middleware('auth');
+Route::post('/commande-fournisseur/create/{supplier}', [CommandeFounisseurController::class, 'store']);
+Route::get('/get-commande-fournisseur-supplier-order/{supplier_order}', [CommandeFounisseurController::class, 'supplier_order']);
+Route::get('/get-commande-fournisseur-order-details/{supplier_order}', [CommandeFounisseurController::class, 'details']);
+
+Route::post('/search-fournisseur', [FournisseurSearchController::class, 'index'])->middleware('auth');
+Route::post('/search-products', [ProductsSearchController::class, 'index'])->middleware('auth');
+Route::get('/get-product-units', [ProductsSearchController::class, 'product_units'])->middleware('auth');
+Route::post('/fournisseur-commande-create-supplier-order/{supplier_order}', [CommandeFounisseurController::class, 'store_product'])->middleware('auth');
+Route::post('/create-new-product', [ProductsController::class, 'store'])->middleware('auth');
+
 
 Route::get('/get-permis-list', [PermisController::class, 'index'])->middleware('auth');
 Route::post('/get-permis-list', [PermisController::class, 'index'])->middleware('auth');
