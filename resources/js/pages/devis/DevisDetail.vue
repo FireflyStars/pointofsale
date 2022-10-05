@@ -141,6 +141,13 @@
         <button v-if="order.order_state_id!=4 && order.order_state_id!=20" class="btn btn-outline-secondary almarai_700_normal" @click.once="changeOrderState(20)">Perdu</button>  
         <button v-if="order.order_state_id!=4 && order.order_state_id!=18" class="btn btn-outline-primary almarai_700_normal"  @click.once="changeOrderState(18)">Abandonne</button>  
         <button v-if="order.order_state_id!=4 && order.order_state_id!=3" class="btn btn-outline-warning almarai_700_normal"  @click.once="changeOrderState(3)">Attente client</button>   
+        <button 
+            :disabled="showloader"
+            class="btn btn-outline-secondary almarai_700_normal"
+            @click.prevent="$router.push({ name: 'Devis' })"
+        >
+            FERMER
+        </button>
     </div>
 
 

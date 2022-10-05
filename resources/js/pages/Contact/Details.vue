@@ -218,20 +218,31 @@
 
         <div style="flex: 1">
         
-            <base-button 
-                title="Editer" 
-                kind="green" 
-                @click.prevent="$router.push({ path: `/contact/edit/${details.id}` })" 
-            />
+            <button 
+                :disabled="showloader"
+                class="btn btn-outline-dark almarai_700_normal"
+                @click.prevent="$router.push({ path: `/contact/edit/${details.id}` })"
+            >
+                EDITER
+            </button>
 
         </div>
 
-        <base-button 
+        
+        <!-- <base-button 
             title="effacer" 
             kind="danger"
             class="text-uppercase"
             @click.prevent="changeStatus" 
-        />
+        /> -->
+
+        <button 
+            :disabled="showloader"
+            class="btn btn-outline-secondary almarai_700_normal"
+            @click.prevent="$router.push({ name: 'contact' })"
+        >
+            FERMER
+        </button>
         
     </div>
 

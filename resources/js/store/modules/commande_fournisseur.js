@@ -191,7 +191,7 @@ export const commande_fournisseur = {
             },
             highlight_row: {
                   where: [
-                    // { col: 'id', value: 10 }, example
+                    // { col: 'id', value: 7 },
                   ], 
                   backgroundColor: '#f7c5af',
                   color: '#fd3b35'

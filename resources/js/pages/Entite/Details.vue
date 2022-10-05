@@ -354,15 +354,17 @@
 
         <div style="flex: 1">
         
-            <base-button 
-                title="Editer" 
-                kind="green" 
-                @click.prevent="$router.push({ path: `/entite/edit/${details.id}` })" 
-            />
+            <button 
+                :disabled="showloader"
+                class="btn btn-outline-dark almarai_700_normal"
+                @click.prevent="$router.push({ path: `/entite/edit/${details.id}` })"
+            >
+                EDITER
+            </button>
 
         </div>
 
-        <base-button 
+        <!-- <base-button 
             title="effacer" 
             kind="danger"
             class="text-uppercase"
@@ -374,7 +376,15 @@
             kind="danger" 
             class="text-uppercase" 
             @click.prevent="changeLitige"
-        />
+        /> -->
+
+        <button 
+            :disabled="showloader"
+            class="btn btn-outline-secondary almarai_700_normal"
+            @click.prevent="$router.push({ name: 'entite' })"
+        >
+            FERMER
+        </button>
 
     </div>
 

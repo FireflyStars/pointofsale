@@ -44,7 +44,6 @@ use App\Http\Controllers\FournisseurSearchController;
 use App\Http\Controllers\CommandeFounisseurController;
 use App\Http\Controllers\CommandeFournisseurController;
 use App\Http\Controllers\ActionCommercialListController;
-use App\Http\Controllers\SettingController;
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();

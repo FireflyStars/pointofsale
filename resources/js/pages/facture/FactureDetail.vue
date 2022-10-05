@@ -99,12 +99,13 @@
 
        </transition>
      <div class="od_actions mb-3" v-if="show">
-        <button class="btn btn-outline-success almarai_700_normal" v-if="invoice.invoice_state_id==1" @click="updateInvoiceState(6)">VALIDE</button>
+        <button class="btn btn-outline-dark almarai_700_normal" v-if="invoice.invoice_state_id==1" @click="updateInvoiceState(6)">VALIDE</button>
      
         <button class="btn btn-outline-info almarai_700_normal" v-if="invoice.invoice_state_id==6"  @click="updateInvoiceState(2)">ENVOYE</button>
         <button class="btn btn-outline-secondary almarai_700_normal" v-if="invoice.invoice_state_id==1&&invoice.invoice_type_id!=3" @click="removeInvoice()">EFFACER</button>  
            <button class="btn btn-outline-warning almarai_700_normal">PDF</button>
-        <button class="btn btn-outline-dark almarai_700_normal"  @click="detailpanel.close()">FERMER</button>   
+        <button class="btn btn-outline-secondary almarai_700_normal"  @click="detailpanel.close()">FERMER</button>  
+        
      </div>
 
 

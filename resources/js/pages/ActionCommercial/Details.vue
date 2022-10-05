@@ -204,14 +204,15 @@
 
     <div class="footer-section d-flex justify-content-between align-items-center" style="gap: 0.3rem;">
 
-        <base-button 
+        <button 
             :disabled="showloader"
-            title="Editer" 
-            kind="green" 
-            @click.prevent="$router.push({ path: `/action-commercial/edit/${details.id}` })" 
-        />
+            class="btn btn-outline-dark almarai_700_normal"
+            @click.prevent="$router.push({ path: `/action-commercial/edit/${details.id}` })"
+        >
+            EDITER
+        </button>
 
-        <base-button 
+        <!-- <base-button 
             :disabled="showloader"
             title="Replanifier" 
             kind="light-green" 
@@ -239,7 +240,15 @@
             :disabled="showloader"
             title="Annuler" 
             @click.prevent="changeAnnuler"
-        />
+        /> -->
+
+        <button 
+            :disabled="showloader"
+            class="btn btn-outline-secondary almarai_700_normal"
+            @click.prevent="$router.push({ name: 'action-commercial' })"
+        >
+            FERMER
+        </button>
 
 
     </div>

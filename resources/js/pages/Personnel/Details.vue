@@ -70,21 +70,31 @@
     <div class="footer-section d-flex align-items-center gap-4" v-if="show">
 
         <div style="flex: 1">
-        
-            <base-button 
-                title="Editer" 
-                kind="green" 
+
+            <button 
+                class="btn btn-outline-dark almarai_700_normal" 
                 @click.prevent="$router.push({ path: `/personnel/edit/${details.id}` })" 
-            />
+            >
+                EDITER
+            </button>
 
         </div>
 
+        
         <base-button 
             title="archiver" 
             kind="danger"
             class="text-uppercase"
             @click.prevent="deleteUser"
         />
+        
+        <button 
+            :disabled="showloader"
+            class="btn btn-outline-secondary almarai_700_normal"
+            @click.prevent="$router.push({ name: 'personnel' })"
+        >
+            FERMER
+        </button>
         
     </div>
 
