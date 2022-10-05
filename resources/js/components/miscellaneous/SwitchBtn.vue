@@ -51,7 +51,7 @@
         cursor: pointer;
     }
     .switch{
-        background-color: #C3C3C3;
+        background-color: #E8581B;
         height: 28px;
         padding: 5px 3px 5px 8px;
         border-radius: 40px;
@@ -80,7 +80,7 @@
         transition: 0.2s ease-in-out opacity;
     }
     .switch.on{
-        background-color: #42A71E;
+        background-color: #E8581B;
     }
     .switch.on:before{
         left: 44px;

@@ -40,6 +40,7 @@ use App\Http\Controllers\CommandeFounisseurController;
 use App\Http\Controllers\ActionCommercialListController;
 use App\Http\Controllers\HtmlTemplateController;
 use App\Http\Controllers\SettingController;
+use Illuminate\Support\Facades\DB;
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();

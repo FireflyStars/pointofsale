@@ -210,7 +210,40 @@
                     </div>
                   </div>
                 </div>
-
+                <div class="description-section bg-white px-3 py-2 my-2" v-if="zone.describes != null">
+                  <div class="d-flex flex-wrap">
+                    <div class="col-6" v-for="(describeGroup, desribeGroupName, desribeGroupIndex) in zone.describes" :key="desribeGroupIndex">
+                      <div class="describe-group">
+                        <h5>{{ desribeGroupName }}</h5>
+                        <div class="d-flex mt-2" v-for="(describe, describeIndex) in describeGroup" :key="describeIndex">
+                          <div class="col-4">
+                            {{ describe.name }}
+                          </div>
+                          <div class="col-8" v-if="describe.type == 'Radio'">
+                            <div class="preference-radio">
+                              <label class="custom-radio" v-for="(value, key) in describe.data" :key="key">{{ value }}
+                                <input type="radio" :checked="describe.default == value ? true : false" :value="value" v-model="describe.default" :name="'pref_'+describe.name">
+                                <span class="checkmark"></span>
+                              </label>
+                            </div>                            
+                          </div>
+                          <div class="col-8" v-else-if="describe.type == 'Switch'">
+                            <switch-btn class="ms-auto" v-model="describe.default"></switch-btn>
+                          </div>
+                          <div class="col-8" v-else-if="describe.type == 'Checkbox'">
+                            <div  v-for="(value, key) in describe.data" :key="key">
+                              <CheckBox v-model="describe.default" :checked="value == 0 ? false : true" :title="value"></CheckBox>
+                            </div>
+                          </div>
+                          <div class="col-8" v-else>
+                            <input v-model="describe.default" class="form-control form-control-sm bg-gray"/>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
                 <div class="ouvrage-section installation-ouvrages bg-white px-4 py-3 mt-2 mb-2" :id="'zone-'+zoneIndex+'-installation-ouvrages'">
                   <div class="ouvrage-header d-flex">
                     <div class="col-7">
@@ -956,6 +989,8 @@ import EmptyOuvrageModal from '../../components/miscellaneous/EmptyOuvrageModal'
 import EmptyProductModal from '../../components/miscellaneous/EmptyProductModal';
 import PdfModal from '../../components/miscellaneous/PdfModal';
 import GoogleMap from '../../components/miscellaneous/GoogleMap';
+import CheckBox from '../../components/miscellaneous/CheckBox';
+import SwitchBtn from '../../components/miscellaneous/SwitchBtn';
 import Swal from 'sweetalert2';
 import {     
   DISPLAY_LOADER,
@@ -984,7 +1019,9 @@ export default {
     EmptyOuvrageModal,
     EmptyProductModal,
     PdfModal,
-    GoogleMap
+    GoogleMap,
+    CheckBox,
+    SwitchBtn
   },
   setup() {
     const store = useStore();
@@ -1021,6 +1058,7 @@ export default {
     const taskModal = ref(null);
     const gedCatId = ref(0);
     const gedCats = ref([]);
+    const describes = ref([]);    
     const roofAccesses = ref([]);
     const form = ref({
       orderName: '',
@@ -1072,6 +1110,7 @@ export default {
           roofAccess: 0,
           height: '',
           gedCats: [],
+          describes: null,
           installOuvrage: {
             name: 'Installation',
             edit: false,
@@ -1312,6 +1351,7 @@ export default {
         units.value = res.data.units;
         roofAccesses.value = res.data.roofAccesses;
         gedCats.value = res.data.gedCats
+        describes.value = res.data.describes
         let devisData = res.data.devis
         if(devisData.address.lat != null){
             devisData.address.lat = parseFloat(devisData.address.lat.replace(/[a-zA-Z()]/g, ""));
@@ -1819,6 +1859,7 @@ export default {
             height: '',
             edit: false,
             gedCats: gedCats.value,
+            describes: describes.value,
             installOuvrage: {
               name: 'Installation',
               edit: false,
@@ -2336,4 +2377,65 @@ export default {
       }
     }
   }
+// custome radio button
+.preference-radio{
+/* Customize the label (the container) */
+    .custom-radio {
+        display: block;
+        position: relative;
+        padding-left: 24px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        font-size: 14px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        /* Hide the browser's default radio button */
+        input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+            /* When the radio button is checked, add a blue background */
+            &:checked ~ .checkmark {
+                border: solid 2px #E8581B;
+                /* Show the indicator (dot/circle) when checked */
+                &:after {
+                    display: block;
+                }
+            }
+        }
+        /* On mouse-over, add a grey background color */
+        // &:hover input ~ .checkmark {
+        //     background-color: #ccc;
+        // }
+        .checkmark:after {
+            top: 2px;
+            left: 2px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background:#E8581B;
+        }
+    }
+    /* Create a custom radio button */
+    .checkmark {
+        position: absolute;
+        top: 1px;
+        left: 0;
+        height: 18px;
+        width: 18px;
+        border-radius: 50%;
+        border: solid 2px #E8581B;
+        background-color: white;
+        /* Create the indicator (the dot/circle - hidden when not checked) */
+        &:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+    }
+}  
 </style>

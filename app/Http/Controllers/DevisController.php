@@ -503,11 +503,22 @@ class DevisController extends Controller
         foreach ($categories as $item) {
             $item->items = [];
         }
+        $describes = DB::table('describe')->join('describe_categories', 'describe.describe_category_id', '=', 'describe_categories.id')
+                    ->select('describe.id', 'describe.name', 'describe.type', 'describe.default', 'describe.order', 'describe.data', 'describe_categories.name as catName')
+                    ->orderBy('order')->get();
+        foreach($describes as $describe){
+            $describe->data = json_decode($describe->data);
+            if($describe->type == 'Checkbox' || $describe->type == 'Switch'){
+                $describe->default = $describe->default == 0 ? false : true;
+            }            
+        }
+        $describes = $describes->groupBy('catName');
         return response()->json([
             'gedCats'   => $categories->groupBy('id'),
             'units'     => DB::table('units')->select('id as value', 'code as display')->get(),
             'taxes'     => DB::table('taxes')->select('id as value', DB::raw('CEIL(taux * 100) as display'))->get(),
             'roofAccesses'     => DB::table('moyenacces')->select('id as value', 'name as display')->get(),
+            'describes'     => $describes,
         ]);
     }
 
@@ -807,7 +818,21 @@ class DevisController extends Controller
                     }
                     $gedDetail->save();
                 }
-            }            
+            }        
+            // save describe
+            foreach($zone['describes'] as $zoneDescribes) {
+                $describeData = [];
+                foreach ($zoneDescribes as $describe) {
+                    $describeData[] = [
+                        'order_zone_id'=> $zoneId,
+                        'describe_id'=> $describe['id'],
+                        'value'=> $describe['default'],
+                        'created_at'=> now(),
+                        'updated_at'=> now()
+                    ];
+                }
+                DB::table('order_describe')->insert($describeData);
+            }
             if( count($zone['installOuvrage']['ouvrages']) ){
                 $installationCat = [
                     'order_zone_id' =>  $zoneId,
@@ -1182,6 +1207,23 @@ class DevisController extends Controller
                 }
             }
             $devis['zones'][$zoneIndex]['gedCats'] = $categories->groupBy('id');
+            $describes = DB::table('order_describe')->join('describe', 'describe.id', '=', 'order_describe.describe_id')
+                        ->where('order_zone_id', $zone->id)
+                        ->join('describe_categories', 'describe_categories.id', '=', 'describe.describe_category_id')
+                        ->select(
+                            'describe.name', 'describe.type', 'order_describe.value as default', 
+                            'describe.order', 'describe.data', 'describe_categories.name as catName',
+                            'describe.id', 'order_describe.id as order_describe_id'
+                        )
+                        ->orderBy('order')->get();            
+            foreach($describes as $describe){
+                $describe->data = json_decode($describe->data);
+                if($describe->type == 'Checkbox' || $describe->type == 'Switch'){
+                    $describe->default = $describe->default == 0 ? false : true;
+                }
+            }                        
+
+            $devis['zones'][$zoneIndex]['describes'] = $describes->groupBy('catName');
             //installation ouvrages;
             
             $orderCat = DB::table('order_cat')->where('order_zone_id', $zone->id)->where('type', 'INSTALLATION')->first();
@@ -1464,6 +1506,17 @@ class DevisController extends Controller
                     }
                     // }
                     $gedDetail->save();
+                }
+            }            
+            // save describe
+            foreach($zone['describes'] as $zoneDescribes) {
+                foreach ($zoneDescribes as $describe) {
+                    DB::table('order_describe')->where('id', $describe['order_describe_id'])->update([
+                        'describe_id'=> $describe['id'],
+                        'value'=> $describe['default'],
+                        'order_zone_id'=> $zoneId,
+                        'updated_at'=> now()
+                    ]);
                 }
             }            
             if( count($zone['installOuvrage']['ouvrages']) ){

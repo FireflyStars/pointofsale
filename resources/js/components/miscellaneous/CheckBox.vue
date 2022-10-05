@@ -81,11 +81,11 @@ export default {
         height: 20px;
         display: inline-block;
         position: relative;
-        border: #868686 2px solid;
+        border: #E8581B 2px solid;
         cursor: pointer;
     }
     span.chkbox.checked {
-        background: #47454B;
+        background: #E8581B;
         border:none;
     }
     span.chkbox:after{
@@ -112,7 +112,7 @@ export default {
         border:#868686 2px solid;
     }
     .filters span.chkbox.checked,header span.chkbox.checked{
-        background: #47454B;
+        background: #E8581B;
         border:none;
     }
     .chkbox_wrap {
