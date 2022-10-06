@@ -249,8 +249,8 @@
                     <div class="service-section bg-white p-2" v-if="zone.services != null">
                       <div class="d-flex flex-wrap mb-2">
                         <div class="col-4 fw-bold">Tache à realiser</div>
-                        <div class="col-3 fw-bold">Moyen à prévoir</div>
-                        <div class="col-5 fw-bold">
+                        <div class="col-5 fw-bold">Moyen à prévoir</div>
+                        <div class="col-3 fw-bold">
                           <div class="text-center fw-bold">Responsable Action</div>
                           <div class="d-flex flex-wrap">
                             <div class="col-3 d-flex justify-content-center fw-bold">SEMTI</div>
@@ -260,15 +260,15 @@
                           </div>
                         </div>
                       </div>
-                      <div class="d-flex mb-2" v-for="(service, index) in zone.services">
+                      <div class="d-flex mb-2 border-bottom" v-for="(service, index) in zone.services">
                         <div class="col-1 d-flex"><CheckBox v-model="service.active" :checked="service.active"></CheckBox></div>
                         <div class="col-3 d-flex align-items-center">{{ service.name }}</div>
-                        <div class="d-flex flex-wrap col-3" v-if="service.type == 'Checkbox'">
+                        <div class="d-flex flex-wrap col-5" v-if="service.type == 'Checkbox'">
                           <div class="me-2" v-for="(value, key) in service.data" :key="key">
                             <CheckBox v-model="service.value" :checked="service.value == value ? true : false" :title="value"></CheckBox>
                           </div>
                         </div>
-                        <div class="d-flex flex-wrap col-3" v-else-if="service.type == 'Radio'">
+                        <div class="d-flex flex-wrap col-5" v-else-if="service.type == 'Radio'">
                           <div class="preference-radio">
                             <label class="custom-radio" v-for="(value, key) in service.data" :key="key">{{ value }}
                               <input type="radio" :checked="service.value == value ? true : false" :value="value" v-model="service.value" :name="'pref_'+service.name">
@@ -276,10 +276,10 @@
                             </label>
                           </div>
                         </div>
-                        <div class="col-3" v-else>
+                        <div class="col-5" v-else>
                           <switch-btn class="ms-auto" v-model="service.value"></switch-btn>
                         </div>
-                        <div class="col-5 d-flex flex-wrap">
+                        <div class="col-3 d-flex flex-wrap">
                           <div class="col-3 d-flex justify-content-center"><CheckBox v-model="service.semti" :checked="service.semti"></CheckBox></div>
                           <div class="col-3 d-flex justify-content-center"><CheckBox v-model="service.sstt" :checked="service.sstt"></CheckBox></div>
                           <div class="col-3 d-flex justify-content-center"><CheckBox v-model="service.loc" :checked="service.loc"></CheckBox></div>
