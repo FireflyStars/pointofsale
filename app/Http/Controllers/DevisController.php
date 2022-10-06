@@ -41,7 +41,7 @@ class DevisController extends Controller
         $orderList=DB::table('orders')
         ->select(['orders.*',
         'events.id as evnt',
-        'users.name as responsable', 
+        'users.name as responsable',
         DB::raw("DATE_FORMAT(orders.created_at, '%Y-%m-%d') as created_at"),
         DB::raw("CONCAT(customers.company,' ',customers.firstname,' ',customers.name) as customer"),
         DB::raw("TRIM(CONCAT(contacts.firstname,' ',contacts.name,'<br/>',contacts.mobile)) as contact"),
@@ -66,7 +66,7 @@ class DevisController extends Controller
         //column filters
         if($column_filters!=null)
         foreach($column_filters as $column_filter){
-       
+
             if($column_filter['type']=='date'){
                 if(isset($column_filter['having'])&&$column_filter['having']==true){
                     if($column_filter['word']['from']!=''){
@@ -84,14 +84,14 @@ class DevisController extends Controller
                     }
                 }
             }elseif(isset($column_filter['filter_options'])&&count($column_filter['word'])>0){
-           
+
                 if(isset($column_filter['having'])&&$column_filter['having']==true){
-                   
+
                     $orderList=$orderList->havingRaw($column_filter['id']." IN ('".implode("','",$column_filter['word'])."')");
                 }else{
                     $orderList=$orderList->whereIn($column_filter['id'],$column_filter['word']);
                 }
-            
+
             }else{
                 if(isset($column_filter['having'])&&$column_filter['having']==true){
                     $orderList=$orderList->having($column_filter['id'],'LIKE','%'.$column_filter['word'].'%');
@@ -129,13 +129,13 @@ class DevisController extends Controller
         $order->customer;
         $order->orderZones;
         $order->mode_paiements=Invoice::getModeDePaiementsByOrderId($order->id);
-    
+
         foreach($order->orderZones as &$orderzone)
         {
             $orderzone->orderOuvrage;
             $groupOrderOuvrage=[];
             foreach( $orderzone->orderOuvrage as $order_ouvrage){
-                
+
                 $order_ouvrage->orderCategory;
                 $groupOrderOuvrage[$order_ouvrage->orderCategory->name][]=$order_ouvrage;
             }
@@ -154,7 +154,7 @@ class DevisController extends Controller
         $order->updateState($order_state_id);
     }
     public function loadOrderInvoices(Request $request){
-        $order_id=$request->post('order_id'); 
+        $order_id=$request->post('order_id');
         $user=Auth::user();
         $order=Order::find($order_id);
         if($order->affiliate_id!=$user->affiliate_id)
@@ -165,10 +165,10 @@ class DevisController extends Controller
         ->select(['order_invoices.*','invoice_types.sign','invoice_types.name as invoice_type_name','invoice_types.color as invoice_type_color','invoices.reference as ref','invoices.invoice_state_id'])
         ->leftJoin('invoices',function($join){
              $join->on('invoices.order_invoice_id','=','order_invoices.id')
-             ->whereNull('invoices.deleted_at');  
+             ->whereNull('invoices.deleted_at');
         })->leftJoin('invoice_types',function($join){
              $join->on('invoice_types.id','=','invoices.invoice_type_id')
-             ->whereNull('invoice_types.deleted_at');  
+             ->whereNull('invoice_types.deleted_at');
         })->where('order_invoices.order_id','=',$order->id)
         ->whereNull('order_invoices.deleted_at')
         ->orderBy('order_invoices.id')
@@ -182,7 +182,7 @@ class DevisController extends Controller
             $order_id=$request->post('order_id');
             $order=Order::find($order_id);
             $order_documents=array();
-            
+
             $user=Auth::user();
             if($order->affiliate_id!=$user->affiliate_id)
             return response('Order is not affiliated to user.Cannot load order documents.',509);
@@ -209,7 +209,7 @@ class DevisController extends Controller
 
            }
 
-      
+
             return response()->json($order_documents);
     }
 
@@ -222,10 +222,10 @@ class DevisController extends Controller
         $order=Order::find($order_id);
         if($order==null)
         return response('Order not found.',509);
-        
+
         if($order->affiliate_id!=$user->affiliate_id)
         return response('Order is not affiliated to user.Cannot save order document.',509);
-        
+
         $ged=Ged::where('user_id','=',$user->id)->where('order_id','=',$order_id)->whereNull('deleted_at')->first();
         if($ged==null){
             $ged=new Ged();
@@ -278,11 +278,11 @@ class DevisController extends Controller
         $order=Order::find($order_id);
         if($order->affiliate_id!=$user->affiliate_id)
         return response('Order is not affiliated to user.Cannot add invoice.',509);
-    
 
-       
-     
-  
+
+
+
+
 
         $oi=new OrderInvoice();
         $oi->description=$description;
@@ -292,8 +292,8 @@ class DevisController extends Controller
         $oi->order_id=$order_id;
         $oi->save();
         $oi->fresh();
-   
-    
+
+
             $oi->facturer=0;
             $in=new Invoice();
             $in->order_id=$order_id;
@@ -313,7 +313,7 @@ class DevisController extends Controller
             $in->updateState(1);//creation
             $oi->invoice_id=$in->id;
             $oi->save();
-              
+
         if($invoice_type_id==1||$invoice_type_id==4||$invoice_type_id==3){
             $inD=new InvoiceDetail();
             $fdate=date('d/m/Y',strtotime($date));
@@ -330,22 +330,22 @@ class DevisController extends Controller
         $inD->save();
         }
 
-        
+
 
         $orderInvoices=DB::table('order_invoices')->select(['order_invoices.*','invoice_types.sign','invoice_types.name as invoice_type_name','invoice_types.color as invoice_type_color'])->leftJoin('invoices',function($join){
             $join->on('invoices.order_invoice_id','=','order_invoices.id')
-            ->whereNull('invoices.deleted_at');  
+            ->whereNull('invoices.deleted_at');
        })->leftJoin('invoice_types',function($join){
             $join->on('invoice_types.id','=','invoices.invoice_type_id')
-            ->whereNull('invoice_types.deleted_at');  
+            ->whereNull('invoice_types.deleted_at');
        })->where('order_invoices.order_id','=',$order->id)
        ->whereNull('order_invoices.deleted_at')->get();
-     
+
        $reste_a_facturer=0;
        $total_facture=0;
        $total_taux_facture=0;
        $total_remise=0;
- 
+
 
        foreach($orderInvoices as $orderInvoice){
          if($orderInvoice->invoice_type_name=='FACTURE'&&$orderInvoice->facturer==1){
@@ -356,7 +356,7 @@ class DevisController extends Controller
             $total_remise+=$orderInvoice->montant;
          }
        }
-     
+
        $reste_a_facturer=$order->total-$total_remise-$total_facture;
 
         if($invoice_type_id==2){// mettre a jour les echeance qui ne sont pas encore facturer
@@ -376,19 +376,19 @@ class DevisController extends Controller
     public function removeOrderInvoice(Request $request){
         $order_invoice_id=$request->post('id');
         $invoice_type_name=$request->post('invoice_type_name');
-        
+
         $oi=OrderInvoice::find($order_invoice_id);
         if($oi==null)
             return response('Order invoice not found.',509);
-         
-          
-        
+
+
+
         $order=$oi->order;
         $user=Auth::user();
         if($order->affiliate_id!=$user->affiliate_id)
         return response('Order is not affiliated to user.Cannot delete invoice.',509);
 
-        
+
         if($oi->invoice_id>0){
             $invoice=Invoice::find($oi->invoice_id);
             if($invoice->invoice_state_id!=1)
@@ -396,12 +396,12 @@ class DevisController extends Controller
 
                 if($invoice_type_name=='AVOIR'&&$invoice->invoice_state_id!=1)
                 return response('Impossible de supprimer une avoir.',509);
-         
+
             if(($invoice->invoice_type_id==1||$invoice->invoice_type_id==2||$invoice->invoice_type_id==3)&&$invoice->invoice_state_id==1){//if facture or remise and still in creation we can delete. we cannot delete avoir
-                $invoice->delete();   
+                $invoice->delete();
         }
         }
-     
+
 
         $oi->delete();
 
@@ -410,19 +410,19 @@ class DevisController extends Controller
              // mettre a jour les echeance qui ne sont pas encore facturer
              $orderInvoices=DB::table('order_invoices')->select(['order_invoices.*','invoice_types.sign','invoice_types.name as invoice_type_name','invoice_types.color as invoice_type_color'])->leftJoin('invoices',function($join){
                 $join->on('invoices.order_invoice_id','=','order_invoices.id')
-                ->whereNull('invoices.deleted_at');  
+                ->whereNull('invoices.deleted_at');
            })->leftJoin('invoice_types',function($join){
                 $join->on('invoice_types.id','=','invoices.invoice_type_id')
-                ->whereNull('invoice_types.deleted_at');  
+                ->whereNull('invoice_types.deleted_at');
            })->where('order_invoices.order_id','=',$order->id)
            ->whereNull('order_invoices.deleted_at')->get();
-         
+
            $reste_a_facturer=0;
            $total_facture=0;
            $total_taux_facture=0;
            $total_remise=0;
-     
-  
+
+
            foreach($orderInvoices as $orderInvoice){
              if($orderInvoice->invoice_type_name=='FACTURE'&&$orderInvoice->facturer==1){
                 $total_facture+=$orderInvoice->montant;
@@ -432,53 +432,53 @@ class DevisController extends Controller
                 $total_remise+=$orderInvoice->montant;
              }
            }
-         
+
            $reste_a_facturer=$order->total-$total_remise-$total_facture;
-    
+
 
                 foreach($orderInvoices as $orderInvoice){
                     if($orderInvoice->invoice_type_name=='FACTURE'&&$orderInvoice->facturer==0){
-                       
+
                         $montant=($reste_a_facturer/(100-$total_taux_facture)*$orderInvoice->pourcentage);
                         $oi=OrderInvoice::find($orderInvoice->id);
                         $oi->montant=$montant;
                         $oi->update();
                     }
                 }
-               
+
             }
-        
+
 
         return response()->json(array('message'=>'ok'));
     }
     public function validateOrderInvoice(Request $request){
         $order_invoice_id=$request->post('id');
         $invoice_type_name=$request->post('invoice_type_name');
-        
+
         $oi=OrderInvoice::find($order_invoice_id);
         if($oi==null)
             return response('Order invoice not found.',509);
-         
-        
+
+
         $order=$oi->order;
         $user=Auth::user();
         if($order->affiliate_id!=$user->affiliate_id)
         return response('Order is not affiliated to user.Cannot create invoice.',509);
- 
-         
+
+
         if($oi->invoice_id>0&&$oi->facturer==1)
         return response('Invoice already exists.',509);
 
         $oi->facturer=1;
         $in=Invoice::find($oi->invoice_id);
-   
+
         $in->updateState(6);//valide
         $oi->save();
         $in->ref=$in->reference;
 
 
         return response()->json(array('message'=>'ok','invoice'=>$in));
-        
+
     }
     public function getOrderStates(Request $request){
         return response()->json(OrderState::all());
@@ -496,7 +496,7 @@ class DevisController extends Controller
     }
     /**
      * Get Ged categories
-     * 
+     *
      */
 
     public function getGedCategories(){
@@ -511,25 +511,26 @@ class DevisController extends Controller
             $describe->data = json_decode($describe->data);
             if($describe->type == 'Checkbox' || $describe->type == 'Switch'){
                 $describe->default = $describe->default == 0 ? false : true;
-            }            
+            }
         }
         $describes = $describes->groupBy('catName');
+
         $services = DB::table('services')->select(
-            'services.name', 'services.type', 'services.default as value', 
+            'services.name', 'services.type', 'services.default as value',
             'services.data', 'services.id',
         )
-        ->orderBy('order')->get();            
+        ->orderBy('order')->get();
         foreach($services as $service){
             $service->data = json_decode($service->data);
-            if($describe->type == 'Checkbox' || $describe->type == 'Switch'){
-                $describe->value = $describe->value == 0 ? false : true;
+            if($service->type == 'Checkbox' || $service->type == 'Switch'){
+                $service->value = $service->value == 0 ? false : true;
             }
-            $describe->active = false;
-            $describe->semti = false;
-            $describe->sstt = false;
-            $describe->client = false;
-            $describe->loc = false;
-        }        
+            $service->active = false;
+            $service->semti = false;
+            $service->sstt = false;
+            $service->client = false;
+            $service->loc = false;
+        }
         return response()->json([
             'gedCats'   => $categories->groupBy('id'),
             'units'     => DB::table('units')->select('id as value', 'code as display')->get(),
@@ -543,7 +544,7 @@ class DevisController extends Controller
 
     /**
      * Get all toits
-     * 
+     *
      */
 
     public function getAllToits(){
@@ -552,7 +553,7 @@ class DevisController extends Controller
 
     /**
      * Get all prestation ouvrages
-     * 
+     *
      */
 
     public function getPrestationOuvrages(Request $request){
@@ -562,7 +563,7 @@ class DevisController extends Controller
                 ->join('units', 'units.id', '=', 'ouvrages.unit_id')
                 ->where('type', 'PRESTATION')
                 ->where('ouvrage_toit_id', $request->toit == 0 ? '!=' : '=',$request->toit);
-        
+
         return response()->json(
             $query->select(
                 'ouvrages.id', 'ouvrages.name',
@@ -597,14 +598,14 @@ class DevisController extends Controller
                             ->leftJoin('product_affiliate', function ($join) {
                                 $join->on('products.id', '=', 'product_affiliate.product_id')
                                      ->where('product_affiliate.affilie_id', '=', Auth::user()->affiliate_id);
-                            })                            
+                            })
                             ->leftJoin('ouvrage_detail_affiliate', function ($join) {
                                 $join->on('ouvrage_detail.id', '=', 'ouvrage_detail_affiliate.ouvrage_detail_id')
                                      ->where('ouvrage_detail_affiliate.affiliate_id', '=', Auth::user()->affiliate_id);
-                            })                            
+                            })
                             ->where('ouvrage_task_id', $task->taskId)
                             ->select(
-                                'ouvrage_detail.qty', 'units.id as unit_id','products.type', 'units.code as unit', 
+                                'ouvrage_detail.qty', 'units.id as unit_id','products.type', 'units.code as unit',
                                 'products.id as productId', 'products.name', 'products.taxe_id as tax',
                                 DB::raw('IF(ISNULL(ouvrage_detail_affiliate.numberh), ouvrage_detail.numberh, ouvrage_detail_affiliate.numberh) as numberH'),
                                 DB::raw('IF(ISNULL(product_affiliate.wholesale_price), products.wholesale_price, product_affiliate.wholesale_price) as unitPrice')
@@ -650,7 +651,7 @@ class DevisController extends Controller
         return response()->json(
             $query->select(
                 'ouvrages.id', 'ouvrages.name',
-                'ouvrages.textchargeaffaire', 'ouvrage_metier.name as metier', 
+                'ouvrages.textchargeaffaire', 'ouvrage_metier.name as metier',
                 'ouvrage_toit.name as toit', 'ouvrages.type', 'units.code as unit'
             )->get()
         );
@@ -682,7 +683,7 @@ class DevisController extends Controller
             )->get()
         );
     }
-    
+
     /**
      * Get Suppliers
      */
@@ -706,17 +707,17 @@ class DevisController extends Controller
 
     /**
      * Get some datas for Adding a interim Modal
-     * 
+     *
      */
     public function getInterimData(){
         return response()->json([
             'societes'  => DB::table('interim_societe')->select('id as value', 'name as display')->get(),
-            'interim'    => 
+            'interim'    =>
                 DB::table('products')
                 ->leftJoin('product_affiliate', function ($join) {
                     $join->on('products.id', '=', 'product_affiliate.product_id')
                          ->where('product_affiliate.affilie_id', '=', Auth::user()->affiliate_id);
-                })                
+                })
                 ->where('products.type', 'INTERIM')->select(
                     DB::raw('IF(ISNULL(product_affiliate.wholesale_price), products.wholesale_price, product_affiliate.wholesale_price) as price'),
                     'products.taxe_id as tax', 'products.id as productId', 'products.unit_id as unitId'
@@ -725,7 +726,7 @@ class DevisController extends Controller
     }
     /**
      * Get MO product's price
-     * 
+     *
      */
     public function getLaborData(){
         return response()->json(
@@ -733,11 +734,11 @@ class DevisController extends Controller
             ->leftJoin('product_affiliate', function ($join) {
                 $join->on('products.id', '=', 'product_affiliate.product_id')
                      ->where('product_affiliate.affilie_id', '=', Auth::user()->affiliate_id);
-            })                
+            })
             ->where('products.type', 'MO')->select(
                 DB::raw('IF(ISNULL(product_affiliate.wholesale_price), products.wholesale_price, product_affiliate.wholesale_price) as price'),
                 'products.taxe_id as tax', 'products.id as productId', 'products.unit_id as unitId'
-            )->first()            
+            )->first()
         );
     }
     /**
@@ -792,13 +793,13 @@ class DevisController extends Controller
                 'order_id'      =>  $orderId,
                 'created_at'    =>  Carbon::now(),
                 'updated_at'    =>  Carbon::now(),
-            ];        
+            ];
             $gedId = DB::table('geds')->insertGetId($zedData);
         }else{
             $gedId = Ged::where('user_id','=',Auth::id())
                         ->where('customer_id', $request->customer['id'])
                         ->where('order_id', $orderId)->value('id');
-        }   
+        }
         foreach ($request->zones as $zone) {
             $zoneData = [
                 'order_id'      =>  $orderId,
@@ -837,7 +838,7 @@ class DevisController extends Controller
                     }
                     $gedDetail->save();
                 }
-            }        
+            }
             // save describe
             foreach($zone['describes'] as $zoneDescribes) {
                 $describeData = [];
@@ -862,7 +863,7 @@ class DevisController extends Controller
                     'semti'=> $service['semti'],
                     'sstt'=> $service['sstt'],
                     'loc'=> $service['loc'],
-                    'client'=> $service['client'],                    
+                    'client'=> $service['client'],
                     'created_at'=> now(),
                     'updated_at'=> now()
                 ]);
@@ -879,7 +880,7 @@ class DevisController extends Controller
                 ];
                 $orderCatId = DB::table('order_cat')->insertGetId($installationCat);
                 foreach ($zone['installOuvrage']['ouvrages'] as $ouvrage) {
-                    
+
                     $ouvrageData = [
                         'order_id'          => $orderId,
                         'order_zone_id'     => $zoneId,
@@ -937,7 +938,7 @@ class DevisController extends Controller
                                 'original_number_h' => $detail['originalNumberH'] ?? 1,
                                 'original_qty'      => $detail['originalDetailQty'] ?? 1,
                                 'created_at'        => Carbon::now(),
-                                'updated_at'        => Carbon::now(),                                
+                                'updated_at'        => Carbon::now(),
                             ];
                             if($detail['type'] == 'INTERIM'){
                                 $detailData['interim_societe_id']   = $detail['societe'];
@@ -952,7 +953,7 @@ class DevisController extends Controller
                                         File::makeDirectory(public_path('SupplierOrder/'), 0755, true, true);
                                     }
                                     $data = str_replace( ' ', '+', $data );
-                                    $data = base64_decode($data);                    
+                                    $data = base64_decode($data);
                                     $uuid_filename = DB::select('select UUID() AS uuid')[0]->uuid;
                                     $orderFilePath = "/SupplierOrder/{$uuid_filename}.{$type}";
                                     Storage::disk('public')->put($orderFilePath, $data);
@@ -982,7 +983,7 @@ class DevisController extends Controller
                         'unit_id'           => $ouvrage['unit'],
                         'qty'               => $ouvrage['qty'],
                         'nbheure'           => $ouvrage['totalHour'],
-                        'total'             => $ouvrage['total'],                        
+                        'total'             => $ouvrage['total'],
                         'order_cat_id'      => $orderCatId,
                         'ouvrage_prestation_id'=> $ouvrage['ouvrage_prestation_id'],
                         'ouvrage_toit_id'   => $ouvrage['ouvrage_toit_id'],
@@ -1006,7 +1007,7 @@ class DevisController extends Controller
                             'qty'                   => $task['qty'],
                             'unit_id'               => $task['unit_id'],
                             'created_at'            => Carbon::now(),
-                            'updated_at'            => Carbon::now(),                            
+                            'updated_at'            => Carbon::now(),
                         ];
                         $orderOuvrageTaskId = DB::table('order_ouvrage_task')->insertGetId($orderOuvrageTask);
                         foreach ($task['details'] as $detailIndex => $detail) {
@@ -1031,9 +1032,9 @@ class DevisController extends Controller
                                 'priceachat'        => $detail['unitPrice'],
                                 'original'          => $detail['original'] ?? false,
                                 'original_number_h' => $detail['originalNumberH'] ?? 1,
-                                'original_qty'      => $detail['originalDetailQty'] ?? 1,                             
+                                'original_qty'      => $detail['originalDetailQty'] ?? 1,
                                 'created_at'        => Carbon::now(),
-                                'updated_at'        => Carbon::now(),                                
+                                'updated_at'        => Carbon::now(),
                             ];
                             if($detail['type'] == 'INTERIM'){
                                 $detailData['interim_societe_id']   = $detail['societe'];
@@ -1048,7 +1049,7 @@ class DevisController extends Controller
                                         File::makeDirectory(public_path('SupplierOrder/'), 0755, true, true);
                                     }
                                     $data = str_replace( ' ', '+', $data );
-                                    $data = base64_decode($data);                    
+                                    $data = base64_decode($data);
                                     $uuid_filename = DB::select('select UUID() AS uuid')[0]->uuid;
                                     $orderFilePath = "/SupplierOrder/{$uuid_filename}.{$type}";
                                     Storage::disk('public')->put($orderFilePath, $data);
@@ -1078,7 +1079,7 @@ class DevisController extends Controller
                         'unit_id'           => $ouvrage['unit'],
                         'qty'               => $ouvrage['qty'],
                         'nbheure'           => $ouvrage['totalHour'],
-                        'total'             => $ouvrage['total'],                        
+                        'total'             => $ouvrage['total'],
                         'order_cat_id'      => $orderCatId,
                         'ouvrage_prestation_id'=> $ouvrage['ouvrage_prestation_id'],
                         'ouvrage_toit_id'   => $ouvrage['ouvrage_toit_id'],
@@ -1102,7 +1103,7 @@ class DevisController extends Controller
                             'qty'                   => $task['qty'],
                             'unit_id'               => $task['unit_id'],
                             'created_at'            => Carbon::now(),
-                            'updated_at'            => Carbon::now(),                            
+                            'updated_at'            => Carbon::now(),
                         ];
                         $orderOuvrageTaskId = DB::table('order_ouvrage_task')->insertGetId($orderOuvrageTask);
                         foreach ($task['details'] as $detailIndex => $detail) {
@@ -1129,7 +1130,7 @@ class DevisController extends Controller
                                 'original_number_h' => $detail['originalNumberH'] ?? 1,
                                 'original_qty'      => $detail['originalDetailQty'] ?? 1,
                                 'created_at'        => Carbon::now(),
-                                'updated_at'        => Carbon::now(),                                
+                                'updated_at'        => Carbon::now(),
                             ];
                             if($detail['type'] == 'INTERIM'){
                                 $detailData['interim_societe_id']   = $detail['societe'];
@@ -1144,7 +1145,7 @@ class DevisController extends Controller
                                         File::makeDirectory(public_path('SupplierOrder/'), 0755, true, true);
                                     }
                                     $data = str_replace( ' ', '+', $data );
-                                    $data = base64_decode($data);                    
+                                    $data = base64_decode($data);
                                     $uuid_filename = DB::select('select UUID() AS uuid')[0]->uuid;
                                     $orderFilePath = "/SupplierOrder/{$uuid_filename}.{$type}";
                                     Storage::disk('public')->put($orderFilePath, $data);
@@ -1162,7 +1163,7 @@ class DevisController extends Controller
 
     /**
      * Get Devis details
-     * 
+     *
      */
     public function getDevis(Order $order){
         $zones = DB::table('order_zones')
@@ -1223,7 +1224,7 @@ class DevisController extends Controller
                                 ->whereNotIn('type', ['txt', 'description'])
                                 ->where('user_id', Auth::id())
                                 ->select(
-                                    DB::raw('CONCAT(CONCAT(storage_path, "/",file), ".", type) as url'), 
+                                    DB::raw('CONCAT(CONCAT(storage_path, "/",file), ".", type) as url'),
                                     'human_readable_filename as fileName',
                                     'id', 'type'
                                 )->get();
@@ -1246,42 +1247,41 @@ class DevisController extends Controller
                         ->where('order_zone_id', $zone->id)
                         ->join('describe_categories', 'describe_categories.id', '=', 'describe.describe_category_id')
                         ->select(
-                            'describe.name', 'describe.type', 'order_describe.value as default', 
+                            'describe.name', 'describe.type', 'order_describe.value as default',
                             'describe.order', 'describe.data', 'describe_categories.name as catName',
                             'describe.id', 'order_describe.id as order_describe_id'
                         )
-                        ->orderBy('order')->get();            
+                        ->orderBy('order')->get();
             foreach($describes as $describe){
                 $describe->data = json_decode($describe->data);
                 if($describe->type == 'Checkbox' || $describe->type == 'Switch'){
                     $describe->default = $describe->default == 0 ? false : true;
                 }
             }
+            $devis['zones'][$zoneIndex]['describes'] = $describes->groupBy('catName');
             $services = DB::table('order_services')->join('services', 'services.id', '=', 'order_services.service_id')
                         ->where('order_zone_id', $zone->id)
                         ->select(
-                            'services.name', 'services.type', 'order_services.value', 
+                            'services.name', 'services.type', 'order_services.value',
                             'services.data', 'order_services.active', 'order_services.semti',
                             'services.id', 'order_services.id as order_service_id', 'order_services.sstt',
                             'order_services.client', 'order_services.loc',
                         )
-                        ->orderBy('order')->get();            
+                        ->orderBy('order')->get();
             foreach($services as $service){
                 $service->data = json_decode($service->data);
-                if($describe->type == 'Checkbox' || $describe->type == 'Switch'){
-                    $describe->value = $describe->value == 0 ? false : true;
+                if($service->type == 'Checkbox' || $service->type == 'Switch'){
+                    $service->value = $service->value == 0 ? false : true;
                 }
-                $describe->active = $describe->active == 0 ? false : true;
-                $describe->semti = $describe->semti == 0 ? false : true;
-                $describe->sstt = $describe->sstt == 0 ? false : true;
-                $describe->client = $describe->client == 0 ? false : true;
-                $describe->loc = $describe->loc == 0 ? false : true;
+                $service->active = $service->active == 0 ? false : true;
+                $service->semti = $service->semti == 0 ? false : true;
+                $service->sstt = $service->sstt == 0 ? false : true;
+                $service->client = $service->client == 0 ? false : true;
+                $service->loc = $service->loc == 0 ? false : true;
             }
-
-            $devis['zones'][$zoneIndex]['describes'] = $describes->groupBy('catName');
             $devis['zones'][$zoneIndex]['services'] = $services;
             //installation ouvrages;
-            
+
             $orderCat = DB::table('order_cat')->where('order_zone_id', $zone->id)->where('type', 'INSTALLATION')->first();
             $devis['zones'][$zoneIndex]['installOuvrage']['sumUnitPrice'] = 0;
             $devis['zones'][$zoneIndex]['installOuvrage']['name'] = 'Installation';
@@ -1300,8 +1300,8 @@ class DevisController extends Controller
                     })
                     ->where('type', 'INSTALLATION')
                     ->select(
-                        'id', 'unit_id as unit', 'qty', 'ouvrage_prestation_id', 'ouvrage_metier_id', 'ouvrage_toit_id', 
-                        'textcustomer as customerText','textchargeaffaire', 'textoperator', 'name', 
+                        'id', 'unit_id as unit', 'qty', 'ouvrage_prestation_id', 'ouvrage_metier_id', 'ouvrage_toit_id',
+                        'textcustomer as customerText','textchargeaffaire', 'textoperator', 'name',
                         'type', 'qty', 'qty as qtyOuvrage', 'nbheure as totalHour', 'total'
                     )
                     ->get();
@@ -1314,7 +1314,7 @@ class DevisController extends Controller
                                     $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
                                 })
                                 ->select(
-                                    'id', 'name', 'textcustomer as customerText', 'textchargeaffaire', 
+                                    'id', 'name', 'textcustomer as customerText', 'textchargeaffaire',
                                     'textoperator', 'unit_id', 'qty'
                                 )->get();
                     foreach ($tasks as $task) {
@@ -1323,13 +1323,13 @@ class DevisController extends Controller
                         ->where('order_ouvrage_task_id', $task->id)
                         ->where(function($query){
                             $query->whereNull('order_ouvrage_detail.deleted_at')->orWhere('order_ouvrage_detail.deleted_at', '0000-00-00 00:00:00');
-                        })                        
+                        })
                         ->select(
                             'order_ouvrage_detail.id', 'order_ouvrage_detail.numberh as numberH', 'order_ouvrage_detail.qty', 'order_ouvrage_detail.unit_id',
                             'order_ouvrage_detail.type', 'units.code as unit', 'order_ouvrage_detail.product_id as productId', 'order_ouvrage_detail.name', 'order_ouvrage_detail.taxe_id as tax', 'order_ouvrage_detail.unitprice as unitPrice', 'order_ouvrage_detail.datesupplier',
                             'order_ouvrage_detail.supplier_id as supplierId', 'order_ouvrage_detail.interim_societe_id as societe', 'order_ouvrage_detail.marge', 'order_ouvrage_detail.totalPrice', 'order_ouvrage_detail.qty', 'order_ouvrage_detail.qty as qtyOuvrage', 'order_ouvrage_detail.original', 'order_ouvrage_detail.original_number_h as originalNumberH',
                             'order_ouvrage_detail.original_qty as originalDetailQty', 'order_ouvrage_detail.orderfile as base64'
-                        )->get();                    
+                        )->get();
                         foreach ($details as $detail) {
                             if($detail->type == 'COMMANDE FOURNISSEUR'){
                                 $detail->base64 = getenv('APP_URL').Storage::url($detail->base64);
@@ -1368,8 +1368,8 @@ class DevisController extends Controller
                         })
                     ->where('type', 'SECURITE')
                     ->select(
-                        'id', 'unit_id as unit', 'qty', 'ouvrage_prestation_id', 'ouvrage_metier_id', 'ouvrage_toit_id', 
-                        'textcustomer as customerText','textchargeaffaire', 'textoperator', 'name', 
+                        'id', 'unit_id as unit', 'qty', 'ouvrage_prestation_id', 'ouvrage_metier_id', 'ouvrage_toit_id',
+                        'textcustomer as customerText','textchargeaffaire', 'textoperator', 'name',
                         'type', 'qty', 'qty as qtyOuvrage', 'nbheure as totalHour', 'total'
                     )
                     ->get();
@@ -1388,13 +1388,13 @@ class DevisController extends Controller
                         ->where('order_ouvrage_task_id', $task->id)
                         ->where(function($query){
                             $query->whereNull('order_ouvrage_detail.deleted_at')->orWhere('order_ouvrage_detail.deleted_at', '0000-00-00 00:00:00');
-                        })                              
+                        })
                         ->select(
                             'order_ouvrage_detail.id', 'order_ouvrage_detail.numberh as numberH', 'order_ouvrage_detail.qty', 'order_ouvrage_detail.unit_id',
                             'order_ouvrage_detail.type', 'units.code as unit', 'order_ouvrage_detail.product_id as productId', 'order_ouvrage_detail.name', 'order_ouvrage_detail.taxe_id as tax', 'order_ouvrage_detail.unitprice as unitPrice', 'order_ouvrage_detail.datesupplier',
                             'order_ouvrage_detail.supplier_id as supplierId', 'order_ouvrage_detail.interim_societe_id as societe', 'order_ouvrage_detail.marge', 'order_ouvrage_detail.totalPrice', 'order_ouvrage_detail.qty', 'order_ouvrage_detail.qty as qtyOuvrage', 'order_ouvrage_detail.original', 'order_ouvrage_detail.original_number_h as originalNumberH',
                             'order_ouvrage_detail.original_qty as originalDetailQty', 'order_ouvrage_detail.orderfile as base64'
-                        )->get();                    
+                        )->get();
                         foreach ($details as $detail) {
                             if($detail->type == 'COMMANDE FOURNISSEUR'){
                                 $detail->base64 = getenv('APP_URL').Storage::url($detail->base64);
@@ -1413,7 +1413,7 @@ class DevisController extends Controller
             }else{
                 $devis['zones'][$zoneIndex]['securityOuvrage']['ouvrages'] = [];
             }
-            
+
             //prestation ouvrages;
             $orderCat = DB::table('order_cat')->where('order_zone_id', $zone->id)->where('type', 'PRESTATION')->first();
             $devis['zones'][$zoneIndex]['prestationOuvrage']['sumUnitPrice'] = 0;
@@ -1433,8 +1433,8 @@ class DevisController extends Controller
                         })
                     ->where('type', 'PRESTATION')
                     ->select(
-                        'id', 'unit_id as unit', 'qty', 'ouvrage_prestation_id', 'ouvrage_metier_id', 'ouvrage_toit_id', 
-                        'textcustomer as customerText','textchargeaffaire', 'textoperator', 'name', 
+                        'id', 'unit_id as unit', 'qty', 'ouvrage_prestation_id', 'ouvrage_metier_id', 'ouvrage_toit_id',
+                        'textcustomer as customerText','textchargeaffaire', 'textoperator', 'name',
                         'type', 'qty', 'qty as qtyOuvrage', 'nbheure as totalHour', 'total'
                     )
                     ->get();
@@ -1453,13 +1453,13 @@ class DevisController extends Controller
                         ->where('order_ouvrage_task_id', $task->id)
                         ->where(function($query){
                             $query->whereNull('order_ouvrage_detail.deleted_at')->orWhere('order_ouvrage_detail.deleted_at', '0000-00-00 00:00:00');
-                        })                              
+                        })
                         ->select(
                             'order_ouvrage_detail.id', 'order_ouvrage_detail.numberh as numberH', 'order_ouvrage_detail.qty', 'order_ouvrage_detail.unit_id',
                             'order_ouvrage_detail.type', 'units.code as unit', 'order_ouvrage_detail.product_id as productId', 'order_ouvrage_detail.name', 'order_ouvrage_detail.taxe_id as tax', 'order_ouvrage_detail.unitprice as unitPrice', 'order_ouvrage_detail.datesupplier',
                             'order_ouvrage_detail.supplier_id as supplierId', 'order_ouvrage_detail.interim_societe_id as societe', 'order_ouvrage_detail.marge', 'order_ouvrage_detail.totalPrice', 'order_ouvrage_detail.qty', 'order_ouvrage_detail.qty as qtyOuvrage', 'order_ouvrage_detail.original', 'order_ouvrage_detail.original_number_h as originalNumberH',
                             'order_ouvrage_detail.original_qty as originalDetailQty', 'order_ouvrage_detail.orderfile as base64'
-                        )->get();                    
+                        )->get();
                         foreach ($details as $detail) {
                             if($detail->type == 'COMMANDE FOURNISSEUR'){
                                 $detail->base64 = getenv('APP_URL').Storage::url($detail->base64);
@@ -1532,7 +1532,7 @@ class DevisController extends Controller
                 $zoneData = [
                     'description'   =>  '',
                     'created_at'    =>  Carbon::now(),
-                ];                
+                ];
                 $zoneId = DB::table('order_zones')->insertGetId($zoneData);
             }
             // adding Order Zone's id;
@@ -1563,7 +1563,7 @@ class DevisController extends Controller
                     // }
                     $gedDetail->save();
                 }
-            }            
+            }
             // update describes
             foreach($zone['describes'] as $zoneDescribes) {
                 foreach ($zoneDescribes as $describe) {
@@ -1574,7 +1574,7 @@ class DevisController extends Controller
                         'updated_at'=> now()
                     ]);
                 }
-            }            
+            }
             // update services
             foreach($zone['services'] as $service) {
                 DB::table('order_services')->where('id', $service['order_service_id'])->update([
@@ -1588,7 +1588,7 @@ class DevisController extends Controller
                     'order_zone_id'=> $zoneId,
                     'updated_at'=> now()
                 ]);
-            }            
+            }
             if( count($zone['installOuvrage']['ouvrages']) ){
                 $orderCat = DB::table('order_cat')
                             ->where('order_zone_id', $zoneId)
@@ -1619,7 +1619,7 @@ class DevisController extends Controller
                         'unit_id'           => $ouvrage['unit'],
                         'qty'               => $ouvrage['qty'],
                         'nbheure'           => $ouvrage['totalHour'],
-                        'total'             => $ouvrage['total'],                          
+                        'total'             => $ouvrage['total'],
                         'ouvrage_prestation_id'=> $ouvrage['ouvrage_prestation_id'],
                         'ouvrage_toit_id'   => $ouvrage['ouvrage_toit_id'],
                         'ouvrage_metier_id' => $ouvrage['ouvrage_metier_id'],
@@ -1684,7 +1684,7 @@ class DevisController extends Controller
                                 'priceachat'        => $detail['unitPrice'],
                                 'original'          => $detail['original'] ?? false,
                                 'original_number_h' => $detail['originalNumberH'] ?? 1,
-                                'original_qty'      => $detail['originalDetailQty'] ?? 1,                              
+                                'original_qty'      => $detail['originalDetailQty'] ?? 1,
                                 'updated_at'        => Carbon::now(),
                             ];
                             if($detail['type'] == 'INTERIM'){
@@ -1700,7 +1700,7 @@ class DevisController extends Controller
                                         File::makeDirectory(public_path('SupplierOrder/'), 0755, true, true);
                                     }
                                     $data = str_replace( ' ', '+', $data );
-                                    $data = base64_decode($data);                    
+                                    $data = base64_decode($data);
                                     $uuid_filename = DB::select('select UUID() AS uuid')[0]->uuid;
                                     $orderFilePath = "/SupplierOrder/{$uuid_filename}.{$type}";
                                     Storage::disk('public')->put($orderFilePath, $data);
@@ -1761,7 +1761,7 @@ class DevisController extends Controller
                         'unit_id'           => $ouvrage['unit'],
                         'qty'               => $ouvrage['qty'],
                         'nbheure'           => $ouvrage['totalHour'],
-                        'total'             => $ouvrage['total'],                          
+                        'total'             => $ouvrage['total'],
                         'ouvrage_prestation_id'=> $ouvrage['ouvrage_prestation_id'],
                         'ouvrage_toit_id'   => $ouvrage['ouvrage_toit_id'],
                         'ouvrage_metier_id' => $ouvrage['ouvrage_metier_id'],
@@ -1826,7 +1826,7 @@ class DevisController extends Controller
                                 'priceachat'        => $detail['unitPrice'],
                                 'original'          => $detail['original'] ?? false,
                                 'original_number_h' => $detail['originalNumberH'] ?? 1,
-                                'original_qty'      => $detail['originalDetailQty'] ?? 1,                              
+                                'original_qty'      => $detail['originalDetailQty'] ?? 1,
                                 'updated_at'        => Carbon::now(),
                             ];
                             if($detail['type'] == 'INTERIM'){
@@ -1842,7 +1842,7 @@ class DevisController extends Controller
                                         File::makeDirectory(public_path('SupplierOrder/'), 0755, true, true);
                                     }
                                     $data = str_replace( ' ', '+', $data );
-                                    $data = base64_decode($data);                    
+                                    $data = base64_decode($data);
                                     $uuid_filename = DB::select('select UUID() AS uuid')[0]->uuid;
                                     $orderFilePath = "/SupplierOrder/{$uuid_filename}.{$type}";
                                     Storage::disk('public')->put($orderFilePath, $data);
@@ -1872,9 +1872,9 @@ class DevisController extends Controller
                 DB::table('order_ouvrages')->where('order_id', $orderId)->where('order_zone_id', $zoneId)->where(function($query){
                             $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
                         })->whereNotIn('id', $availSecurityOuvrages)->where('type', 'SECURITE')->update(['deleted_at'=> Carbon::now()]);
-            }            
+            }
             if( count($zone['prestationOuvrage']['ouvrages']) ){
-                
+
                 $orderCat = DB::table('order_cat')
                             ->where('order_zone_id', $zoneId)
                             ->where('type', 'PRESTATION')
@@ -1904,7 +1904,7 @@ class DevisController extends Controller
                         'unit_id'           => $ouvrage['unit'],
                         'qty'               => $ouvrage['qty'],
                         'nbheure'           => $ouvrage['totalHour'],
-                        'total'             => $ouvrage['total'],                          
+                        'total'             => $ouvrage['total'],
                         'ouvrage_prestation_id'=> $ouvrage['ouvrage_prestation_id'],
                         'ouvrage_toit_id'   => $ouvrage['ouvrage_toit_id'],
                         'ouvrage_metier_id' => $ouvrage['ouvrage_metier_id'],
@@ -1914,7 +1914,7 @@ class DevisController extends Controller
                         'name'              => $ouvrage['name'],
                         'updated_at'        => Carbon::now(),
                     ];
-                    
+
                     if(isset($ouvrage['id']) && $ouvrage['id'] != ''){
                         $orderOuvrageId = $ouvrage['id'];
                         DB::table('order_ouvrages')->where('id', $orderOuvrageId)->update($ouvrageData);
@@ -1970,7 +1970,7 @@ class DevisController extends Controller
                                 'priceachat'        => $detail['unitPrice'],
                                 'original'          => $detail['original'] ?? false,
                                 'original_number_h' => $detail['originalNumberH'] ?? 1,
-                                'original_qty'      => $detail['originalDetailQty'] ?? 1,                              
+                                'original_qty'      => $detail['originalDetailQty'] ?? 1,
                                 'updated_at'        => Carbon::now(),
                             ];
                             if($detail['type'] == 'INTERIM'){
@@ -1986,7 +1986,7 @@ class DevisController extends Controller
                                         File::makeDirectory(public_path('SupplierOrder/'), 0755, true, true);
                                     }
                                     $data = str_replace( ' ', '+', $data );
-                                    $data = base64_decode($data);                    
+                                    $data = base64_decode($data);
                                     $uuid_filename = DB::select('select UUID() AS uuid')[0]->uuid;
                                     $orderFilePath = "/SupplierOrder/{$uuid_filename}.{$type}";
                                     Storage::disk('public')->put($orderFilePath, $data);
@@ -2016,12 +2016,12 @@ class DevisController extends Controller
                 DB::table('order_ouvrages')->where('order_id', $orderId)->where('order_zone_id', $zoneId)->where(function($query){
                             $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
                         })->whereNotIn('id', $availPrestationOuvrages)->where('type', 'PRESTATION')->update(['deleted_at'=> Carbon::now()]);
-            }            
+            }
         }
         // label deleted_at for deleted zones
         DB::table('order_zones')->where('order_id', $orderId)->where(function($query){
                             $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
                         })->whereNotIn('id', $availOrderZoneIds)->update(['deleted_at'=> Carbon::now()]);
         return response()->json(['success'=> true]);
-    }    
+    }
 }

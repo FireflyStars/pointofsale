@@ -231,9 +231,9 @@
                               <div class="col-8" v-else-if="describe.type == 'Switch'">
                                 <switch-btn class="ms-auto" v-model="describe.default"></switch-btn>
                               </div>
-                              <div class="col-8" v-else>
+                              <div class="col-8" v-else-if="describe.type == 'Checkbox'">
                                 <div  v-for="(value, key) in describe.data" :key="key">
-                                  <CheckBox v-model="describe.default" :checked="value == 0 ? false : true" :title="value"></CheckBox>
+                                  <CheckBox v-model="describe.default" :checked="value == 1 ? true : false" :title="value"></CheckBox>
                                 </div>
                               </div>
                               <div class="col-8" v-else>
@@ -1070,8 +1070,8 @@ export default {
     const store = useStore();
     const router = useRouter();
     const breadcrumbs = ref(['Choix client']);
-    // const devisCreateStep = ref('choose_customer');
-    const devisCreateStep = ref('create_devis');
+    const devisCreateStep = ref('choose_customer');
+    // const devisCreateStep = ref('create_devis');
     const tabs = ref({
           description:'Description',
           service:'Service',
