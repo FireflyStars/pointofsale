@@ -853,16 +853,14 @@ class DevisController extends Controller
                 DB::table('order_describe')->insert($describeData);
             }
             // save services
-            $serviceData = [];
             foreach($zone['services'] as $service) {
-                    $serviceData[] = [
-                        'order_zone_id'=> $zoneId,
-                        'service_id'=> $service['id'],
-                        'value'=> $service['value'],
-                        'created_at'=> now(),
-                        'updated_at'=> now()
-                    ];
-                DB::table('order_services')->insert($serviceData);
+                DB::table('order_services')->insert([
+                    'order_zone_id'=> $zoneId,
+                    'service_id'=> $service['id'],
+                    'value'=> $service['value'],
+                    'created_at'=> now(),
+                    'updated_at'=> now()
+                ]);
             }
             if( count($zone['installOuvrage']['ouvrages']) ){
                 $installationCat = [
@@ -1260,7 +1258,7 @@ class DevisController extends Controller
                             'services.name', 'services.type', 'order_services.value', 
                             'services.data', 'order_services.active', 'order_services.semti',
                             'services.id', 'order_services.id as order_service_id', 'order_services.sstt',
-                            'order_services.client', 'order_services.loc'
+                            'order_services.client', 'order_services.loc',
                         )
                         ->orderBy('order')->get();            
             foreach($services as $service){
@@ -1268,6 +1266,7 @@ class DevisController extends Controller
                 if($describe->type == 'Checkbox' || $describe->type == 'Switch'){
                     $describe->value = $describe->value == 0 ? false : true;
                 }
+                $describe->active = $describe->active == 0 ? false : true;
                 $describe->semti = $describe->semti == 0 ? false : true;
                 $describe->sstt = $describe->sstt == 0 ? false : true;
                 $describe->client = $describe->client == 0 ? false : true;
@@ -1560,7 +1559,7 @@ class DevisController extends Controller
                     $gedDetail->save();
                 }
             }            
-            // save describe
+            // update describes
             foreach($zone['describes'] as $zoneDescribes) {
                 foreach ($zoneDescribes as $describe) {
                     DB::table('order_describe')->where('id', $describe['order_describe_id'])->update([
@@ -1571,7 +1570,7 @@ class DevisController extends Controller
                     ]);
                 }
             }            
-            // save services
+            // update services
             foreach($zone['services'] as $service) {
                 DB::table('order_services')->where('id', $service['order_service_id'])->update([
                     'service_id'=> $service['id'],
