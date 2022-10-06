@@ -858,6 +858,11 @@ class DevisController extends Controller
                     'order_zone_id'=> $zoneId,
                     'service_id'=> $service['id'],
                     'value'=> $service['value'],
+                    'active'=> $service['active'],
+                    'semti'=> $service['semti'],
+                    'sstt'=> $service['sstt'],
+                    'loc'=> $service['loc'],
+                    'client'=> $service['client'],                    
                     'created_at'=> now(),
                     'updated_at'=> now()
                 ]);
@@ -1575,6 +1580,11 @@ class DevisController extends Controller
                 DB::table('order_services')->where('id', $service['order_service_id'])->update([
                     'service_id'=> $service['id'],
                     'value'=> $service['value'],
+                    'active'=> $service['active'],
+                    'semti'=> $service['semti'],
+                    'sstt'=> $service['sstt'],
+                    'loc'=> $service['loc'],
+                    'client'=> $service['client'],
                     'order_zone_id'=> $zoneId,
                     'updated_at'=> now()
                 ]);
