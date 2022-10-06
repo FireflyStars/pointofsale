@@ -15,8 +15,8 @@
             </div>
           </div>
           <ul class="m-0 p-0 breadcrumb mt-3" v-if="breadcrumbs.length">
-            <li class="breadcrumb-item almarai-extrabold font-18 cursor-pointer" 
-              v-for="(breadcrumb, index) in breadcrumbs" 
+            <li class="breadcrumb-item almarai-extrabold font-18 cursor-pointer"
+              v-for="(breadcrumb, index) in breadcrumbs"
               @click="goToStep(index)"
               :key="index">{{ breadcrumb }}</li>
           </ul>
@@ -69,7 +69,7 @@
             <div class="col-5 p-3 mt-3 rounded bg-white">
               <h2 class="almarai-extrabold font-22">Choix adresse Chantier <span @click="addNewAddress" class="ms-3 almarai-bold font-16 cursor-pointer text-decoration-underline text-custom-success">Nouvelle adresse</span></h2>
               <div class="mt-3 customer-addresses">
-                <div class="px-4 py-3 bg-gray mt-2 address-item rounded cursor-pointer" 
+                <div class="px-4 py-3 bg-gray mt-2 address-item rounded cursor-pointer"
                   @click="chooseCustomerAddress(address)" v-for="(address, index) in customerAddresses" :key="index">
                   <div class="d-flex">
                     <div class="col-7">
@@ -96,7 +96,7 @@
               <div class="customer-section px-3 py-2 d-flex bg-white">
                 <div class="col-7 d-flex">
                   <div class="customer-pic rounded-circle bg-primary">
-                      
+
                   </div>
                   <div class="ms-3 customer-name d-flex flex-wrap">
                     <div class="small-title w-100">
@@ -124,7 +124,7 @@
                 </div>
               </div>
               <div class="zone-section" v-for="(zone, zoneIndex) in form.zones" :key="zoneIndex">
-                <div class="ged-section bg-white px-3 py-2">
+                <div class="ged-section bg-white p-2 mb-2">
                   <div class="zone-header d-flex align-items-center">
                     <span class="home-icon"></span>
                     <div class="zone-name ms-2">
@@ -145,8 +145,8 @@
                       </div>
                       <div class="d-flex mt-3 ms-4">
                         <div class="col-6">
-                          <SelectBox :label="''" 
-                              v-model="zone.roofAccess" 
+                          <SelectBox :label="''"
+                              v-model="zone.roofAccess"
                               :options="roofAccesses"
                               :name="'roofAccess'+zoneIndex"
                               :classnames="'col-12'"
@@ -172,7 +172,7 @@
                   <div class="d-flex px-4 mt-4 flex-wrap">
                     <div class="col-6 mb-3" v-for="(gedCat, catIndex) in zone.gedCats" :key="catIndex">
                       <div class="ged-cat-header d-flex align-items-end mulish-semibold font-16 custom-text-danger">
-                        <span class="camera-icon me-2"></span> {{ gedCat[0].name }} 
+                        <span class="camera-icon me-2"></span> {{ gedCat[0].name }}
                         <div class="add-btn ms-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer"
                         @click="addFileToGed(zoneIndex, gedCat[0].id)">
                           <span class="plus-icon me-2"></span> AJOUTER
@@ -200,7 +200,7 @@
                             <div class="w-100 h-100 d-flex justify-content-around align-items-center">
                               <span class="play-icon" @click="viewGedMedia(gedDetail.url != '' ? gedDetail.url : gedDetail.base64data, gedDetail.type)"></span>
                             </div>
-                          </div>                          
+                          </div>
                         </div>
                       </div>
                       <!-- <div v-if="gedCat[0].name == 'Vue exterieur'" class="get-cat-footer almarai-light font-14 mb-3">
@@ -209,50 +209,96 @@
                     </div>
                   </div>
                 </div>
-
-                <div class="description-section bg-white px-3 py-2 my-2" v-if="zone.describes != null">
-                  <div class="d-flex flex-wrap">
-                    <div class="col-6" v-for="(describeGroup, desribeGroupName, desribeGroupIndex) in zone.describes" :key="desribeGroupIndex">
-                      <div class="describe-group">
-                        <h5>{{ desribeGroupName }}</h5>
-                        <div class="d-flex mt-2" v-for="(describe, describeIndex) in describeGroup" :key="describeIndex">
-                          <div class="col-4">
-                            {{ describe.name }}
-                          </div>
-                          <div class="col-8" v-if="describe.type == 'Radio'">
-                            <div class="preference-radio">
-                              <label class="custom-radio" v-for="(value, key) in describe.data" :key="key">{{ value }}
-                                <input type="radio" :checked="describe.default == value ? true : false" :value="value" v-model="describe.default" :name="'pref_'+describe.name">
-                                <span class="checkmark"></span>
-                              </label>
-                            </div>                            
-                          </div>
-                          <div class="col-8" v-else-if="describe.type == 'Switch'">
-                            <switch-btn class="ms-auto" v-model="describe.default"></switch-btn>
-                          </div>
-                          <div class="col-8" v-else-if="describe.type == 'Checkbox'">
-                            <div  v-for="(value, key) in describe.data" :key="key">
-                              <CheckBox v-model="describe.default" :checked="value == 0 ? false : true" :title="value"></CheckBox>
+                <tab-pane :tabs="tabs" current='description' class="almarai_700_normal" v-if="form.describeOn">
+                  <template v-slot:description>
+                    <div class="description-section bg-white p-2" v-if="zone.describes != null">
+                      <div class="d-flex flex-wrap">
+                        <div class="col-6" v-for="(describeGroup, desribeGroupName, desribeGroupIndex) in zone.describes" :key="desribeGroupIndex">
+                          <div class="describe-group">
+                            <h5>{{ desribeGroupName }}</h5>
+                            <div class="d-flex mt-2" v-for="(describe, describeIndex) in describeGroup" :key="describeIndex">
+                              <div class="col-4">
+                                {{ describe.name }}
+                              </div>
+                              <div class="col-8" v-if="describe.type == 'Radio'">
+                                <div class="preference-radio">
+                                  <label class="custom-radio" v-for="(value, key) in describe.data" :key="key">{{ value }}
+                                    <input type="radio" :checked="describe.default == value ? true : false" :value="value" v-model="describe.default" :name="'pref_'+describe.name">
+                                    <span class="checkmark"></span>
+                                  </label>
+                                </div>
+                              </div>
+                              <div class="col-8" v-else-if="describe.type == 'Switch'">
+                                <switch-btn class="ms-auto" v-model="describe.default"></switch-btn>
+                              </div>
+                              <div class="col-8" v-else>
+                                <div  v-for="(value, key) in describe.data" :key="key">
+                                  <CheckBox v-model="describe.default" :checked="value == 0 ? false : true" :title="value"></CheckBox>
+                                </div>
+                              </div>
+                              <div class="col-8" v-else>
+                                <input v-model="describe.default" class="form-control form-control-sm bg-gray"/>
+                              </div>
                             </div>
-                          </div>
-                          <div class="col-8" v-else>
-                            <input v-model="describe.default" class="form-control form-control-sm bg-gray"/>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
+                  </template>
+                  <template v-slot:service>
+                    <div class="service-section bg-white p-2" v-if="zone.services != null">
+                      <div class="d-flex flex-wrap mb-2">
+                        <div class="col-4 fw-bold">Tache à realiser</div>
+                        <div class="col-3 fw-bold">Moyen à prévoir</div>
+                        <div class="col-5 fw-bold">
+                          <div class="text-center fw-bold">Responsable Action</div>
+                          <div class="d-flex flex-wrap">
+                            <div class="col-3 d-flex justify-content-center fw-bold">SEMTI</div>
+                            <div class="col-3 d-flex justify-content-center fw-bold">SSTT</div>
+                            <div class="col-3 d-flex justify-content-center fw-bold">LOC</div>
+                            <div class="col-3 d-flex justify-content-center fw-bold">CLIENT</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="d-flex mb-2" v-for="(service, index) in zone.services">
+                        <div class="col-1 d-flex"><CheckBox v-model="service.active" :checked="service.active"></CheckBox></div>
+                        <div class="col-3 d-flex align-items-center">{{ service.name }}</div>
+                        <div class="d-flex flex-wrap col-3" v-if="service.type == 'Checkbox'">
+                          <div class="me-2" v-for="(value, key) in service.data" :key="key">
+                            <CheckBox v-model="service.value" :checked="service.value == value ? true : false" :title="value"></CheckBox>
+                          </div>
+                        </div>
+                        <div class="d-flex flex-wrap col-3" v-else-if="service.type == 'Radio'">
+                          <div class="preference-radio">
+                            <label class="custom-radio" v-for="(value, key) in service.data" :key="key">{{ value }}
+                              <input type="radio" :checked="service.value == value ? true : false" :value="value" v-model="service.value" :name="'pref_'+service.name">
+                              <span class="checkmark"></span>
+                            </label>
+                          </div>
+                        </div>
+                        <div class="col-3" v-else>
+                          <switch-btn class="ms-auto" v-model="service.value"></switch-btn>
+                        </div>
+                        <div class="col-5 d-flex flex-wrap">
+                          <div class="col-3 d-flex justify-content-center"><CheckBox v-model="service.semti" :checked="service.semti"></CheckBox></div>
+                          <div class="col-3 d-flex justify-content-center"><CheckBox v-model="service.sstt" :checked="service.sstt"></CheckBox></div>
+                          <div class="col-3 d-flex justify-content-center"><CheckBox v-model="service.loc" :checked="service.loc"></CheckBox></div>
+                          <div class="col-3 d-flex justify-content-center"><CheckBox v-model="service.client" :checked="service.client"></CheckBox></div>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                </tab-pane>
                 <div class="ouvrage-section installation-ouvrages bg-white px-4 py-3 my-2" :id="'zone-'+zoneIndex+'-installation-ouvrages'">
                   <div class="ouvrage-header d-flex">
                     <div class="col-7">
                       <div class="col-5 d-flex align-items-center cursor-pointer toggle-btn" @click="togglePanel('zone-'+zoneIndex+'-installation-ouvrages')">
-                        <span class="installation-icon me-2"></span> 
+                        <span class="installation-icon me-2"></span>
                         <input type="text" @blur="zone.installOuvrage.edit = false" v-if="zone.installOuvrage.edit" class="form-control form-control-sm" v-model="zone.installOuvrage.name">
                         <span v-else class="me-4" @dblclick="zone.installOuvrage.edit = true">{{ zone.installOuvrage.name }}</span>
                         <span class="arrow-icon ms-auto"></span>
                       </div>
-                      <div class="add-btn ms-5 ps-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" 
+                      <div class="add-btn ms-5 ps-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer"
                         @click="openInstallationModal(zoneIndex)">
                         <span class="plus-icon me-2"></span> AJOUTER UN OUVRAGE
                       </div>
@@ -361,13 +407,13 @@
                                         <td valign="middle" class="text-center fw-bold">Taxe</td>
                                         <td></td>
                                       </tr>
-                                    </thead>                                    
+                                    </thead>
                                     <tbody>
                                       <tr v-for="(detail, detailIndex) in task.details" :key="detailIndex">
                                         <td valign="middle">
                                           <div class="custom-option d-flex align-items-center">
-                                            <span 
-                                              :class="{ 'clock-icon': detail.type == 'MO' || detail.type == 'INTERIM'|| detail.type == 'Labor',  
+                                            <span
+                                              :class="{ 'clock-icon': detail.type == 'MO' || detail.type == 'INTERIM'|| detail.type == 'Labor',
                                                 'book-icon' : detail.type == 'PRODUIT' || detail.type == 'COMMANDE FOURNISSEUR'
                                               }"
                                             ></span> {{ detail.name }}
@@ -383,7 +429,7 @@
                                           <div class="d-flex align-items-center">
                                             <input @keyup="updateAllValues" type="text" v-model.number="detail.numberH" class="w-100 form-control form-control-sm custom-text-danger">hr
                                           </div>
-                                        </td>                                      
+                                        </td>
                                         <td valign="middle" class="text-center supplier" v-else-if="detail.type == 'COMMANDE FOURNISSEUR'">
                                           <svg width="20" height="25" viewBox="0 0 20 25" fill="none" xmlns="http://www.w3.org/2000/svg" @click="openPdfModal(detail.base64)" class="cursor-pointer">
                                             <path d="M19.9981 5.41835C19.9972 5.4093 19.9956 5.40049 19.994 5.39168C19.9935 5.38875 19.9932 5.38571 19.9926 5.38278C19.9905 5.37226 19.9877 5.36199 19.9847 5.35186C19.9843 5.35064 19.9841 5.34932 19.9837 5.34809C19.9804 5.33767 19.9766 5.3275 19.9724 5.31751C19.972 5.31649 19.9717 5.31541 19.9713 5.31438C19.9672 5.30484 19.9626 5.2956 19.9578 5.2865C19.957 5.28498 19.9563 5.28341 19.9555 5.2819C19.9509 5.27343 19.9457 5.26531 19.9405 5.25724C19.9391 5.25519 19.9379 5.25303 19.9366 5.25103C19.9314 5.24349 19.9258 5.23635 19.92 5.22921C19.9182 5.22686 19.9165 5.22441 19.9146 5.22211C19.9075 5.21365 19.8998 5.20558 19.892 5.19775C19.8913 5.19702 19.8907 5.19623 19.8899 5.1955L14.6769 0.107436C14.676 0.106556 14.675 0.105822 14.674 0.104941C14.6662 0.097456 14.6581 0.0902153 14.6497 0.0834149C14.6469 0.0812133 14.644 0.0793542 14.6412 0.0772505C14.6343 0.0720157 14.6274 0.0667808 14.6201 0.0620352C14.6176 0.0603718 14.6149 0.059002 14.6123 0.0573875C14.6045 0.052544 14.5967 0.0477495 14.5885 0.0434932C14.5867 0.0425636 14.5848 0.0417808 14.583 0.0409002C14.5739 0.0363503 14.5647 0.0319472 14.5552 0.0280822C14.554 0.027593 14.5527 0.0272505 14.5515 0.0267613C14.5414 0.0227984 14.5311 0.0190802 14.5206 0.0159491C14.5192 0.0155577 14.5179 0.0153131 14.5165 0.0149217C14.5062 0.0119863 14.4957 0.0092955 14.4851 0.00719178C14.4819 0.00655577 14.4786 0.00631115 14.4754 0.00577299C14.4666 0.00425636 14.4577 0.00273973 14.4486 0.0018591C14.4361 0.000636008 14.4236 0 14.411 0H1.97995C0.88822 0 0 0.866928 0 1.93249V23.0675C0 24.1331 0.88822 25 1.97995 25H18.02C19.1118 25 20 24.1331 20 23.0675V5.45499C20 5.44271 19.9993 5.43048 19.9981 5.41835ZM14.787 1.25274L18.7165 5.08806H16.015C15.3379 5.08806 14.787 4.55039 14.787 3.88943V1.25274ZM18.02 24.2661H1.97995C1.30281 24.2661 0.75188 23.7285 0.75188 23.0675V1.93249C0.75188 1.27153 1.30281 0.733855 1.97995 0.733855H14.0351V3.88943C14.0351 4.95499 14.9233 5.82192 16.015 5.82192H19.2481V23.0675C19.2481 23.7285 18.6972 24.2661 18.02 24.2661Z" fill="black"/>
@@ -400,13 +446,13 @@
                                         <td v-else style="min-width: 40px" valign="middle">
                                           <div class="d-flex align-items-center">
                                             <input @keyup="updateAllValues" type="text" v-model.number="detail.marge" class="w-100 form-control form-control-sm custom-text-danger">%
-                                          </div>                                        
+                                          </div>
                                         </td>
                                         <td valign="middle">{{ detail.totalPrice }}€</td>
                                         <td valign="middle">
                                           <select style="min-width: 40px" class="w-100 form-control form-control-sm custom-text-danger" v-model="detail.tax">
                                             <option :value="tax.value" v-for="(tax, taxIndex) in taxes" :key="taxIndex">{{ tax.display }} %</option>
-                                          </select>                                          
+                                          </select>
                                         </td>
                                         <td valign="middle">
                                           <svg class="cursor-pointer" @click="removeOuvrageDetail(zoneIndex, 1, ouvrageIndex, taskIndex, detailIndex)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -442,7 +488,7 @@
                             </div>
                             <div v-if="ouvrage.tasks.length == 0" class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openTaskModal(zoneIndex, 1, ouvrageIndex)">
                               <span class="plus-icon me-2"></span> AJOUTER ACTION
-                            </div>                                                
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -454,12 +500,12 @@
                   <div class="ouvrage-header d-flex">
                     <div class="col-7">
                       <div class="col-5 d-flex align-items-center cursor-pointer toggle-btn" @click="togglePanel('zone-'+zoneIndex+'-security-ouvrages')">
-                        <span class="securite-icon me-2"></span> 
+                        <span class="securite-icon me-2"></span>
                         <input type="text" @blur="zone.securityOuvrage.edit = false" v-if="zone.securityOuvrage.edit" class="form-control form-control-sm" v-model="zone.securityOuvrage.name">
                         <span v-else class="me-4" @dblclick="zone.securityOuvrage.edit = true">{{ zone.securityOuvrage.name }}</span>
                         <span class="arrow-icon ms-auto"></span>
                       </div>
-                      <div class="add-btn ms-5 ps-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" 
+                      <div class="add-btn ms-5 ps-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer"
                         @click="openSecuriteModal(zoneIndex)">
                         <span class="plus-icon me-2"></span> AJOUTER UN OUVRAGE
                       </div>
@@ -484,7 +530,7 @@
                             <div class="col-2"></div>
                           </div>
                         </div>
-                      </div>                      
+                      </div>
                       <div class="ouvrage-item" v-for="(ouvrage, ouvrageIndex) in zone.securityOuvrage.ouvrages" :key="ouvrageIndex">
                         <div class="d-flex ouvrage-header">
                           <div class="col-4">
@@ -573,8 +619,8 @@
                                       <tr v-for="(detail, detailIndex) in task.details" :key="detailIndex">
                                         <td valign="middle">
                                           <div class="custom-option d-flex align-items-center">
-                                            <span 
-                                              :class="{ 'clock-icon': detail.type == 'MO' || detail.type == 'INTERIM'|| detail.type == 'Labor',  
+                                            <span
+                                              :class="{ 'clock-icon': detail.type == 'MO' || detail.type == 'INTERIM'|| detail.type == 'Labor',
                                                 'book-icon' : detail.type == 'PRODUIT' || detail.type == 'COMMANDE FOURNISSEUR'
                                               }"
                                             ></span> {{ detail.name }}
@@ -590,7 +636,7 @@
                                           <div class="d-flex align-items-center">
                                             <input @keyup="updateAllValues" type="text" v-model.number="detail.numberH" class="w-100 form-control form-control-sm custom-text-danger">hr
                                           </div>
-                                        </td>                                      
+                                        </td>
                                         <td valign="middle" class="text-center supplier" v-else-if="detail.type == 'COMMANDE FOURNISSEUR'">
                                           <svg width="20" height="25" viewBox="0 0 20 25" fill="none" xmlns="http://www.w3.org/2000/svg" @click="openPdfModal(detail.base64)" class="cursor-pointer">
                                             <path d="M19.9981 5.41835C19.9972 5.4093 19.9956 5.40049 19.994 5.39168C19.9935 5.38875 19.9932 5.38571 19.9926 5.38278C19.9905 5.37226 19.9877 5.36199 19.9847 5.35186C19.9843 5.35064 19.9841 5.34932 19.9837 5.34809C19.9804 5.33767 19.9766 5.3275 19.9724 5.31751C19.972 5.31649 19.9717 5.31541 19.9713 5.31438C19.9672 5.30484 19.9626 5.2956 19.9578 5.2865C19.957 5.28498 19.9563 5.28341 19.9555 5.2819C19.9509 5.27343 19.9457 5.26531 19.9405 5.25724C19.9391 5.25519 19.9379 5.25303 19.9366 5.25103C19.9314 5.24349 19.9258 5.23635 19.92 5.22921C19.9182 5.22686 19.9165 5.22441 19.9146 5.22211C19.9075 5.21365 19.8998 5.20558 19.892 5.19775C19.8913 5.19702 19.8907 5.19623 19.8899 5.1955L14.6769 0.107436C14.676 0.106556 14.675 0.105822 14.674 0.104941C14.6662 0.097456 14.6581 0.0902153 14.6497 0.0834149C14.6469 0.0812133 14.644 0.0793542 14.6412 0.0772505C14.6343 0.0720157 14.6274 0.0667808 14.6201 0.0620352C14.6176 0.0603718 14.6149 0.059002 14.6123 0.0573875C14.6045 0.052544 14.5967 0.0477495 14.5885 0.0434932C14.5867 0.0425636 14.5848 0.0417808 14.583 0.0409002C14.5739 0.0363503 14.5647 0.0319472 14.5552 0.0280822C14.554 0.027593 14.5527 0.0272505 14.5515 0.0267613C14.5414 0.0227984 14.5311 0.0190802 14.5206 0.0159491C14.5192 0.0155577 14.5179 0.0153131 14.5165 0.0149217C14.5062 0.0119863 14.4957 0.0092955 14.4851 0.00719178C14.4819 0.00655577 14.4786 0.00631115 14.4754 0.00577299C14.4666 0.00425636 14.4577 0.00273973 14.4486 0.0018591C14.4361 0.000636008 14.4236 0 14.411 0H1.97995C0.88822 0 0 0.866928 0 1.93249V23.0675C0 24.1331 0.88822 25 1.97995 25H18.02C19.1118 25 20 24.1331 20 23.0675V5.45499C20 5.44271 19.9993 5.43048 19.9981 5.41835ZM14.787 1.25274L18.7165 5.08806H16.015C15.3379 5.08806 14.787 4.55039 14.787 3.88943V1.25274ZM18.02 24.2661H1.97995C1.30281 24.2661 0.75188 23.7285 0.75188 23.0675V1.93249C0.75188 1.27153 1.30281 0.733855 1.97995 0.733855H14.0351V3.88943C14.0351 4.95499 14.9233 5.82192 16.015 5.82192H19.2481V23.0675C19.2481 23.7285 18.6972 24.2661 18.02 24.2661Z" fill="black"/>
@@ -607,13 +653,13 @@
                                         <td v-else style="min-width: 40px" valign="middle">
                                           <div class="d-flex align-items-center">
                                             <input @keyup="updateAllValues" type="text" v-model.number="detail.marge" class="w-100 form-control form-control-sm custom-text-danger">%
-                                          </div>                                        
+                                          </div>
                                         </td>
                                         <td valign="middle">{{ detail.totalPrice }}€</td>
                                         <td valign="middle">
                                           <select style="min-width: 40px" class="w-100 form-control form-control-sm custom-text-danger" v-model="detail.tax">
                                             <option :value="tax.value" v-for="(tax, taxIndex) in taxes" :key="taxIndex">{{ tax.display }} %</option>
-                                          </select>                                          
+                                          </select>
                                         </td>
                                         <td valign="middle">
                                           <svg class="cursor-pointer" @click="removeOuvrageDetail(zoneIndex, 2, ouvrageIndex, taskIndex, detailIndex)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -649,7 +695,7 @@
                             </div>
                             <div v-if="ouvrage.tasks.length == 0" class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openTaskModal(zoneIndex, 2, ouvrageIndex)">
                               <span class="plus-icon me-2"></span> AJOUTER ACTION
-                            </div>                                                
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -661,12 +707,12 @@
                   <div class="ouvrage-header d-flex">
                     <div class="col-7">
                       <div class="col-5 d-flex align-items-center cursor-pointer toggle-btn" @click="togglePanel('zone-'+zoneIndex+'-prestation-ouvrages')">
-                        <span class="prestation-icon me-2"></span> 
+                        <span class="prestation-icon me-2"></span>
                         <input type="text" @blur="zone.prestationOuvrage.edit = false" v-if="zone.prestationOuvrage.edit" class="form-control form-control-sm" v-model="zone.prestationOuvrage.name">
-                        <span v-else class="me-4" @dblclick="zone.prestationOuvrage.edit = true">{{ zone.prestationOuvrage.name }}</span>                          
+                        <span v-else class="me-4" @dblclick="zone.prestationOuvrage.edit = true">{{ zone.prestationOuvrage.name }}</span>
                         <span class="arrow-icon ms-auto"></span>
                       </div>
-                      <div class="add-btn ms-5 ps-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" 
+                      <div class="add-btn ms-5 ps-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer"
                       @click="openPrestationModal(zoneIndex)">
                         <span class="plus-icon me-2"></span> AJOUTER UN OUVRAGE
                       </div>
@@ -691,7 +737,7 @@
                             <div class="col-2"></div>
                           </div>
                         </div>
-                      </div>                      
+                      </div>
                       <div class="ouvrage-item" v-for="(ouvrage, ouvrageIndex) in zone.prestationOuvrage.ouvrages" :key="ouvrageIndex">
                         <div class="d-flex ouvrage-header">
                           <div class="col-4">
@@ -775,13 +821,13 @@
                                         <td valign="middle" class="text-center fw-bold">Taxe</td>
                                         <td></td>
                                       </tr>
-                                    </thead>                                    
+                                    </thead>
                                     <tbody>
                                       <tr v-for="(detail, detailIndex) in task.details" :key="detailIndex">
                                         <td valign="middle">
                                           <div class="custom-option d-flex align-items-center">
-                                            <span 
-                                              :class="{ 'clock-icon': detail.type == 'MO' || detail.type == 'INTERIM'|| detail.type == 'Labor',  
+                                            <span
+                                              :class="{ 'clock-icon': detail.type == 'MO' || detail.type == 'INTERIM'|| detail.type == 'Labor',
                                                 'book-icon' : detail.type == 'PRODUIT' || detail.type == 'COMMANDE FOURNISSEUR'
                                               }"
                                             ></span> {{ detail.name }}
@@ -797,7 +843,7 @@
                                           <div class="d-flex align-items-center">
                                             <input @keyup="updateAllValues" type="text" v-model="detail.numberH" class="w-100 form-control form-control-sm custom-text-danger">hr
                                           </div>
-                                        </td>                                      
+                                        </td>
                                         <td valign="middle" class="text-center supplier" v-else-if="detail.type == 'COMMANDE FOURNISSEUR'">
                                           <svg width="20" height="25" viewBox="0 0 20 25" fill="none" xmlns="http://www.w3.org/2000/svg" @click="openPdfModal(detail.base64)" class="cursor-pointer">
                                             <path d="M19.9981 5.41835C19.9972 5.4093 19.9956 5.40049 19.994 5.39168C19.9935 5.38875 19.9932 5.38571 19.9926 5.38278C19.9905 5.37226 19.9877 5.36199 19.9847 5.35186C19.9843 5.35064 19.9841 5.34932 19.9837 5.34809C19.9804 5.33767 19.9766 5.3275 19.9724 5.31751C19.972 5.31649 19.9717 5.31541 19.9713 5.31438C19.9672 5.30484 19.9626 5.2956 19.9578 5.2865C19.957 5.28498 19.9563 5.28341 19.9555 5.2819C19.9509 5.27343 19.9457 5.26531 19.9405 5.25724C19.9391 5.25519 19.9379 5.25303 19.9366 5.25103C19.9314 5.24349 19.9258 5.23635 19.92 5.22921C19.9182 5.22686 19.9165 5.22441 19.9146 5.22211C19.9075 5.21365 19.8998 5.20558 19.892 5.19775C19.8913 5.19702 19.8907 5.19623 19.8899 5.1955L14.6769 0.107436C14.676 0.106556 14.675 0.105822 14.674 0.104941C14.6662 0.097456 14.6581 0.0902153 14.6497 0.0834149C14.6469 0.0812133 14.644 0.0793542 14.6412 0.0772505C14.6343 0.0720157 14.6274 0.0667808 14.6201 0.0620352C14.6176 0.0603718 14.6149 0.059002 14.6123 0.0573875C14.6045 0.052544 14.5967 0.0477495 14.5885 0.0434932C14.5867 0.0425636 14.5848 0.0417808 14.583 0.0409002C14.5739 0.0363503 14.5647 0.0319472 14.5552 0.0280822C14.554 0.027593 14.5527 0.0272505 14.5515 0.0267613C14.5414 0.0227984 14.5311 0.0190802 14.5206 0.0159491C14.5192 0.0155577 14.5179 0.0153131 14.5165 0.0149217C14.5062 0.0119863 14.4957 0.0092955 14.4851 0.00719178C14.4819 0.00655577 14.4786 0.00631115 14.4754 0.00577299C14.4666 0.00425636 14.4577 0.00273973 14.4486 0.0018591C14.4361 0.000636008 14.4236 0 14.411 0H1.97995C0.88822 0 0 0.866928 0 1.93249V23.0675C0 24.1331 0.88822 25 1.97995 25H18.02C19.1118 25 20 24.1331 20 23.0675V5.45499C20 5.44271 19.9993 5.43048 19.9981 5.41835ZM14.787 1.25274L18.7165 5.08806H16.015C15.3379 5.08806 14.787 4.55039 14.787 3.88943V1.25274ZM18.02 24.2661H1.97995C1.30281 24.2661 0.75188 23.7285 0.75188 23.0675V1.93249C0.75188 1.27153 1.30281 0.733855 1.97995 0.733855H14.0351V3.88943C14.0351 4.95499 14.9233 5.82192 16.015 5.82192H19.2481V23.0675C19.2481 23.7285 18.6972 24.2661 18.02 24.2661Z" fill="black"/>
@@ -814,13 +860,13 @@
                                         <td v-else style="min-width: 40px" valign="middle">
                                           <div class="d-flex align-items-center">
                                             <input @keyup="updateAllValues" type="text" v-model.number="detail.marge" class="w-100 form-control form-control-sm custom-text-danger">%
-                                          </div>                                        
+                                          </div>
                                         </td>
                                         <td valign="middle">{{ detail.totalPrice }}€</td>
                                         <td valign="middle">
                                           <select style="min-width: 40px" class="w-100 form-control form-control-sm custom-text-danger" v-model="detail.tax">
                                             <option :value="tax.value" v-for="(tax, taxIndex) in taxes" :key="taxIndex">{{ tax.display }} %</option>
-                                          </select>                                          
+                                          </select>
                                         </td>
                                         <td valign="middle">
                                           <svg class="cursor-pointer" @click="removeOuvrageDetail(zoneIndex, 3, ouvrageIndex, taskIndex, detailIndex)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -856,10 +902,10 @@
                             </div>
                             <div v-if="ouvrage.tasks.length == 0" class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openTaskModal(zoneIndex, 3, ouvrageIndex)">
                               <span class="plus-icon me-2"></span> AJOUTER ACTION
-                            </div>                                                
+                            </div>
                           </div>
                         </div>
-                      </div>                        
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -885,7 +931,7 @@
                 <div class="d-flex mt-2">
                   <div class="col-9 d-flex flex-wrap">
                     <p class="w-100 m-0 title">
-                      Remise Euros :  
+                      Remise Euros :
                     </p>
                     <p class="w-100 m-0 sub-title">
                       A convertir en heure et a soustraire au total d’heures
@@ -893,7 +939,7 @@
                   </div>
                   <div class="col-3 d-flex align-items-center">
                     <p class="w-100 text-center font-16 mulish-extrabold d-flex align-items-center">
-                      <input type="text" class="form-control form-control-sm me-2" v-model="form.discount"> € 
+                      <input type="text" class="form-control form-control-sm me-2" v-model="form.discount"> €
                     </p>
                   </div>
                 </div>
@@ -905,7 +951,7 @@
                       Synthese Chantier
                     </p>
                     <p class="w-100 m-0 sub-title">
-                      Apud has gentes, quarum exordiens 
+                      Apud has gentes, quarum exordiens
                     </p>
                   </div>
                   <div class="col-2 d-flex align-items-center justify-content-center fw-bold mulish-extra-bold font-16 text-black  text-nowrap">
@@ -991,10 +1037,10 @@ import GoogleMap from '../../components/miscellaneous/GoogleMap';
 import CheckBox from '../../components/miscellaneous/CheckBox';
 import SwitchBtn from '../../components/miscellaneous/SwitchBtn';
 import Swal from 'sweetalert2';
-import {     
+import {
   DISPLAY_LOADER,
   HIDE_LOADER,
-  LOADER_MODULE 
+  LOADER_MODULE
   } from '../../store/types/types';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
@@ -1024,8 +1070,12 @@ export default {
     const store = useStore();
     const router = useRouter();
     const breadcrumbs = ref(['Choix client']);
-    const devisCreateStep = ref('choose_customer');
-    // const devisCreateStep = ref('create_devis');
+    // const devisCreateStep = ref('choose_customer');
+    const devisCreateStep = ref('create_devis');
+    const tabs = ref({
+          description:'Description',
+          service:'Service',
+      });
     watchEffect(()=>{
       if(devisCreateStep.value == 'choose_customer'){
         breadcrumbs.value = ['Choix client'];
@@ -1056,9 +1106,11 @@ export default {
     const gedCatId = ref(0);
     const gedCats = ref([]);
     const describes = ref([]);
+    const services = ref([]);
     const roofAccesses = ref([]);
     const form = ref({
       orderName: '',
+      describeOn: false,
       customer: {
         id: 1,
         company: 'La boulangerie',
@@ -1102,6 +1154,7 @@ export default {
           height: '',
           gedCats: [],
           describes: null,
+          services: null,
           installOuvrage: {
             name: 'Installation',
             edit: false,
@@ -1126,10 +1179,10 @@ export default {
             sumUnitPrice: 0,
             totalPrice: 0,
             ouvrages: []
-          },          
+          },
         }
       ],
-    });    
+    });
     const updateAllValues = ()=>{
       form.value.totalHoursForInstall = 0;
       form.value.totalPriceForInstall = 0;
@@ -1159,7 +1212,7 @@ export default {
                   detail.qty = parseInt(ouvrage.qty)*parseInt(detail.originalDetailQty);
                   detail.numberH = parseFloat(detail.originalNumberH)* parseInt(detail.qty);
                 }
-              }           
+              }
               if(detail.type == 'MO'){
                 if(detail.original){
                   detail.totalPrice = (parseFloat(detail.numberH == '' ? '0' : detail.numberH) * parseInt(detail.unitPrice)).toFixed(2);
@@ -1178,11 +1231,11 @@ export default {
               else{
                 detail.totalPrice = (parseInt(detail.qty) * parseFloat(detail.unitPrice) * (parseInt(detail.marge)/100 + 1)).toFixed(2);
                 detail.totalPriceWithoutMarge = (parseInt(detail.qty) * parseFloat(detail.unitPrice));
-              }     
+              }
               if(detail.type == 'INTERIM'){
                 form.value.totalHoursForInterim += parseFloat(detail.qty)
               }
-              ouvrage.total += parseFloat(detail.totalPrice);    
+              ouvrage.total += parseFloat(detail.totalPrice);
               ouvrage.totalWithoutMarge += parseFloat(detail.totalPriceWithoutMarge);
               ouvrage.totalHour += parseFloat(detail.numberH == '' ? '0' : detail.numberH);
             })
@@ -1212,7 +1265,7 @@ export default {
                   detail.qty = parseInt(ouvrage.qty)*parseInt(detail.originalDetailQty);
                   detail.numberH = parseFloat(detail.originalNumberH)* parseInt(detail.qty);
                 }
-              }           
+              }
               if(detail.type == 'MO'){
                 if(detail.original){
                   detail.totalPrice = (parseFloat(detail.numberH == '' ? '0' : detail.numberH) * parseInt(detail.unitPrice)).toFixed(2);
@@ -1231,25 +1284,25 @@ export default {
               else{
                 detail.totalPrice = (parseInt(detail.qty) * parseFloat(detail.unitPrice) * (parseInt(detail.marge)/100 + 1)).toFixed(2);
                 detail.totalPriceWithoutMarge = (parseInt(detail.qty) * parseFloat(detail.unitPrice));
-              }     
-              if(detail.type == 'INTERIM')     
+              }
+              if(detail.type == 'INTERIM')
                 form.value.totalHoursForInterim += parseFloat(detail.qty)
-              ouvrage.total += parseFloat(detail.totalPrice);    
+              ouvrage.total += parseFloat(detail.totalPrice);
               ouvrage.totalWithoutMarge += parseFloat(detail.totalPriceWithoutMarge);
               ouvrage.totalHour += parseFloat(detail.numberH == '' ? '0' : detail.numberH);
             })
           })
           zone.securityOuvrage.totalHour += ouvrage.totalHour;
-          zone.securityOuvrage.totalPrice += ouvrage.total;          
+          zone.securityOuvrage.totalPrice += ouvrage.total;
           form.value.totalPriceWithoutMarge += ouvrage.totalWithoutMarge;
         })
         form.value.totalUnitPrice += zone.securityOuvrage.sumUnitPrice;
         form.value.totalHoursForSecurity += zone.securityOuvrage.totalHour;
-        form.value.totalPriceForSecurity += zone.securityOuvrage.totalPrice;        
+        form.value.totalPriceForSecurity += zone.securityOuvrage.totalPrice;
         // prestation ouvrages
         zone.prestationOuvrage.totalHour = 0;
         zone.prestationOuvrage.totalPrice = 0;
-        zone.prestationOuvrage.sumUnitPrice = 0;                
+        zone.prestationOuvrage.sumUnitPrice = 0;
         zone.prestationOuvrage.ouvrages.forEach(ouvrage=>{
           ouvrage.total = 0;
           ouvrage.totalHour = 0;
@@ -1265,7 +1318,7 @@ export default {
                   detail.qty = parseInt(ouvrage.qty)*parseInt(detail.originalDetailQty);
                   detail.numberH = parseFloat(detail.originalNumberH)* parseInt(detail.qty);
                 }
-              }           
+              }
               if(detail.type == 'MO'){
                 if(detail.original){
                   detail.totalPrice = (parseFloat(detail.numberH == '' ? '0' : detail.numberH) * parseInt(detail.unitPrice)).toFixed(2);
@@ -1273,7 +1326,7 @@ export default {
                 }else{
                   detail.totalPrice = (parseFloat(detail.numberH == '' ? '0' : detail.numberH) * parseInt(detail.unitPrice)* parseInt(detail.qty)).toFixed(2);
                   detail.totalPriceWithoutMarge = (parseFloat(detail.numberH == '' ? '0' : detail.numberH) * parseFloat(detail.unitPrice)* parseInt(detail.qty));
-                }                
+                }
               }else if( detail.type == 'Labor' ){
                 detail.totalPrice = (parseFloat(detail.numberH == '' ? '0' : detail.numberH) * parseInt(detail.unitPrice) * parseInt(detail.qty)).toFixed(2);
                 detail.totalPriceWithoutMarge = (parseFloat(detail.numberH == '' ? '0' : detail.numberH) * parseFloat(detail.unitPrice));
@@ -1284,21 +1337,21 @@ export default {
               else{
                 detail.totalPrice = (parseInt(detail.qty) * parseFloat(detail.unitPrice) * (parseInt(detail.marge)/100 + 1)).toFixed(2);
                 detail.totalPriceWithoutMarge = (parseInt(detail.qty) * parseFloat(detail.unitPrice));
-              }     
-              if(detail.type == 'INTERIM')     
+              }
+              if(detail.type == 'INTERIM')
                 form.value.totalHoursForInterim += parseFloat(detail.qty)
-              ouvrage.total += parseFloat(detail.totalPrice);    
+              ouvrage.total += parseFloat(detail.totalPrice);
               ouvrage.totalWithoutMarge += parseFloat(detail.totalPriceWithoutMarge);
               ouvrage.totalHour += parseFloat(detail.numberH == '' ? '0' : detail.numberH);
             })
           })
           zone.prestationOuvrage.totalHour += ouvrage.totalHour;
-          zone.prestationOuvrage.totalPrice += ouvrage.total;            
-          form.value.totalPriceWithoutMarge += ouvrage.totalWithoutMarge;          
+          zone.prestationOuvrage.totalPrice += ouvrage.total;
+          form.value.totalPriceWithoutMarge += ouvrage.totalWithoutMarge;
         })
         form.value.totalUnitPrice += zone.prestationOuvrage.sumUnitPrice;
         form.value.totalHoursForPrestation += zone.prestationOuvrage.totalHour;
-        form.value.totalPriceForPrestation += zone.prestationOuvrage.totalPrice;    
+        form.value.totalPriceForPrestation += zone.prestationOuvrage.totalPrice;
         form.value.totalDays = (form.value.totalHoursForPrestation + form.value.totalHoursForSecurity +  form.value.totalHoursForInstall)/8
       })
     };
@@ -1338,12 +1391,15 @@ export default {
     onMounted(()=>{
       axios.post('/get-ged-categories').then((res)=>{
         gedCats.value = res.data.gedCats;
+        form.value.describeOn = res.data.describeOn;
         describes.value = res.data.describes;
+        describes.value = res.data.services;
         taxes.value = res.data.taxes;
         units.value = res.data.units;
         roofAccesses.value = res.data.roofAccesses;
         form.value.zones.forEach(element => {
           element.describes = res.data.describes;
+          element.services = res.data.services;
         });
       }).catch((error)=>{
         console.log(error);
@@ -1373,11 +1429,11 @@ export default {
             fileName: images[i].name,
             type: type,
             url: reader.result,
-            id: '',            
+            id: '',
           })
         };
         reader.readAsDataURL(images[i]);
-      }      
+      }
     }
     const removeImage = (zIndex, id, index)=>{
       form.value.zones[zIndex].gedCats[id][0].items =  form.value.zones[zIndex].gedCats[id][0].items.filter((item, i)=>{
@@ -1405,7 +1461,7 @@ export default {
     const openProductModal = (zIndex, ouvrageType, ouvrageId, taskId)=>{
       productModal.value.openModal(zIndex, ouvrageType, ouvrageId, taskId);
     }
-    
+
     const openInterimModal = (zIndex, ouvrageType, ouvrageId, taskId)=>{
       interimModal.value.openModal(zIndex, ouvrageType, ouvrageId, taskId);
     }
@@ -1419,7 +1475,7 @@ export default {
     const openPdfModal = (data)=>{
       pdfModal.value.openModal(data);
     }
-        
+
     const addNewCustomer = ()=>{
       router.push({
         name: "CreateCustomer"
@@ -1433,7 +1489,7 @@ export default {
     const addedNewAddress = (data)=>{
       customerAddresses.value.push(data);
     }
-    
+
     const selectedCustomer = (data)=>{
       // move on to "addess choose step"
       devisCreateStep.value = 'choose_address';
@@ -1466,7 +1522,7 @@ export default {
           data.lon = parseFloat(data.lon.replace(/[a-zA-Z()]/g, ""));
       }else{
           data.lon = 2.3491914978706396;
-      }      
+      }
       form.value.address = data;
     }
 
@@ -1492,7 +1548,7 @@ export default {
         if(data.type == 'prestation'){
           form.value.zones[data.zoneIndex].prestationOuvrage.ouvrages.push(res.data);
           document.querySelector('.prestation-ouvrages').classList.add('open');
-        }        
+        }
         updateAllValues();
       }).catch((error)=>{
         console.log(error);
@@ -1742,7 +1798,7 @@ export default {
           unit_id: task.unit_id,
           qty: task.qty,
           details: []
-        });        
+        });
       }
       if(task.ouvrageType == 3){
         form.value.zones[task.zoneIndex].prestationOuvrage.ouvrages[task.ouvrageId].tasks.push({
@@ -1752,7 +1808,7 @@ export default {
           unit_id: task.unit_id,
           qty: task.qty,
           details: []
-        });        
+        });
       }
       updateAllValues();
     }
@@ -1766,6 +1822,7 @@ export default {
           edit: false,
           gedCats: gedCats.value,
           describes: describes.value,
+          services: services.value,
           installOuvrage: {
             name: 'Installation',
             edit: false,
@@ -1790,7 +1847,7 @@ export default {
             totalPrice: 0,
             ouvrages: []
           },
-        } 
+        }
       );
 
     }
@@ -1816,7 +1873,7 @@ export default {
             'Supprimé!',
             "Louvrage a été supprimé.",
             'success'
-          )          
+          )
           updateAllValues();
         }
       });
@@ -1864,7 +1921,7 @@ export default {
           if(ouvrageType == 3){
             form.value.zones[zoneIndex].prestationOuvrage.ouvrages = form.value.zones[zoneIndex].prestationOuvrage.ouvrages.filter((item, index)=>{
               return ouvrageIndex != index;
-            });            
+            });
           }
           updateAllValues();
         }
@@ -1880,7 +1937,7 @@ export default {
         confirmButtonColor: '#42A71E',
         // cancelButtonColor: '#E8581B',
         cancelButtonColor: 'var(--lcdtOrange)',
-        cancelButtonText: 'Annuler',        
+        cancelButtonText: 'Annuler',
         confirmButtonText: `Oui, s'il vous plaît.`
       }).then((result) => {
         if (result.isConfirmed) {
@@ -1897,16 +1954,16 @@ export default {
           if(ouvrageType == 3){
             form.value.zones[zoneIndex].prestationOuvrage.ouvrages[ouvrageIndex].tasks[taskIndex].details = form.value.zones[zoneIndex].prestationOuvrage.ouvrages[ouvrageIndex].tasks[taskIndex].details.filter((item, index)=>{
               return detailIndex != index;
-            })            
+            })
           }
           Swal.fire(
             'Supprimé!',
             'Le détail a été supprimé.',
             'success'
-          )        
+          )
           updateAllValues();
         }
-      })        
+      })
     }
     // save Devis
     const storeDevis = ()=>{
@@ -1945,8 +2002,8 @@ export default {
       if(type == 3){
         form.value.zones[zIndex].prestationOuvrage.ouvrages.push(emptyOuvrage);
         document.querySelector('.prestation-ouvrages').classList.add('open');
-      }  
-      updateAllValues();     
+      }
+      updateAllValues();
     }
     // open empty product modal
     const openEmptyProductModal = (data)=>{
@@ -2002,11 +2059,12 @@ export default {
           productId: 0,
           unit_id: 0,
         });
-      }      
+      }
       updateAllValues();
     }
     return {
       breadcrumbs,
+      tabs,
       taxes,
       units,
       roofAccesses,
@@ -2079,11 +2137,11 @@ export default {
   }
   /* Track */
   ::-webkit-scrollbar-track {
-    background: #E0E0E0; 
+    background: #E0E0E0;
   }
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: #47454B; 
+    background: #47454B;
     border-radius: 6px;
   }
   .page-title{
@@ -2113,7 +2171,7 @@ export default {
     font-family: "Mulish SemiBold";
     font-size: 10px;
     color: rgba(0, 24, 51, 0.22);
-    line-height: 12.55px;    
+    line-height: 12.55px;
   }
   .breadcrumb{
     .breadcrumb-item + .breadcrumb-item::before{
@@ -2135,7 +2193,7 @@ export default {
   }
   .btn-pdf{
     width: 190px;
-    background: rgba(255, 0, 0, 0.7);    
+    background: rgba(255, 0, 0, 0.7);
     border-radius: 10px;
     border: none;
     outline: none;
@@ -2153,7 +2211,7 @@ export default {
       padding: 0;
       &:focus{
         outline: none;
-        box-shadow: none;        
+        box-shadow: none;
       }
     }
   }
@@ -2175,7 +2233,7 @@ export default {
     &.active{
       .option-icon-dot{
         background-color: #E8581B;
-      }      
+      }
     }
     *{
       pointer-events: none;
@@ -2311,5 +2369,5 @@ export default {
             display: none;
         }
     }
-}  
+}
 </style>

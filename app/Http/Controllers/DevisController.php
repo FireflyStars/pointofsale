@@ -514,12 +514,30 @@ class DevisController extends Controller
             }            
         }
         $describes = $describes->groupBy('catName');
+        $services = DB::table('services')->select(
+            'services.name', 'services.type', 'services.default as value', 
+            'services.data', 'services.id',
+        )
+        ->orderBy('order')->get();            
+        foreach($services as $service){
+            $service->data = json_decode($service->data);
+            if($describe->type == 'Checkbox' || $describe->type == 'Switch'){
+                $describe->value = $describe->value == 0 ? false : true;
+            }
+            $describe->active = false;
+            $describe->semti = false;
+            $describe->sstt = false;
+            $describe->client = false;
+            $describe->loc = false;
+        }        
         return response()->json([
             'gedCats'   => $categories->groupBy('id'),
             'units'     => DB::table('units')->select('id as value', 'code as display')->get(),
             'taxes'     => DB::table('taxes')->select('id as value', DB::raw('CEIL(taux * 100) as display'))->get(),
             'roofAccesses'     => DB::table('moyenacces')->select('id as value', 'name as display')->get(),
             'describes'     => $describes,
+            'services'     => $services,
+            'describeOn'     => DB::table('settings')->where('key', 'admin.Describe')->value('value') == 1 ? true : false,
         ]);
     }
 
@@ -834,6 +852,18 @@ class DevisController extends Controller
                 }
                 DB::table('order_describe')->insert($describeData);
             }
+            // save services
+            $serviceData = [];
+            foreach($zone['services'] as $service) {
+                    $serviceData[] = [
+                        'order_zone_id'=> $zoneId,
+                        'service_id'=> $service['id'],
+                        'value'=> $service['value'],
+                        'created_at'=> now(),
+                        'updated_at'=> now()
+                    ];
+                DB::table('order_services')->insert($serviceData);
+            }
             if( count($zone['installOuvrage']['ouvrages']) ){
                 $installationCat = [
                     'order_zone_id' =>  $zoneId,
@@ -1145,6 +1175,7 @@ class DevisController extends Controller
                                 ->where('orders.id', $order->id)
                                 ->select('order_states.order_type as type', 'order_states.name', 'order_states.fontcolor', 'order_states.color')->first();
         $devis['orderName'] = $order->name;
+        $devis['describeOn'] = DB::table('settings')->where('key', 'admin.Describe')->value('value') == 1 ? true : false;
         $devis['totalHoursForInstall'] = 0;
         $devis['totalPriceForInstall'] = 0;
         $devis['totalHoursForSecurity'] = 0;
@@ -1222,9 +1253,29 @@ class DevisController extends Controller
                 if($describe->type == 'Checkbox' || $describe->type == 'Switch'){
                     $describe->default = $describe->default == 0 ? false : true;
                 }
-            }                        
+            }
+            $services = DB::table('order_services')->join('services', 'services.id', '=', 'order_services.service_id')
+                        ->where('order_zone_id', $zone->id)
+                        ->select(
+                            'services.name', 'services.type', 'order_services.value', 
+                            'services.data', 'order_services.active', 'order_services.semti',
+                            'services.id', 'order_services.id as order_service_id', 'order_services.sstt',
+                            'order_services.client', 'order_services.loc'
+                        )
+                        ->orderBy('order')->get();            
+            foreach($services as $service){
+                $service->data = json_decode($service->data);
+                if($describe->type == 'Checkbox' || $describe->type == 'Switch'){
+                    $describe->value = $describe->value == 0 ? false : true;
+                }
+                $describe->semti = $describe->semti == 0 ? false : true;
+                $describe->sstt = $describe->sstt == 0 ? false : true;
+                $describe->client = $describe->client == 0 ? false : true;
+                $describe->loc = $describe->loc == 0 ? false : true;
+            }
 
             $devis['zones'][$zoneIndex]['describes'] = $describes->groupBy('catName');
+            $devis['zones'][$zoneIndex]['services'] = $services;
             //installation ouvrages;
             
             $orderCat = DB::table('order_cat')->where('order_zone_id', $zone->id)->where('type', 'INSTALLATION')->first();
@@ -1519,6 +1570,15 @@ class DevisController extends Controller
                         'updated_at'=> now()
                     ]);
                 }
+            }            
+            // save services
+            foreach($zone['services'] as $service) {
+                DB::table('order_services')->where('id', $service['order_service_id'])->update([
+                    'service_id'=> $service['id'],
+                    'value'=> $service['value'],
+                    'order_zone_id'=> $zoneId,
+                    'updated_at'=> now()
+                ]);
             }            
             if( count($zone['installOuvrage']['ouvrages']) ){
                 $orderCat = DB::table('order_cat')

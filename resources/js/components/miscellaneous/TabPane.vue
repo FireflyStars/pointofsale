@@ -70,7 +70,8 @@
       bottom:2px;
   }
     .tab-view{
-        min-height: 550px;
+        height: fit-content;
+        /* min-height: 550px; */
         align-items: center;justify-content: center;
         position: relative;
     }

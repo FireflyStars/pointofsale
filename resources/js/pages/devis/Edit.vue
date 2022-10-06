@@ -126,7 +126,7 @@
                 </div>
               </div>
               <div class="zone-section" v-for="(zone, zoneIndex) in form.zones" :key="zoneIndex">
-                <div class="ged-section bg-white px-3 py-2">
+                <div class="ged-section bg-white px-3 py-2 mb-2">
                   <div class="zone-header d-flex align-items-center">
                     <span class="home-icon"></span>
                     <div class="zone-name ms-2">
@@ -210,40 +210,87 @@
                     </div>
                   </div>
                 </div>
-                <div class="description-section bg-white px-3 py-2 my-2" v-if="zone.describes != null">
-                  <div class="d-flex flex-wrap">
-                    <div class="col-6" v-for="(describeGroup, desribeGroupName, desribeGroupIndex) in zone.describes" :key="desribeGroupIndex">
-                      <div class="describe-group">
-                        <h5>{{ desribeGroupName }}</h5>
-                        <div class="d-flex mt-2" v-for="(describe, describeIndex) in describeGroup" :key="describeIndex">
-                          <div class="col-4">
-                            {{ describe.name }}
-                          </div>
-                          <div class="col-8" v-if="describe.type == 'Radio'">
-                            <div class="preference-radio">
-                              <label class="custom-radio" v-for="(value, key) in describe.data" :key="key">{{ value }}
-                                <input type="radio" :checked="describe.default == value ? true : false" :value="value" v-model="describe.default" :name="'pref_'+describe.name">
-                                <span class="checkmark"></span>
-                              </label>
-                            </div>                            
-                          </div>
-                          <div class="col-8" v-else-if="describe.type == 'Switch'">
-                            <switch-btn class="ms-auto" v-model="describe.default"></switch-btn>
-                          </div>
-                          <div class="col-8" v-else-if="describe.type == 'Checkbox'">
-                            <div  v-for="(value, key) in describe.data" :key="key">
-                              <CheckBox v-model="describe.default" :checked="value == 0 ? false : true" :title="value"></CheckBox>
+                <tab-pane :tabs="tabs" current='description' class="almarai_700_normal" v-if="form.describeOn">
+                  <template v-slot:description>
+                    <div class="description-section bg-white p-2" v-if="zone.describes != null">
+                      <div class="d-flex flex-wrap">
+                        <div class="col-6" v-for="(describeGroup, desribeGroupName, desribeGroupIndex) in zone.describes" :key="desribeGroupIndex">
+                          <div class="describe-group">
+                            <h5>{{ desribeGroupName }}</h5>
+                            <div class="d-flex mt-2" v-for="(describe, describeIndex) in describeGroup" :key="describeIndex">
+                              <div class="col-4">
+                                {{ describe.name }}
+                              </div>
+                              <div class="col-8" v-if="describe.type == 'Radio'">
+                                <div class="preference-radio">
+                                  <label class="custom-radio" v-for="(value, key) in describe.data" :key="key">{{ value }}
+                                    <input type="radio" :checked="describe.default == value ? true : false" :value="value" v-model="describe.default" :name="'pref_'+describe.name">
+                                    <span class="checkmark"></span>
+                                  </label>
+                                </div>                            
+                              </div>
+                              <div class="col-8" v-else-if="describe.type == 'Switch'">
+                                <switch-btn class="ms-auto" v-model="describe.default"></switch-btn>
+                              </div>
+                              <div class="col-8" v-else-if="describe.type == 'Checkbox'">
+                                <div  v-for="(value, key) in describe.data" :key="key">
+                                  <CheckBox v-model="describe.default" :checked="value == 0 ? false : true" :title="value"></CheckBox>
+                                </div>
+                              </div>
+                              <div class="col-8" v-else>
+                                <input v-model="describe.default" class="form-control form-control-sm bg-gray"/>
+                              </div>
                             </div>
-                          </div>
-                          <div class="col-8" v-else>
-                            <input v-model="describe.default" class="form-control form-control-sm bg-gray"/>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-                
+                  </template>
+                  <template v-slot:service>
+                    <div class="description-section bg-white p-2" v-if="zone.services != null">
+                      <div class="d-flex flex-wrap mb-2">
+                        <div class="col-1"></div>
+                        <div class="col-3 fw-bold">Tache à realiser</div>
+                        <div class="col-3 fw-bold">Moyen à prévoir</div>
+                        <div class="col-5 fw-bold">
+                          <div class="fw-bold">Responsable Action</div>
+                          <div class="d-flex flex-wrap">
+                            <div class="col-3 d-flex justify-content-center fw-bold">SEMTI</div>
+                            <div class="col-3 d-flex justify-content-center fw-bold">SSTT</div>
+                            <div class="col-3 d-flex justify-content-center fw-bold">LOC</div>
+                            <div class="col-3 d-flex justify-content-center fw-bold">CLIENT</div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="d-flex mb-2" v-for="(service, index) in zone.services" :key="index">
+                        <div class="col-1"><CheckBox v-model="service.active" :checked="service.active"></CheckBox></div>
+                        <div class="col-3">{{ service.name }}</div>
+                        <div class="d-flex col-3" v-if="service.type == 'Checkbox'">
+                          <div class="me-2" v-for="(value, key) in service.data" :key="key">
+                            <CheckBox v-model="service.value" :checked="value == service.value ? true : false" :title="value"></CheckBox>
+                          </div>
+                        </div>
+                        <div class="d-flex col-3" v-else-if="service.type == 'Radio'">
+                          <div class="preference-radio">
+                            <label class="custom-radio" v-for="(value, key) in service.data" :key="key">{{ value }}
+                              <input type="radio" :checked="service.value == value ? true : false" :value="value" v-model="service.value" :name="'pref_'+service.name">
+                              <span class="checkmark"></span>
+                            </label>
+                          </div>
+                        </div>
+                        <div class="col-3" v-else>
+                          <switch-btn class="ms-auto" v-model="service.value"></switch-btn>
+                        </div>
+                        <div class="col-5 d-flex flex-wrap">
+                          <div class="col-3 d-flex justify-content-center fw-bold"><CheckBox v-model="service.semti" :checked="service.semti"></CheckBox></div>
+                          <div class="col-3 d-flex justify-content-center fw-bold"><CheckBox v-model="service.sstt" :checked="service.sstt"></CheckBox></div>
+                          <div class="col-3 d-flex justify-content-center fw-bold"><CheckBox v-model="service.loc" :checked="service.loc"></CheckBox></div>
+                          <div class="col-3 d-flex justify-content-center fw-bold"><CheckBox v-model="service.client" :checked="service.client"></CheckBox></div>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                </tab-pane>                
                 <div class="ouvrage-section installation-ouvrages bg-white px-4 py-3 mt-2 mb-2" :id="'zone-'+zoneIndex+'-installation-ouvrages'">
                   <div class="ouvrage-header d-flex">
                     <div class="col-7">
@@ -1028,6 +1075,10 @@ export default {
     const router = useRouter();
     const route = useRoute();
     const breadcrumbs = ref(['Choix client']);
+    const tabs = ref({
+          description:'Description',
+          service:'Service',
+      });        
     const devisCreateStep = ref('create_devis');
     watchEffect(()=>{
       if(devisCreateStep.value == 'choose_customer'){
@@ -1059,9 +1110,11 @@ export default {
     const gedCatId = ref(0);
     const gedCats = ref([]);
     const describes = ref([]);    
+    const services = ref([]);    
     const roofAccesses = ref([]);
     const form = ref({
       orderName: '',
+      describeOn: false,
       orderStatus: {
         name: 'EN PREPA',
         type: 'DEVIS',
@@ -1111,6 +1164,7 @@ export default {
           height: '',
           gedCats: [],
           describes: null,
+          services: null,
           installOuvrage: {
             name: 'Installation',
             edit: false,
@@ -1352,6 +1406,7 @@ export default {
         roofAccesses.value = res.data.roofAccesses;
         gedCats.value = res.data.gedCats
         describes.value = res.data.describes
+        services.value = res.data.services
         let devisData = res.data.devis
         if(devisData.address.lat != null){
             devisData.address.lat = parseFloat(devisData.address.lat.replace(/[a-zA-Z()]/g, ""));
@@ -1860,6 +1915,7 @@ export default {
             edit: false,
             gedCats: gedCats.value,
             describes: describes.value,
+            services: services.value,
             installOuvrage: {
               name: 'Installation',
               edit: false,
@@ -2139,6 +2195,7 @@ export default {
     return {
       route,
       breadcrumbs,
+      tabs,
       taxes,
       units,
       roofAccesses,
