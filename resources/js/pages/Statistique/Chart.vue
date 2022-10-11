@@ -423,7 +423,8 @@ export default {
                 percent = "--";
             }
             let originLabel = originSeries.children.push(am5.Label.new(originChartRoot, {
-                text: "${valueSum.formatNumber('#,###.')}\n   "+ percent,
+                text: "${valueSum.formatNumber('#,###.')}\n"+ percent,
+                textAlign: 'center',
                 centerX: am5.percent(50),
                 centerY: am5.percent(50),
                 fontSize: 20,
@@ -491,7 +492,8 @@ export default {
                 percent = "--";
             }            
             let clientLabel = clientSeries.children.push(am5.Label.new(clientChartRoot, {
-                text: "${valueSum.formatNumber('#,###.')}\n   " + percent,
+                text: "${valueSum.formatNumber('#,###.')}\n" + percent,
+                textAlign: 'center',
                 centerX: am5.percent(50),
                 centerY: am5.percent(50),
                 fontSize: 20,

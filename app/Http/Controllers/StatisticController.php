@@ -74,11 +74,11 @@ class StatisticController extends Controller
                     $past_period = [Carbon::now()->subMonth()->subDays(90)->startOfDay()->toDateTimeString(), Carbon::now()->subMonth()->endOfDay()->toDateTimeString()];
                 }
             }else if ( $dateRangeType == 'Last Month' ){
-                $period = [Carbon::now()->startOfMonth()->startOfDay()->toDateTimeString(), Carbon::now()->endOfDay()->toDateTimeString()];
+                $period = [Carbon::now()->subMonth()->startOfMonth()->startOfDay()->toDateTimeString(), Carbon::now()->subMonth()->endOfMonth()->endOfDay()->toDateTimeString()];
                 if(!$compareCustomFilter && $compareMode == 'year'){
                     $past_period = [Carbon::now()->subYear()->subMonth()->startOfDay()->toDateTimeString(), Carbon::now()->subYear()->endOfDay()->toDateTimeString()];
                 }else{
-                    $past_period = [Carbon::now()->subMonth()->startOfMonth()->startOfDay()->toDateTimeString(), Carbon::now()->subMonth()->endOfMonth()->endOfDay()->toDateTimeString()];
+                    $past_period = [Carbon::now()->subMonth(2)->startOfMonth()->startOfDay()->toDateTimeString(), Carbon::now()->subMonth(2)->endOfMonth()->endOfDay()->toDateTimeString()];
                 }
             }else if ( $dateRangeType == 'Year to date' ){
                 $period = [Carbon::now()->startOfYear()->toDateTimeString(), Carbon::now()->endOfDay()->toDateTimeString()];
