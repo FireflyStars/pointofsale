@@ -1292,13 +1292,17 @@ class DevisController extends Controller
                 }
                 if(isset($service->active)){
                     $service->active = $service->active == 0 ? false : true;
+                    $service->semti = $service->semti == 0 ? false : true;
+                    $service->sstt = $service->sstt == 0 ? false : true;
+                    $service->client = $service->client == 0 ? false : true;
+                    $service->loc = $service->loc == 0 ? false : true;
                 }else{
                     $service->active = false;
+                    $service->semti = false;
+                    $service->sstt = false;
+                    $service->client = false;
+                    $service->loc = false;
                 }
-                $service->semti = $service->semti == 0 ? false : true;
-                $service->sstt = $service->sstt == 0 ? false : true;
-                $service->client = $service->client == 0 ? false : true;
-                $service->loc = $service->loc == 0 ? false : true;
             }
             $devis['zones'][$zoneIndex]['services'] = $services;
             //installation ouvrages;
