@@ -532,6 +532,7 @@ class DevisController extends Controller
             $service->loc = false;
         }
         return response()->json([
+            'useGoogleService'   => DB::table('settings')->where('key', 'admin.Google')->value('value'),
             'gedCats'   => $categories->groupBy('id'),
             'units'     => DB::table('units')->select('id as value', 'code as display')->get(),
             'taxes'     => DB::table('taxes')->select('id as value', DB::raw('CEIL(taux * 100) as display'))->get(),
@@ -1243,31 +1244,47 @@ class DevisController extends Controller
                 }
             }
             $devis['zones'][$zoneIndex]['gedCats'] = $categories->groupBy('id');
-            $describes = DB::table('order_describe')->join('describe', 'describe.id', '=', 'order_describe.describe_id')
-                        ->where('order_zone_id', $zone->id)
-                        ->join('describe_categories', 'describe_categories.id', '=', 'describe.describe_category_id')
-                        ->select(
-                            'describe.name', 'describe.type', 'order_describe.value as default',
-                            'describe.order', 'describe.data', 'describe_categories.name as catName',
-                            'describe.id', 'order_describe.id as order_describe_id'
-                        )
-                        ->orderBy('order')->get();
+            if($devis['describeOn'] && DB::table('order_describe')->where('order_zone_id', $zone->id)->count()){
+                $describes = DB::table('order_describe')->join('describe', 'describe.id', '=', 'order_describe.describe_id')
+                                ->where('order_zone_id', $zone->id)
+                                ->join('describe_categories', 'describe_categories.id', '=', 'describe.describe_category_id')
+                                ->select(
+                                    'describe.name', 'describe.type', 'order_describe.value as default',
+                                    'describe.order', 'describe.data', 'describe_categories.name as catName',
+                                    'describe.id', 'order_describe.id as order_describe_id'
+                                )
+                                ->orderBy('order')->get();
+            }else{
+                $describes = DB::table('describe')->join('describe_categories', 'describe.describe_category_id', '=', 'describe_categories.id')
+                            ->select('describe.id', 'describe.name', 'describe.type', 'describe.default', 'describe.order', 'describe.data', 'describe_categories.name as catName')
+                            ->orderBy('order')->get();
+            }
             foreach($describes as $describe){
                 $describe->data = json_decode($describe->data);
                 if($describe->type == 'Checkbox' || $describe->type == 'Switch'){
                     $describe->default = $describe->default == 0 ? false : true;
                 }
             }
+            $describes = $describes->groupBy('catName');
             $devis['zones'][$zoneIndex]['describes'] = $describes->groupBy('catName');
-            $services = DB::table('order_services')->join('services', 'services.id', '=', 'order_services.service_id')
-                        ->where('order_zone_id', $zone->id)
-                        ->select(
-                            'services.name', 'services.type', 'order_services.value',
-                            'services.data', 'order_services.active', 'order_services.semti',
-                            'services.id', 'order_services.id as order_service_id', 'order_services.sstt',
-                            'order_services.client', 'order_services.loc',
-                        )
-                        ->orderBy('order')->get();
+
+            if($devis['describeOn'] && DB::table('order_services')->where('order_zone_id', $zone->id)->count()){
+                $services = DB::table('order_services')->join('services', 'services.id', '=', 'order_services.service_id')
+                ->where('order_zone_id', $zone->id)
+                ->select(
+                    'services.name', 'services.type', 'order_services.value',
+                    'services.data', 'order_services.active', 'order_services.semti',
+                    'services.id', 'order_services.id as order_service_id', 'order_services.sstt',
+                    'order_services.client', 'order_services.loc',
+                )
+                ->orderBy('order')->get();
+            }else{
+                $services = DB::table('services')->select(
+                    'services.name', 'services.type', 'services.default as value',
+                    'services.data', 'services.id',
+                )
+                ->orderBy('order')->get();
+            }
             foreach($services as $service){
                 $service->data = json_decode($service->data);
                 if($service->type == 'Checkbox' || $service->type == 'Switch'){
@@ -1486,6 +1503,7 @@ class DevisController extends Controller
         return response()->json(
             [
                 'devis' => $devis,
+                'useGoogleService'   => DB::table('settings')->where('key', 'admin.Google')->value('value'),
                 'gedCats'   => $categories->groupBy('id'),
                 'units'     => DB::table('units')->select('id as value', 'code as display')->get(),
                 'taxes'     => DB::table('taxes')->select('id as value', DB::raw('CEIL(taux * 100) as display'))->get(),
@@ -1567,27 +1585,52 @@ class DevisController extends Controller
             // update describes
             foreach($zone['describes'] as $zoneDescribes) {
                 foreach ($zoneDescribes as $describe) {
-                    DB::table('order_describe')->where('id', $describe['order_describe_id'])->update([
-                        'describe_id'=> $describe['id'],
-                        'value'=> $describe['default'],
-                        'order_zone_id'=> $zoneId,
-                        'updated_at'=> now()
-                    ]);
+                    if(isset($describe['order_describe_id'])){
+                        DB::table('order_describe')->where('id', $describe['order_describe_id'])->update([
+                            'describe_id'=> $describe['id'],
+                            'value'=> $describe['default'],
+                            'order_zone_id'=> $zoneId,
+                            'updated_at'=> now()
+                        ]);
+                    }else{
+                        DB::table('order_describe')->insert([
+                            'order_zone_id'=> $zoneId,
+                            'describe_id'=> $describe['id'],
+                            'value'=> $describe['default'],
+                            'created_at'=> now(),
+                            'updated_at'=> now()                            
+                        ]);                        
+                    }
                 }
             }
             // update services
             foreach($zone['services'] as $service) {
-                DB::table('order_services')->where('id', $service['order_service_id'])->update([
-                    'service_id'=> $service['id'],
-                    'value'=> $service['value'],
-                    'active'=> $service['active'],
-                    'semti'=> $service['semti'],
-                    'sstt'=> $service['sstt'],
-                    'loc'=> $service['loc'],
-                    'client'=> $service['client'],
-                    'order_zone_id'=> $zoneId,
-                    'updated_at'=> now()
-                ]);
+                if(isset($service['order_service_id'])){
+                    DB::table('order_services')->where('id', $service['order_service_id'])->update([
+                        'service_id'=> $service['id'],
+                        'value'=> $service['value'],
+                        'active'=> $service['active'],
+                        'semti'=> $service['semti'],
+                        'sstt'=> $service['sstt'],
+                        'loc'=> $service['loc'],
+                        'client'=> $service['client'],
+                        'order_zone_id'=> $zoneId,
+                        'updated_at'=> now()
+                    ]);
+                }else{
+                    DB::table('order_services')->insert([
+                        'order_zone_id'=> $zoneId,
+                        'service_id'=> $service['id'],
+                        'value'=> $service['value'],
+                        'active'=> $service['active'],
+                        'semti'=> $service['semti'],
+                        'sstt'=> $service['sstt'],
+                        'loc'=> $service['loc'],
+                        'client'=> $service['client'],
+                        'created_at'=> now(),
+                        'updated_at'=> now()
+                    ]);
+                }
             }
             if( count($zone['installOuvrage']['ouvrages']) ){
                 $orderCat = DB::table('order_cat')

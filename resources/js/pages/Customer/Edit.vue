@@ -284,7 +284,8 @@
                                 <div class="col-6">
                                     <div class="form-group">
                                         <label class="text-nowrap">ADRESSE 1 (N° et libellé de voie…)  * </label>
-                                        <GoogleAddress :address="address.address1" :index="index" :placeholder="'Adresse1'" @updateAddressInfo="updateAddressInfo"></GoogleAddress>
+                                        <GoogleAddress v-if="useGoogleService" :address="address.address1" :index="index" :placeholder="'Adresse1'" @updateAddressInfo="updateAddressInfo"></GoogleAddress>
+                                        <input v-else type="text" placeholder="Adresse1" v-model="address.address1" class="form-control">
                                     </div>
                                 </div>
                                 <div class="col-6 ps-3">
@@ -687,6 +688,7 @@ export default {
         const customerPaiements   = ref([]);
         const addressTypes     = ref([]);
         const contactTypes     = ref([]);
+        const useGoogleService     = ref(false);
         const form = ref({
             id: '',
             created_at: '',
@@ -1214,6 +1216,7 @@ export default {
         }
         onMounted(()=>{
             axios.post('/get-customer/'+ route.params.id).then((res)=>{
+                useGoogleService.value  = res.data.useGoogleService;
                 customerOrigins.value  = res.data.customerOrigins;
                 customerStatuses.value  = res.data.status;
                 customerTaxes.value    = res.data.taxes;
@@ -1285,6 +1288,7 @@ export default {
         })
         return {
             form,
+            useGoogleService,
             step,
             customerOrigins,
             customerStatuses,

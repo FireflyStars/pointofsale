@@ -166,7 +166,7 @@
                         <p class="m-0 almarai-bold font-14 text-gray">Adresse du chantier</p>
                         <p class="m-0 almarai-light font-14">{{ form.address.address1 }} {{ form.address.postCode }} {{ form.address.city }}</p>
                       </div>
-                      <div class="col-7">
+                      <div class="col-7" v-if="useGoogleService">
                         <GoogleMap v-model:latitude="form.address.lat" v-model:longitude="form.address.lon"></GoogleMap>
                       </div>
                     </div>
@@ -1112,6 +1112,7 @@ export default {
     const describes = ref([]);    
     const services = ref([]);    
     const roofAccesses = ref([]);
+    const useGoogleService = ref(false);
     const form = ref({
       orderName: '',
       describeOn: false,
@@ -1401,6 +1402,7 @@ export default {
     }
     onMounted(()=>{
       axios.post('/get-devis/'+route.params.id).then((res)=>{
+        useGoogleService.value = res.data.useGoogleService;
         taxes.value = res.data.taxes;
         units.value = res.data.units;
         roofAccesses.value = res.data.roofAccesses;
@@ -2194,6 +2196,7 @@ export default {
     }
     return {
       route,
+      useGoogleService,
       breadcrumbs,
       tabs,
       taxes,

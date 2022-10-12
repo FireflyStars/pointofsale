@@ -14,6 +14,7 @@ class CustomerController extends Controller
     //
     public function getListInfoForCustomer(){
         return response()->json([
+            'useGoogleService'  => DB::table('settings')->where('key', 'admin.Google')->value('value') == 1 ? true : false,
             'customerOrigins'   => DB::table('customer_origins')->select('id as value', 'name as display')->orderBy('name')->get(),
             'status'            => DB::table('customer_statut')->select('id as value', 'name as display')->orderBy('name')->get(),
             'customerCats'      => DB::table('customer_categories')->select('id as value', 'name as display')->orderBy('name')->get(),
@@ -275,6 +276,7 @@ class CustomerController extends Controller
                                 ->get();
         return response()->json([
             'customer'  => $customer,
+            'useGoogleService'  => DB::table('settings')->where('key', 'admin.Google')->value('value') == 1 ? true : false,
             'customerOrigins'   => DB::table('customer_origins')->select('id as value', 'name as display')->orderBy('name')->get(),
             'status'            => DB::table('customer_statut')->select('id as value', 'name as display')->orderBy('name')->get(),
             'customerCats'      => DB::table('customer_categories')->select('id as value', 'name as display')->orderBy('name')->get(),
