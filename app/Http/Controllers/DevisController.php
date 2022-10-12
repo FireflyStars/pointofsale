@@ -1290,7 +1290,11 @@ class DevisController extends Controller
                 if($service->type == 'Checkbox' || $service->type == 'Switch'){
                     $service->value = $service->value == 0 ? false : true;
                 }
-                $service->active = $service->active == 0 ? false : true;
+                if(isset($service->active)){
+                    $service->active = $service->active == 0 ? false : true;
+                }else{
+                    $service->active = false;
+                }
                 $service->semti = $service->semti == 0 ? false : true;
                 $service->sstt = $service->sstt == 0 ? false : true;
                 $service->client = $service->client == 0 ? false : true;
