@@ -16,6 +16,7 @@ class SupplierResource extends JsonResource
     {
         return [
             'id'          => $this->id,
+            'actif'       => $this->actif,
             'contact'     => $this->get_formatted_contact($this),
             'created_at'  => $this->created_at,
             'type'        => $this->type,

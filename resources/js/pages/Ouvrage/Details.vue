@@ -49,7 +49,7 @@
 
     <hr />
 
-    <div class="raison-social-entite-section">
+    <div class="raison-social-entite-section" v-if="show">
 
         <div>
             <span class="title-label">Description</span>
@@ -58,7 +58,7 @@
 
     </div>
 
-    <div class="raison-social-entite-section">
+    <div class="raison-social-entite-section" v-if="show">
 
         <div>
             <span class="title-label">Texte Client ouvrage</span>
@@ -145,10 +145,12 @@
 
         </div>
 
-        <base-button 
-            title="Annuler"
-            @click.prevent="$router.push({ name: 'ouvrage' })" 
-        />
+        <button 
+            class="btn btn-outline-secondary almarai_700_normal"
+            @click.prevent="$router.push({ name: 'ouvrage' })"
+        >
+            Fermer
+        </button>
         
     </div>
 

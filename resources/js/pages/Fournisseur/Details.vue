@@ -35,7 +35,7 @@
                 class="status-tag"
             >
                 <span>Actif:</span> 
-                <Icon name="check" v-if="details.active == 1" width="22.2" height="16.2" />        
+                <Icon name="check" v-if="details.actif == 1" width="22.2" height="16.2" />        
                 <Icon name="times-circle" v-else width="22" height="22" />        
             </div>
 
@@ -148,29 +148,38 @@
 
     </div>
 
-    <div class="footer-section d-flex align-items-center gap-4" v-if="show">
+    <div class="footer-section d-flex align-items-center justify-content-between" v-if="show">
 
-        <div style="flex: 1">
-        
-            <base-button 
-                title="Editer" 
-                kind="green" 
-                @click.prevent="$router.push({ path: `/fournisseur/edit/${details.id}` })" 
-            />
 
-        </div>
+        <button 
+            class="btn btn-outline-dark almarai_700_normal"
+            @click.prevent="$router.push({ path: `/fournisseur/edit/${details.id}` })"
+        >
+            Editer
+        </button>
 
         <base-button 
             title="deactiver" 
             kind="danger"
             class="text-uppercase"
+            @click.prevent="deactivateSupplier"
+            :disabled="showloader || !show"
         />
         
         <base-button 
             title="CREER COMMANDE"
             kind="success" 
             class="text-uppercase" 
+            @click.prevent="$router.push({ path: '/commande-fournisseur/create' })"
         />
+
+        <button 
+            class="btn btn-outline-secondary almarai_700_normal"
+            @click.prevent="$router.push({ name: 'fournisseur' })"
+        >
+            Fermer
+        </button>  
+
 
     </div>
 
@@ -220,15 +229,12 @@ import {
     TOASTER_MODULE,
     TOASTER_MESSAGE,
     ENTITE_LIST_MODULE,
-    GET_ENTITE_DETAILS,
     RESET_DETAILS,
     CHANGE_LITIGE,
-    ITEM_LIST_MODULE,
-    ITEM_LIST_REMOVE_ROW,
-    CHANGE_ACTIF,
     FOURNISSEUR_LIST_MODULE,
     FOURNISSEUR_GET_DETAILS,
-    FOURNISSEUR_APPEND_RESULTS
+    FOURNISSEUR_APPEND_RESULTS,
+    ARCHIVE_FOURNISSEUR
 }
 from '../../store/types/types'
 
@@ -265,6 +271,38 @@ const actifBackground = computed(() => {
 const litigeBackground = computed(() => {
     return details.value?.litige == 1 ? 'rgba(66, 167, 30, 0.2)' : '#ff000045'
 })
+
+const deactivateSupplier = async () => {
+
+    try {
+
+        const result = await Swal.fire({
+            title: 'Veuillez confirmer!',
+            text: `Voulez vous archiver ce fournisseur?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#42A71E',
+            cancelButtonColor: 'var(--lcdtOrange)',
+            cancelButtonText: 'Annuler',
+            confirmButtonText: `Oui, s'il vous plaît.`
+        })
+
+        if(result.isConfirmed) {
+            showloader.value = true
+            await store.dispatch(`${FOURNISSEUR_LIST_MODULE}${ARCHIVE_FOURNISSEUR}`, props.id)
+        }
+
+    }
+
+    catch(e) {
+        throw e
+    }
+
+    finally {
+        showloader.value = false
+    }
+
+}
 
 const getFournisseurDetails = async () => {
 

@@ -29,16 +29,6 @@
                                 height="46"
                             />
 
-
-                            <BaseButton 
-                                kind="default" 
-                                title="Add New" 
-                                class=""
-                                @click="$router.push({
-                                    name: 'templates-add'
-                                })"
-                            />
-                        
                         </div>
 
                         <div class="row m-0 ml-5 mr-5">

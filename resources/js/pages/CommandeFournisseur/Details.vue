@@ -65,7 +65,11 @@
     
         </div>
 
-        <supplier-order-details v-if="show" :supplierOrderId="id" @trigger="triggerNewSupplierOrderDetail" />
+        <supplier-order-details 
+            v-if="show" 
+            :supplierOrderId="id" 
+            @trigger="triggerNewSupplierOrderDetail" 
+        />
     
         <div class="od_actions my-3" v-if="show">
             <button 
@@ -75,7 +79,7 @@
                 Editer
             </button>
             <button 
-                class="btn btn-outline-warning almarai_700_normal"  
+                class="btn btn-outline-secondary almarai_700_normal"  
             >
                 Fermer
             </button>   

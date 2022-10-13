@@ -9,7 +9,8 @@ import {
     FOURNISSEUR_GET_LIST_MES,
     RESET_DETAILS,
     FOURNISSEUR_APPEND_RESULTS,
-    FOURNISSEUR_SAVE_RESULTS
+    FOURNISSEUR_SAVE_RESULTS,
+    ARCHIVE_FOURNISSEUR
 }
 from '../types/types'
 
@@ -293,12 +294,28 @@ export const fournisseur = {
 
         [FOURNISSEUR_SAVE_RESULTS](state, data) {
             state.details.orders = data
+        },
+
+        [ARCHIVE_FOURNISSEUR](state, id) {
+            state.details.actif = 0
         }
 
     },
 
     actions: {
 
+        async [ARCHIVE_FOURNISSEUR]({ commit }, id) {
+
+            try {
+                await axios.post(`/archive-fournisseur/${id}`)
+                commit(ARCHIVE_FOURNISSEUR, id)
+            }
+
+            catch(e) {
+                throw e
+            }
+
+        },
 
         async [FOURNISSEUR_GET_LIST]({ commit }, params) {
 

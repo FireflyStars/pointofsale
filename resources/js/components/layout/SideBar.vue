@@ -316,7 +316,7 @@
     box-shadow: inset 0px 0px 6px rgba(0, 0, 0, 0.25);
     width: 72px;
     height: 100%;
-    z-index: 8;
+    z-index: 9;
     &--visible {
         //transition: width .2s;
         width: 300px;

@@ -93,9 +93,12 @@
 
         </div>
 
-        <base-button 
-            title="Annuler" 
-        />
+        <button 
+            class="btn btn-outline-secondary almarai_700_normal"
+            @click.prevent="$router.push({ name: 'articles' })"
+        >
+            Fermer
+        </button>
         
     </div>
 

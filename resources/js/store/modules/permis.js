@@ -24,7 +24,7 @@ const columns_def = [
     {
         id: "id",
         display_name: "No",
-        type: "number",
+        type: "string",
         class: "",
         header_class: "",
         sort: true,
@@ -33,7 +33,7 @@ const columns_def = [
         suffix: "",
     },
     {
-        id: "user_id",
+        id: "user_name",
         display_name: "Personnel",
         type: "string",
         class: "",

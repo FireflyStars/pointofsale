@@ -17,14 +17,15 @@ class PermisController extends Controller
 
         $permis = $permis->select(
             'user_documents.id',
-            'user_documents.user_id',
+            'users.name as user_name',
             'user_doc_permis.name as name', 
             DB::raw('DATE_FORMAT(user_documents.dateofdocument, "%Y-%m-%d") as dateofdocument'),            
             DB::raw('DATE_FORMAT(user_documents.expires, "%Y-%m-%d") as expires'),            
             DB::raw('DATE_FORMAT(user_documents.created_at, "%Y-%m-%d") as created_at'),            
         );
 
-        $permis = $permis->leftJoin('user_doc_permis', 'user_doc_permis.id', '=', 'user_documents.user_doc_permi_id');
+        $permis = $permis->leftJoin('user_doc_permis', 'user_doc_permis.id', '=', 'user_documents.user_doc_permi_id')
+        ->leftJoin('users', 'users.id', '=', 'user_documents.user_id');
 
         $data = (new TableFiltersController)->sorts($request, $permis, 'user_documents.id');
         $data = (new TableFiltersController)->filters($request, $data);
