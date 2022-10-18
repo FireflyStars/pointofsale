@@ -751,6 +751,16 @@ const router = createRouter({
             },
         },
         {
+            path: "/saisie-rapide",
+            name: "SaisieRapide",
+            component: () =>
+                import("../pages/SaisieRapide/Index.vue"),
+            props: false,
+            meta: {
+                authenticated: false,
+            },
+        },
+        {
             path: "/chat",
             name: "Chat",
             component: () =>

@@ -532,7 +532,7 @@ class DevisController extends Controller
             $service->loc = false;
         }
         return response()->json([
-            'useGoogleService'   => DB::table('settings')->where('key', 'admin.Google')->value('value'),
+            'useGoogleService'   => DB::table('settings')->where('key', 'admin.Google')->value('value') == 1 ? true : false,
             'gedCats'   => $categories->groupBy('id'),
             'units'     => DB::table('units')->select('id as value', 'code as display')->get(),
             'taxes'     => DB::table('taxes')->select('id as value', DB::raw('CEIL(taux * 100) as display'))->get(),
@@ -1511,7 +1511,7 @@ class DevisController extends Controller
         return response()->json(
             [
                 'devis' => $devis,
-                'useGoogleService'   => DB::table('settings')->where('key', 'admin.Google')->value('value'),
+                'useGoogleService'   => DB::table('settings')->where('key', 'admin.Google')->value('value') == 1 ? true : false,
                 'gedCats'   => $categories->groupBy('id'),
                 'units'     => DB::table('units')->select('id as value', 'code as display')->get(),
                 'taxes'     => DB::table('taxes')->select('id as value', DB::raw('CEIL(taux * 100) as display'))->get(),
