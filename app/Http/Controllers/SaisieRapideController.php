@@ -44,6 +44,7 @@ class SaisieRapideController extends Controller
                     ->join('customers', 'orders.customer_id', '=', 'customers.id')
                     ->join('users', 'users.id', '=', 'pointage.user_id')
                     ->where('datepointage', $request->datepointage)
+                    ->whereNull('pointage.deleted_at')
                     ->select(
                         'pointage.id', 'pointage.order_id as orderId', 'pointage.user_id as userId',
                         DB::raw('CONCAT(users.firstname, " ", users.name) as userName'),
@@ -70,6 +71,7 @@ class SaisieRapideController extends Controller
                     ->join('customers', 'orders.customer_id', '=', 'customers.id')
                     ->join('users', 'users.id', '=', 'pointage.user_id')
                     ->where('datepointage', $request->datepointage)
+                    ->whereNull('pointage.deleted_at')
                     ->select(
                         'pointage.id', 'pointage.order_id as orderId', 'pointage.user_id as userId',
                         DB::raw('CONCAT(users.firstname, " ", users.name) as userName'),
