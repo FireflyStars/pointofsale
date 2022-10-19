@@ -3,7 +3,7 @@
         enter-active-class="animate__animated animate__fadeIn"
         leave-active-class="animate__animated animate__fadeOut"
     >
-        <mini-panel v-if="details?.length" class="mt-3">
+        <mini-panel class="mt-3">
 
             <div class="position-relative">
             
@@ -71,19 +71,19 @@
                         
                         </div>
 
-                        <div class="d-flex justify-content-evenly mt-4" @click.prevent="TriggerNewDetail">
-                            <span 
-                                class="font-14 mulish_600_normal facture_action noselect" 
-                            >
-                                <icon name="plus-circle" width="16px" height="16px" /> 
-                                AJOUTER LIGNE
-                            </span>
-                        </div>  
-
                     </div>
 
-
+                    
                 </transition>
+                
+                <div class="d-flex justify-content-evenly mt-4" @click.prevent="TriggerNewDetail">
+                    <span 
+                        class="font-14 mulish_600_normal facture_action noselect" 
+                    >
+                        <icon name="plus-circle" width="16px" height="16px" /> 
+                        AJOUTER LIGNE
+                    </span>
+                </div>  
 
             </div>
 
@@ -137,12 +137,12 @@ export default {
          try {
             loading.status = true
             await store.dispatch(`${COMMANDE_FOURNISSEUR_LIST_MODULE}${COMMANDE_FOURNISSEUR_LOAD_ORDER_DETAILS}`, { id: props.supplierOrderId,  take: 'all' })
-            fetched.value = true
         }
         catch(e) {
             throw e
         }
         finally {
+            fetched.value = false
             loading.status = false
         }
     }

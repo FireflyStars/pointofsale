@@ -223,6 +223,8 @@ Route::get('/get-fournisseur-history/{supplier}', [FournisseurController::class,
 Route::post('/commande-fournisseur/create/{supplier}', [CommandeFounisseurController::class, 'store']);
 Route::get('/get-commande-fournisseur-supplier-order/{supplier_order}', [CommandeFounisseurController::class, 'supplier_order']);
 Route::get('/get-commande-fournisseur-order-details/{supplier_order}', [CommandeFounisseurController::class, 'details']);
+Route::post('/archive-fournisseur/{supplier}', [FournisseurController::class, 'archive_fournisseur']);
+
 
 Route::post('/search-fournisseur', [FournisseurSearchController::class, 'index'])->middleware('auth');
 Route::post('/search-products', [ProductsSearchController::class, 'index'])->middleware('auth');

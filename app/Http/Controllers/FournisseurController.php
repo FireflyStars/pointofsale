@@ -14,6 +14,12 @@ use App\Http\Resources\SupplierResource;
 class FournisseurController extends Controller
 {
 
+    public function archive_fournisseur(Supplier $supplier) 
+    {
+        $supplier->update(['actif' => 0]);
+        return response()->noContent();
+    }
+
     private function get_data(Request $request) 
     {
         
