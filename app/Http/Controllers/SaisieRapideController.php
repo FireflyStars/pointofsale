@@ -48,7 +48,7 @@ class SaisieRapideController extends Controller
                         'pointage.id', 'pointage.order_id as orderId', 'pointage.user_id as userId',
                         DB::raw('CONCAT(users.firstname, " ", users.name) as userName'),
                         'orders.name as orderName', 'customers.raisonsociale as raisonsocila',
-                        'pointage.numberh', 'pointage.numberhtransport'
+                        'pointage.numberh', 'pointage.numberhtransport', 'pointage_type.name as type'
                     )->get();
         return response()->json($pointages);
     }
@@ -74,7 +74,7 @@ class SaisieRapideController extends Controller
                         'pointage.id', 'pointage.order_id as orderId', 'pointage.user_id as userId',
                         DB::raw('CONCAT(users.firstname, " ", users.name) as userName'),
                         'orders.name as orderName', 'customers.raisonsociale as raisonsocila',
-                        'pointage.numberh', 'pointage.numberhtransport'
+                        'pointage.numberh', 'pointage.numberhtransport', 'pointage_type.name as type'
                     )->get();
         return response()->json($pointages);
     }
