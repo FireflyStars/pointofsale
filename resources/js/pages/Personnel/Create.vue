@@ -125,7 +125,7 @@
   </router-view>
 </template>
 <script>
-import { ref, onMounted, watchEffect } from 'vue';
+import { ref, onMounted } from 'vue';
 import SelectBox from '../../components/miscellaneous/SelectBox';
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'

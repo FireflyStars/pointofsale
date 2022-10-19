@@ -17,14 +17,15 @@ import moment from 'moment';
     import { ref, watch, onMounted } from 'vue';
     export default{
         name: 'WeekController',
-        setup(){
+        emits: ['DateSelected'],
+        setup( props, { emit } ){
             var now = moment().locale('fr');
             const weekNumber = ref(now.week());
             const endOfWeek = ref(moment().locale('fr').endOf('week'));
             const days = ref([]);
             const getWeekDays = ()=>{
                 days.value = [];
-                endOfWeek.value;
+                weekNumber.value = endOfWeek.value.week();
                 for (let index = 0; index <= 6; index++) {
                     if(index != 0){
                         var tmpDay = endOfWeek.value.subtract(1, 'd');
@@ -34,6 +35,7 @@ import moment from 'moment';
                     days.value.push({
                         day: tmpDay.locale('fr').format('dddd'),
                         date: tmpDay.format('D/M'),
+                        fullDate: tmpDay.format('Y-M-D'),
                         active: now.dayOfYear() == tmpDay.dayOfYear(),
                     });
                 }
@@ -41,7 +43,11 @@ import moment from 'moment';
                 endOfWeek.value = endOfWeek.value.add(6, 'd');
             }
             getWeekDays();
+            onMounted(()=>{
+                emit('DateSelected', now.format('Y-M-D'));
+            })
             const selectDay = (day)=>{
+                emit('DateSelected', day.fullDate);
                 days.value.forEach((item)=>{
                     if(item.day == day.day) {
                         item.active = true;

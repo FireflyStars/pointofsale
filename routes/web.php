@@ -44,6 +44,7 @@ use App\Http\Controllers\FournisseurSearchController;
 use App\Http\Controllers\CommandeFounisseurController;
 use App\Http\Controllers\CommandeFournisseurController;
 use App\Http\Controllers\ActionCommercialListController;
+use App\Http\Controllers\SaisieRapideController;
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
@@ -415,8 +416,13 @@ Route::group([
     Route::post('/get-supplier/{id}', [ SupplierController::class, 'edit' ])->middleware('auth')->name('edit.supplier');
     Route::post('/supplier/update/{id}', [ SupplierController::class, 'update' ])->middleware('auth')->name('update.supplier');
     Route::post('/get-supplier-status-type', [ SupplierController::class, 'getSupplierStatusType' ])->middleware('auth')->name('get.supplier.status.type');
+    // saisie rapide
+    Route::post('/get-saisie-rapide-info', [ SaisieRapideController::class, 'getInfo' ])->middleware('auth')->name('get.saisie.rapide.create.info');
+    Route::post('/search-saisie-order', [ SaisieRapideController::class, 'searchOrders' ])->middleware('auth')->name('search.saisie.orders');
+    Route::post('/create-pointage', [ SaisieRapideController::class, 'create' ])->middleware('auth')->name('create.pointage');
+    Route::post('/get-pointages', [ SaisieRapideController::class, 'getPointages' ])->middleware('auth')->name('get.pointage');
+    Route::post('/delete-pointage', [ SaisieRapideController::class, 'delete' ])->middleware('auth')->name('delete.pointage');
 });
-// Route::get('/statistique',   [StatisticController::class,'index'])->middleware('auth')->name('get.statis');
 // Outlook Agenda
 Route::get('/outlook/sync', [ ActionCommercialListController::class, 'syncOutlook' ])->middleware('auth')->name('outlook.sync');
 Route::get('/callback', [ ActionCommercialListController::class, 'outlookSyncCallback' ])->middleware('auth')->name('outlook.sync.callback');

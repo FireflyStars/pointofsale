@@ -17,7 +17,8 @@
                     />
                     <div class="row m-0 ml-5 mr-5">
                         <div class="col p-0">
-                            <WeekController></WeekController>
+                            <WeekController @date-selected="dateSelected"></WeekController>
+                            <Pointage :date="date"></Pointage>
                         </div>
                     </div>
                 </div>
@@ -29,15 +30,22 @@
 import { useStore } from 'vuex'
 import { ref, watch, onMounted } from 'vue';
 import WeekController from './WeekController.vue';
+import Pointage from './Pointage.vue';
 
 export default {
     components:{
-        WeekController
+        WeekController,
+        Pointage,
     },
     setup(){
         const store = useStore();
-
+        const date = ref('');
+        const dateSelected = (dateSelected)=>{
+            date.value = dateSelected;
+        }
         return {
+            date,
+            dateSelected
         }
     }
 }
