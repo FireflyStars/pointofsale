@@ -13,7 +13,7 @@
     </div>
 </template>
 <script>
-import moment from 'moment';
+    import moment from 'moment';
     import { ref, watch, onMounted } from 'vue';
     export default{
         name: 'WeekController',
@@ -22,6 +22,7 @@ import moment from 'moment';
             var now = moment().locale('fr');
             const weekNumber = ref(now.week());
             const endOfWeek = ref(moment().locale('fr').endOf('week'));
+            const selectedDate = ref(now.format('Y-MM-DD'));
             const days = ref([]);
             const getWeekDays = ()=>{
                 days.value = [];
@@ -34,9 +35,9 @@ import moment from 'moment';
                     }
                     days.value.push({
                         day: tmpDay.locale('fr').format('dddd'),
-                        date: tmpDay.format('D/M'),
-                        fullDate: tmpDay.format('Y-M-D'),
-                        active: now.dayOfYear() == tmpDay.dayOfYear(),
+                        date: tmpDay.format('DD/MM'),
+                        fullDate: tmpDay.format('Y-MM-DD'),
+                        active: selectedDate.value == tmpDay.format('Y-MM-DD'),
                     });
                 }
 
@@ -44,9 +45,10 @@ import moment from 'moment';
             }
             getWeekDays();
             onMounted(()=>{
-                emit('DateSelected', now.format('Y-M-D'));
+                emit('DateSelected', now.format('Y-MM-DD'));
             })
             const selectDay = (day)=>{
+                selectedDate.value = day.fullDate;
                 emit('DateSelected', day.fullDate);
                 days.value.forEach((item)=>{
                     if(item.day == day.day) {

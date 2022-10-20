@@ -1,7 +1,7 @@
 <template>
     <div class="d-flex">
         <div class="col-9 bg-white">
-            <table class="table table-borderless table-hover m-0">
+            <table class="table table-borderless m-0">
                 <thead>
                     <tr>
                         <th class="text-nowrap number">No POINTAGE</th>
@@ -31,7 +31,7 @@
                         <td valign="middle"><span @click="AddPointage" class="d-flex align-items-center lcdtOrange cursor-pointer"><span class="plus-icon me-2"></span> AJOUTER</span></td>
                         <td></td>
                     </tr>
-                    <tr v-for="(item, index) in pointages" :key="index" class="border-top">
+                    <tr v-for="(item, index) in pointages" :key="index" class="border-top" >
                         <td valign="middle">{{ item.id }}</td>
                         <td valign="middle">{{ item.raisonsocila }}</td>
                         <td valign="middle">
@@ -41,12 +41,14 @@
                             </div>
                             <!-- <div>{{ item.raisonsocila }}</div> -->
                         </td>
-                        <td valign="middle">{{ item.userName }}</td>
+                        <td valign="middle" class="text-capitalize">{{ item.userName }}</td>
                         <td valign="middle">{{ item.numberh }} Hr</td>
                         <td valign="middle">{{ item.numberhtransport }} Hr</td>
                         <td valign="middle">{{ item.type }}</td>
-                        <td valign="middle" v-if="item.numberh + item.numberhtransport == 8.75" class="green-text">{{ item.numberh + item.numberhtransport }} Hr</td>
-                        <td valign="middle" v-if="item.numberh + item.numberhtransport > 8.75" class="text-danger">{{ item.numberh + item.numberhtransport }} Hr</td>
+                        <td valign="middle" v-if="item.numberh + item.numberhtransport == 8.75 && !isFriday(item.datepointage)" class="green-text">{{ item.numberh + item.numberhtransport }} Hr</td>
+                        <td valign="middle" v-else-if="item.numberh + item.numberhtransport > 8.75  && !isFriday(item.datepointage)" class="text-danger">{{ item.numberh + item.numberhtransport }} Hr</td>
+                        <td valign="middle" v-else-if="item.numberh + item.numberhtransport == 4  && isFriday(item.datepointage)" class="green-text">{{ item.numberh + item.numberhtransport }} Hr</td>
+                        <td valign="middle" v-else-if="item.numberh + item.numberhtransport > 4  && isFriday(item.datepointage)" class="text-danger">{{ item.numberh + item.numberhtransport }} Hr</td>
                         <td valign="middle" v-else>{{ item.numberh + item.numberhtransport }} Hr</td>
                         <td valign="middle">
                             <svg class="cursor-pointer" @click="deletePointage(item.id)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -54,11 +56,49 @@
                             </svg>
                         </td>
                     </tr>
+                    <tr class="border-top"></tr>
                 </tbody>
             </table>
         </div>
-        <div class="col-3 p-2">
-            <div class="total-panel bg-white"></div>
+        <div class="col-3 px-2">
+            <div class="total-panel bg-white p-3">
+                <h3>Total</h3>
+                <table class="table table-borderless m-0">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>H-TRAV</th>
+                            <th>H-TRAJET</th>
+                            <th>TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(item, index) in totalByUser" :key="index">
+                            <td class="text-capitalize">{{ item.userName }}</td>
+                            <td>{{ item.sumNumberh }} Hr</td>
+                            <td>{{ item.sumNumberhtransport }} Hr</td>
+                            <td v-if="item.sumNumberh + item.sumNumberhtransport == 8.75 && !isFriday(item.datepointage)" class="green-text fw-bold">{{ item.sumNumberh + item.sumNumberhtransport }} Hr</td>
+                            <td v-else-if="item.sumNumberh + item.sumNumberhtransport > 8.75  && !isFriday(item.datepointage)" class="text-danger fw-bold">{{ item.sumNumberh + item.sumNumberhtransport }} Hr</td>
+                            <td v-else-if="item.sumNumberh + item.sumNumberhtransport == 4  && isFriday(item.datepointage)" class="green-text fw-bold">{{ item.sumNumberh + item.sumNumberhtransport }} Hr</td>
+                            <td v-else-if="item.sumNumberh + item.sumNumberhtransport > 4  && isFriday(item.datepointage)" class="text-danger fw-bold">{{ item.sumNumberh + item.sumNumberhtransport }} Hr</td>
+                            <td v-else class="fw-bold">{{ item.sumNumberh + item.sumNumberhtransport }} Hr</td>
+                        </tr>
+                        <tr class="border-top">
+                            <td colspan="4"></td>
+                        </tr>
+                        <tr v-for="(item, index) in totalByOrder" :key="index">
+                            <td>{{ item.orderId }} - {{ item.orderName }}</td>
+                            <td>{{ item.sumNumberh }} Hr</td>
+                            <td>{{ item.sumNumberhtransport }} Hr</td>
+                            <td v-if="item.sumNumberh + item.sumNumberhtransport == 8.75 && !isFriday(item.datepointage)" class="green-text fw-bold">{{ item.sumNumberh + item.sumNumberhtransport }} Hr</td>
+                            <td v-else-if="item.sumNumberh + item.sumNumberhtransport > 8.75  && !isFriday(item.datepointage)" class="text-danger fw-bold">{{ item.sumNumberh + item.sumNumberhtransport }} Hr</td>
+                            <td v-else-if="item.sumNumberh + item.sumNumberhtransport == 4  && isFriday(item.datepointage)" class="green-text fw-bold">{{ item.sumNumberh + item.sumNumberhtransport }} Hr</td>
+                            <td v-else-if="item.sumNumberh + item.sumNumberhtransport > 4  && isFriday(item.datepointage)" class="text-danger fw-bold">{{ item.sumNumberh + item.sumNumberhtransport }} Hr</td>
+                            <td class="fw-bold" v-else>{{ item.sumNumberh + item.sumNumberhtransport }} Hr</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </template>
@@ -66,7 +106,7 @@
 import SelectBox from '../../components/miscellaneous/SelectBox.vue';
 import Affaire from './Affaire.vue';
 
-import { ref, onMounted, watchEffect, watch } from 'vue';
+import { ref, onMounted, watch, onBeforeUnmount } from 'vue';
 import { useStore } from 'vuex';
 import {
     TOASTER_MODULE,
@@ -74,10 +114,10 @@ import {
     LOADER_MODULE,
     HIDE_LOADER,
     DISPLAY_LOADER,
-GET_POINTAGE_LIST,
 } from '../../store/types/types';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import moment from 'moment';
 export default{
     name: 'Pointage',
     props:{
@@ -98,6 +138,9 @@ export default{
             datepointage: props.date,
         })
         const pointages = ref([]);
+        const lastPointage = ref({});
+        const totalByUser = ref([]);
+        const totalByOrder = ref([]);
         watch(()=>props.date, (cur_val, pre_val)=>{
             pointage.value.datepointage = cur_val;
             getPointages(cur_val);
@@ -105,6 +148,7 @@ export default{
         const users = ref([]);
         const types = ref([]);
         onMounted(()=>{
+            window.addEventListener('keydown', onKeyPressHandler);
             axios.post('/get-saisie-rapide-info').then((res)=>{
                 users.value = res.data.users;
                 types.value = res.data.types;
@@ -122,7 +166,7 @@ export default{
                     type: 'danger',
                     message: 'Please Select Affaire',
                     ttl: 5,
-                });                       
+                });
                 error = true;
             }
             if(pointage.value.userId == 0){
@@ -130,7 +174,7 @@ export default{
                     type: 'danger',
                     message: 'Please Select Personnel',
                     ttl: 5,
-                });                       
+                });
                 error = true;
             }
             if(pointage.value.numberh == ''){
@@ -138,7 +182,7 @@ export default{
                     type: 'danger',
                     message: 'Please enter H.TRAVAILLE',
                     ttl: 5,
-                });                       
+                });
                 error = true;
             }
             if(pointage.value.numberhtransport == ''){
@@ -146,13 +190,18 @@ export default{
                     type: 'danger',
                     message: 'Please enter H.TRAJET',
                     ttl: 5,
-                });                       
+                });
                 error = true;
             }
             if(! error){
                 store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Enregistrer le pointage...']);
                 axios.post('/create-pointage', pointage.value).then((res)=>{
-                    pointages.value = res.data;
+                    pointages.value = res.data.pointages;
+                    totalByUser.value = res.data.totalByUser;
+                    totalByOrder.value = res.data.totalByOrder;
+                    lastPointage.value = {
+                        ...pointage.value
+                    };
                     pointage.value = {
                         orderId: 0,
                         typeId: 0,
@@ -168,6 +217,14 @@ export default{
                 });
             }
         }
+        const onKeyPressHandler = (event)=>{
+            if(event.code == 'F12' && event.altKey){
+                pointage.value = {... lastPointage.value};
+            }
+        }
+        onBeforeUnmount(()=>{
+            window.removeEventListener('keydown', onKeyPressHandler);
+        })
         const deletePointage = (id)=>{
             Swal.fire({
                 title: 'Etes-vous sûr?',
@@ -191,25 +248,33 @@ export default{
                         store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
                     });
                 }
-            });            
+            });
         }
         const getPointages = (date)=>{
             store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'loading pointages...']);
             axios.post('/get-pointages', { datepointage: date }).then((res)=>{
-                pointages.value = res.data;
+                pointages.value = res.data.pointages;
+                totalByUser.value = res.data.totalByUser;
+                totalByOrder.value = res.data.totalByOrder;
             }).catch((error)=>{
                 console.log(error);
             }).finally(()=>{
                 store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
             })
         }
+        const isFriday = (date)=>{
+            return moment(date).day() == 5;
+        }
         return {
             pointage,
             pointages,
+            totalByUser,
+            totalByOrder,
             users,
             types,
             AddPointage,
-            deletePointage
+            deletePointage,
+            isFriday
         }
     }
 }

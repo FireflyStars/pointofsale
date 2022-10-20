@@ -39,19 +39,33 @@ class SaisieRapideController extends Controller
      * get pointages by date
      */
     public function getPointages(Request $request){
-        $pointages = DB::table('pointage')->join('pointage_type', 'pointage_type.id', '=', 'pointage.pointage_type_id')
+        $query = DB::table('pointage')->join('pointage_type', 'pointage_type.id', '=', 'pointage.pointage_type_id')
                     ->join('orders', 'orders.id', '=', 'pointage.order_id')
                     ->join('customers', 'orders.customer_id', '=', 'customers.id')
                     ->join('users', 'users.id', '=', 'pointage.user_id')
                     ->where('datepointage', $request->datepointage)
-                    ->whereNull('pointage.deleted_at')
-                    ->select(
+                    ->whereNull('pointage.deleted_at');
+        $pointages = $query->select(
                         'pointage.id', 'pointage.order_id as orderId', 'pointage.user_id as userId',
                         DB::raw('CONCAT(users.firstname, " ", users.name) as userName'),
                         'orders.name as orderName', 'customers.raisonsociale as raisonsocila',
-                        'pointage.numberh', 'pointage.numberhtransport', 'pointage_type.name as type'
-                    )->get();
-        return response()->json($pointages);
+                        'pointage.numberh', 'pointage.numberhtransport', 'pointage_type.name as type', 'datepointage'
+                    )->orderBy('pointage.id')->get();
+        $totalByUser = $query->groupBy('pointage.user_id')->select(
+            DB::raw('SUM(pointage.numberh) as sumNumberh'),
+            DB::raw('SUM(pointage.numberhtransport) as sumNumberhtransport'),
+            DB::raw('CONCAT(users.firstname, " ", users.name) as userName'), 'datepointage'
+        )->get();
+        $totalByOrder = $query->groupBy('pointage.order_id')->select(
+            DB::raw('SUM(pointage.numberh) as sumNumberh'),
+            DB::raw('SUM(pointage.numberhtransport) as sumNumberhtransport'),
+            'pointage.order_id as orderId', 'datepointage', 'orders.name as orderName'
+        )->get();
+        return response()->json([
+           'pointages'=> $pointages,
+           'totalByUser'=> $totalByUser,
+           'totalByOrder'=> $totalByOrder,
+        ]);
     }
     /**
      * Create a pointage
@@ -66,19 +80,33 @@ class SaisieRapideController extends Controller
             'numberhtransport'  => $request->numberhtransport,
             'affiliate_id'      => auth()->user()->affiliate_id,
         ]);
-        $pointages = DB::table('pointage')->join('pointage_type', 'pointage_type.id', '=', 'pointage.pointage_type_id')
+        $query = DB::table('pointage')->join('pointage_type', 'pointage_type.id', '=', 'pointage.pointage_type_id')
                     ->join('orders', 'orders.id', '=', 'pointage.order_id')
                     ->join('customers', 'orders.customer_id', '=', 'customers.id')
                     ->join('users', 'users.id', '=', 'pointage.user_id')
                     ->where('datepointage', $request->datepointage)
-                    ->whereNull('pointage.deleted_at')
-                    ->select(
-                        'pointage.id', 'pointage.order_id as orderId', 'pointage.user_id as userId',
-                        DB::raw('CONCAT(users.firstname, " ", users.name) as userName'),
-                        'orders.name as orderName', 'customers.raisonsociale as raisonsocila',
-                        'pointage.numberh', 'pointage.numberhtransport', 'pointage_type.name as type'
-                    )->get();
-        return response()->json($pointages);
+                    ->whereNull('pointage.deleted_at');
+        $pointages = $query->select(
+                'pointage.id', 'pointage.order_id as orderId', 'pointage.user_id as userId',
+                DB::raw('CONCAT(users.firstname, " ", users.name) as userName'),
+                'orders.name as orderName', 'customers.raisonsociale as raisonsocila',
+                'pointage.numberh', 'pointage.numberhtransport', 'pointage_type.name as type', 'datepointage'
+            )->orderBy('pointage.id')->get();
+        $totalByUser = $query->groupBy('pointage.user_id')->select(
+                DB::raw('SUM(pointage.numberh) as sumNumberh'),
+                DB::raw('SUM(pointage.numberhtransport) as sumNumberhtransport'),
+                DB::raw('CONCAT(users.firstname, " ", users.name) as userName'), 'datepointage'
+            )->get();
+        $totalByOrder = $query->groupBy('pointage.order_id')->select(
+                DB::raw('SUM(pointage.numberh) as sumNumberh'),
+                DB::raw('SUM(pointage.numberhtransport) as sumNumberhtransport'),
+                'pointage.order_id as orderId', 'datepointage', 'orders.name as orderName'
+            )->get();
+        return response()->json([
+            'pointages'=> $pointages,
+            'totalByUser'=> $totalByUser,
+            'totalByOrder'=> $totalByOrder,
+         ]);
     }
     /**
      * soft delete a pointage
