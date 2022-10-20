@@ -15,13 +15,19 @@ class SaisieRapideController extends Controller
     public function getInfo(){
         $users = DB::table('users')->select('id as value', DB::raw('CONCAT(firstname, " ", name) as display'))->get();
         foreach ($users as $user) {
-            $user->display = Str::initials($user->display);
+            $user->display = $this->initials($user->display);
         }
         return response()->json([
             'users'=> $users,
             'types'=> DB::table('pointage_type')->select('id as value', 'name as display')->get()
         ]);
     }
+    public function initials($str) {
+        $ret = '';
+        foreach (explode(' ', $str) as $word)
+          $ret .= strtoupper($word[0]?? '');
+        return $ret;
+   }    
     /**
      * Search saisie orders
      */
