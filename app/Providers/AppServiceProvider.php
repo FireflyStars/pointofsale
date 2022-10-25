@@ -23,8 +23,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Str::macro('initials', fn($value, $sep = ' ', $glue = ' ') => trim(collect(explode($sep, strtoupper($value)))->map(function ($segment) {
-            return $segment[0] ?? '';
-        })->join($glue)));
+        // Str::macro('initials', fn($value, $sep = ' ', $glue = ' ') => trim(collect(explode($sep, strtoupper($value)))->map(function ($segment) {
+        //     return $segment[0] ?? '';
+        // })->join($glue)));
     }
 }
