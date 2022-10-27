@@ -233,6 +233,12 @@
         background-image: url(../js/images/down-arrow.svg);
     }   
 }
+.download-icon{
+    display: block;
+    width: 17px;
+    height: 19px;
+    background-image: url(../js/images/download-icon.png) no-repeat center center;
+}
 .cursor-pointer{
     cursor: pointer;
 }

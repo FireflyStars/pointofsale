@@ -54,6 +54,6 @@ export default {
 <style lang="scss" scoped>
 .main-view{
     padding: 0;
-    margin: 64px 50px 0 0;
+    margin: 64px 50px 0 72px;
 }
 </style>

@@ -532,6 +532,7 @@ class DevisController extends Controller
             $service->loc = false;
         }
         return response()->json([
+            'devisWithOuvrage'   => DB::table('settings')->where('key', 'admin.ouvrage')->value('value') == 1 ? true : false,
             'useGoogleService'   => DB::table('settings')->where('key', 'admin.Google')->value('value') == 1 ? true : false,
             'gedCats'   => $categories->groupBy('id'),
             'units'     => DB::table('units')->select('id as value', 'code as display')->get(),
