@@ -39,9 +39,7 @@ class DevisController extends Controller
         $user=Auth::user();
 
         $orderList=DB::table('orders')
-        ->select(['orders.*',
-        'events.id as evnt',
-        'users.name as responsable',
+        ->select(['orders.*', 'events.id as evnt', 'users.name as responsable',
         DB::raw("DATE_FORMAT(orders.created_at, '%Y-%m-%d') as created_at"),
         DB::raw("CONCAT(customers.company,' ',customers.firstname,' ',customers.name) as customer"),
         DB::raw("TRIM(CONCAT(contacts.firstname,' ',contacts.name,'<br/>',contacts.mobile)) as contact"),
@@ -755,409 +753,513 @@ class DevisController extends Controller
      * Save a new devis
      */
     public function storeDevis(Request $request){
-        $orderData = [
-            'lang_id'           => 1,
-            'name'              => $request->orderName,
-            'affiliate_id'      => Auth::user()->affiliate->id,
-            'responsable_id'    => Auth::id(),
-            'order_state_id'    => 2,
-            'total'             => ($request->totalPriceForInstall + $request->totalPriceForSecurity + $request->totalPriceForPrestation),
-            'nbheure'           => ($request->totalHoursForInstall + $request->totalHoursForSecurity + $request->totalHoursForPrestation),
-            'address_id'        => $request->address['id'],
-            'customer_id'       => $request->customer['id'],
-            'contact_id'        => $request->customer['contact_id'],
-            'remise'            => $request->discount,
-            'datecommande'      => Carbon::now(),
-            'signed_by_customer'=> 0,
-            'reference'         => $this->passwdGen(10,'NO_NUMERIC'),
-            'created_at'        => Carbon::now(),
-            'updated_at'        => Carbon::now(),
-        ];
-
-
-        $orderId = DB::table('orders')->insertGetId($orderData);
-        $orderHistory = [
-            'user_id'       => Auth::id(),
-            'order_id'      => $orderId,
-            'order_state_id'=> 2,
-            'created_at'    => Carbon::now(),
-            'updated_at'    => Carbon::now(),
-        ];
-        DB::table('order_histories')->insert($orderHistory);
-        if(
-            ! Ged::where('user_id','=',Auth::id())
-                ->where('customer_id', $request->customer['id'])
-                ->where('order_id', $orderId)->exists()
-        ){
-            $zedData = [
-                'customer_id'   =>  $request->customer['id'],
-                'user_id'       =>  Auth::id(),
-                'order_id'      =>  $orderId,
-                'created_at'    =>  Carbon::now(),
-                'updated_at'    =>  Carbon::now(),
+        if(DB::table('settings')->where('key', 'admin.ouvrage')->value('value') == 1 ){
+            $orderData = [
+                'lang_id'           => 1,
+                'name'              => $request->orderName,
+                'affiliate_id'      => Auth::user()->affiliate->id,
+                'responsable_id'    => Auth::id(),
+                'order_state_id'    => 2,
+                'total'             => ($request->totalPriceForInstall + $request->totalPriceForSecurity + $request->totalPriceForPrestation),
+                'nbheure'           => ($request->totalHoursForInstall + $request->totalHoursForSecurity + $request->totalHoursForPrestation),
+                'address_id'        => $request->address['id'],
+                'customer_id'       => $request->customer['id'],
+                'contact_id'        => $request->customer['contact_id'],
+                'remise'            => $request->discount,
+                'datecommande'      => Carbon::now(),
+                'signed_by_customer'=> 0,
+                'reference'         => $this->passwdGen(10,'NO_NUMERIC'),
+                'created_at'        => Carbon::now(),
+                'updated_at'        => Carbon::now(),
             ];
-            $gedId = DB::table('geds')->insertGetId($zedData);
+
+
+            $orderId = DB::table('orders')->insertGetId($orderData);
+            $orderHistory = [
+                'user_id'       => Auth::id(),
+                'order_id'      => $orderId,
+                'order_state_id'=> 2,
+                'created_at'    => Carbon::now(),
+                'updated_at'    => Carbon::now(),
+            ];
+            DB::table('order_histories')->insert($orderHistory);
+            if(
+                ! Ged::where('user_id','=',Auth::id())
+                    ->where('customer_id', $request->customer['id'])
+                    ->where('order_id', $orderId)->exists()
+            ){
+                $zedData = [
+                    'customer_id'   =>  $request->customer['id'],
+                    'user_id'       =>  Auth::id(),
+                    'order_id'      =>  $orderId,
+                    'created_at'    =>  Carbon::now(),
+                    'updated_at'    =>  Carbon::now(),
+                ];
+                $gedId = DB::table('geds')->insertGetId($zedData);
+            }else{
+                $gedId = Ged::where('user_id','=',Auth::id())
+                            ->where('customer_id', $request->customer['id'])
+                            ->where('order_id', $orderId)->value('id');
+            }
+            foreach ($request->zones as $zone) {
+                $zoneData = [
+                    'order_id'      =>  $orderId,
+                    'latitude'      =>  $request->address['lat'],
+                    'longitude'     =>  $request->address['lon'],
+                    // 'latitude'      =>  '10.197948495703532',
+                    // 'longitude'     =>  '10.197948495703532',
+                    'description'   =>  '',
+                    'hauteur'       =>  $zone['height'],
+                    'moyenacces_id' =>  $zone['roofAccess'],
+                    'name'          =>  $zone['name'],
+                    'created_at'    =>  Carbon::now(),
+                    'updated_at'    =>  Carbon::now(),
+                ];
+                $zoneId = DB::table('order_zones')->insertGetId($zoneData);
+                // save ged details
+                foreach ($zone['gedCats'] as $gedCatId=> $gedCat) {
+                    foreach ($gedCat[0]['items'] as $file) {
+                        $gedDetail = new GedDetail();
+                        $gedDetail->ged_id = $gedId;
+                        $gedDetail->order_zone_id = $zoneId;
+                        $gedDetail->ged_category_id = $gedCatId;
+                        $gedDetail->user_id = Auth::id();
+                        $gedDetail->save();
+                        $gedDetail = $gedDetail->fresh();//retreve fresh object with all fields
+
+                        $file['base64data'];
+                        if( $gedDetail->file == null){//files can only be stored once to avoid duplicates;
+                            if( !empty($file['base64data']) ){
+                                $storedFile = $this->storeFile($file['base64data'], $file['fileName'], $gedDetail->id);
+                                $gedDetail->file = $storedFile->file;
+                                $gedDetail->type = $storedFile->type;
+                                $gedDetail->storage_path = $storedFile->storage_path;
+                                $gedDetail->human_readable_filename = $storedFile->human_readable_filename;
+                            }
+                        }
+                        $gedDetail->save();
+                    }
+                }
+                // save describe
+                foreach($zone['describes'] as $zoneDescribes) {
+                    $describeData = [];
+                    foreach ($zoneDescribes as $describe) {
+                        $describeData[] = [
+                            'order_zone_id'=> $zoneId,
+                            'describe_id'=> $describe['id'],
+                            'value'=> $describe['default'],
+                            'created_at'=> now(),
+                            'updated_at'=> now()
+                        ];
+                    }
+                    DB::table('order_describe')->insert($describeData);
+                }
+                // save services
+                foreach($zone['services'] as $service) {
+                    DB::table('order_services')->insert([
+                        'order_zone_id'=> $zoneId,
+                        'service_id'=> $service['id'],
+                        'value'=> $service['value'],
+                        'active'=> $service['active'],
+                        'semti'=> $service['semti'],
+                        'sstt'=> $service['sstt'],
+                        'loc'=> $service['loc'],
+                        'client'=> $service['client'],
+                        'created_at'=> now(),
+                        'updated_at'=> now()
+                    ]);
+                }
+                if( count($zone['installOuvrage']['ouvrages']) ){
+                    $installationCat = [
+                        'order_zone_id' =>  $zoneId,
+                        'type'          =>  'INSTALLATION',
+                        'name'          =>  $zone['installOuvrage']['name'],
+                        'textcustomer'  =>  '',
+                        'textoperator'  =>  '',
+                        'created_at'    =>  Carbon::now(),
+                        'updated_at'    =>  Carbon::now()
+                    ];
+                    $orderCatId = DB::table('order_cat')->insertGetId($installationCat);
+                    foreach ($zone['installOuvrage']['ouvrages'] as $ouvrage) {
+
+                        $ouvrageData = [
+                            'order_id'          => $orderId,
+                            'order_zone_id'     => $zoneId,
+                            'unit_id'           => $ouvrage['unit'],
+                            'qty'               => $ouvrage['qty'],
+                            'order_cat_id'      => $orderCatId,
+                            'nbheure'           => $ouvrage['totalHour'],
+                            'total'             => $ouvrage['total'],
+                            'ouvrage_prestation_id'=> $ouvrage['ouvrage_prestation_id'],
+                            'ouvrage_toit_id'   => $ouvrage['ouvrage_toit_id'],
+                            'ouvrage_metier_id' => $ouvrage['ouvrage_metier_id'],
+                            'textcustomer'      => $ouvrage['customerText'],
+                            'textchargeaffaire' => $ouvrage['textchargeaffaire'],
+                            'textoperator'      => $ouvrage['textoperator'],
+                            'type'              => 'INSTALLATION',
+                            'name'              => $ouvrage['name'],
+                            'created_at'        => Carbon::now(),
+                            'updated_at'        => Carbon::now(),
+                        ];
+                        $orderOuvrageId = DB::table('order_ouvrages')->insertGetId($ouvrageData);
+                        foreach ($ouvrage['tasks'] as $taskIndex => $task) {
+                            $orderOuvrageTask = [
+                                'order_ouvrage_id'      => $orderOuvrageId,
+                                'name'                  => $task['name'],
+                                'textcustomer'          => $task['customerText'],
+                                'textchargeaffaire'     => $task['textchargeaffaire'],
+                                'textoperator'          => $task['textoperator'],
+                                'qty'                   => $task['qty'],
+                                'unit_id'               => $task['unit_id'],
+                                'created_at'            => Carbon::now(),
+                                'updated_at'            => Carbon::now(),
+                            ];
+                            $orderOuvrageTaskId = DB::table('order_ouvrage_task')->insertGetId($orderOuvrageTask);
+                            foreach ($task['details'] as $detailIndex => $detail) {
+                                $detailData = [
+                                    'order_ouvrage_task_id'   => $orderOuvrageTaskId,
+                                    'product_id'        => $detail['productId'],
+                                    'type'              => $detail['type'],
+                                    'name'              => $detail['name'],
+                                    'textcustomer'      => '',
+                                    'textchargeaffaire' => '',
+                                    'textoperator'      => '',
+                                    'qty'               => $detail['qty'],
+                                    'numberh'           => $detail['numberH'],
+                                    'unitprice'         => $detail['unitPrice'],
+                                    'qtyouvrage'        => $detail['qtyOuvrage'] == '' ? 0 : $detail['qtyOuvrage'],
+                                    'qtyunitouvrage'    => 1,
+                                    'houvrage'          => 0,
+                                    'marge'             => $detail['marge'],
+                                    'totalprice'        => $detail['totalPrice'],
+                                    'taxe_id'           => $detail['tax'],
+                                    'unit_id'           => $detail['unit_id'],
+                                    'priceachat'        => $detail['unitPrice'],
+                                    'original'          => $detail['original'] ?? false,
+                                    'original_number_h' => $detail['originalNumberH'] ?? 1,
+                                    'original_qty'      => $detail['originalDetailQty'] ?? 1,
+                                    'created_at'        => Carbon::now(),
+                                    'updated_at'        => Carbon::now(),
+                                ];
+                                if($detail['type'] == 'INTERIM'){
+                                    $detailData['interim_societe_id']   = $detail['societe'];
+                                }
+                                if($detail['type'] == 'COMMANDE FOURNISSEUR'){
+                                    $detailData['supplier_id']   = $detail['supplierId'];
+                                    $detailData['datesupplier']   = $detail['datesupplier'];
+                                    if(preg_match('/^data:application\/pdf;base64,/', $detail['base64'], $type)){
+                                        $data = substr($detail['base64'], strpos($detail['base64'], ',') + 1);
+                                        $type = 'pdf';
+                                        if(!File::isDirectory(public_path('SupplierOrder/'))){
+                                            File::makeDirectory(public_path('SupplierOrder/'), 0755, true, true);
+                                        }
+                                        $data = str_replace( ' ', '+', $data );
+                                        $data = base64_decode($data);
+                                        $uuid_filename = DB::select('select UUID() AS uuid')[0]->uuid;
+                                        $orderFilePath = "/SupplierOrder/{$uuid_filename}.{$type}";
+                                        Storage::disk('public')->put($orderFilePath, $data);
+                                        $detailData['orderfile'] = $orderFilePath;
+                                    }
+                                }
+                                DB::table('order_ouvrage_detail')->insert($detailData);
+                            }
+                        }
+                    }
+                }
+                if( count($zone['securityOuvrage']['ouvrages']) ){
+                    $securityCat = [
+                        'order_zone_id' =>  $zoneId,
+                        'type'          =>  'SECURITE',
+                        'name'          =>  $zone['securityOuvrage']['name'],
+                        'textcustomer'  =>  '',
+                        'textoperator'  =>  '',
+                        'created_at'    =>  Carbon::now(),
+                        'updated_at'    =>  Carbon::now()
+                    ];
+                    $orderCatId = DB::table('order_cat')->insertGetId($securityCat);
+                    foreach ($zone['securityOuvrage']['ouvrages'] as $ouvrage) {
+                        $ouvrageData = [
+                            'order_id'          => $orderId,
+                            'order_zone_id'     => $zoneId,
+                            'unit_id'           => $ouvrage['unit'],
+                            'qty'               => $ouvrage['qty'],
+                            'nbheure'           => $ouvrage['totalHour'],
+                            'total'             => $ouvrage['total'],
+                            'order_cat_id'      => $orderCatId,
+                            'ouvrage_prestation_id'=> $ouvrage['ouvrage_prestation_id'],
+                            'ouvrage_toit_id'   => $ouvrage['ouvrage_toit_id'],
+                            'ouvrage_metier_id' => $ouvrage['ouvrage_metier_id'],
+                            'textcustomer'      => $ouvrage['customerText'],
+                            'textchargeaffaire' => $ouvrage['textchargeaffaire'],
+                            'textoperator'      => $ouvrage['textoperator'],
+                            'type'              => 'SECURITE',
+                            'name'              => $ouvrage['name'],
+                            'created_at'        => Carbon::now(),
+                            'updated_at'        => Carbon::now(),
+                        ];
+                        $orderOuvrageId = DB::table('order_ouvrages')->insertGetId($ouvrageData);
+                        foreach ($ouvrage['tasks'] as $taskIndex => $task) {
+                            $orderOuvrageTask = [
+                                'order_ouvrage_id'      => $orderOuvrageId,
+                                'name'                  => $task['name'],
+                                'textcustomer'          => $task['customerText'],
+                                'textchargeaffaire'     => $task['textchargeaffaire'],
+                                'textoperator'          => $task['textoperator'],
+                                'qty'                   => $task['qty'],
+                                'unit_id'               => $task['unit_id'],
+                                'created_at'            => Carbon::now(),
+                                'updated_at'            => Carbon::now(),
+                            ];
+                            $orderOuvrageTaskId = DB::table('order_ouvrage_task')->insertGetId($orderOuvrageTask);
+                            foreach ($task['details'] as $detailIndex => $detail) {
+                                $detailData = [
+                                    'order_ouvrage_task_id'   => $orderOuvrageTaskId,
+                                    'product_id'        => $detail['productId'],
+                                    'type'              => $detail['type'],
+                                    'name'              => $detail['name'],
+                                    'textcustomer'      => '',
+                                    'textchargeaffaire' => '',
+                                    'textoperator'      => '',
+                                    'qty'               => $detail['qty'],
+                                    'numberh'           => $detail['numberH'],
+                                    'unitprice'         => $detail['unitPrice'],
+                                    'qtyouvrage'        => $detail['qtyOuvrage'] == '' ? 0 : $detail['qtyOuvrage'],
+                                    'qtyunitouvrage'    => 1,
+                                    'houvrage'          => 0,
+                                    'marge'             => $detail['marge'],
+                                    'totalprice'        => $detail['totalPrice'],
+                                    'taxe_id'           => $detail['tax'],
+                                    'unit_id'           => $detail['unit_id'],
+                                    'priceachat'        => $detail['unitPrice'],
+                                    'original'          => $detail['original'] ?? false,
+                                    'original_number_h' => $detail['originalNumberH'] ?? 1,
+                                    'original_qty'      => $detail['originalDetailQty'] ?? 1,
+                                    'created_at'        => Carbon::now(),
+                                    'updated_at'        => Carbon::now(),
+                                ];
+                                if($detail['type'] == 'INTERIM'){
+                                    $detailData['interim_societe_id']   = $detail['societe'];
+                                }
+                                if($detail['type'] == 'COMMANDE FOURNISSEUR'){
+                                    $detailData['supplier_id']   = $detail['supplierId'];
+                                    $detailData['datesupplier']   = $detail['datesupplier'];
+                                    if(preg_match('/^data:application\/pdf;base64,/', $detail['base64'], $type)){
+                                        $data = substr($detail['base64'], strpos($detail['base64'], ',') + 1);
+                                        $type = 'pdf';
+                                        if(!File::isDirectory(public_path('SupplierOrder/'))){
+                                            File::makeDirectory(public_path('SupplierOrder/'), 0755, true, true);
+                                        }
+                                        $data = str_replace( ' ', '+', $data );
+                                        $data = base64_decode($data);
+                                        $uuid_filename = DB::select('select UUID() AS uuid')[0]->uuid;
+                                        $orderFilePath = "/SupplierOrder/{$uuid_filename}.{$type}";
+                                        Storage::disk('public')->put($orderFilePath, $data);
+                                        $detailData['orderfile'] = $orderFilePath;
+                                    }
+                                }
+                                DB::table('order_ouvrage_detail')->insert($detailData);
+                            }
+                        }
+                    }
+                }
+                if( count($zone['prestationOuvrage']['ouvrages']) ){
+                    $prestationCat = [
+                        'order_zone_id' =>  $zoneId,
+                        'type'          =>  'PRESTATION',
+                        'name'          =>  $zone['prestationOuvrage']['name'],
+                        'textcustomer'  =>  '',
+                        'textoperator'  =>  '',
+                        'created_at'    =>  Carbon::now(),
+                        'updated_at'    =>  Carbon::now()
+                    ];
+                    $orderCatId = DB::table('order_cat')->insertGetId($prestationCat);
+                    foreach ($zone['prestationOuvrage']['ouvrages'] as $ouvrage) {
+                        $ouvrageData = [
+                            'order_id'          => $orderId,
+                            'order_zone_id'     => $zoneId,
+                            'unit_id'           => $ouvrage['unit'],
+                            'qty'               => $ouvrage['qty'],
+                            'nbheure'           => $ouvrage['totalHour'],
+                            'total'             => $ouvrage['total'],
+                            'order_cat_id'      => $orderCatId,
+                            'ouvrage_prestation_id'=> $ouvrage['ouvrage_prestation_id'],
+                            'ouvrage_toit_id'   => $ouvrage['ouvrage_toit_id'],
+                            'ouvrage_metier_id' => $ouvrage['ouvrage_metier_id'],
+                            'textcustomer'      => $ouvrage['customerText'],
+                            'textchargeaffaire' => $ouvrage['textchargeaffaire'],
+                            'textoperator'      => $ouvrage['textoperator'],
+                            'type'              => 'PRESTATION',
+                            'name'              => $ouvrage['name'],
+                            'created_at'        => Carbon::now(),
+                            'updated_at'        => Carbon::now(),
+                        ];
+                        $orderOuvrageId = DB::table('order_ouvrages')->insertGetId($ouvrageData);
+                        foreach ($ouvrage['tasks'] as $taskIndex => $task) {
+                            $orderOuvrageTask = [
+                                'order_ouvrage_id'      => $orderOuvrageId,
+                                'name'                  => $task['name'],
+                                'textcustomer'          => $task['customerText'],
+                                'textchargeaffaire'     => $task['textchargeaffaire'],
+                                'textoperator'          => $task['textoperator'],
+                                'qty'                   => $task['qty'],
+                                'unit_id'               => $task['unit_id'],
+                                'created_at'            => Carbon::now(),
+                                'updated_at'            => Carbon::now(),
+                            ];
+                            $orderOuvrageTaskId = DB::table('order_ouvrage_task')->insertGetId($orderOuvrageTask);
+                            foreach ($task['details'] as $detailIndex => $detail) {
+                                $detailData = [
+                                    'order_ouvrage_task_id'   => $orderOuvrageTaskId,
+                                    'product_id'        => $detail['productId'],
+                                    'type'              => $detail['type'],
+                                    'name'              => $detail['name'],
+                                    'textcustomer'      => '',
+                                    'textchargeaffaire' => '',
+                                    'textoperator'      => '',
+                                    'qty'               => $detail['qty'],
+                                    'numberh'           => $detail['numberH'],
+                                    'unitprice'         => $detail['unitPrice'],
+                                    'qtyouvrage'        => $detail['qtyOuvrage'] == '' ? 0 : $detail['qtyOuvrage'],
+                                    'qtyunitouvrage'    => 1,
+                                    'houvrage'          => 0,
+                                    'marge'             => $detail['marge'],
+                                    'totalprice'        => $detail['totalPrice'],
+                                    'taxe_id'           => $detail['tax'],
+                                    'unit_id'           => $detail['unit_id'],
+                                    'priceachat'        => $detail['unitPrice'],
+                                    'original'          => $detail['original'] ?? false,
+                                    'original_number_h' => $detail['originalNumberH'] ?? 1,
+                                    'original_qty'      => $detail['originalDetailQty'] ?? 1,
+                                    'created_at'        => Carbon::now(),
+                                    'updated_at'        => Carbon::now(),
+                                ];
+                                if($detail['type'] == 'INTERIM'){
+                                    $detailData['interim_societe_id']   = $detail['societe'];
+                                }
+                                if($detail['type'] == 'COMMANDE FOURNISSEUR'){
+                                    $detailData['supplier_id']   = $detail['supplierId'];
+                                    $detailData['datesupplier']   = $detail['datesupplier'];
+                                    if(preg_match('/^data:application\/pdf;base64,/', $detail['base64'], $type)){
+                                        $data = substr($detail['base64'], strpos($detail['base64'], ',') + 1);
+                                        $type = 'pdf';
+                                        if(!File::isDirectory(public_path('SupplierOrder/'))){
+                                            File::makeDirectory(public_path('SupplierOrder/'), 0755, true, true);
+                                        }
+                                        $data = str_replace( ' ', '+', $data );
+                                        $data = base64_decode($data);
+                                        $uuid_filename = DB::select('select UUID() AS uuid')[0]->uuid;
+                                        $orderFilePath = "/SupplierOrder/{$uuid_filename}.{$type}";
+                                        Storage::disk('public')->put($orderFilePath, $data);
+                                        $detailData['orderfile'] = $orderFilePath;
+                                    }
+                                }
+                                DB::table('order_ouvrage_detail')->insert($detailData);
+                            }
+                        }
+                    }
+                }
+            }
+            // store the devis that has no ouvrages
         }else{
-            $gedId = Ged::where('user_id','=',Auth::id())
-                        ->where('customer_id', $request->customer['id'])
-                        ->where('order_id', $orderId)->value('id');
-        }
-        foreach ($request->zones as $zone) {
+            $orderData = [
+                'lang_id'           => 1,
+                'name'              => $request->orderName,
+                'affiliate_id'      => Auth::user()->affiliate->id,
+                'responsable_id'    => Auth::id(),
+                'order_state_id'    => 2,
+                'total'             => ($request->totalAmount),
+                'nbheure'           => ($request->totalHours),
+                'address_id'        => $request->address['id'],
+                'customer_id'       => $request->customer['id'],
+                'contact_id'        => $request->customer['contact_id'],
+                'remise'            => $request->reductionAmount,
+                'datecommande'      => Carbon::now(),
+                'signed_by_customer'=> 0,
+                'reference'         => $this->passwdGen(10,'NO_NUMERIC'),
+                'created_at'        => Carbon::now(),
+                'updated_at'        => Carbon::now(),
+            ];
+            $orderId = DB::table('orders')->insertGetId($orderData);
+            $orderHistory = [
+                'user_id'       => Auth::id(),
+                'order_id'      => $orderId,
+                'order_state_id'=> 2,
+                'created_at'    => Carbon::now(),
+                'updated_at'    => Carbon::now(),
+            ];
+            DB::table('order_histories')->insert($orderHistory);
+            if(
+                ! Ged::where('user_id','=',Auth::id())
+                    ->where('customer_id', $request->customer['id'])
+                    ->where('order_id', $orderId)->exists()
+            ){
+                $zedData = [
+                    'customer_id'   =>  $request->customer['id'],
+                    'user_id'       =>  Auth::id(),
+                    'order_id'      =>  $orderId,
+                    'created_at'    =>  Carbon::now(),
+                    'updated_at'    =>  Carbon::now(),
+                ];
+                $gedId = DB::table('geds')->insertGetId($zedData);
+            }else{
+                $gedId = Ged::where('user_id','=',Auth::id())
+                            ->where('customer_id', $request->customer['id'])
+                            ->where('order_id', $orderId)->value('id');
+            }
             $zoneData = [
                 'order_id'      =>  $orderId,
                 'latitude'      =>  $request->address['lat'],
                 'longitude'     =>  $request->address['lon'],
-                // 'latitude'      =>  '10.197948495703532',
-                // 'longitude'     =>  '10.197948495703532',
                 'description'   =>  '',
-                'hauteur'       =>  $zone['height'],
-                'moyenacces_id' =>  $zone['roofAccess'],
-                'name'          =>  $zone['name'],
+                'hauteur'       =>  0,
+                'name'          =>  'Zone 1',
                 'created_at'    =>  Carbon::now(),
                 'updated_at'    =>  Carbon::now(),
             ];
             $zoneId = DB::table('order_zones')->insertGetId($zoneData);
-            // save ged details
-            foreach ($zone['gedCats'] as $gedCatId=> $gedCat) {
-                foreach ($gedCat[0]['items'] as $file) {
-                    $gedDetail = new GedDetail();
-                    $gedDetail->ged_id = $gedId;
-                    $gedDetail->order_zone_id = $zoneId;
-                    $gedDetail->ged_category_id = $gedCatId;
-                    $gedDetail->user_id = Auth::id();
-                    $gedDetail->save();
-                    $gedDetail = $gedDetail->fresh();//retreve fresh object with all fields
+            // save photos
+            foreach ($request->photos as $file) {
+                $gedDetail = new GedDetail();
+                $gedDetail->ged_id = $gedId;
+                $gedDetail->order_zone_id = $zoneId;
+                $gedDetail->ged_category_id = 0;
+                $gedDetail->user_id = Auth::id();
+                $gedDetail->save();
+                $gedDetail = $gedDetail->fresh();//retreve fresh object with all fields
 
-                    $file['base64data'];
-                    if( $gedDetail->file == null){//files can only be stored once to avoid duplicates;
-                        if( !empty($file['base64data']) ){
-                            $storedFile = $this->storeFile($file['base64data'], $file['fileName'], $gedDetail->id);
-                            $gedDetail->file = $storedFile->file;
-                            $gedDetail->type = $storedFile->type;
-                            $gedDetail->storage_path = $storedFile->storage_path;
-                            $gedDetail->human_readable_filename = $storedFile->human_readable_filename;
-                        }
+                if( $gedDetail->file == null){//files can only be stored once to avoid duplicates;
+                    if( !empty($file['base64data']) ){
+                        $storedFile = $this->storeFile($file['base64data'], $file['fileName'], $gedDetail->id);
+                        $gedDetail->file = $storedFile->file;
+                        $gedDetail->type = $storedFile->type;
+                        $gedDetail->storage_path = $storedFile->storage_path;
+                        $gedDetail->human_readable_filename = $storedFile->human_readable_filename;
                     }
-                    $gedDetail->save();
                 }
+                $gedDetail->save();
             }
-            // save describe
-            foreach($zone['describes'] as $zoneDescribes) {
-                $describeData = [];
-                foreach ($zoneDescribes as $describe) {
-                    $describeData[] = [
-                        'order_zone_id'=> $zoneId,
-                        'describe_id'=> $describe['id'],
-                        'value'=> $describe['default'],
-                        'created_at'=> now(),
-                        'updated_at'=> now()
-                    ];
-                }
-                DB::table('order_describe')->insert($describeData);
-            }
-            // save services
-            foreach($zone['services'] as $service) {
-                DB::table('order_services')->insert([
-                    'order_zone_id'=> $zoneId,
-                    'service_id'=> $service['id'],
-                    'value'=> $service['value'],
-                    'active'=> $service['active'],
-                    'semti'=> $service['semti'],
-                    'sstt'=> $service['sstt'],
-                    'loc'=> $service['loc'],
-                    'client'=> $service['client'],
-                    'created_at'=> now(),
-                    'updated_at'=> now()
-                ]);
-            }
-            if( count($zone['installOuvrage']['ouvrages']) ){
-                $installationCat = [
-                    'order_zone_id' =>  $zoneId,
-                    'type'          =>  'INSTALLATION',
-                    'name'          =>  $zone['installOuvrage']['name'],
-                    'textcustomer'  =>  '',
-                    'textoperator'  =>  '',
-                    'created_at'    =>  Carbon::now(),
-                    'updated_at'    =>  Carbon::now()
+            // save order details
+            foreach ($request->details as $detail) {
+                $orderDetailData = [
+                    'order_id'      => $orderId,
+                    'supplier_id'   => 0,
+                    'name'          => $detail['name'],
+                    'unitprice'     => $detail['unitPrice'],
+                    'taxe_id'       => $detail['taxId'],
+                    'qty'           => $detail['qty'],
+                    'numberh'       => $detail['hours'],
                 ];
-                $orderCatId = DB::table('order_cat')->insertGetId($installationCat);
-                foreach ($zone['installOuvrage']['ouvrages'] as $ouvrage) {
-
-                    $ouvrageData = [
-                        'order_id'          => $orderId,
-                        'order_zone_id'     => $zoneId,
-                        'unit_id'           => $ouvrage['unit'],
-                        'qty'               => $ouvrage['qty'],
-                        'order_cat_id'      => $orderCatId,
-                        'nbheure'           => $ouvrage['totalHour'],
-                        'total'             => $ouvrage['total'],
-                        'ouvrage_prestation_id'=> $ouvrage['ouvrage_prestation_id'],
-                        'ouvrage_toit_id'   => $ouvrage['ouvrage_toit_id'],
-                        'ouvrage_metier_id' => $ouvrage['ouvrage_metier_id'],
-                        'textcustomer'      => $ouvrage['customerText'],
-                        'textchargeaffaire' => $ouvrage['textchargeaffaire'],
-                        'textoperator'      => $ouvrage['textoperator'],
-                        'type'              => 'INSTALLATION',
-                        'name'              => $ouvrage['name'],
-                        'created_at'        => Carbon::now(),
-                        'updated_at'        => Carbon::now(),
-                    ];
-                    $orderOuvrageId = DB::table('order_ouvrages')->insertGetId($ouvrageData);
-                    foreach ($ouvrage['tasks'] as $taskIndex => $task) {
-                        $orderOuvrageTask = [
-                            'order_ouvrage_id'      => $orderOuvrageId,
-                            'name'                  => $task['name'],
-                            'textcustomer'          => $task['customerText'],
-                            'textchargeaffaire'     => $task['textchargeaffaire'],
-                            'textoperator'          => $task['textoperator'],
-                            'qty'                   => $task['qty'],
-                            'unit_id'               => $task['unit_id'],
-                            'created_at'            => Carbon::now(),
-                            'updated_at'            => Carbon::now(),
-                        ];
-                        $orderOuvrageTaskId = DB::table('order_ouvrage_task')->insertGetId($orderOuvrageTask);
-                        foreach ($task['details'] as $detailIndex => $detail) {
-                            $detailData = [
-                                'order_ouvrage_task_id'   => $orderOuvrageTaskId,
-                                'product_id'        => $detail['productId'],
-                                'type'              => $detail['type'],
-                                'name'              => $detail['name'],
-                                'textcustomer'      => '',
-                                'textchargeaffaire' => '',
-                                'textoperator'      => '',
-                                'qty'               => $detail['qty'],
-                                'numberh'           => $detail['numberH'],
-                                'unitprice'         => $detail['unitPrice'],
-                                'qtyouvrage'        => $detail['qtyOuvrage'] == '' ? 0 : $detail['qtyOuvrage'],
-                                'qtyunitouvrage'    => 1,
-                                'houvrage'          => 0,
-                                'marge'             => $detail['marge'],
-                                'totalprice'        => $detail['totalPrice'],
-                                'taxe_id'           => $detail['tax'],
-                                'unit_id'           => $detail['unit_id'],
-                                'priceachat'        => $detail['unitPrice'],
-                                'original'          => $detail['original'] ?? false,
-                                'original_number_h' => $detail['originalNumberH'] ?? 1,
-                                'original_qty'      => $detail['originalDetailQty'] ?? 1,
-                                'created_at'        => Carbon::now(),
-                                'updated_at'        => Carbon::now(),
-                            ];
-                            if($detail['type'] == 'INTERIM'){
-                                $detailData['interim_societe_id']   = $detail['societe'];
-                            }
-                            if($detail['type'] == 'COMMANDE FOURNISSEUR'){
-                                $detailData['supplier_id']   = $detail['supplierId'];
-                                $detailData['datesupplier']   = $detail['datesupplier'];
-                                if(preg_match('/^data:application\/pdf;base64,/', $detail['base64'], $type)){
-                                    $data = substr($detail['base64'], strpos($detail['base64'], ',') + 1);
-                                    $type = 'pdf';
-                                    if(!File::isDirectory(public_path('SupplierOrder/'))){
-                                        File::makeDirectory(public_path('SupplierOrder/'), 0755, true, true);
-                                    }
-                                    $data = str_replace( ' ', '+', $data );
-                                    $data = base64_decode($data);
-                                    $uuid_filename = DB::select('select UUID() AS uuid')[0]->uuid;
-                                    $orderFilePath = "/SupplierOrder/{$uuid_filename}.{$type}";
-                                    Storage::disk('public')->put($orderFilePath, $data);
-                                    $detailData['orderfile'] = $orderFilePath;
-                                }
-                            }
-                            DB::table('order_ouvrage_detail')->insert($detailData);
-                        }
-                    }
-                }
+                DB::table('order_detail')->insert($orderDetailData);
             }
-            if( count($zone['securityOuvrage']['ouvrages']) ){
-                $securityCat = [
-                    'order_zone_id' =>  $zoneId,
-                    'type'          =>  'SECURITE',
-                    'name'          =>  $zone['securityOuvrage']['name'],
-                    'textcustomer'  =>  '',
-                    'textoperator'  =>  '',
-                    'created_at'    =>  Carbon::now(),
-                    'updated_at'    =>  Carbon::now()
-                ];
-                $orderCatId = DB::table('order_cat')->insertGetId($securityCat);
-                foreach ($zone['securityOuvrage']['ouvrages'] as $ouvrage) {
-                    $ouvrageData = [
-                        'order_id'          => $orderId,
-                        'order_zone_id'     => $zoneId,
-                        'unit_id'           => $ouvrage['unit'],
-                        'qty'               => $ouvrage['qty'],
-                        'nbheure'           => $ouvrage['totalHour'],
-                        'total'             => $ouvrage['total'],
-                        'order_cat_id'      => $orderCatId,
-                        'ouvrage_prestation_id'=> $ouvrage['ouvrage_prestation_id'],
-                        'ouvrage_toit_id'   => $ouvrage['ouvrage_toit_id'],
-                        'ouvrage_metier_id' => $ouvrage['ouvrage_metier_id'],
-                        'textcustomer'      => $ouvrage['customerText'],
-                        'textchargeaffaire' => $ouvrage['textchargeaffaire'],
-                        'textoperator'      => $ouvrage['textoperator'],
-                        'type'              => 'SECURITE',
-                        'name'              => $ouvrage['name'],
-                        'created_at'        => Carbon::now(),
-                        'updated_at'        => Carbon::now(),
-                    ];
-                    $orderOuvrageId = DB::table('order_ouvrages')->insertGetId($ouvrageData);
-                    foreach ($ouvrage['tasks'] as $taskIndex => $task) {
-                        $orderOuvrageTask = [
-                            'order_ouvrage_id'      => $orderOuvrageId,
-                            'name'                  => $task['name'],
-                            'textcustomer'          => $task['customerText'],
-                            'textchargeaffaire'     => $task['textchargeaffaire'],
-                            'textoperator'          => $task['textoperator'],
-                            'qty'                   => $task['qty'],
-                            'unit_id'               => $task['unit_id'],
-                            'created_at'            => Carbon::now(),
-                            'updated_at'            => Carbon::now(),
-                        ];
-                        $orderOuvrageTaskId = DB::table('order_ouvrage_task')->insertGetId($orderOuvrageTask);
-                        foreach ($task['details'] as $detailIndex => $detail) {
-                            $detailData = [
-                                'order_ouvrage_task_id'   => $orderOuvrageTaskId,
-                                'product_id'        => $detail['productId'],
-                                'type'              => $detail['type'],
-                                'name'              => $detail['name'],
-                                'textcustomer'      => '',
-                                'textchargeaffaire' => '',
-                                'textoperator'      => '',
-                                'qty'               => $detail['qty'],
-                                'numberh'           => $detail['numberH'],
-                                'unitprice'         => $detail['unitPrice'],
-                                'qtyouvrage'        => $detail['qtyOuvrage'] == '' ? 0 : $detail['qtyOuvrage'],
-                                'qtyunitouvrage'    => 1,
-                                'houvrage'          => 0,
-                                'marge'             => $detail['marge'],
-                                'totalprice'        => $detail['totalPrice'],
-                                'taxe_id'           => $detail['tax'],
-                                'unit_id'           => $detail['unit_id'],
-                                'priceachat'        => $detail['unitPrice'],
-                                'original'          => $detail['original'] ?? false,
-                                'original_number_h' => $detail['originalNumberH'] ?? 1,
-                                'original_qty'      => $detail['originalDetailQty'] ?? 1,
-                                'created_at'        => Carbon::now(),
-                                'updated_at'        => Carbon::now(),
-                            ];
-                            if($detail['type'] == 'INTERIM'){
-                                $detailData['interim_societe_id']   = $detail['societe'];
-                            }
-                            if($detail['type'] == 'COMMANDE FOURNISSEUR'){
-                                $detailData['supplier_id']   = $detail['supplierId'];
-                                $detailData['datesupplier']   = $detail['datesupplier'];
-                                if(preg_match('/^data:application\/pdf;base64,/', $detail['base64'], $type)){
-                                    $data = substr($detail['base64'], strpos($detail['base64'], ',') + 1);
-                                    $type = 'pdf';
-                                    if(!File::isDirectory(public_path('SupplierOrder/'))){
-                                        File::makeDirectory(public_path('SupplierOrder/'), 0755, true, true);
-                                    }
-                                    $data = str_replace( ' ', '+', $data );
-                                    $data = base64_decode($data);
-                                    $uuid_filename = DB::select('select UUID() AS uuid')[0]->uuid;
-                                    $orderFilePath = "/SupplierOrder/{$uuid_filename}.{$type}";
-                                    Storage::disk('public')->put($orderFilePath, $data);
-                                    $detailData['orderfile'] = $orderFilePath;
-                                }
-                            }
-                            DB::table('order_ouvrage_detail')->insert($detailData);
-                        }
-                    }
-                }
-            }
-            if( count($zone['prestationOuvrage']['ouvrages']) ){
-                $prestationCat = [
-                    'order_zone_id' =>  $zoneId,
-                    'type'          =>  'PRESTATION',
-                    'name'          =>  $zone['prestationOuvrage']['name'],
-                    'textcustomer'  =>  '',
-                    'textoperator'  =>  '',
-                    'created_at'    =>  Carbon::now(),
-                    'updated_at'    =>  Carbon::now()
-                ];
-                $orderCatId = DB::table('order_cat')->insertGetId($prestationCat);
-                foreach ($zone['prestationOuvrage']['ouvrages'] as $ouvrage) {
-                    $ouvrageData = [
-                        'order_id'          => $orderId,
-                        'order_zone_id'     => $zoneId,
-                        'unit_id'           => $ouvrage['unit'],
-                        'qty'               => $ouvrage['qty'],
-                        'nbheure'           => $ouvrage['totalHour'],
-                        'total'             => $ouvrage['total'],
-                        'order_cat_id'      => $orderCatId,
-                        'ouvrage_prestation_id'=> $ouvrage['ouvrage_prestation_id'],
-                        'ouvrage_toit_id'   => $ouvrage['ouvrage_toit_id'],
-                        'ouvrage_metier_id' => $ouvrage['ouvrage_metier_id'],
-                        'textcustomer'      => $ouvrage['customerText'],
-                        'textchargeaffaire' => $ouvrage['textchargeaffaire'],
-                        'textoperator'      => $ouvrage['textoperator'],
-                        'type'              => 'PRESTATION',
-                        'name'              => $ouvrage['name'],
-                        'created_at'        => Carbon::now(),
-                        'updated_at'        => Carbon::now(),
-                    ];
-                    $orderOuvrageId = DB::table('order_ouvrages')->insertGetId($ouvrageData);
-                    foreach ($ouvrage['tasks'] as $taskIndex => $task) {
-                        $orderOuvrageTask = [
-                            'order_ouvrage_id'      => $orderOuvrageId,
-                            'name'                  => $task['name'],
-                            'textcustomer'          => $task['customerText'],
-                            'textchargeaffaire'     => $task['textchargeaffaire'],
-                            'textoperator'          => $task['textoperator'],
-                            'qty'                   => $task['qty'],
-                            'unit_id'               => $task['unit_id'],
-                            'created_at'            => Carbon::now(),
-                            'updated_at'            => Carbon::now(),
-                        ];
-                        $orderOuvrageTaskId = DB::table('order_ouvrage_task')->insertGetId($orderOuvrageTask);
-                        foreach ($task['details'] as $detailIndex => $detail) {
-                            $detailData = [
-                                'order_ouvrage_task_id'   => $orderOuvrageTaskId,
-                                'product_id'        => $detail['productId'],
-                                'type'              => $detail['type'],
-                                'name'              => $detail['name'],
-                                'textcustomer'      => '',
-                                'textchargeaffaire' => '',
-                                'textoperator'      => '',
-                                'qty'               => $detail['qty'],
-                                'numberh'           => $detail['numberH'],
-                                'unitprice'         => $detail['unitPrice'],
-                                'qtyouvrage'        => $detail['qtyOuvrage'] == '' ? 0 : $detail['qtyOuvrage'],
-                                'qtyunitouvrage'    => 1,
-                                'houvrage'          => 0,
-                                'marge'             => $detail['marge'],
-                                'totalprice'        => $detail['totalPrice'],
-                                'taxe_id'           => $detail['tax'],
-                                'unit_id'           => $detail['unit_id'],
-                                'priceachat'        => $detail['unitPrice'],
-                                'original'          => $detail['original'] ?? false,
-                                'original_number_h' => $detail['originalNumberH'] ?? 1,
-                                'original_qty'      => $detail['originalDetailQty'] ?? 1,
-                                'created_at'        => Carbon::now(),
-                                'updated_at'        => Carbon::now(),
-                            ];
-                            if($detail['type'] == 'INTERIM'){
-                                $detailData['interim_societe_id']   = $detail['societe'];
-                            }
-                            if($detail['type'] == 'COMMANDE FOURNISSEUR'){
-                                $detailData['supplier_id']   = $detail['supplierId'];
-                                $detailData['datesupplier']   = $detail['datesupplier'];
-                                if(preg_match('/^data:application\/pdf;base64,/', $detail['base64'], $type)){
-                                    $data = substr($detail['base64'], strpos($detail['base64'], ',') + 1);
-                                    $type = 'pdf';
-                                    if(!File::isDirectory(public_path('SupplierOrder/'))){
-                                        File::makeDirectory(public_path('SupplierOrder/'), 0755, true, true);
-                                    }
-                                    $data = str_replace( ' ', '+', $data );
-                                    $data = base64_decode($data);
-                                    $uuid_filename = DB::select('select UUID() AS uuid')[0]->uuid;
-                                    $orderFilePath = "/SupplierOrder/{$uuid_filename}.{$type}";
-                                    Storage::disk('public')->put($orderFilePath, $data);
-                                    $detailData['orderfile'] = $orderFilePath;
-                                }
-                            }
-                            DB::table('order_ouvrage_detail')->insert($detailData);
-                        }
-                    }
-                }
+            // save order documents
+            foreach ($request->documents as $document) {
+                $orderDocument          =   new OrderDocument();
+                $orderDocument->ged_id  =   $gedId;
+                $orderDocument->human_readable_filename =   $document->getClientOriginalName();
+                $uuid_filename = DB::select('select UUID() AS uuid')[0]->uuid;
+                $orderDocument->name    =   $uuid_filename.'.'.$document->getClientOriginalExtension();
+                $orderDocument->file_path   =   $document->storeAs( 'GED/GED_' . $gedId . '/order_documents', $orderDocument->name, 'public' );
+                $orderDocument->save();
             }
         }
         return response()->json(['success'=> true, 'orderId' => $orderId]);
@@ -1522,7 +1624,7 @@ class DevisController extends Controller
     }
 
     /**
-     * Save a new devis
+     * update a devis
      */
     public function updateDevis(Request $request, $orderId){
         $orderData = [
@@ -1607,8 +1709,8 @@ class DevisController extends Controller
                             'describe_id'=> $describe['id'],
                             'value'=> $describe['default'],
                             'created_at'=> now(),
-                            'updated_at'=> now()                            
-                        ]);                        
+                            'updated_at'=> now()
+                        ]);
                     }
                 }
             }

@@ -1071,7 +1071,7 @@
                           </div>
                         </div>
                         <div class="ged-cat-content mt-3 mb-3 d-flex flex-wrap">
-                          <div class="img ms-2" v-for="(photo, index) in orderPhotos" :key="index">
+                          <div class="img ms-2" v-for="(photo, index) in newOrder.photos" :key="index">
                             <div class="rounded border border-1 ged-image"
                               :style="{ 'background-image': `url(${photo.url != '' ? photo.url : photo.base64data})`}"
                             >
@@ -1147,8 +1147,8 @@
                   <div class="order-detail">
                     <div class="d-flex col-7 align-items-center justify-content-between">
                       <div class="devis-name col-9">
-                        <h4 v-if="!editDevisName" class="ms-2 mb-0 fw-bold font-20">{{ newOrder.name }}</h4>
-                        <input v-else type="text" v-model="newOrder.name" class="form-control form-control-sm bg-white"/>
+                        <h4 v-if="!editDevisName" class="ms-2 mb-0 fw-bold font-20">{{ newOrder.orderName }}</h4>
+                        <input v-else type="text" v-model="newOrder.orderName" class="form-control form-control-sm bg-white"/>
                       </div>
                       <div class="ms-auto">
                         <span class="edit-icon me-3" @click="editDevisName = !editDevisName"></span>
@@ -1193,7 +1193,7 @@
                           <td></td>
                           <td>Réduction :</td>
                           <td class="border-bottom"></td>
-                          <td class="border-bottom d-flex align-items-center"><input type="text" v-model="newOrder.reductionPercent" class="form-control w-25"> %</td>
+                          <td class="border-bottom d-flex align-items-center"><input type="text" v-model="newOrder.reductionPercent" @input="calcReduceAmount" class="form-control w-25"> %</td>
                           <td class="border-bottom"></td>
                           <td class="lcdtOrange border-bottom">{{ newOrder.reductionAmount }} €</td>
                           <td></td>
@@ -1202,10 +1202,10 @@
                           <td></td>
                           <td></td>
                           <td></td>
-                          <td class="lcdtOrange"></td>
-                          <td class="lcdtOrange"></td>
-                          <td class="lcdtOrange"></td>
-                          <td></td>
+                          <td class="lcdtOrange">{{ newOrder.totalHours }}</td>
+                          <td class="lcdtOrange">{{ newOrder.taxAmount }}</td>
+                          <td class="lcdtOrange">{{ newOrder.totalAmount }}</td>
+                          <td class="font-10">{{ newOrder.totalAmount - newOrder.taxAmount }} € UT</td>
                         </tr>
                       </tbody>
                     </table>
@@ -1337,7 +1337,6 @@ export default {
     const editDevisName = ref(false);
     // const useGoogleService = ref(false);
     const useGoogleService = ref(true);
-    const orderPhotos = ref([]);
     const form = ref({
       orderName: '',
       describeOn: false,
@@ -1414,7 +1413,36 @@ export default {
       ],
     });
     const newOrder = ref({
-      name: 'Devis Reparation Salle de bain',
+      orderName: 'Devis Reparation Salle de bain',
+      totalAmount: 0,
+      totalHours: 0,
+      taxAmount: 0,
+      customer: {
+        id: 1,
+        company: 'La boulangerie',
+        raisonsocial: 'de la plangne',
+        group: 'Lagardere',
+        contact: 'Thierry Gavois',
+        telephone: '58 58 74 58 44',
+        tax: '10%',
+        taxId: 0,
+        naf: 'Boulangerie',
+        siret: '4654654646546546',
+        contact_id: 0,
+      },
+      address: {
+        id: 1,
+        name: '',
+        address1: '',
+        address2: '',
+        postcode: '',
+        city: '',
+        addressType: '',
+        lat: 36.846691982477985,
+        lon: 10.197948495703532,
+      },      
+      photos: [],
+      documents: [],
       details: [
       {
         name: 'Installation Tuyauterie',
@@ -1436,6 +1464,25 @@ export default {
       reductionPercent: '',
       reductionAmount: '',
     })
+    const calcOrderDetails = ()=>{
+      newOrder.value.totalAmount = 0;
+      newOrder.value.totalHours = 0;
+      newOrder.value.taxAmount = 0;
+      newOrder.value.details.forEach(detail=>{
+        if(detail.qty == 0){
+          const tax = taxes.value.find(item=>{
+            return item.value = detail.taxId;
+          }).value;
+          newOrder.value.totalAmount += detail.hours * detail.unitPrice;
+          newOrder.value.taxAmount += (detail.hours * detail.unitPrice) * tax / 100;
+        }else{
+          newOrder.value.totalAmount += detail.qty * detail.unitPrice;
+        }
+      })
+    }
+    const calcReduceAmount = ()=>{
+
+    }
     const orderDetail = ref({
       name: '',
       hours: 0,
@@ -1695,7 +1742,7 @@ export default {
               id: '',
             })
           }else{
-            orderPhotos.value.push({
+            newOrder.value.photos.push({
               url: '',
               base64data: reader.result,
               fileName: images[i].name,
@@ -1766,7 +1813,11 @@ export default {
       // move on to "addess choose step"
       devisCreateStep.value = 'choose_address';
       // set customer value to devis form
-      form.value.customer = data;
+      if(devisWithOuvrage.value){
+        form.value.customer = data;
+      }else{
+        newOrder.value.customer = data;
+      }
 
       // loading customer addresses
       store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Chargement des adresses des clients..']);
@@ -1795,7 +1846,11 @@ export default {
       }else{
           data.lon = 2.3491914978706396;
       }
-      form.value.address = data;
+      if(devisWithOuvrage.value){
+        form.value.address = data;
+      }else{
+        newOrder.value.address = data;
+      }
     }
 
     const goToStep = (index)=>{
@@ -2240,18 +2295,33 @@ export default {
     // save Devis
     const storeDevis = ()=>{
       store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Enregistrer le Devis...']);
-      axios.post('/store-devis', form.value).then((res)=>{
-        if(res.data.success){
-          router.push({
-            name: 'DevisDetail',
-            params: { id: res.data.orderId }
-          });
-        }
-      }).catch((error)=>{
-        console.log(error);
-      }).finally(()=>{
-        store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
-      })
+      if(devisWithOuvrage.value){
+        axios.post('/store-devis', newOrder.value).then((res)=>{
+          if(res.data.success){
+            router.push({
+              name: 'DevisDetail',
+              params: { id: res.data.orderId }
+            });
+          }
+        }).catch((error)=>{
+          console.log(error);
+        }).finally(()=>{
+          store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+        })
+      }else{
+        axios.post('/store-devis', form.value).then((res)=>{
+          if(res.data.success){
+            router.push({
+              name: 'DevisDetail',
+              params: { id: res.data.orderId }
+            });
+          }
+        }).catch((error)=>{
+          console.log(error);
+        }).finally(()=>{
+          store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+        })
+      }
     }
     // Generate PDF for DEVIS
     const PDFDevis = ()=>{
@@ -2338,12 +2408,11 @@ export default {
       file.value.click();
     }
     const removeImageFromDevis = (photoIndex)=>{
-      orderPhotos.value = orderPhotos.value.filter((item, index)=>{
+      newOrder.value.photos = newOrder.value.photos.filter((item, index)=>{
         return photoIndex != index;
       });
     }
     const addHourOrderDetail = ()=>{
-      console.log('aaaa');
       newOrder.value.details.push({
         name: orderDetail.value.name,
         qty: orderDetail.value.qty,
@@ -2355,9 +2424,9 @@ export default {
       orderDetail.value.name = '';
       orderDetail.value.hours = 0;
       orderDetail.value.hoursUnitPrice = 0;
+      calcOrderDetails();      
     }
     const addQteOrderDetail = ()=>{
-      console.log('ssss');
       newOrder.value.details.push({
         name: orderDetail.value.name,
         qty: orderDetail.value.qty,
@@ -2369,11 +2438,13 @@ export default {
       orderDetail.value.name = '';
       orderDetail.value.qty = 0;
       orderDetail.value.qtyUnitPrice = 0;      
+      calcOrderDetails();
     }
     const deleteOrderDetail = (detailIndex)=>{
       newOrder.value.details = newOrder.value.details.filter((item, index)=>{
         return index != detailIndex;
       })
+      calcOrderDetails();      
     }
     return {
       editDevisName,
@@ -2403,7 +2474,6 @@ export default {
       pdfModal,
       newOrder,
       orderDetail,
-      orderPhotos,
       addFileToGed,
       addPhotoToDevis,
       previewFile,
@@ -2449,7 +2519,9 @@ export default {
       addQteOrderDetail,
       addHourOrderDetail,
       removeImageFromDevis,
-      deleteOrderDetail
+      deleteOrderDetail,
+      calcReduceAmount,
+      calcOrderDetails
     }
   },
 }
@@ -2685,6 +2757,9 @@ export default {
         }
       }
     }
+  }
+  .font-10{
+    font-size: 10px !important;
   }
 // custome radio button
 .preference-radio{
