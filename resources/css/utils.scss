@@ -43,19 +43,19 @@
 .almarai_bold_normal {
     font-family: 'Almarai Bold';
     font-style: normal;
-}  
+}
 .almarai_extrabold_normal {
     font-family: 'Almarai ExtraBold';
     font-style: normal;
-}  
+}
 .almarai_light_normal {
     font-family: 'Almarai Light';
     font-style: normal;
-}  
+}
 .almarai_regular_normal {
     font-family: 'Almarai regular';
     font-style: normal;
-}  
+}
 .devis-icon{
     display: block;
     width: 44px;
@@ -188,13 +188,13 @@
     background-image: url(../js/images/prestation-icon.svg);
 }
 .arrow-icon{
-    width: 13px;   
+    width: 13px;
     height: 13px;
     display: block;
     background-image: url(../js/images/left-arrow.svg);
     background-size: contain;
     background-position: center;
-    background-repeat: no-repeat;    
+    background-repeat: no-repeat;
 }
 .clock-icon{
     min-width: 35px;
@@ -203,26 +203,26 @@
     background-image: url(../js/images/clock-icon.svg);
     background-size: contain;
     background-position: center;
-    background-repeat: no-repeat;    
+    background-repeat: no-repeat;
 }
 .book-icon{
-    min-width: 35px;   
+    min-width: 35px;
     height: 35px;
     display: block;
     background-image: url(../js/images/book-icon.svg);
     background-size: contain;
     background-position: center;
-    background-repeat: no-repeat;    
+    background-repeat: no-repeat;
 }
 .play-icon,
 .music-play-icon{
-    min-width: 35px;   
+    min-width: 35px;
     height: 35px;
     display: block;
     background-image: url(../js/images/play-butoon.svg);
     background-size: contain;
     background-position: center;
-    background-repeat: no-repeat;    
+    background-repeat: no-repeat;
     cursor: pointer;
 }
 .music-play-icon{
@@ -231,13 +231,16 @@
 .ouvrage-section.open{
     .arrow-icon{
         background-image: url(../js/images/down-arrow.svg);
-    }   
+    }
 }
 .download-icon{
     display: block;
     width: 17px;
     height: 19px;
-    background-image: url(../js/images/download-icon.png) no-repeat center center;
+    background-image: url(../js/images/download-icon.png);
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 .cursor-pointer{
     cursor: pointer;

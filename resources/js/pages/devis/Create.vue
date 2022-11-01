@@ -1054,10 +1054,10 @@
                     <div class="col-5 ps-5 pt-4 pe-3">
                       <div class="d-flex">
                         <span class="ms-auto col-4 fw-bold mulish-extra-bold font-16 text-black text-center text-nowrap">
-                          15 hr
+                          {{ newOrder.totalHours }} hr
                         </span>
                         <span class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center text-nowrap lcdtOrange">
-                          5 800 €
+                          {{ newOrder.totalAmount.toLocaleString() }} €
                         </span>
                       </div>
                       <div class="photos mt-3">
@@ -1171,7 +1171,7 @@
                           <td>{{ oDetail.name }}</td>
                           <td>{{ oDetail.unitPrice }} €</td>
 
-                          <td v-if="oDetail.qty !=0">{{ oDetail.qty }} hrs</td>
+                          <td v-if="oDetail.qty !=0">{{ oDetail.qty }}</td>
                           <td v-else></td>
 
                           <td v-if="oDetail.hours !=0">{{ oDetail.hours }} hrs</td>
@@ -1211,7 +1211,7 @@
                   </div>
                 </div>
                 <div class="ms-2 right-panel">
-                  <attach></attach>
+                  <attach :documents="newOrder.documents" @updateDocumentList="updateDocumentList"></attach>
                 </div>
               </div>
             </div>
@@ -1452,14 +1452,15 @@ export default {
       newOrder.value.totalHours = 0;
       newOrder.value.taxAmount = 0;
       newOrder.value.details.forEach(detail=>{
+        const tax = taxes.value.find(item=>{
+          return item.value == detail.taxId;
+        }).display;
         if(detail.qty == 0){
-          const tax = taxes.value.find(item=>{
-            return item.value = detail.taxId;
-          }).value;
           newOrder.value.totalAmount += detail.hours * detail.unitPrice;
           newOrder.value.taxAmount += (detail.hours * detail.unitPrice) * tax / 100;
         }else{
           newOrder.value.totalAmount += detail.qty * detail.unitPrice;
+          newOrder.value.taxAmount += (detail.qty * detail.unitPrice) * tax / 100;
         }
       })
     }
@@ -2744,10 +2745,14 @@ export default {
         }
       }
     }
+    select{
+      border: none;
+    }
   }
   .font-10{
     font-size: 10px !important;
   }
+  
 // custome radio button
 .preference-radio{
 /* Customize the label (the container) */
