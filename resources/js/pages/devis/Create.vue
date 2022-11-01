@@ -1173,16 +1173,15 @@
 
                           <td v-if="oDetail.qty !=0">{{ oDetail.qty }} hrs</td>
                           <td v-else></td>
-                          
+
                           <td v-if="oDetail.hours !=0">{{ oDetail.hours }} hrs</td>
                           <td v-else></td>
-                          
                           <td>
                             <select style="min-width: 40px" class="w-100 form-control form-control-sm custom-text-danger" v-model="oDetail.taxId">
                               <option :value="tax.value" v-for="(tax, taxIndex) in taxes" :key="taxIndex">{{ tax.display }} %</option>
-                            </select>                            
+                            </select>
                           </td>
-                          <td class="lcdtOrange">{{ oDetail.total.toLocaleString() }} €</td>
+                          <td valign="middle" class="lcdtOrange">{{ oDetail.total.toLocaleString() }} €</td>
                           <td>
                             <svg class="cursor-pointer" @click="deleteOrderDetail(index)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M17 6H22V8H20V21C20 21.2652 19.8946 21.5196 19.7071 21.7071C19.5196 21.8946 19.2652 22 19 22H5C4.73478 22 4.48043 21.8946 4.29289 21.7071C4.10536 21.5196 4 21.2652 4 21V8H2V6H7V3C7 2.73478 7.10536 2.48043 7.29289 2.29289C7.48043 2.10536 7.73478 2 8 2H16C16.2652 2 16.5196 2.10536 16.7071 2.29289C16.8946 2.48043 17 2.73478 17 3V6ZM18 8H6V20H18V8ZM13.414 14L15.182 15.768L13.768 17.182L12 15.414L10.232 17.182L8.818 15.768L10.586 14L8.818 12.232L10.232 10.818L12 12.586L13.768 10.818L15.182 12.232L13.414 14ZM9 4V6H15V4H9Z" fill="black"/>
@@ -1195,17 +1194,17 @@
                           <td class="border-bottom"></td>
                           <td class="border-bottom d-flex align-items-center"><input type="text" v-model="newOrder.reductionPercent" @input="calcReduceAmount" class="form-control w-25"> %</td>
                           <td class="border-bottom"></td>
-                          <td class="lcdtOrange border-bottom">{{ newOrder.reductionAmount }} €</td>
+                          <td valign="middle" class="lcdtOrange border-bottom">{{ newOrder.reductionAmount }} €</td>
                           <td></td>
                         </tr>
                         <tr>
                           <td></td>
                           <td></td>
                           <td></td>
-                          <td class="lcdtOrange">{{ newOrder.totalHours }}</td>
-                          <td class="lcdtOrange">{{ newOrder.taxAmount }}</td>
-                          <td class="lcdtOrange">{{ newOrder.totalAmount }}</td>
-                          <td class="font-10">{{ newOrder.totalAmount - newOrder.taxAmount }} € UT</td>
+                          <td valign="middle" class="lcdtOrange">{{ newOrder.totalHours }} hrs</td>
+                          <td valign="middle"  class="lcdtOrange">{{ newOrder.taxAmount }} €</td>
+                          <td valign="middle"  class="lcdtOrange">{{ newOrder.totalAmount }} € TTC</td>
+                          <td valign="middle"  class="font-10">{{ newOrder.totalAmount - newOrder.taxAmount }} € UT</td>
                         </tr>
                       </tbody>
                     </table>
@@ -1440,29 +1439,13 @@ export default {
         addressType: '',
         lat: 36.846691982477985,
         lon: 10.197948495703532,
-      },      
+      },
       photos: [],
       documents: [],
       details: [
-      {
-        name: 'Installation Tuyauterie',
-        qty: 0,
-        taxId: 2,
-        hours: 15,
-        unitPrice: 25,
-        total: 375,
-      },
-      {
-        name: 'Equipement       Ref:XXXXXXXX',
-        qty: 12,
-        taxId: 2,
-        hours: 0,
-        unitPrice: 100,
-        total: 1200,
-      },
       ],
-      reductionPercent: '',
-      reductionAmount: '',
+      reductionPercent: 0,
+      reductionAmount: 0,
     })
     const calcOrderDetails = ()=>{
       newOrder.value.totalAmount = 0;
@@ -1481,7 +1464,10 @@ export default {
       })
     }
     const calcReduceAmount = ()=>{
-
+      newOrder.value.reductionAmount = newOrder.value.totalAmount * newOrder.value.reductionPercent / 100;
+    }
+    const updateDocumentList = (lists)=>{
+      newOrder.value.documents = lists;
     }
     const orderDetail = ref({
       name: '',
@@ -1696,23 +1682,23 @@ export default {
       }
     }
     onMounted(()=>{
-      // axios.post('/get-ged-categories').then((res)=>{
-      //   devisWithOuvrage.value = res.data.devisWithOuvrage
-      //   useGoogleService.value = res.data.useGoogleService
-      //   gedCats.value = res.data.gedCats;
-      //   form.value.describeOn = res.data.describeOn;
-      //   describes.value = res.data.describes;
-      //   describes.value = res.data.services;
-      //   taxes.value = res.data.taxes;
-      //   units.value = res.data.units;
-      //   roofAccesses.value = res.data.roofAccesses;
-      //   form.value.zones.forEach(element => {
-      //     element.describes = res.data.describes;
-      //     element.services = res.data.services;
-      //   });
-      // }).catch((error)=>{
-      //   console.log(error);
-      // })
+      axios.post('/get-ged-categories').then((res)=>{
+        devisWithOuvrage.value = res.data.devisWithOuvrage
+        useGoogleService.value = res.data.useGoogleService
+        gedCats.value = res.data.gedCats;
+        form.value.describeOn = res.data.describeOn;
+        describes.value = res.data.describes;
+        describes.value = res.data.services;
+        taxes.value = res.data.taxes;
+        units.value = res.data.units;
+        roofAccesses.value = res.data.roofAccesses;
+        form.value.zones.forEach(element => {
+          element.describes = res.data.describes;
+          element.services = res.data.services;
+        });
+      }).catch((error)=>{
+        console.log(error);
+      })
     })
     const addFileToGed = (zone, catId)=>{
       zoneIndex.value = zone;
@@ -2424,7 +2410,7 @@ export default {
       orderDetail.value.name = '';
       orderDetail.value.hours = 0;
       orderDetail.value.hoursUnitPrice = 0;
-      calcOrderDetails();      
+      calcOrderDetails();
     }
     const addQteOrderDetail = ()=>{
       newOrder.value.details.push({
@@ -2437,14 +2423,14 @@ export default {
       })
       orderDetail.value.name = '';
       orderDetail.value.qty = 0;
-      orderDetail.value.qtyUnitPrice = 0;      
+      orderDetail.value.qtyUnitPrice = 0;
       calcOrderDetails();
     }
     const deleteOrderDetail = (detailIndex)=>{
       newOrder.value.details = newOrder.value.details.filter((item, index)=>{
         return index != detailIndex;
       })
-      calcOrderDetails();      
+      calcOrderDetails();
     }
     return {
       editDevisName,
@@ -2521,7 +2507,8 @@ export default {
       removeImageFromDevis,
       deleteOrderDetail,
       calcReduceAmount,
-      calcOrderDetails
+      calcOrderDetails,
+      updateDocumentList
     }
   },
 }
