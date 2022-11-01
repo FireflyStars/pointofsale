@@ -1456,13 +1456,15 @@ export default {
           return item.value == detail.taxId;
         }).display;
         if(detail.qty == 0){
-          newOrder.value.totalAmount += detail.hours * detail.unitPrice;
-          newOrder.value.taxAmount += (detail.hours * detail.unitPrice) * tax / 100;
+          newOrder.value.totalAmount += parseFloat(detail.hours) * parseFloat(detail.unitPrice);
+          newOrder.value.totalHours += parseFloat(detail.hours);
+          newOrder.value.taxAmount += (parseFloat(detail.hours) * parseFloat(detail.unitPrice)) * tax / 100;
         }else{
-          newOrder.value.totalAmount += detail.qty * detail.unitPrice;
-          newOrder.value.taxAmount += (detail.qty * detail.unitPrice) * tax / 100;
+          newOrder.value.totalAmount += parseFloat(detail.qty) * parseFloat(detail.unitPrice);
+          newOrder.value.taxAmount += (parseFloat(detail.qty) * parseFloat(detail.unitPrice)) * tax / 100;
         }
       })
+      calcReduceAmount();
     }
     const calcReduceAmount = ()=>{
       newOrder.value.reductionAmount = newOrder.value.totalAmount * newOrder.value.reductionPercent / 100;
