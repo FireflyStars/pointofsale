@@ -71,7 +71,7 @@
                             base64data: reader.result,
                             fileName: documents[i].name,
                             type: 'pdf',
-                            id: '',
+                            id: null,
                         })
                     };
                     reader.readAsDataURL(documents[i]);

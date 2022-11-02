@@ -1630,7 +1630,7 @@ class DevisController extends Controller
             $devis['orderName'] = $order->name;
             $devis['comment'] = $order->comment;
             $devis['reductionAmount'] = $order->remise;
-            $devis['reductionPercent'] = $order->remise / $order->total;
+            $devis['reductionPercent'] = 0;
             $devis['totalAmount'] = $order->total;
             $devis['totalHours'] = $order->nbheure;
             $devis['taxAmount'] = 0;
@@ -2280,26 +2280,20 @@ class DevisController extends Controller
                         ->where('order_id', $orderId)->value('id');
             $zoneId = DB::table('order_zones')->where('order_id', $orderId)->value('id');
             // save photos
-            $availableGedDetailIDs = DB::table('ged_details')
-                                    ->where('order_zone_id', $zoneId)
-                                    ->where('ged_category_id', 0)
-                                    ->whereNotIn('type', ['txt', 'description'])
-                                    ->where('user_id', Auth::id())
-                                    ->select('id')->get();
+            $availableGedDetailIDs = [];
             foreach ($request->photos as $file) {
-                if($file['id'] == ''){
+                if( !empty($file['base64data']) ){
                     $gedDetail = new GedDetail();
                 }else{
                     $gedDetail = GedDetail::find($file['id']);
-                    $availableGedDetailIDs = $availableGedDetailIDs->where('id', '!=', $file['id'])->all();
                 }
                 $gedDetail->ged_id = $gedId;
                 $gedDetail->order_zone_id = $zoneId;
                 $gedDetail->user_id = Auth::id();
                 $gedDetail->save();
                 $gedDetail = $gedDetail->fresh();//retreve fresh object with all fields
-
-                if( $gedDetail->human_readable_filename != $file['fileName']){//files can only be stored once to avoid duplicates;
+                $availableGedDetailIDs[] = $file['id'];
+                if( $gedDetail->file == null){//files can only be stored once to avoid duplicates;
                     if( !empty($file['base64data']) ){
                         $storedFile = $this->storeFile($file['base64data'], $file['fileName'], $gedDetail->id);
                         $gedDetail->file = $storedFile->file;
@@ -2310,7 +2304,7 @@ class DevisController extends Controller
                 }
                 $gedDetail->save();
             }
-            DB::table('ged_details')->whereIn('id', $availableGedDetailIDs->pluck('id')->all())->delete();
+            DB::table('ged_details')->where('order_zone_id', $zoneId)->whereNotIn('id', $availableGedDetailIDs)->delete();
             // save order details
             foreach ($request->details as $detail) {
                 if($detail['id'] != ''){
@@ -2323,7 +2317,7 @@ class DevisController extends Controller
                         'numberh'       => $detail['hours'] ?? 0,
                         'updated_at'    => Carbon::now()
                     ];
-                    DB::table('order_detail')->where('id', $detail->id)->update($orderDetailData);
+                    DB::table('order_detail')->where('id', $detail['id'])->update($orderDetailData);
                 }else{
                     $orderDetailData = [
                         'order_id'      => $orderId,
@@ -2340,9 +2334,9 @@ class DevisController extends Controller
                 }
             }
             // save order documents
-            $availableDocumentsIDs = DB::table('order_documents')->where('ged_id', $gedId)->select('id')->get();
+            $availableDocumentsIDs = [];
             foreach ($request->documents as $document) {
-                if($document['id'] == ''){
+                if( $document['id'] == null){
                     $pathinfo   =   pathinfo($document['fileName']);
                     $file_extension =   $pathinfo['extension'];
                     $uuid_filename  = DB::select('select UUID() AS uuid')[0]->uuid;
@@ -2358,11 +2352,12 @@ class DevisController extends Controller
                     $orderDocument->name    =   $uuid_filename.'.'.$file_extension;
                     $orderDocument->file_path   =   $path;
                     $orderDocument->save();
+                    $availableDocumentsIDs[] = $orderDocument->id;
                 }else{
-                    $availableDocumentsIDs = $availableDocumentsIDs->where('id', '!=', $document['id'])->all();
+                    $availableDocumentsIDs[] = $document['id'];
                 }
             }
-            DB::table('order_documents')->whereIn('id', $availableDocumentsIDs->pluck('id')->all())->delete();
+            DB::table('order_documents')->where('ged_id', $gedId)->whereNotIn('id', $availableDocumentsIDs)->delete();
         }
         return response()->json(['success'=> true]);
     }

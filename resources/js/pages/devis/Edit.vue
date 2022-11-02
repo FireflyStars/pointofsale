@@ -1789,7 +1789,7 @@ export default {
               fileName: images[i].name,
               type: type,
               url: reader.result,
-              id: '',
+              id: null,
             })
           }else{
             newOrder.value.photos.push({
@@ -1798,7 +1798,7 @@ export default {
               fileName: images[i].name,
               type: type,
               url: reader.result,
-              id: '',
+              id: null,
             })
           }
         };
@@ -2471,16 +2471,17 @@ export default {
         })
       }else{
         axios.post('/update-devis/'+route.params.id, newOrder.value).then((res)=>{
+          console.log(res.data);
           if(res.data.success){
             Swal.fire({
               title: 'Success',
               text: "DEVIS updated successfully!",
               icon: 'success',
             });
-            router.push({
-              name: 'DevisDetail',
-              params: { id: route.params.id }
-            });
+            // router.push({
+            //   name: 'DevisDetail',
+            //   params: { id: route.params.id }
+            // });
           }
         }).catch((error)=>{
           console.log(error);
