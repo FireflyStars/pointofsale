@@ -17,8 +17,8 @@
             </div>
           </div>
           <ul class="m-0 p-0 breadcrumb mt-3" v-if="breadcrumbs.length">
-            <li class="breadcrumb-item almarai-extrabold font-18 cursor-pointer" 
-              v-for="(breadcrumb, index) in breadcrumbs" 
+            <li class="breadcrumb-item almarai-extrabold font-18 cursor-pointer"
+              v-for="(breadcrumb, index) in breadcrumbs"
               @click="goToStep(index)"
               :key="index">{{ breadcrumb }}</li>
           </ul>
@@ -29,7 +29,7 @@
             </div>
           </div>
           <div class="choose-address-panel mt-3" v-if="devisCreateStep == 'choose_address'">
-            <div class="col-5 p-3 bg-white rounded">
+            <div class="col-5 p-3 bg-white rounded" v-if="devisWithOuvrage">
               <div class="d-flex">
                 <div class="col-6">
                   <h2 class="almarai-extrabold font-22">{{ form.customer.company }}</h2>
@@ -68,10 +68,49 @@
                 </div>
               </div>
             </div>
+            <div class="col-5 p-3 bg-white rounded" v-else>
+              <div class="d-flex">
+                <div class="col-6">
+                  <h2 class="almarai-extrabold font-22">{{ newOrder.customer.company }}</h2>
+                  <p class="text-gray font-16 almarai-bold">{{ newOrder.customer.raisonsocial }}</p>
+                </div>
+                <div class="col-6 d-flex align-items-center justify-content-end">
+                  <p @click="chooseOtherCustomer" class="text-custom-success font-16 almarai-bold text-decoration-underline cursor-pointer">Autre client</p>
+                </div>
+              </div>
+              <div class="d-flex mt-3">
+                <div class="col-4">
+                  <label for="" class="text-gray font-16 almarai-bold">GROUPE</label>
+                  <p class="font-16 almarai-bold">{{ newOrder.customer.group }}</p>
+                </div>
+                <div class="col-4">
+                  <label for="" class="text-gray font-16 almarai-bold">CONTACT</label>
+                  <p class="font-16 almarai-bold">{{ newOrder.customer.contact }}</p>
+                </div>
+                <div class="col-4">
+                  <label for="" class="text-gray font-16 almarai-bold">TELEPHONE</label>
+                  <p class="font-16 almarai-bold">{{ newOrder.customer.telephone }}</p>
+                </div>
+              </div>
+              <div class="d-flex mt-3">
+                <div class="col-4">
+                  <label for="" class="text-gray font-16 almarai-bold">TVA</label>
+                  <p class="font-16 almarai-bold">{{ newOrder.customer.tax }}</p>
+                </div>
+                <div class="col-4">
+                  <label for="" class="text-gray font-16 almarai-bold">NAF</label>
+                  <p class="font-16 almarai-bold">{{ newOrder.customer.naf }}</p>
+                </div>
+                <div class="col-4">
+                  <label for="" class="text-gray font-16 almarai-bold">SIRET</label>
+                  <p class="font-16 almarai-bold">{{ newOrder.customer.siret }}</p>
+                </div>
+              </div>
+            </div>
             <div class="col-5 p-3 mt-3 rounded bg-white">
               <h2 class="almarai-extrabold font-22">Choix adresse Chantier <span @click="addNewAddress" class="ms-3 almarai-bold font-16 cursor-pointer text-decoration-underline text-custom-success">Nouvelle adresse</span></h2>
               <div class="mt-3 customer-addresses">
-                <div class="px-4 py-3 bg-gray mt-2 address-item rounded cursor-pointer" 
+                <div class="px-4 py-3 bg-gray mt-2 address-item rounded cursor-pointer"
                   @click="chooseCustomerAddress(address)" v-for="(address, index) in customerAddresses" :key="index">
                   <div class="d-flex">
                     <div class="col-7">
@@ -91,917 +130,1137 @@
             </div>
           </div>
           <div class="devis-panel d-flex" v-if="devisCreateStep == 'create_devis'">
-            <div class="left-panel">
-              <div class="devis-name-section p-2 bg-white">
-                <input type="text" v-model="form.orderName" placeholder="Devis nom" class="form-control"/>
-              </div>              
-              <div class="customer-section px-3 py-2 d-flex bg-white">
-                <div class="col-7 d-flex">
-                  <div class="customer-pic rounded-circle bg-primary">
-                      
-                  </div>
-                  <div class="ms-3 customer-name d-flex flex-wrap">
-                    <div class="small-title w-100">
-                      Nom du client
+            <div class="devis-with-ouvrages d-flex" v-if="devisWithOuvrage">
+              <div class="left-panel">
+                <div class="devis-name-section p-2 bg-white">
+                  <input type="text" v-model="form.orderName" placeholder="Devis nom" class="form-control"/>
+                </div>
+                <div class="customer-section px-3 py-2 d-flex bg-white">
+                  <div class="col-7 d-flex">
+                    <div class="customer-pic rounded-circle bg-primary">
+
                     </div>
-                    <div class="mulish-extrabold font-16 w-100">
-                      {{ form.customer.contact }}
+                    <div class="ms-3 customer-name d-flex flex-wrap">
+                      <div class="small-title w-100">
+                        Nom du client
+                      </div>
+                      <div class="mulish-extrabold font-16 w-100">
+                        {{ form.customer.contact }}
+                      </div>
+                    </div>
+                    <div class="ms-5 customer-edit d-flex align-items-center">
+                      <!-- <span class="edit-icon me-3"></span> -->
+                      <!-- <span class="call-external"></span> -->
                     </div>
                   </div>
-                  <div class="ms-5 customer-edit d-flex align-items-center">
-                    <!-- <span class="edit-icon me-3"></span> -->
-                    <!-- <span class="call-external"></span> -->
+                  <div class="col-5 me-3 price-section d-flex align-items-end">
+                    <span class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center text-nowrap">
+                      {{ (form.totalHoursForInstall + form.totalHoursForSecurity + form.totalHoursForPrestation) }} hr
+                    </span>
+                    <span class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center text-nowrap">
+                      {{ (form.totalPriceForInstall + form.totalPriceForSecurity + form.totalPriceForPrestation).toFixed(2) }} €
+                    </span>
+                    <span class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center text-nowrap">
+                      {{ (form.totalPriceForInstall + form.totalPriceForSecurity + form.totalPriceForPrestation).toFixed(2) }} €
+                    </span>
                   </div>
                 </div>
-                <div class="col-5 me-3 price-section d-flex align-items-end">
-                  <span class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center text-nowrap">
-                    {{ (form.totalHoursForInstall + form.totalHoursForSecurity + form.totalHoursForPrestation) }} hr
-                  </span>
-                  <span class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center text-nowrap">
-                    {{ (form.totalPriceForInstall + form.totalPriceForSecurity + form.totalPriceForPrestation).toFixed(2) }} €
-                  </span>
-                  <span class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center text-nowrap">
-                    {{ (form.totalPriceForInstall + form.totalPriceForSecurity + form.totalPriceForPrestation).toFixed(2) }} €
-                  </span>
+                <div class="zone-section" v-for="(zone, zoneIndex) in form.zones" :key="zoneIndex">
+                  <div class="ged-section bg-white p-2 mb-2">
+                    <div class="zone-header d-flex align-items-center">
+                      <span class="home-icon"></span>
+                      <div class="zone-name ms-2">
+                        <input type="text" @blur="zone.edit = false" v-if="zone.edit" class="form-control form-control-sm" v-model="zone.name">
+                        <span class="mulish-extrabold font-18 text-black" @dblclick="zone.edit = true" v-else>{{ zone.name }}</span>
+                      </div>
+                      <div v-if="zoneIndex == 0" @click="addZone(zoneIndex)" class="add-btn ms-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer">
+                        <span class="plus-icon me-2"></span> AJOUTER
+                      </div>
+                      <div @click="removeZone(zoneIndex)" class="remove-btn ms-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer">
+                        <span class="cancel-icon me-2"></span> RETIRER
+                      </div>
+                    </div>
+                    <div class="d-flex px-4 mt-4">
+                      <div class="col-6">
+                        <div class="roof-access d-flex align-items-end mulish-semibold font-16 custom-text-danger">
+                          <span class="roof-icon me-2"></span> Accès toiture
+                        </div>
+                        <div class="d-flex mt-3 ms-4">
+                          <div class="col-6">
+                            <SelectBox :label="''"
+                                v-model="zone.roofAccess"
+                                :options="roofAccesses"
+                                :name="'roofAccess'+zoneIndex"
+                                :classnames="'col-12'"
+                                :placeholder="'Accessible'"
+                            />
+                          </div>
+                          <div class="col-1"></div>
+                          <div class="col-5">
+                            <input type="text" v-model="zone.height" class="form-control" placeholder="Hauteur m">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-6 ps-2 d-flex">
+                        <div class="col-5 pe-2">
+                          <p class="m-0 almarai-bold font-14 text-gray">Adresse du chantier</p>
+                          <p class="m-0 almarai-light font-14">{{ form.address.address1 }} {{ form.address.postCode }} {{ form.address.city }}</p>
+                        </div>
+                        <div class="col-7 google-map-container" v-if="useGoogleService">
+                          <GoogleMap v-model:latitude="form.address.lat" v-model:longitude="form.address.lon"></GoogleMap>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="d-flex px-4 mt-4 flex-wrap">
+                      <div class="col-6 mb-3" v-for="(gedCat, catIndex) in zone.gedCats" :key="catIndex">
+                        <div class="ged-cat-header d-flex align-items-end mulish-semibold font-16 custom-text-danger">
+                          <span class="camera-icon me-2"></span> {{ gedCat[0].name }}
+                          <div class="add-btn ms-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer"
+                          @click="addFileToGed(zoneIndex, gedCat[0].id)">
+                            <span class="plus-icon me-2"></span> AJOUTER
+                          </div>
+                        </div>
+                        <div class="ged-cat-content mt-3 mb-3 d-flex flex-wrap">
+                          <div class="img ms-2" v-for="(gedDetail, index) in gedCat[0].items" :key="index">
+                            <div class="rounded border border-1 ged-image"
+                              :style="{ 'background-image': `url(${gedDetail.url != '' ? gedDetail.url : gedDetail.base64data})`}"
+                              v-if="gedDetail.type == 'png'"
+                            >
+                              <div class="w-100 h-100 image-overlayer d-flex justify-content-around align-items-center">
+                                <span class="eye-icon" @click="viewGedMedia(gedDetail.url != '' ? gedDetail.url : gedDetail.base64data, gedDetail.type)"></span>
+                                <span class="cancel-icon" @click="removeImage(zoneIndex, gedCat[0].id,index)"></span>
+                              </div>
+                            </div>
+                            <div class="rounded border border-1 ged-image"
+                              v-else-if="gedDetail.type == 'm4a'">
+                              <div class="w-100 h-100 d-flex justify-content-around align-items-center">
+                                <span class="music-play-icon" @click="viewGedMedia(gedDetail.url != '' ? gedDetail.url : gedDetail.base64data, gedDetail.type)"></span>
+                              </div>
+                            </div>
+                            <div class="rounded border border-1 ged-image"
+                              v-else>
+                              <div class="w-100 h-100 d-flex justify-content-around align-items-center">
+                                <span class="play-icon" @click="viewGedMedia(gedDetail.url != '' ? gedDetail.url : gedDetail.base64data, gedDetail.type)"></span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <tab-pane :tabs="tabs" current='description' class="almarai_700_normal" v-if="form.describeOn">
+                    <template v-slot:description>
+                      <div class="description-section bg-white p-2" v-if="zone.describes != null">
+                        <div class="d-flex flex-wrap">
+                          <div class="col-6" v-for="(describeGroup, desribeGroupName, desribeGroupIndex) in zone.describes" :key="desribeGroupIndex">
+                            <div class="describe-group">
+                              <h5>{{ desribeGroupName }}</h5>
+                              <div class="d-flex mt-2" v-for="(describe, describeIndex) in describeGroup" :key="describeIndex">
+                                <div class="col-4">
+                                  {{ describe.name }}
+                                </div>
+                                <div class="col-8" v-if="describe.type == 'Radio'">
+                                  <div class="preference-radio">
+                                    <label class="custom-radio" v-for="(value, key) in describe.data" :key="key">{{ value }}
+                                      <input type="radio" :checked="describe.default == value ? true : false" :value="value" v-model="describe.default" :name="'pref_'+describe.name">
+                                      <span class="checkmark"></span>
+                                    </label>
+                                  </div>
+                                </div>
+                                <div class="col-8" v-else-if="describe.type == 'Switch'">
+                                  <switch-btn class="ms-auto" v-model="describe.default"></switch-btn>
+                                </div>
+                                <div class="col-8" v-else-if="describe.type == 'Checkbox'">
+                                  <div  v-for="(value, key) in describe.data" :key="key">
+                                    <CheckBox v-model="describe.default" :checked="value == 1 ? true : false" :title="value"></CheckBox>
+                                  </div>
+                                </div>
+                                <div class="col-8" v-else>
+                                  <input v-model="describe.default" class="form-control form-control-sm bg-gray"/>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </template>
+                    <template v-slot:service>
+                      <div class="service-section bg-white p-2" v-if="zone.services != null">
+                        <div class="d-flex flex-wrap mb-2">
+                          <div class="col-4 fw-bold">Tache à realiser</div>
+                          <div class="col-5 fw-bold">Moyen à prévoir</div>
+                          <div class="col-3 fw-bold">
+                            <div class="text-center fw-bold">Responsable Action</div>
+                            <div class="d-flex flex-wrap">
+                              <div class="col-3 d-flex justify-content-center fw-bold">SEMTI</div>
+                              <div class="col-3 d-flex justify-content-center fw-bold">SSTT</div>
+                              <div class="col-3 d-flex justify-content-center fw-bold">LOC</div>
+                              <div class="col-3 d-flex justify-content-center fw-bold">CLIENT</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="d-flex mb-2 border-bottom" v-for="(service, index) in zone.services">
+                          <div class="col-1 d-flex"><CheckBox v-model="service.active" :checked="service.active"></CheckBox></div>
+                          <div class="col-3 d-flex align-items-center">{{ service.name }}</div>
+                          <div class="d-flex flex-wrap col-5" v-if="service.type == 'Checkbox'">
+                            <div class="me-2" v-for="(value, key) in service.data" :key="key">
+                              <CheckBox v-model="service.value" :checked="service.value == value ? true : false" :title="value"></CheckBox>
+                            </div>
+                          </div>
+                          <div class="d-flex flex-wrap col-5" v-else-if="service.type == 'Radio'">
+                            <div class="preference-radio">
+                              <label class="custom-radio" v-for="(value, key) in service.data" :key="key">{{ value }}
+                                <input type="radio" :checked="service.value == value ? true : false" :value="value" v-model="service.value" :name="'pref_'+service.name">
+                                <span class="checkmark"></span>
+                              </label>
+                            </div>
+                          </div>
+                          <div class="col-5" v-else>
+                            <switch-btn class="ms-auto" v-model="service.value"></switch-btn>
+                          </div>
+                          <div class="col-3 d-flex flex-wrap">
+                            <div class="col-3 d-flex justify-content-center"><CheckBox v-model="service.semti" :checked="service.semti"></CheckBox></div>
+                            <div class="col-3 d-flex justify-content-center"><CheckBox v-model="service.sstt" :checked="service.sstt"></CheckBox></div>
+                            <div class="col-3 d-flex justify-content-center"><CheckBox v-model="service.loc" :checked="service.loc"></CheckBox></div>
+                            <div class="col-3 d-flex justify-content-center"><CheckBox v-model="service.client" :checked="service.client"></CheckBox></div>
+                          </div>
+                        </div>
+                      </div>
+                    </template>
+                  </tab-pane>
+                  <div class="ouvrage-section installation-ouvrages bg-white px-4 py-3 my-2" :id="'zone-'+zoneIndex+'-installation-ouvrages'">
+                    <div class="ouvrage-header d-flex">
+                      <div class="col-7">
+                        <div class="col-5 d-flex align-items-center cursor-pointer toggle-btn" @click="togglePanel('zone-'+zoneIndex+'-installation-ouvrages')">
+                          <span class="installation-icon me-2"></span>
+                          <input type="text" @blur="zone.installOuvrage.edit = false" v-if="zone.installOuvrage.edit" class="form-control form-control-sm" v-model="zone.installOuvrage.name">
+                          <span v-else class="me-4" @dblclick="zone.installOuvrage.edit = true">{{ zone.installOuvrage.name }}</span>
+                          <span class="arrow-icon ms-auto"></span>
+                        </div>
+                        <div class="add-btn ms-5 ps-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer"
+                          @click="openInstallationModal(zoneIndex)">
+                          <span class="plus-icon me-2"></span> AJOUTER UN OUVRAGE
+                        </div>
+                      </div>
+                      <div class="col-5 d-flex align-items-center">
+                        <div class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center">{{ zone.installOuvrage.totalHour }} hr</div>
+                        <div class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center text-nowrap">{{ zone.installOuvrage.sumUnitPrice.toFixed(2) }} €</div>
+                        <div class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center text-nowrap">{{ zone.installOuvrage.totalPrice.toFixed(2) }} €</div>
+                      </div>
+                    </div>
+                    <div class="ouvrage-body ps-3 mt-3">
+                      <div class="ouvrage-list">
+                        <div class="ouvrage-list-header">
+                          <div class="d-flex">
+                            <div class="col-4"></div>
+                            <div class="col-8 d-flex">
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Qte</div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Unit ouv</div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Total hr</div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Total / Qte</div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Total</div>
+                              <div class="col-2"></div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="ouvrage-item" v-for="(ouvrage, ouvrageIndex) in zone.installOuvrage.ouvrages" :key="ouvrageIndex">
+                          <div class="d-flex ouvrage-header">
+                            <div class="col-4">
+                              <a class="ouvrage custom-option d-flex align-items-center px-0 text-black" :class="{ 'active': ouvrageIndex == (zone.installOuvrage.ouvrages.length - 1)}" :data-id="'zone-' + zoneIndex +'-installation-ouvrage-'+ouvrageIndex" href="javascript:;"
+                                  @click="activeOuvrage"
+                                >
+                                  <span class="option-icon me-2"><span class="option-icon-dot"></span></span> {{ ouvrage.name }}
+                                </a>
+                            </div>
+                            <div class="col-8 d-flex">
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1">
+                                <input type="text" @keyup="updateAllValues" v-model.number="ouvrage.qty" class="w-100 form-control form-control-sm custom-text-danger">
+                              </div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1">
+                                <select class="form-control form-control-sm custom-text-danger" v-model="ouvrage.unit">
+                                  <option v-for="(unit, unitIndex) in units" :value="unit.value" :key="unitIndex">{{ unit.display }}</option>
+                                </select>
+                              </div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1">
+                                {{ ouvrage.totalHour }} hr
+                              </div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1">
+                                {{ (ouvrage.total / ouvrage.qty).toFixed(2) }}€
+                              </div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1">
+                                {{ ouvrage.total.toFixed(2) }}€
+                              </div>
+                              <div class="col-2 d-flex align-items-center justify-content-center">
+                                <svg class="cursor-pointer" @click="removeOuvrage(zoneIndex, 1, ouvrageIndex)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M17 6H22V8H20V21C20 21.2652 19.8946 21.5196 19.7071 21.7071C19.5196 21.8946 19.2652 22 19 22H5C4.73478 22 4.48043 21.8946 4.29289 21.7071C4.10536 21.5196 4 21.2652 4 21V8H2V6H7V3C7 2.73478 7.10536 2.48043 7.29289 2.29289C7.48043 2.10536 7.73478 2 8 2H16C16.2652 2 16.5196 2.10536 16.7071 2.29289C16.8946 2.48043 17 2.73478 17 3V6ZM18 8H6V20H18V8ZM13.414 14L15.182 15.768L13.768 17.182L12 15.414L10.232 17.182L8.818 15.768L10.586 14L8.818 12.232L10.232 10.818L12 12.586L13.768 10.818L15.182 12.232L13.414 14ZM9 4V6H15V4H9Z" fill="black"/>
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="tab-content mb-3">
+                            <div class="tab-pane ps-3" :class="{ 'active': ouvrageIndex == 0}" :id="'zone-'+ zoneIndex +'-installation-ouvrage-'+ouvrageIndex">
+                              <h3 class="mulish-light fw-light custom-text-danger font-14">TEXTE COMMENTAIRE TECHNIQUE</h3>
+                              <!-- ouvrage description -->
+                              <ul class="ps-3" v-if="ouvrage.textchargeaffaire !=''">
+                                <li class="mulish-regular font-10">
+                                  {{ ouvrage.textchargeaffaire }}
+                                </li>
+                              </ul>
+                              <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
+                              <ul class="ps-3">
+                                <li class="mulish-regular font-10 custom-text-danger">
+                                  <input style="text-align: left !important" type="text" v-model="ouvrage.customerText" class="w-100 form-control form-control-sm custom-text-danger">
+                                </li>
+                              </ul>
+                              <!-- Ouvrage Task -->
+                              <div class="ouvrage-task" v-for="(task, taskIndex) in ouvrage.tasks" :key="taskIndex">
+                                <div class="task-header mt-3 d-flex align-items-center custom-option cursor-pointer" :class="{ 'active': taskIndex == 0}" :data-id="'zone-'+ zoneIndex +'-installation-ouvrage-'+ouvrageIndex+'-task-'+taskIndex" @click="activeOuvrageTask">
+                                  <span class="option-icon me-2"><span class="option-icon-dot"></span></span> {{ task.name }}
+                                </div>
+                                <div class="task-body ps-3" :class="{ 'show': taskIndex == 0}" :id="'zone-'+ zoneIndex +'-installation-ouvrage-'+ouvrageIndex+'-task-'+taskIndex">
+                                  <h3 class="mulish-light fw-light custom-text-danger font-14">TEXTE COMMENTAIRE TECHNIQUE</h3>
+                                  <!-- task description -->
+                                  <ul class="ps-3" v-if="task.textchargeaffaire != ''">
+                                    <li class="mulish-regular font-10">
+                                      {{ task.textchargeaffaire }}
+                                    </li>
+                                  </ul>
+                                  <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
+                                  <ul class="ps-3">
+                                    <li class="mulish-regular font-10 custom-text-danger">
+                                      <textarea style="text-align: left !important" v-model="task.customerText" class="w-100 form-control custom-text-danger" rows="2"></textarea>
+                                    </li>
+                                  </ul>
+                                  <div class="w-100 ps-3">
+                                    <table class="table w-100 details-table m-0">
+                                      <thead>
+                                        <tr>
+                                          <td></td>
+                                          <td valign="middle" class="text-center fw-bold">Qte ouvrage</td>
+                                          <td valign="middle" class="text-center fw-bold">Qte</td>
+                                          <td valign="middle" class="text-center fw-bold">Unité</td>
+                                          <td valign="middle" class="text-center fw-bold">Hr</td>
+                                          <td valign="middle" class="text-center fw-bold">Prix</td>
+                                          <td valign="middle" class="text-center fw-bold">Marge</td>
+                                          <td valign="middle" class="text-center fw-bold">Total</td>
+                                          <td valign="middle" class="text-center fw-bold">Taxe</td>
+                                          <td></td>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <tr v-for="(detail, detailIndex) in task.details" :key="detailIndex">
+                                          <td valign="middle">
+                                            <div class="custom-option d-flex align-items-center">
+                                              <span
+                                                :class="{ 'clock-icon': detail.type == 'MO' || detail.type == 'INTERIM'|| detail.type == 'Labor',
+                                                  'book-icon' : detail.type == 'PRODUIT' || detail.type == 'COMMANDE FOURNISSEUR'
+                                                }"
+                                              ></span> {{ detail.name }}
+                                            </div>
+                                          </td>
+                                          <td valign="middle" class="text-center">{{ detail.qtyOuvrage }}</td>
+                                          <td valign="middle" class="text-center">
+                                            <input v-if="detail.type != 'MO'" @keyup="updateAllValues" type="text" v-model.number="detail.qty" class="w-100 form-control form-control-sm custom-text-danger">
+                                            <span v-else>{{ detail.qty }}</span>
+                                          </td>
+                                          <td valign="middle" text="text-center">{{ detail.unit }}</td>
+                                          <td valign="middle" v-if="detail.type == 'MO' || detail.type == 'Labor'">
+                                            <div class="d-flex align-items-center">
+                                              <input @keyup="updateAllValues" type="text" v-model.number="detail.numberH" class="w-100 form-control form-control-sm custom-text-danger">hr
+                                            </div>
+                                          </td>
+                                          <td valign="middle" class="text-center supplier" v-else-if="detail.type == 'COMMANDE FOURNISSEUR'">
+                                            <svg width="20" height="25" viewBox="0 0 20 25" fill="none" xmlns="http://www.w3.org/2000/svg" @click="openPdfModal(detail.base64)" class="cursor-pointer">
+                                              <path d="M19.9981 5.41835C19.9972 5.4093 19.9956 5.40049 19.994 5.39168C19.9935 5.38875 19.9932 5.38571 19.9926 5.38278C19.9905 5.37226 19.9877 5.36199 19.9847 5.35186C19.9843 5.35064 19.9841 5.34932 19.9837 5.34809C19.9804 5.33767 19.9766 5.3275 19.9724 5.31751C19.972 5.31649 19.9717 5.31541 19.9713 5.31438C19.9672 5.30484 19.9626 5.2956 19.9578 5.2865C19.957 5.28498 19.9563 5.28341 19.9555 5.2819C19.9509 5.27343 19.9457 5.26531 19.9405 5.25724C19.9391 5.25519 19.9379 5.25303 19.9366 5.25103C19.9314 5.24349 19.9258 5.23635 19.92 5.22921C19.9182 5.22686 19.9165 5.22441 19.9146 5.22211C19.9075 5.21365 19.8998 5.20558 19.892 5.19775C19.8913 5.19702 19.8907 5.19623 19.8899 5.1955L14.6769 0.107436C14.676 0.106556 14.675 0.105822 14.674 0.104941C14.6662 0.097456 14.6581 0.0902153 14.6497 0.0834149C14.6469 0.0812133 14.644 0.0793542 14.6412 0.0772505C14.6343 0.0720157 14.6274 0.0667808 14.6201 0.0620352C14.6176 0.0603718 14.6149 0.059002 14.6123 0.0573875C14.6045 0.052544 14.5967 0.0477495 14.5885 0.0434932C14.5867 0.0425636 14.5848 0.0417808 14.583 0.0409002C14.5739 0.0363503 14.5647 0.0319472 14.5552 0.0280822C14.554 0.027593 14.5527 0.0272505 14.5515 0.0267613C14.5414 0.0227984 14.5311 0.0190802 14.5206 0.0159491C14.5192 0.0155577 14.5179 0.0153131 14.5165 0.0149217C14.5062 0.0119863 14.4957 0.0092955 14.4851 0.00719178C14.4819 0.00655577 14.4786 0.00631115 14.4754 0.00577299C14.4666 0.00425636 14.4577 0.00273973 14.4486 0.0018591C14.4361 0.000636008 14.4236 0 14.411 0H1.97995C0.88822 0 0 0.866928 0 1.93249V23.0675C0 24.1331 0.88822 25 1.97995 25H18.02C19.1118 25 20 24.1331 20 23.0675V5.45499C20 5.44271 19.9993 5.43048 19.9981 5.41835ZM14.787 1.25274L18.7165 5.08806H16.015C15.3379 5.08806 14.787 4.55039 14.787 3.88943V1.25274ZM18.02 24.2661H1.97995C1.30281 24.2661 0.75188 23.7285 0.75188 23.0675V1.93249C0.75188 1.27153 1.30281 0.733855 1.97995 0.733855H14.0351V3.88943C14.0351 4.95499 14.9233 5.82192 16.015 5.82192H19.2481V23.0675C19.2481 23.7285 18.6972 24.2661 18.02 24.2661Z" fill="black"/>
+                                            </svg>
+                                          </td>
+                                          <td valign="middle" class="text-center" v-else></td>
+                                          <td valign="middle">
+                                            <div class="d-flex align-items-center">
+                                              <input @keyup="updateAllValues" type="text" v-model="detail.unitPrice" class="w-100 form-control form-control-sm custom-text-danger">€
+                                            </div>
+                                          </td>
+                                          <td valign="middle" v-if="detail.type == 'MO' || detail.type == 'Labor'">
+                                          </td>
+                                          <td v-else style="min-width: 40px" valign="middle">
+                                            <div class="d-flex align-items-center">
+                                              <input @keyup="updateAllValues" type="text" v-model.number="detail.marge" class="w-100 form-control form-control-sm custom-text-danger">%
+                                            </div>
+                                          </td>
+                                          <td valign="middle">{{ detail.totalPrice }}€</td>
+                                          <td valign="middle">
+                                            <select style="min-width: 40px" class="w-100 form-control form-control-sm custom-text-danger" v-model="detail.tax">
+                                              <option :value="tax.value" v-for="(tax, taxIndex) in taxes" :key="taxIndex">{{ tax.display }} %</option>
+                                            </select>
+                                          </td>
+                                          <td valign="middle">
+                                            <svg class="cursor-pointer" @click="removeOuvrageDetail(zoneIndex, 1, ouvrageIndex, taskIndex, detailIndex)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M17 6H22V8H20V21C20 21.2652 19.8946 21.5196 19.7071 21.7071C19.5196 21.8946 19.2652 22 19 22H5C4.73478 22 4.48043 21.8946 4.29289 21.7071C4.10536 21.5196 4 21.2652 4 21V8H2V6H7V3C7 2.73478 7.10536 2.48043 7.29289 2.29289C7.48043 2.10536 7.73478 2 8 2H16C16.2652 2 16.5196 2.10536 16.7071 2.29289C16.8946 2.48043 17 2.73478 17 3V6ZM18 8H6V20H18V8ZM13.414 14L15.182 15.768L13.768 17.182L12 15.414L10.232 17.182L8.818 15.768L10.586 14L8.818 12.232L10.232 10.818L12 12.586L13.768 10.818L15.182 12.232L13.414 14ZM9 4V6H15V4H9Z" fill="black"/>
+                                            </svg>
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                  <div class="btns d-flex mt-4">
+                                    <div class="col-5">
+                                      <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openProductModal(zoneIndex, 1,ouvrageIndex, taskIndex)">
+                                        <span class="plus-icon me-2"></span> AJOUTER UN PRODUIT
+                                      </div>
+                                      <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openTaskModal(zoneIndex, 1, ouvrageIndex)">
+                                        <span class="plus-icon me-2"></span> AJOUTER ACTION
+                                      </div>
+                                      <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openSupplierModal(zoneIndex, 1, ouvrageIndex, taskIndex)">
+                                        <span class="plus-icon me-2"></span> COMMANDE FOURNISSEUR
+                                      </div>
+                                    </div>
+                                    <div class="col-5">
+                                      <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openLaborModal(zoneIndex, 1, ouvrageIndex, taskIndex)">
+                                        <span class="plus-icon me-2"></span> AJOUTER UN MAIN D’ OEUVRES
+                                      </div>
+                                      <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openInterimModal(zoneIndex, 1, ouvrageIndex, taskIndex)">
+                                        <span class="plus-icon me-2"></span> AJOUTER  INTERIM
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div v-if="ouvrage.tasks.length == 0" class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openTaskModal(zoneIndex, 1, ouvrageIndex)">
+                                <span class="plus-icon me-2"></span> AJOUTER ACTION
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="ouvrage-section security-ouvrages bg-white px-4 py-3 my-2" :id="'zone-'+zoneIndex+'-security-ouvrages'">
+                    <div class="ouvrage-header d-flex">
+                      <div class="col-7">
+                        <div class="col-5 d-flex align-items-center cursor-pointer toggle-btn" @click="togglePanel('zone-'+zoneIndex+'-security-ouvrages')">
+                          <span class="securite-icon me-2"></span>
+                          <input type="text" @blur="zone.securityOuvrage.edit = false" v-if="zone.securityOuvrage.edit" class="form-control form-control-sm" v-model="zone.securityOuvrage.name">
+                          <span v-else class="me-4" @dblclick="zone.securityOuvrage.edit = true">{{ zone.securityOuvrage.name }}</span>
+                          <span class="arrow-icon ms-auto"></span>
+                        </div>
+                        <div class="add-btn ms-5 ps-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer"
+                          @click="openSecuriteModal(zoneIndex)">
+                          <span class="plus-icon me-2"></span> AJOUTER UN OUVRAGE
+                        </div>
+                      </div>
+                      <div class="col-5 d-flex align-items-center">
+                        <div class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center">{{ zone.securityOuvrage.totalHour }} hr</div>
+                        <div class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center text-nowrap">{{ zone.securityOuvrage.sumUnitPrice.toFixed(2) }} €</div>
+                        <div class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center text-nowrap">{{ zone.securityOuvrage.totalPrice.toFixed(2) }} €</div>
+                      </div>
+                    </div>
+                    <div class="ouvrage-body ps-3 mt-3">
+                      <div class="ouvrage-list">
+                        <div class="ouvrage-list-header">
+                          <div class="d-flex">
+                            <div class="col-4"></div>
+                            <div class="col-8 d-flex">
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Qte</div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Unit ouv</div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Total hr</div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Total / Qte</div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Total</div>
+                              <div class="col-2"></div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="ouvrage-item" v-for="(ouvrage, ouvrageIndex) in zone.securityOuvrage.ouvrages" :key="ouvrageIndex">
+                          <div class="d-flex ouvrage-header">
+                            <div class="col-4">
+                              <a class="ouvrage custom-option d-flex align-items-center px-0 text-black" :class="{ 'active': ouvrageIndex == (zone.securityOuvrage.ouvrages.length -1) }" :data-id="'zone-' + zoneIndex +'-security-ouvrage-'+ouvrageIndex" href="javascript:;"
+                                  @click="activeOuvrage"
+                                >
+                                  <span class="option-icon me-2"><span class="option-icon-dot"></span></span> {{ ouvrage.name }}
+                                </a>
+                            </div>
+                            <div class="col-8 d-flex">
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1">
+                                <input @keyup="updateAllValues" type="text" v-model.number="ouvrage.qty" class="w-100 form-control form-control-sm custom-text-danger">
+                              </div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1">
+                                <select class="form-control form-control-sm custom-text-danger" v-model="ouvrage.unit">
+                                  <option v-for="(unit, unitIndex) in units" :value="unit.value" :key="unitIndex">{{ unit.display }}</option>
+                                </select>
+                              </div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1">
+                                {{ ouvrage.totalHour }} hr
+                              </div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1">
+                                {{ (ouvrage.total / ouvrage.qty).toFixed(2) }}€
+                              </div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1">
+                                {{ ouvrage.total.toFixed(2) }}€
+                              </div>
+                              <div class="col-2 d-flex align-items-center justify-content-center">
+                                <svg class="cursor-pointer" @click="removeOuvrage(zoneIndex, 2, ouvrageIndex)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M17 6H22V8H20V21C20 21.2652 19.8946 21.5196 19.7071 21.7071C19.5196 21.8946 19.2652 22 19 22H5C4.73478 22 4.48043 21.8946 4.29289 21.7071C4.10536 21.5196 4 21.2652 4 21V8H2V6H7V3C7 2.73478 7.10536 2.48043 7.29289 2.29289C7.48043 2.10536 7.73478 2 8 2H16C16.2652 2 16.5196 2.10536 16.7071 2.29289C16.8946 2.48043 17 2.73478 17 3V6ZM18 8H6V20H18V8ZM13.414 14L15.182 15.768L13.768 17.182L12 15.414L10.232 17.182L8.818 15.768L10.586 14L8.818 12.232L10.232 10.818L12 12.586L13.768 10.818L15.182 12.232L13.414 14ZM9 4V6H15V4H9Z" fill="black"/>
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="tab-content mb-3">
+                            <div class="tab-pane ps-3" :class="{ 'active': ouvrageIndex == 0}" :id="'zone-'+ zoneIndex +'-security-ouvrage-'+ouvrageIndex">
+                              <h3 class="mulish-light fw-light custom-text-danger font-14">TEXTE COMMENTAIRE TECHNIQUE</h3>
+                              <!-- ouvrage description -->
+                              <ul class="ps-3" v-if="ouvrage.textchargeaffaire !=''">
+                                <li class="mulish-regular font-10">
+                                  {{ ouvrage.textchargeaffaire }}
+                                </li>
+                              </ul>
+                              <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
+                              <ul class="ps-3">
+                                <li class="mulish-regular font-10 custom-text-danger">
+                                  <input style="text-align: left !important" type="text" v-model="ouvrage.customerText" class="w-100 form-control form-control-sm custom-text-danger">
+                                </li>
+                              </ul>
+                              <!-- Ouvrage Task -->
+                              <div class="ouvrage-task" v-for="(task, taskIndex) in ouvrage.tasks" :key="taskIndex">
+                                <div class="task-header mt-3 d-flex align-items-center custom-option cursor-pointer" :class="{ 'active': taskIndex == 0}" :data-id="'zone-'+ zoneIndex +'-security-ouvrage-'+ouvrageIndex+'-task-'+taskIndex" @click="activeOuvrageTask">
+                                  <span class="option-icon me-2"><span class="option-icon-dot"></span></span> {{ task.name }}
+                                </div>
+                                <div class="task-body ps-3" :class="{ 'show': taskIndex == 0}" :id="'zone-'+ zoneIndex +'-security-ouvrage-'+ouvrageIndex+'-task-'+taskIndex">
+                                  <h3 class="mulish-light fw-light custom-text-danger font-14">TEXTE COMMENTAIRE TECHNIQUE</h3>
+                                  <!-- task description -->
+                                  <ul class="ps-3" v-if="task.textchargeaffaire != ''">
+                                    <li class="mulish-regular font-10">
+                                      {{ task.textchargeaffaire }}
+                                    </li>
+                                  </ul>
+                                  <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
+                                  <ul class="ps-3">
+                                    <li class="mulish-regular font-10 custom-text-danger">
+                                      <textarea style="text-align: left !important" v-model="task.customerText" class="w-100 form-control custom-text-danger" rows="2"></textarea>
+                                    </li>
+                                  </ul>
+                                  <div class="w-100 ps-3">
+                                    <table class="table w-100 details-table m-0">
+                                      <thead>
+                                        <tr>
+                                          <td></td>
+                                          <td valign="middle" class="text-center fw-bold">Qte ouvrage</td>
+                                          <td valign="middle" class="text-center fw-bold">Qte</td>
+                                          <td valign="middle" class="text-center fw-bold">Unité</td>
+                                          <td valign="middle" class="text-center fw-bold">Hr</td>
+                                          <td valign="middle" class="text-center fw-bold">Prix</td>
+                                          <td valign="middle" class="text-center fw-bold">Marge</td>
+                                          <td valign="middle" class="text-center fw-bold">Total</td>
+                                          <td valign="middle" class="text-center fw-bold">Taxe</td>
+                                          <td></td>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <tr v-for="(detail, detailIndex) in task.details" :key="detailIndex">
+                                          <td valign="middle">
+                                            <div class="custom-option d-flex align-items-center">
+                                              <span
+                                                :class="{ 'clock-icon': detail.type == 'MO' || detail.type == 'INTERIM'|| detail.type == 'Labor',
+                                                  'book-icon' : detail.type == 'PRODUIT' || detail.type == 'COMMANDE FOURNISSEUR'
+                                                }"
+                                              ></span> {{ detail.name }}
+                                            </div>
+                                          </td>
+                                         <td valign="middle" class="text-center">{{ detail.qtyOuvrage }}</td>
+                                          <td valign="middle" class="text-center">
+                                            <input v-if="detail.type != 'MO'" @keyup="updateAllValues" type="text" v-model.number="detail.qty" class="w-100 form-control form-control-sm custom-text-danger">
+                                            <span v-else>{{ detail.qty }}</span>
+                                          </td>
+                                          <td valign="middle" text="text-center">{{ detail.unit }}</td>
+                                          <td valign="middle" v-if="detail.type == 'MO' || detail.type == 'Labor'">
+                                            <div class="d-flex align-items-center">
+                                              <input @keyup="updateAllValues" type="text" v-model.number="detail.numberH" class="w-100 form-control form-control-sm custom-text-danger">hr
+                                            </div>
+                                          </td>
+                                          <td valign="middle" class="text-center supplier" v-else-if="detail.type == 'COMMANDE FOURNISSEUR'">
+                                            <svg width="20" height="25" viewBox="0 0 20 25" fill="none" xmlns="http://www.w3.org/2000/svg" @click="openPdfModal(detail.base64)" class="cursor-pointer">
+                                              <path d="M19.9981 5.41835C19.9972 5.4093 19.9956 5.40049 19.994 5.39168C19.9935 5.38875 19.9932 5.38571 19.9926 5.38278C19.9905 5.37226 19.9877 5.36199 19.9847 5.35186C19.9843 5.35064 19.9841 5.34932 19.9837 5.34809C19.9804 5.33767 19.9766 5.3275 19.9724 5.31751C19.972 5.31649 19.9717 5.31541 19.9713 5.31438C19.9672 5.30484 19.9626 5.2956 19.9578 5.2865C19.957 5.28498 19.9563 5.28341 19.9555 5.2819C19.9509 5.27343 19.9457 5.26531 19.9405 5.25724C19.9391 5.25519 19.9379 5.25303 19.9366 5.25103C19.9314 5.24349 19.9258 5.23635 19.92 5.22921C19.9182 5.22686 19.9165 5.22441 19.9146 5.22211C19.9075 5.21365 19.8998 5.20558 19.892 5.19775C19.8913 5.19702 19.8907 5.19623 19.8899 5.1955L14.6769 0.107436C14.676 0.106556 14.675 0.105822 14.674 0.104941C14.6662 0.097456 14.6581 0.0902153 14.6497 0.0834149C14.6469 0.0812133 14.644 0.0793542 14.6412 0.0772505C14.6343 0.0720157 14.6274 0.0667808 14.6201 0.0620352C14.6176 0.0603718 14.6149 0.059002 14.6123 0.0573875C14.6045 0.052544 14.5967 0.0477495 14.5885 0.0434932C14.5867 0.0425636 14.5848 0.0417808 14.583 0.0409002C14.5739 0.0363503 14.5647 0.0319472 14.5552 0.0280822C14.554 0.027593 14.5527 0.0272505 14.5515 0.0267613C14.5414 0.0227984 14.5311 0.0190802 14.5206 0.0159491C14.5192 0.0155577 14.5179 0.0153131 14.5165 0.0149217C14.5062 0.0119863 14.4957 0.0092955 14.4851 0.00719178C14.4819 0.00655577 14.4786 0.00631115 14.4754 0.00577299C14.4666 0.00425636 14.4577 0.00273973 14.4486 0.0018591C14.4361 0.000636008 14.4236 0 14.411 0H1.97995C0.88822 0 0 0.866928 0 1.93249V23.0675C0 24.1331 0.88822 25 1.97995 25H18.02C19.1118 25 20 24.1331 20 23.0675V5.45499C20 5.44271 19.9993 5.43048 19.9981 5.41835ZM14.787 1.25274L18.7165 5.08806H16.015C15.3379 5.08806 14.787 4.55039 14.787 3.88943V1.25274ZM18.02 24.2661H1.97995C1.30281 24.2661 0.75188 23.7285 0.75188 23.0675V1.93249C0.75188 1.27153 1.30281 0.733855 1.97995 0.733855H14.0351V3.88943C14.0351 4.95499 14.9233 5.82192 16.015 5.82192H19.2481V23.0675C19.2481 23.7285 18.6972 24.2661 18.02 24.2661Z" fill="black"/>
+                                            </svg>
+                                          </td>
+                                          <td valign="middle" class="text-center" v-else></td>
+                                          <td valign="middle">
+                                            <div class="d-flex align-items-center">
+                                              <input @keyup="updateAllValues" type="text" v-model="detail.unitPrice" class="w-100 form-control form-control-sm custom-text-danger">€
+                                            </div>
+                                          </td>
+                                          <td valign="middle" v-if="detail.type == 'MO' || detail.type == 'Labor'">
+                                          </td>
+                                          <td v-else style="min-width: 40px" valign="middle">
+                                            <div class="d-flex align-items-center">
+                                              <input @keyup="updateAllValues" type="text" v-model.number="detail.marge" class="w-100 form-control form-control-sm custom-text-danger">%
+                                            </div>
+                                          </td>
+                                          <td valign="middle">{{ detail.totalPrice }}€</td>
+                                          <td valign="middle">
+                                            <select style="min-width: 40px" class="w-100 form-control form-control-sm custom-text-danger" v-model="detail.tax">
+                                              <option :value="tax.value" v-for="(tax, taxIndex) in taxes" :key="taxIndex">{{ tax.display }} %</option>
+                                            </select>
+                                          </td>
+                                          <td valign="middle">
+                                            <svg class="cursor-pointer" @click="removeOuvrageDetail(zoneIndex, 2, ouvrageIndex, taskIndex, detailIndex)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M17 6H22V8H20V21C20 21.2652 19.8946 21.5196 19.7071 21.7071C19.5196 21.8946 19.2652 22 19 22H5C4.73478 22 4.48043 21.8946 4.29289 21.7071C4.10536 21.5196 4 21.2652 4 21V8H2V6H7V3C7 2.73478 7.10536 2.48043 7.29289 2.29289C7.48043 2.10536 7.73478 2 8 2H16C16.2652 2 16.5196 2.10536 16.7071 2.29289C16.8946 2.48043 17 2.73478 17 3V6ZM18 8H6V20H18V8ZM13.414 14L15.182 15.768L13.768 17.182L12 15.414L10.232 17.182L8.818 15.768L10.586 14L8.818 12.232L10.232 10.818L12 12.586L13.768 10.818L15.182 12.232L13.414 14ZM9 4V6H15V4H9Z" fill="black"/>
+                                            </svg>
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                  <div class="btns d-flex mt-4">
+                                    <div class="col-5">
+                                      <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openProductModal(zoneIndex, 2,ouvrageIndex, taskIndex)">
+                                        <span class="plus-icon me-2"></span> AJOUTER UN PRODUIT
+                                      </div>
+                                      <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openTaskModal(zoneIndex, 2, ouvrageIndex)">
+                                        <span class="plus-icon me-2"></span> AJOUTER ACTION
+                                      </div>
+                                      <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openSupplierModal(zoneIndex, 2, ouvrageIndex, taskIndex)">
+                                        <span class="plus-icon me-2"></span> COMMANDE FOURNISSEUR
+                                      </div>
+                                    </div>
+                                    <div class="col-5">
+                                      <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openLaborModal(zoneIndex, 2, ouvrageIndex, taskIndex)">
+                                        <span class="plus-icon me-2"></span> AJOUTER UN MAIN D’ OEUVRES
+                                      </div>
+                                      <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openInterimModal(zoneIndex, 2, ouvrageIndex, taskIndex)">
+                                        <span class="plus-icon me-2"></span> AJOUTER  INTERIM
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div v-if="ouvrage.tasks.length == 0" class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openTaskModal(zoneIndex, 2, ouvrageIndex)">
+                                <span class="plus-icon me-2"></span> AJOUTER ACTION
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="ouvrage-section prestation-ouvrages bg-white px-4 py-3 my-2" :id="'zone-'+zoneIndex+'-prestation-ouvrages'">
+                    <div class="ouvrage-header d-flex">
+                      <div class="col-7">
+                        <div class="col-5 d-flex align-items-center cursor-pointer toggle-btn" @click="togglePanel('zone-'+zoneIndex+'-prestation-ouvrages')">
+                          <span class="prestation-icon me-2"></span>
+                          <input type="text" @blur="zone.prestationOuvrage.edit = false" v-if="zone.prestationOuvrage.edit" class="form-control form-control-sm" v-model="zone.prestationOuvrage.name">
+                          <span v-else class="me-4" @dblclick="zone.prestationOuvrage.edit = true">{{ zone.prestationOuvrage.name }}</span>
+                          <span class="arrow-icon ms-auto"></span>
+                        </div>
+                        <div class="add-btn ms-5 ps-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer"
+                        @click="openPrestationModal(zoneIndex)">
+                          <span class="plus-icon me-2"></span> AJOUTER UN OUVRAGE
+                        </div>
+                      </div>
+                      <div class="col-5 d-flex align-items-center">
+                        <div class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center">{{ zone.prestationOuvrage.totalHour }} hr</div>
+                        <div class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center text-nowrap">{{ zone.prestationOuvrage.sumUnitPrice.toFixed(2) }} €</div>
+                        <div class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center text-nowrap">{{ zone.prestationOuvrage.totalPrice.toFixed(2) }} €</div>
+                      </div>
+                    </div>
+                    <div class="ouvrage-body ps-3 mt-3">
+                      <div class="ouvrage-list">
+                        <div class="ouvrage-list-header">
+                          <div class="d-flex">
+                            <div class="col-4"></div>
+                            <div class="col-8 d-flex">
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Qte</div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Unit ouv</div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Total hr</div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Total / Qte</div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Total</div>
+                              <div class="col-2"></div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="ouvrage-item" v-for="(ouvrage, ouvrageIndex) in zone.prestationOuvrage.ouvrages" :key="ouvrageIndex">
+                          <div class="d-flex ouvrage-header">
+                            <div class="col-4">
+                              <a class="ouvrage custom-option d-flex align-items-center px-0 text-black" :class="{ 'active': ouvrageIndex == (zone.prestationOuvrage.ouvrages.length - 1 )}" :data-id="'zone-' + zoneIndex +'-prestation-ouvrage-'+ouvrageIndex" href="javascript:;"
+                                  @click="activeOuvrage"
+                                >
+                                  <span class="option-icon me-2"><span class="option-icon-dot"></span></span> {{ ouvrage.name }}
+                                </a>
+                            </div>
+                            <div class="col-8 d-flex">
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1">
+                                <input @keyup="updateAllValues" type="text" v-model.number="ouvrage.qty" class="w-100 form-control form-control-sm custom-text-danger">
+                              </div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1">
+                                <select class="form-control form-control-sm custom-text-danger" v-model="ouvrage.unit">
+                                  <option v-for="(unit, unitIndex) in units" :value="unit.value" :key="unitIndex">{{ unit.display }}</option>
+                                </select>
+                              </div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1">
+                                {{ ouvrage.totalHour }} hr
+                              </div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1">
+                                {{ (ouvrage.total / ouvrage.qty).toFixed(2) }}€
+                              </div>
+                              <div class="col-2 d-flex align-items-center justify-content-center border border-1">
+                                {{ ouvrage.total.toFixed(2) }}€
+                              </div>
+                              <div class="col-2 d-flex align-items-center justify-content-center">
+                                <svg class="cursor-pointer" @click="removeOuvrage(zoneIndex, 3, ouvrageIndex)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M17 6H22V8H20V21C20 21.2652 19.8946 21.5196 19.7071 21.7071C19.5196 21.8946 19.2652 22 19 22H5C4.73478 22 4.48043 21.8946 4.29289 21.7071C4.10536 21.5196 4 21.2652 4 21V8H2V6H7V3C7 2.73478 7.10536 2.48043 7.29289 2.29289C7.48043 2.10536 7.73478 2 8 2H16C16.2652 2 16.5196 2.10536 16.7071 2.29289C16.8946 2.48043 17 2.73478 17 3V6ZM18 8H6V20H18V8ZM13.414 14L15.182 15.768L13.768 17.182L12 15.414L10.232 17.182L8.818 15.768L10.586 14L8.818 12.232L10.232 10.818L12 12.586L13.768 10.818L15.182 12.232L13.414 14ZM9 4V6H15V4H9Z" fill="black"/>
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="tab-content mb-3">
+                            <div class="tab-pane ps-3" :class="{ 'active': ouvrageIndex == 0}" :id="'zone-'+ zoneIndex +'-prestation-ouvrage-'+ouvrageIndex">
+                              <h3 class="mulish-light fw-light custom-text-danger font-14">TEXTE COMMENTAIRE TECHNIQUE</h3>
+                              <!-- ouvrage description -->
+                              <ul class="ps-3" v-if="ouvrage.textchargeaffaire !=''">
+                                <li class="mulish-regular font-10">
+                                  {{ ouvrage.textchargeaffaire }}
+                                </li>
+                              </ul>
+                              <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
+                              <ul class="ps-3">
+                                <li class="mulish-regular font-10 custom-text-danger">
+                                  <input style="text-align: left !important" type="text" v-model="ouvrage.customerText" class="w-100 form-control form-control-sm custom-text-danger">
+                                </li>
+                              </ul>
+                              <!-- Ouvrage Task -->
+                              <div class="ouvrage-task" v-for="(task, taskIndex) in ouvrage.tasks" :key="taskIndex">
+                                <div class="task-header mt-3 d-flex align-items-center custom-option cursor-pointer" :class="{ 'active': taskIndex == 0}" :data-id="'zone-'+ zoneIndex +'-prestation-ouvrage-'+ouvrageIndex+'-task-'+taskIndex" @click="activeOuvrageTask">
+                                  <span class="option-icon me-2"><span class="option-icon-dot"></span></span> {{ task.name }}
+                                </div>
+                                <div class="task-body ps-3" :class="{ 'show': taskIndex == 0}" :id="'zone-'+ zoneIndex +'-prestation-ouvrage-'+ouvrageIndex+'-task-'+taskIndex">
+                                  <h3 class="mulish-light fw-light custom-text-danger font-14">TEXTE COMMENTAIRE TECHNIQUE</h3>
+                                  <!-- task description -->
+                                  <ul class="ps-3" v-if="task.textchargeaffaire != ''">
+                                    <li class="mulish-regular font-10">
+                                      {{ task.textchargeaffaire }}
+                                    </li>
+                                  </ul>
+                                  <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
+                                  <ul class="ps-3">
+                                    <li class="mulish-regular font-10 custom-text-danger">
+                                      <textarea style="text-align: left !important" v-model="task.customerText" class="w-100 form-control custom-text-danger" rows="2"></textarea>
+                                    </li>
+                                  </ul>
+                                  <div class="w-100 ps-3">
+                                    <table class="table w-100 details-table m-0">
+                                      <thead>
+                                        <tr>
+                                          <td></td>
+                                          <td valign="middle" class="text-center fw-bold">Qte ouvrage</td>
+                                          <td valign="middle" class="text-center fw-bold">Qte</td>
+                                          <td valign="middle" class="text-center fw-bold">Unité</td>
+                                          <td valign="middle" class="text-center fw-bold">Hr</td>
+                                          <td valign="middle" class="text-center fw-bold">Prix</td>
+                                          <td valign="middle" class="text-center fw-bold">Marge</td>
+                                          <td valign="middle" class="text-center fw-bold">Total</td>
+                                          <td valign="middle" class="text-center fw-bold">Taxe</td>
+                                          <td></td>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <tr v-for="(detail, detailIndex) in task.details" :key="detailIndex">
+                                          <td valign="middle">
+                                            <div class="custom-option d-flex align-items-center">
+                                              <span
+                                                :class="{ 'clock-icon': detail.type == 'MO' || detail.type == 'INTERIM'|| detail.type == 'Labor',
+                                                  'book-icon' : detail.type == 'PRODUIT' || detail.type == 'COMMANDE FOURNISSEUR'
+                                                }"
+                                              ></span> {{ detail.name }}
+                                            </div>
+                                          </td>
+                                         <td valign="middle" class="text-center">{{ detail.qtyOuvrage }}</td>
+                                          <td valign="middle" class="text-center">
+                                            <input v-if="detail.type != 'MO'" @keyup="updateAllValues" type="text" v-model.number="detail.qty" class="w-100 form-control form-control-sm custom-text-danger">
+                                            <span v-else>{{ detail.qty }}</span>
+                                          </td>
+                                          <td valign="middle" text="text-center">{{ detail.unit }}</td>
+                                          <td valign="middle" v-if="detail.type == 'MO' || detail.type == 'Labor'">
+                                            <div class="d-flex align-items-center">
+                                              <input @keyup="updateAllValues" type="text" v-model="detail.numberH" class="w-100 form-control form-control-sm custom-text-danger">hr
+                                            </div>
+                                          </td>
+                                          <td valign="middle" class="text-center supplier" v-else-if="detail.type == 'COMMANDE FOURNISSEUR'">
+                                            <svg width="20" height="25" viewBox="0 0 20 25" fill="none" xmlns="http://www.w3.org/2000/svg" @click="openPdfModal(detail.base64)" class="cursor-pointer">
+                                              <path d="M19.9981 5.41835C19.9972 5.4093 19.9956 5.40049 19.994 5.39168C19.9935 5.38875 19.9932 5.38571 19.9926 5.38278C19.9905 5.37226 19.9877 5.36199 19.9847 5.35186C19.9843 5.35064 19.9841 5.34932 19.9837 5.34809C19.9804 5.33767 19.9766 5.3275 19.9724 5.31751C19.972 5.31649 19.9717 5.31541 19.9713 5.31438C19.9672 5.30484 19.9626 5.2956 19.9578 5.2865C19.957 5.28498 19.9563 5.28341 19.9555 5.2819C19.9509 5.27343 19.9457 5.26531 19.9405 5.25724C19.9391 5.25519 19.9379 5.25303 19.9366 5.25103C19.9314 5.24349 19.9258 5.23635 19.92 5.22921C19.9182 5.22686 19.9165 5.22441 19.9146 5.22211C19.9075 5.21365 19.8998 5.20558 19.892 5.19775C19.8913 5.19702 19.8907 5.19623 19.8899 5.1955L14.6769 0.107436C14.676 0.106556 14.675 0.105822 14.674 0.104941C14.6662 0.097456 14.6581 0.0902153 14.6497 0.0834149C14.6469 0.0812133 14.644 0.0793542 14.6412 0.0772505C14.6343 0.0720157 14.6274 0.0667808 14.6201 0.0620352C14.6176 0.0603718 14.6149 0.059002 14.6123 0.0573875C14.6045 0.052544 14.5967 0.0477495 14.5885 0.0434932C14.5867 0.0425636 14.5848 0.0417808 14.583 0.0409002C14.5739 0.0363503 14.5647 0.0319472 14.5552 0.0280822C14.554 0.027593 14.5527 0.0272505 14.5515 0.0267613C14.5414 0.0227984 14.5311 0.0190802 14.5206 0.0159491C14.5192 0.0155577 14.5179 0.0153131 14.5165 0.0149217C14.5062 0.0119863 14.4957 0.0092955 14.4851 0.00719178C14.4819 0.00655577 14.4786 0.00631115 14.4754 0.00577299C14.4666 0.00425636 14.4577 0.00273973 14.4486 0.0018591C14.4361 0.000636008 14.4236 0 14.411 0H1.97995C0.88822 0 0 0.866928 0 1.93249V23.0675C0 24.1331 0.88822 25 1.97995 25H18.02C19.1118 25 20 24.1331 20 23.0675V5.45499C20 5.44271 19.9993 5.43048 19.9981 5.41835ZM14.787 1.25274L18.7165 5.08806H16.015C15.3379 5.08806 14.787 4.55039 14.787 3.88943V1.25274ZM18.02 24.2661H1.97995C1.30281 24.2661 0.75188 23.7285 0.75188 23.0675V1.93249C0.75188 1.27153 1.30281 0.733855 1.97995 0.733855H14.0351V3.88943C14.0351 4.95499 14.9233 5.82192 16.015 5.82192H19.2481V23.0675C19.2481 23.7285 18.6972 24.2661 18.02 24.2661Z" fill="black"/>
+                                            </svg>
+                                          </td>
+                                          <td valign="middle" class="text-center" v-else></td>
+                                          <td valign="middle">
+                                            <div class="d-flex align-items-center">
+                                              <input @keyup="updateAllValues" type="text" v-model.number="detail.unitPrice" class="w-100 form-control form-control-sm custom-text-danger">€
+                                            </div>
+                                          </td>
+                                          <td valign="middle" v-if="detail.type == 'MO' || detail.type == 'Labor'">
+                                          </td>
+                                          <td v-else style="min-width: 40px" valign="middle">
+                                            <div class="d-flex align-items-center">
+                                              <input @keyup="updateAllValues" type="text" v-model.number="detail.marge" class="w-100 form-control form-control-sm custom-text-danger">%
+                                            </div>
+                                          </td>
+                                          <td valign="middle">{{ detail.totalPrice }}€</td>
+                                          <td valign="middle">
+                                            <select style="min-width: 40px" class="w-100 form-control form-control-sm custom-text-danger" v-model="detail.tax">
+                                              <option :value="tax.value" v-for="(tax, taxIndex) in taxes" :key="taxIndex">{{ tax.display }} %</option>
+                                            </select>
+                                          </td>
+                                          <td valign="middle">
+                                            <svg class="cursor-pointer" @click="removeOuvrageDetail(zoneIndex, 3, ouvrageIndex, taskIndex, detailIndex)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M17 6H22V8H20V21C20 21.2652 19.8946 21.5196 19.7071 21.7071C19.5196 21.8946 19.2652 22 19 22H5C4.73478 22 4.48043 21.8946 4.29289 21.7071C4.10536 21.5196 4 21.2652 4 21V8H2V6H7V3C7 2.73478 7.10536 2.48043 7.29289 2.29289C7.48043 2.10536 7.73478 2 8 2H16C16.2652 2 16.5196 2.10536 16.7071 2.29289C16.8946 2.48043 17 2.73478 17 3V6ZM18 8H6V20H18V8ZM13.414 14L15.182 15.768L13.768 17.182L12 15.414L10.232 17.182L8.818 15.768L10.586 14L8.818 12.232L10.232 10.818L12 12.586L13.768 10.818L15.182 12.232L13.414 14ZM9 4V6H15V4H9Z" fill="black"/>
+                                            </svg>
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                  <div class="btns d-flex mt-4">
+                                    <div class="col-5">
+                                      <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openProductModal(zoneIndex, 3,ouvrageIndex, taskIndex)">
+                                        <span class="plus-icon me-2"></span> AJOUTER UN PRODUIT
+                                      </div>
+                                      <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openTaskModal(zoneIndex, 3, ouvrageIndex)">
+                                        <span class="plus-icon me-2"></span> AJOUTER ACTION
+                                      </div>
+                                      <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openSupplierModal(zoneIndex, 3, ouvrageIndex, taskIndex)">
+                                        <span class="plus-icon me-2"></span> COMMANDE FOURNISSEUR
+                                      </div>
+                                    </div>
+                                    <div class="col-5">
+                                      <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openLaborModal(zoneIndex, 3, ouvrageIndex, taskIndex)">
+                                        <span class="plus-icon me-2"></span> AJOUTER UN MAIN D’ OEUVRES
+                                      </div>
+                                      <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openInterimModal(zoneIndex, 3, ouvrageIndex, taskIndex)">
+                                        <span class="plus-icon me-2"></span> AJOUTER  INTERIM
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div v-if="ouvrage.tasks.length == 0" class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openTaskModal(zoneIndex, 3, ouvrageIndex)">
+                                <span class="plus-icon me-2"></span> AJOUTER ACTION
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="zone-section" v-for="(zone, zoneIndex) in form.zones" :key="zoneIndex">
-                <div class="ged-section bg-white px-3 py-2 mb-2">
-                  <div class="zone-header d-flex align-items-center">
-                    <span class="home-icon"></span>
-                    <div class="zone-name ms-2">
-                      <input type="text" @blur="zone.edit = false" v-if="zone.edit" class="form-control form-control-sm" v-model="zone.name">
-                      <span class="mulish-extrabold font-18 text-black" @dblclick="zone.edit = true" v-else>{{ zone.name }}</span>
+              <div class="ms-2 right-panel">
+                <div class="section bg-white">
+                  <div class="d-flex">
+                    <div class="col-9 d-flex flex-wrap">
+                      <p class="w-100 m-0 title">
+                        Arrondir les heures
+                      </p>
+                      <p class="w-100 m-0 sub-title">
+                        Les jours du Chantiers
+                      </p>
                     </div>
-                    <div v-if="zoneIndex == 0" @click="addZone(zoneIndex)" class="add-btn ms-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer">
-                      <span class="plus-icon me-2"></span> AJOUTER
-                    </div>
-                    <div @click="removeZone(zoneIndex)" class="remove-btn ms-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer">
-                      <span class="cancel-icon me-2"></span> RETIRER
-                    </div>
-                  </div>
-                  <div class="d-flex px-4 mt-4">
-                    <div class="col-6">
-                      <div class="roof-access d-flex align-items-end mulish-semibold font-16 custom-text-danger">
-                        <span class="roof-icon me-2"></span> Accès toiture
-                      </div>
-                      <div class="d-flex mt-3 ms-4">
-                        <div class="col-6">
-                          <SelectBox :label="''" 
-                              v-model="zone.roofAccess" 
-                              :options="roofAccesses"
-                              :name="'roofAccess'+zoneIndex"
-                              :classnames="'col-12'"
-                              :placeholder="'Accessible'"
-                          />
-                        </div>
-                        <div class="col-1"></div>
-                        <div class="col-5">
-                          <input type="text" v-model="zone.height" class="form-control" placeholder="Hauteur m">
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-6 ps-2 d-flex">
-                      <div class="col-5 pe-2">
-                        <p class="m-0 almarai-bold font-14 text-gray">Adresse du chantier</p>
-                        <p class="m-0 almarai-light font-14">{{ form.address.address1 }} {{ form.address.postCode }} {{ form.address.city }}</p>
-                      </div>
-                      <div class="col-7" v-if="useGoogleService">
-                        <GoogleMap v-model:latitude="form.address.lat" v-model:longitude="form.address.lon"></GoogleMap>
-                      </div>
+                    <div class="col-3 d-flex align-items-center">
+                      <p class="w-100 text-center font-16 mulish-extrabold d-flex align-items-center">
+                        <input type="text" class="form-control form-control-sm me-2" v-model="form.totalDays" @change="adjustHours"> jours
+                      </p>
                     </div>
                   </div>
-                  <div class="d-flex px-4 mt-4 flex-wrap">
-                    <div class="col-6 mb-3" v-for="(gedCat, catIndex) in zone.gedCats" :key="catIndex">
-                      <div class="ged-cat-header d-flex align-items-end mulish-semibold font-16 custom-text-danger">
-                        <span class="camera-icon me-2"></span> {{ gedCat[0].name }} 
-                        <div class="add-btn ms-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer"
-                        @click="addFileToGed(zoneIndex, gedCat[0].id)">
-                          <span class="plus-icon me-2"></span> AJOUTER
-                        </div>
-                      </div>
-                      <div class="ged-cat-content mt-3 mb-3 d-flex flex-wrap">
-                        <div class="img ms-2" v-for="(gedDetail, index) in gedCat[0].items" :key="index">
-                          <div class="rounded border border-1 ged-image"
-                            :style="{ 'background-image': `url(${gedDetail.url != '' ? gedDetail.url : gedDetail.base64data})`}"
-                            v-if="gedDetail.type == 'png'">
-                            <div class="w-100 h-100 image-overlayer d-flex justify-content-around align-items-center">
-                              <span class="eye-icon" @click="viewGedMedia(gedDetail.url != '' ? gedDetail.url : gedDetail.base64data, gedDetail.type)"></span>
-                              <span class="cancel-icon" @click="removeImage(zoneIndex, gedCat[0].id,index)"></span>
-                            </div>
-                          </div>
-                          <div class="rounded border border-1 ged-image"
-                            v-else-if="gedDetail.type == 'm4a'">
-                            <div class="w-100 h-100 d-flex justify-content-around align-items-center">
-                              <span class="music-play-icon" @click="viewGedMedia(gedDetail.url != '' ? gedDetail.url : gedDetail.base64data, gedDetail.type)"></span>
-                            </div>
-                          </div>
-                          <div class="rounded border border-1 ged-image"
-                            v-else>
-                            <div class="w-100 h-100 d-flex justify-content-around align-items-center">
-                              <span class="play-icon" @click="viewGedMedia(gedDetail.url != '' ? gedDetail.url : gedDetail.base64data, gedDetail.type)"></span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <!-- <div v-if="gedCat[0].name == 'Vue exterieur'" class="get-cat-footer almarai-light font-14 mb-3">
-                        Attention grosse poutre en haut
-                      </div> -->
+                  <div class="d-flex mt-2">
+                    <div class="col-9 d-flex flex-wrap">
+                      <p class="w-100 m-0 title">
+                        Remise Euros :
+                      </p>
+                      <p class="w-100 m-0 sub-title">
+                        A convertir en heure et a soustraire au total d’heures
+                      </p>
+                    </div>
+                    <div class="col-3 d-flex align-items-center">
+                      <p class="w-100 text-center font-16 mulish-extrabold d-flex align-items-center">
+                        <input type="text" class="form-control form-control-sm me-2" v-model="form.discount"> €
+                      </p>
                     </div>
                   </div>
                 </div>
-                <tab-pane :tabs="tabs" current='description' class="almarai_700_normal" v-if="form.describeOn">
-                  <template v-slot:description>
-                    <div class="description-section bg-white p-2" v-if="zone.describes != null">
-                      <div class="d-flex flex-wrap">
-                        <div class="col-6" v-for="(describeGroup, desribeGroupName, desribeGroupIndex) in zone.describes" :key="desribeGroupIndex">
-                          <div class="describe-group">
-                            <h5>{{ desribeGroupName }}</h5>
-                            <div class="d-flex mt-2" v-for="(describe, describeIndex) in describeGroup" :key="describeIndex">
-                              <div class="col-4">
-                                {{ describe.name }}
-                              </div>
-                              <div class="col-8" v-if="describe.type == 'Radio'">
-                                <div class="preference-radio">
-                                  <label class="custom-radio" v-for="(value, key) in describe.data" :key="key">{{ value }}
-                                    <input type="radio" :checked="describe.default == value ? true : false" :value="value" v-model="describe.default" :name="'pref_'+describe.name">
-                                    <span class="checkmark"></span>
-                                  </label>
-                                </div>                            
-                              </div>
-                              <div class="col-8" v-else-if="describe.type == 'Switch'">
-                                <switch-btn class="ms-auto" v-model="describe.default"></switch-btn>
-                              </div>
-                              <div class="col-8" v-else-if="describe.type == 'Checkbox'">
-                                <div  v-for="(value, key) in describe.data" :key="key">
-                                  <CheckBox v-model="describe.default" :checked="value == 0 ? false : true" :title="value"></CheckBox>
-                                </div>
-                              </div>
-                              <div class="col-8" v-else>
-                                <input v-model="describe.default" class="form-control form-control-sm bg-gray"/>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                <div class="section mt-2 bg-white">
+                  <div class="d-flex">
+                    <div class="d-flex flex-wrap col-8">
+                      <p class="w-100 title m-0">
+                        Synthese Chantier
+                      </p>
+                      <p class="w-100 m-0 sub-title">
+                        Apud has gentes, quarum exordiens
+                      </p>
                     </div>
-                  </template>
-                  <template v-slot:service>
-                    <div class="description-section bg-white p-2" v-if="zone.services != null">
-                      <div class="d-flex flex-wrap mb-2">
-                        <div class="col-1"></div>
-                        <div class="col-3 fw-bold">Tache à realiser</div>
-                        <div class="col-5 fw-bold">Moyen à prévoir</div>
-                        <div class="col-3 fw-bold">
-                          <div class="fw-bold">Responsable Action</div>
-                          <div class="d-flex flex-wrap">
-                            <div class="col-3 d-flex justify-content-center fw-bold">SEMTI</div>
-                            <div class="col-3 d-flex justify-content-center fw-bold">SSTT</div>
-                            <div class="col-3 d-flex justify-content-center fw-bold">LOC</div>
-                            <div class="col-3 d-flex justify-content-center fw-bold">CLIENT</div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="d-flex mb-2 border-bottom" v-for="(service, index) in zone.services" :key="index">
-                        <div class="col-1"><CheckBox v-model="service.active" :checked="service.active"></CheckBox></div>
-                        <div class="col-3">{{ service.name }}</div>
-                        <div class="d-flex col-5" v-if="service.type == 'Checkbox'">
-                          <div class="me-2" v-for="(value, key) in service.data" :key="key">
-                            <CheckBox v-model="service.value" :checked="value == service.value ? true : false" :title="value"></CheckBox>
-                          </div>
-                        </div>
-                        <div class="d-flex col-5" v-else-if="service.type == 'Radio'">
-                          <div class="preference-radio">
-                            <label class="custom-radio" v-for="(value, key) in service.data" :key="key">{{ value }}
-                              <input type="radio" :checked="service.value == value ? true : false" :value="value" v-model="service.value" :name="'pref_'+service.name">
-                              <span class="checkmark"></span>
-                            </label>
-                          </div>
-                        </div>
-                        <div class="col-5" v-else>
-                          <switch-btn class="ms-auto" v-model="service.value"></switch-btn>
-                        </div>
-                        <div class="col-3 d-flex flex-wrap">
-                          <div class="col-3 d-flex justify-content-center fw-bold"><CheckBox v-model="service.semti" :checked="service.semti"></CheckBox></div>
-                          <div class="col-3 d-flex justify-content-center fw-bold"><CheckBox v-model="service.sstt" :checked="service.sstt"></CheckBox></div>
-                          <div class="col-3 d-flex justify-content-center fw-bold"><CheckBox v-model="service.loc" :checked="service.loc"></CheckBox></div>
-                          <div class="col-3 d-flex justify-content-center fw-bold"><CheckBox v-model="service.client" :checked="service.client"></CheckBox></div>
-                        </div>
-                      </div>
+                    <div class="col-2 d-flex align-items-center justify-content-center fw-bold mulish-extra-bold font-16 text-black  text-nowrap">
+                      {{ (form.totalHoursForInstall + form.totalHoursForSecurity + form.totalHoursForPrestation).toFixed(2) }} hr
                     </div>
-                  </template>
-                </tab-pane>                
-                <div class="ouvrage-section installation-ouvrages bg-white px-4 py-3 mt-2 mb-2" :id="'zone-'+zoneIndex+'-installation-ouvrages'">
-                  <div class="ouvrage-header d-flex">
-                    <div class="col-7">
-                      <div class="col-5 d-flex align-items-center cursor-pointer toggle-btn" @click="togglePanel('zone-'+zoneIndex+'-installation-ouvrages')">
-                        <span class="installation-icon me-2"></span> 
-                        <input type="text" @blur="zone.installOuvrage.edit = false" v-if="zone.installOuvrage.edit" class="form-control form-control-sm" v-model="zone.installOuvrage.name">
-                        <span v-else class="me-4" @dblclick="zone.installOuvrage.edit = true">{{ zone.installOuvrage.name }}</span>
-                        <span class="arrow-icon ms-auto"></span>
-                      </div>
-                      <div class="add-btn ms-5 ps-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" 
-                        @click="openInstallationModal(zoneIndex)">
-                        <span class="plus-icon me-2"></span> AJOUTER UN OUVRAGE
-                      </div>
-                    </div>
-                    <div class="col-5 d-flex align-items-center">
-                      <div class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center">{{ zone.installOuvrage.totalHour }} hr</div>
-                      <div class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center text-nowrap">{{ zone.installOuvrage.sumUnitPrice.toFixed(2) }} €</div>
-                      <div class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center text-nowrap">{{ zone.installOuvrage.totalPrice.toFixed(2) }} €</div>
+                    <div class="col-2 d-flex align-items-center justify-content-center fw-bold mulish-extra-bold font-16 text-black  text-nowrap">
+                      {{ (form.totalPriceForInstall + form.totalPriceForSecurity + form.totalPriceForPrestation - form.discount).toFixed(2) }} €
                     </div>
                   </div>
-                  <div class="ouvrage-body ps-3 mt-3">
-                    <div class="ouvrage-list">
-                      <div class="ouvrage-list-header">
-                        <div class="d-flex">
-                          <div class="col-4"></div>
-                          <div class="col-8 d-flex">
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Qte</div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Unit ouv</div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Total hr</div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Total / Qte</div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Total</div>
-                            <div class="col-2"></div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="ouvrage-item" v-for="(ouvrage, ouvrageIndex) in zone.installOuvrage.ouvrages" :key="ouvrageIndex">
-                        <div class="d-flex ouvrage-header">
-                          <div class="col-4">
-                            <a class="ouvrage custom-option d-flex align-items-center px-0 text-black" :class="{ 'active': ouvrageIndex == (zone.installOuvrage.ouvrages.length - 1)}" :data-id="'zone-' + zoneIndex +'-installation-ouvrage-'+ouvrageIndex" href="javascript:;"
-                                @click="activeOuvrage"
-                              >
-                                <span class="option-icon me-2"><span class="option-icon-dot"></span></span> {{ ouvrage.name }}
-                              </a>
-                          </div>
-                          <div class="col-8 d-flex">
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1">
-                              <input type="text" @keyup="updateAllValues" v-model.number="ouvrage.qty" class="w-100 form-control form-control-sm custom-text-danger">
-                            </div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1">
-                              <select class="form-control form-control-sm custom-text-danger" v-model="ouvrage.unit">
-                                <option v-for="(unit, unitIndex) in units" :value="unit.value" :key="unitIndex">{{ unit.display }}</option>
-                              </select>
-                            </div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1">
-                              {{ ouvrage.totalHour }} hr
-                            </div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1">
-                              {{ (ouvrage.total / ouvrage.qty).toFixed(2) }}€
-                            </div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1">
-                              {{ ouvrage.total.toFixed(2) }}€
-                            </div>
-                            <div class="col-2 d-flex align-items-center justify-content-center">
-                              <svg class="cursor-pointer" @click="removeOuvrage(zoneIndex, 1, ouvrageIndex)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M17 6H22V8H20V21C20 21.2652 19.8946 21.5196 19.7071 21.7071C19.5196 21.8946 19.2652 22 19 22H5C4.73478 22 4.48043 21.8946 4.29289 21.7071C4.10536 21.5196 4 21.2652 4 21V8H2V6H7V3C7 2.73478 7.10536 2.48043 7.29289 2.29289C7.48043 2.10536 7.73478 2 8 2H16C16.2652 2 16.5196 2.10536 16.7071 2.29289C16.8946 2.48043 17 2.73478 17 3V6ZM18 8H6V20H18V8ZM13.414 14L15.182 15.768L13.768 17.182L12 15.414L10.232 17.182L8.818 15.768L10.586 14L8.818 12.232L10.232 10.818L12 12.586L13.768 10.818L15.182 12.232L13.414 14ZM9 4V6H15V4H9Z" fill="black"/>
-                              </svg>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="tab-content mb-3">
-                          <div class="tab-pane ps-3" :class="{ 'active': ouvrageIndex == 0}" :id="'zone-'+ zoneIndex +'-installation-ouvrage-'+ouvrageIndex">
-                            <h3 class="mulish-light fw-light custom-text-danger font-14">TEXTE COMMENTAIRE TECHNIQUE</h3>
-                            <!-- ouvrage description -->
-                            <ul class="ps-3" v-if="ouvrage.textchargeaffaire !=''">
-                              <li class="mulish-regular font-10">
-                                {{ ouvrage.textchargeaffaire }}
-                              </li>
-                            </ul>
-                            <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
-                            <ul class="ps-3">
-                              <li class="mulish-regular font-10 custom-text-danger">
-                                <input style="text-align: left !important" type="text" v-model="ouvrage.customerText" class="w-100 form-control form-control-sm custom-text-danger">
-                              </li>
-                            </ul>
-                            <!-- Ouvrage Task -->
-                            <div class="ouvrage-task" v-for="(task, taskIndex) in ouvrage.tasks" :key="taskIndex">
-                              <div class="task-header mt-3 d-flex align-items-center custom-option cursor-pointer" :class="{ 'active': taskIndex == 0}" :data-id="'zone-'+ zoneIndex +'-installation-ouvrage-'+ouvrageIndex+'-task-'+taskIndex" @click="activeOuvrageTask">
-                                <span class="option-icon me-2"><span class="option-icon-dot"></span></span> {{ task.name }}
-                              </div>
-                              <div class="task-body ps-3" :class="{ 'show': taskIndex == 0}" :id="'zone-'+ zoneIndex +'-installation-ouvrage-'+ouvrageIndex+'-task-'+taskIndex">
-                                <h3 class="mulish-light fw-light custom-text-danger font-14">TEXTE COMMENTAIRE TECHNIQUE</h3>
-                                <!-- task description -->
-                                <ul class="ps-3" v-if="task.textchargeaffaire != ''">
-                                  <li class="mulish-regular font-10">
-                                    {{ task.textchargeaffaire }}
-                                  </li>
-                                </ul>
-                                <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
-                                <ul class="ps-3">
-                                  <li class="mulish-regular font-10 custom-text-danger">
-                                    <textarea style="text-align: left !important" v-model="task.customerText" class="w-100 form-control custom-text-danger" rows="2"></textarea>
-                                  </li>
-                                </ul>
-                                <div class="w-100 ps-3">
-                                  <table class="table w-100 details-table m-0">
-                                    <thead>
-                                      <tr>
-                                        <td></td>
-                                        <td valign="middle" class="text-center fw-bold">Qte ouvrage</td>
-                                        <td valign="middle" class="text-center fw-bold">Qte</td>
-                                        <td valign="middle" class="text-center fw-bold">Unité</td>
-                                        <td valign="middle" class="text-center fw-bold">Hr</td>
-                                        <td valign="middle" class="text-center fw-bold">Prix</td>
-                                        <td valign="middle" class="text-center fw-bold">Marge</td>
-                                        <td valign="middle" class="text-center fw-bold">Total</td>
-                                        <td valign="middle" class="text-center fw-bold">Taxe</td>
-                                        <td></td>
-                                      </tr>
-                                    </thead>                                    
-                                    <tbody>
-                                      <tr v-for="(detail, detailIndex) in task.details" :key="detailIndex">
-                                        <td valign="middle">
-                                          <div class="custom-option d-flex align-items-center">
-                                            <span 
-                                              :class="{ 'clock-icon': detail.type == 'MO' || detail.type == 'INTERIM'|| detail.type == 'Labor',  
-                                                'book-icon' : detail.type == 'PRODUIT' || detail.type == 'COMMANDE FOURNISSEUR'
-                                              }"
-                                            ></span> {{ detail.name }}
-                                          </div>
-                                        </td>
-                                        <td valign="middle" class="text-center">{{ detail.qtyOuvrage }}</td>
-                                        <td valign="middle" class="text-center">
-                                          <input v-if="detail.type != 'MO'" @keyup="updateAllValues" type="text" v-model.number="detail.qty" class="w-100 form-control form-control-sm custom-text-danger">
-                                          <span v-else>{{ detail.qty }}</span>
-                                        </td>
-                                        <td valign="middle" text="text-center">{{ detail.unit }}</td>
-                                        <td valign="middle" v-if="detail.type == 'MO' || detail.type == 'Labor'">
-                                          <div class="d-flex align-items-center">
-                                            <input @keyup="updateAllValues" type="text" v-model.number="detail.numberH" class="w-100 form-control form-control-sm custom-text-danger">hr
-                                          </div>
-                                        </td>                                      
-                                        <td valign="middle" class="text-center supplier" v-else-if="detail.type == 'COMMANDE FOURNISSEUR'">
-                                          <svg width="20" height="25" viewBox="0 0 20 25" fill="none" xmlns="http://www.w3.org/2000/svg" @click="openPdfModal(detail.base64)" class="cursor-pointer">
-                                            <path d="M19.9981 5.41835C19.9972 5.4093 19.9956 5.40049 19.994 5.39168C19.9935 5.38875 19.9932 5.38571 19.9926 5.38278C19.9905 5.37226 19.9877 5.36199 19.9847 5.35186C19.9843 5.35064 19.9841 5.34932 19.9837 5.34809C19.9804 5.33767 19.9766 5.3275 19.9724 5.31751C19.972 5.31649 19.9717 5.31541 19.9713 5.31438C19.9672 5.30484 19.9626 5.2956 19.9578 5.2865C19.957 5.28498 19.9563 5.28341 19.9555 5.2819C19.9509 5.27343 19.9457 5.26531 19.9405 5.25724C19.9391 5.25519 19.9379 5.25303 19.9366 5.25103C19.9314 5.24349 19.9258 5.23635 19.92 5.22921C19.9182 5.22686 19.9165 5.22441 19.9146 5.22211C19.9075 5.21365 19.8998 5.20558 19.892 5.19775C19.8913 5.19702 19.8907 5.19623 19.8899 5.1955L14.6769 0.107436C14.676 0.106556 14.675 0.105822 14.674 0.104941C14.6662 0.097456 14.6581 0.0902153 14.6497 0.0834149C14.6469 0.0812133 14.644 0.0793542 14.6412 0.0772505C14.6343 0.0720157 14.6274 0.0667808 14.6201 0.0620352C14.6176 0.0603718 14.6149 0.059002 14.6123 0.0573875C14.6045 0.052544 14.5967 0.0477495 14.5885 0.0434932C14.5867 0.0425636 14.5848 0.0417808 14.583 0.0409002C14.5739 0.0363503 14.5647 0.0319472 14.5552 0.0280822C14.554 0.027593 14.5527 0.0272505 14.5515 0.0267613C14.5414 0.0227984 14.5311 0.0190802 14.5206 0.0159491C14.5192 0.0155577 14.5179 0.0153131 14.5165 0.0149217C14.5062 0.0119863 14.4957 0.0092955 14.4851 0.00719178C14.4819 0.00655577 14.4786 0.00631115 14.4754 0.00577299C14.4666 0.00425636 14.4577 0.00273973 14.4486 0.0018591C14.4361 0.000636008 14.4236 0 14.411 0H1.97995C0.88822 0 0 0.866928 0 1.93249V23.0675C0 24.1331 0.88822 25 1.97995 25H18.02C19.1118 25 20 24.1331 20 23.0675V5.45499C20 5.44271 19.9993 5.43048 19.9981 5.41835ZM14.787 1.25274L18.7165 5.08806H16.015C15.3379 5.08806 14.787 4.55039 14.787 3.88943V1.25274ZM18.02 24.2661H1.97995C1.30281 24.2661 0.75188 23.7285 0.75188 23.0675V1.93249C0.75188 1.27153 1.30281 0.733855 1.97995 0.733855H14.0351V3.88943C14.0351 4.95499 14.9233 5.82192 16.015 5.82192H19.2481V23.0675C19.2481 23.7285 18.6972 24.2661 18.02 24.2661Z" fill="black"/>
-                                          </svg>
-                                        </td>
-                                        <td valign="middle" class="text-center" v-else></td>
-                                        <td valign="middle">
-                                          <div class="d-flex align-items-center">
-                                            <input @keyup="updateAllValues" type="text" v-model="detail.unitPrice" class="w-100 form-control form-control-sm custom-text-danger">€
-                                          </div>
-                                        </td>
-                                        <td valign="middle" v-if="detail.type == 'MO' || detail.type == 'Labor'">
-                                        </td>
-                                        <td v-else style="min-width: 40px" valign="middle">
-                                          <div class="d-flex align-items-center">
-                                            <input @keyup="updateAllValues" type="text" v-model.number="detail.marge" class="w-100 form-control form-control-sm custom-text-danger">%
-                                          </div>                                        
-                                        </td>
-                                        <td valign="middle">{{ detail.totalPrice }}€</td>
-                                        <td valign="middle">
-                                          <select style="min-width: 40px" class="w-100 form-control form-control-sm custom-text-danger" v-model="detail.tax">
-                                            <option :value="tax.value" v-for="(tax, taxIndex) in taxes" :key="taxIndex">{{ tax.display }} %</option>
-                                          </select>                                          
-                                        </td>
-                                        <td valign="middle">
-                                          <svg class="cursor-pointer" @click="removeOuvrageDetail(zoneIndex, 1, ouvrageIndex, taskIndex, detailIndex)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                          <path d="M17 6H22V8H20V21C20 21.2652 19.8946 21.5196 19.7071 21.7071C19.5196 21.8946 19.2652 22 19 22H5C4.73478 22 4.48043 21.8946 4.29289 21.7071C4.10536 21.5196 4 21.2652 4 21V8H2V6H7V3C7 2.73478 7.10536 2.48043 7.29289 2.29289C7.48043 2.10536 7.73478 2 8 2H16C16.2652 2 16.5196 2.10536 16.7071 2.29289C16.8946 2.48043 17 2.73478 17 3V6ZM18 8H6V20H18V8ZM13.414 14L15.182 15.768L13.768 17.182L12 15.414L10.232 17.182L8.818 15.768L10.586 14L8.818 12.232L10.232 10.818L12 12.586L13.768 10.818L15.182 12.232L13.414 14ZM9 4V6H15V4H9Z" fill="black"/>
-                                          </svg>
-                                        </td>
-                                      </tr>
-                                    </tbody>
-                                  </table>
-                                </div>
-                                <div class="btns d-flex mt-4">
-                                  <div class="col-5">
-                                    <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openProductModal(zoneIndex, 1,ouvrageIndex, taskIndex)">
-                                      <span class="plus-icon me-2"></span> AJOUTER UN PRODUIT
-                                    </div>
-                                    <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openTaskModal(zoneIndex, 1, ouvrageIndex)">
-                                      <span class="plus-icon me-2"></span> AJOUTER ACTION
-                                    </div>
-                                    <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openSupplierModal(zoneIndex, 1, ouvrageIndex, taskIndex)">
-                                      <span class="plus-icon me-2"></span> COMMANDE FOURNISSEUR
-                                    </div>
-                                  </div>
-                                  <div class="col-5">
-                                    <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openLaborModal(zoneIndex, 1, ouvrageIndex, taskIndex)">
-                                      <span class="plus-icon me-2"></span> AJOUTER UN MAIN D’ OEUVRES
-                                    </div>
-                                    <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openInterimModal(zoneIndex, 1, ouvrageIndex, taskIndex)">
-                                      <span class="plus-icon me-2"></span> AJOUTER  INTERIM
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div v-if="ouvrage.tasks.length == 0" class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openTaskModal(zoneIndex, 1, ouvrageIndex)">
-                              <span class="plus-icon me-2"></span> AJOUTER ACTION
-                            </div>                                                
-                          </div>
-                        </div>
-                      </div>
+                  <div class="d-flex mt-4">
+                    <div class="col-8 title">
+                      Installation
                     </div>
+                    <div class="col-2 border-bottom text-center border-end font-14 text-nowrap">{{ form.totalHoursForInstall }}hr</div>
+                    <div class="col-2 border-bottom text-center font-14  text-nowrap">{{ form.totalPriceForInstall.toFixed(2) }} €</div>
                   </div>
-                </div>
-
-                <div class="ouvrage-section security-ouvrages bg-white px-4 py-3 mt-2 mb-2" :id="'zone-'+zoneIndex+'-security-ouvrages'">
-                  <div class="ouvrage-header d-flex">
-                    <div class="col-7">
-                      <div class="col-5 d-flex align-items-center cursor-pointer toggle-btn" @click="togglePanel('zone-'+zoneIndex+'-security-ouvrages')">
-                        <span class="securite-icon me-2"></span> 
-                        <input type="text" @blur="zone.securityOuvrage.edit = false" v-if="zone.securityOuvrage.edit" class="form-control form-control-sm" v-model="zone.securityOuvrage.name">
-                        <span v-else class="me-4" @dblclick="zone.securityOuvrage.edit = true">{{ zone.securityOuvrage.name }}</span>
-                        <span class="arrow-icon ms-auto"></span>
-                      </div>
-                      <div class="add-btn ms-5 ps-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" 
-                        @click="openSecuriteModal(zoneIndex)">
-                        <span class="plus-icon me-2"></span> AJOUTER UN OUVRAGE
-                      </div>
+                  <div class="d-flex mt-3">
+                    <div class="col-8 title">
+                      Mise en Securite
                     </div>
-                    <div class="col-5 d-flex align-items-center">
-                      <div class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center">{{ zone.securityOuvrage.totalHour }} hr</div>
-                      <div class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center text-nowrap">{{ zone.securityOuvrage.sumUnitPrice.toFixed(2) }} €</div>
-                      <div class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center text-nowrap">{{ zone.securityOuvrage.totalPrice.toFixed(2) }} €</div>
-                    </div>
+                    <div class="col-2 border-bottom text-center border-end font-14 text-nowrap">{{ form.totalHoursForSecurity }}hr</div>
+                    <div class="col-2 border-bottom text-center font-14 text-nowrap">{{ form.totalPriceForSecurity.toFixed(2) }} €</div>
                   </div>
-                  <div class="ouvrage-body ps-3 mt-3">
-                    <div class="ouvrage-list">
-                      <div class="ouvrage-list-header">
-                        <div class="d-flex">
-                          <div class="col-4"></div>
-                          <div class="col-8 d-flex">
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Qte</div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Unit ouv</div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Total hr</div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Total / Qte</div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Total</div>
-                            <div class="col-2"></div>
-                          </div>
-                        </div>
-                      </div>                      
-                      <div class="ouvrage-item" v-for="(ouvrage, ouvrageIndex) in zone.securityOuvrage.ouvrages" :key="ouvrageIndex">
-                        <div class="d-flex ouvrage-header">
-                          <div class="col-4">
-                            <a class="ouvrage custom-option d-flex align-items-center px-0 text-black" :class="{ 'active': ouvrageIndex == (zone.securityOuvrage.ouvrages.length -1) }" :data-id="'zone-' + zoneIndex +'-security-ouvrage-'+ouvrageIndex" href="javascript:;"
-                                @click="activeOuvrage"
-                              >
-                                <span class="option-icon me-2"><span class="option-icon-dot"></span></span> {{ ouvrage.name }}
-                              </a>
-                          </div>
-                          <div class="col-8 d-flex">
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1">
-                              <input @keyup="updateAllValues" type="text" v-model.number="ouvrage.qty" class="w-100 form-control form-control-sm custom-text-danger">
-                            </div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1">
-                              <select class="form-control form-control-sm custom-text-danger" v-model="ouvrage.unit">
-                                <option v-for="(unit, unitIndex) in units" :value="unit.value" :key="unitIndex">{{ unit.display }}</option>
-                              </select>
-                            </div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1">
-                              {{ ouvrage.totalHour }} hr
-                            </div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1">
-                              {{ (ouvrage.total / ouvrage.qty).toFixed(2) }}€
-                            </div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1">
-                              {{ ouvrage.total.toFixed(2) }}€
-                            </div>
-                            <div class="col-2 d-flex align-items-center justify-content-center">
-                              <svg class="cursor-pointer" @click="removeOuvrage(zoneIndex, 2, ouvrageIndex)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M17 6H22V8H20V21C20 21.2652 19.8946 21.5196 19.7071 21.7071C19.5196 21.8946 19.2652 22 19 22H5C4.73478 22 4.48043 21.8946 4.29289 21.7071C4.10536 21.5196 4 21.2652 4 21V8H2V6H7V3C7 2.73478 7.10536 2.48043 7.29289 2.29289C7.48043 2.10536 7.73478 2 8 2H16C16.2652 2 16.5196 2.10536 16.7071 2.29289C16.8946 2.48043 17 2.73478 17 3V6ZM18 8H6V20H18V8ZM13.414 14L15.182 15.768L13.768 17.182L12 15.414L10.232 17.182L8.818 15.768L10.586 14L8.818 12.232L10.232 10.818L12 12.586L13.768 10.818L15.182 12.232L13.414 14ZM9 4V6H15V4H9Z" fill="black"/>
-                              </svg>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="tab-content mb-3">
-                          <div class="tab-pane ps-3" :class="{ 'active': ouvrageIndex == 0}" :id="'zone-'+ zoneIndex +'-security-ouvrage-'+ouvrageIndex">
-                            <h3 class="mulish-light fw-light custom-text-danger font-14">TEXTE COMMENTAIRE TECHNIQUE</h3>
-                            <!-- ouvrage description -->
-                            <ul class="ps-3" v-if="ouvrage.textchargeaffaire !=''">
-                              <li class="mulish-regular font-10">
-                                {{ ouvrage.textchargeaffaire }}
-                              </li>
-                            </ul>
-                            <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
-                            <ul class="ps-3">
-                              <li class="mulish-regular font-10 custom-text-danger">
-                                <input style="text-align: left !important" type="text" v-model="ouvrage.customerText" class="w-100 form-control form-control-sm custom-text-danger">
-                              </li>
-                            </ul>
-                            <!-- Ouvrage Task -->
-                            <div class="ouvrage-task" v-for="(task, taskIndex) in ouvrage.tasks" :key="taskIndex">
-                              <div class="task-header mt-3 d-flex align-items-center custom-option cursor-pointer" :class="{ 'active': taskIndex == 0}" :data-id="'zone-'+ zoneIndex +'-security-ouvrage-'+ouvrageIndex+'-task-'+taskIndex" @click="activeOuvrageTask">
-                                <span class="option-icon me-2"><span class="option-icon-dot"></span></span> {{ task.name }}
-                              </div>
-                              <div class="task-body ps-3" :class="{ 'show': taskIndex == 0}" :id="'zone-'+ zoneIndex +'-security-ouvrage-'+ouvrageIndex+'-task-'+taskIndex">
-                                <h3 class="mulish-light fw-light custom-text-danger font-14">TEXTE COMMENTAIRE TECHNIQUE</h3>
-                                <!-- task description -->
-                                <ul class="ps-3" v-if="task.textchargeaffaire != ''">
-                                  <li class="mulish-regular font-10">
-                                    {{ task.textchargeaffaire }}
-                                  </li>
-                                </ul>
-                                <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
-                                <ul class="ps-3">
-                                  <li class="mulish-regular font-10 custom-text-danger">
-                                    <textarea style="text-align: left !important" v-model="task.customerText" class="w-100 form-control custom-text-danger" rows="2"></textarea>
-                                  </li>
-                                </ul>
-                                <div class="w-100 ps-3">
-                                  <table class="table w-100 details-table m-0">
-                                    <thead>
-                                      <tr>
-                                        <td></td>
-                                        <td valign="middle" class="text-center fw-bold">Qte ouvrage</td>
-                                        <td valign="middle" class="text-center fw-bold">Qte</td>
-                                        <td valign="middle" class="text-center fw-bold">Unité</td>
-                                        <td valign="middle" class="text-center fw-bold">Hr</td>
-                                        <td valign="middle" class="text-center fw-bold">Prix</td>
-                                        <td valign="middle" class="text-center fw-bold">Marge</td>
-                                        <td valign="middle" class="text-center fw-bold">Total</td>
-                                        <td valign="middle" class="text-center fw-bold">Taxe</td>
-                                        <td></td>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      <tr v-for="(detail, detailIndex) in task.details" :key="detailIndex">
-                                        <td valign="middle">
-                                          <div class="custom-option d-flex align-items-center">
-                                            <span 
-                                              :class="{ 'clock-icon': detail.type == 'MO' || detail.type == 'INTERIM'|| detail.type == 'Labor',  
-                                                'book-icon' : detail.type == 'PRODUIT' || detail.type == 'COMMANDE FOURNISSEUR'
-                                              }"
-                                            ></span> {{ detail.name }}
-                                          </div>
-                                        </td>
-                                       <td valign="middle" class="text-center">{{ detail.qtyOuvrage }}</td>
-                                        <td valign="middle" class="text-center">
-                                          <input v-if="detail.type != 'MO'" @keyup="updateAllValues" type="text" v-model.number="detail.qty" class="w-100 form-control form-control-sm custom-text-danger">
-                                          <span v-else>{{ detail.qty }}</span>
-                                        </td>
-                                        <td valign="middle" text="text-center">{{ detail.unit }}</td>
-                                        <td valign="middle" v-if="detail.type == 'MO' || detail.type == 'Labor'">
-                                          <div class="d-flex align-items-center">
-                                            <input @keyup="updateAllValues" type="text" v-model.number="detail.numberH" class="w-100 form-control form-control-sm custom-text-danger">hr
-                                          </div>
-                                        </td>                                      
-                                        <td valign="middle" class="text-center supplier" v-else-if="detail.type == 'COMMANDE FOURNISSEUR'">
-                                          <svg width="20" height="25" viewBox="0 0 20 25" fill="none" xmlns="http://www.w3.org/2000/svg" @click="openPdfModal(detail.base64)" class="cursor-pointer">
-                                            <path d="M19.9981 5.41835C19.9972 5.4093 19.9956 5.40049 19.994 5.39168C19.9935 5.38875 19.9932 5.38571 19.9926 5.38278C19.9905 5.37226 19.9877 5.36199 19.9847 5.35186C19.9843 5.35064 19.9841 5.34932 19.9837 5.34809C19.9804 5.33767 19.9766 5.3275 19.9724 5.31751C19.972 5.31649 19.9717 5.31541 19.9713 5.31438C19.9672 5.30484 19.9626 5.2956 19.9578 5.2865C19.957 5.28498 19.9563 5.28341 19.9555 5.2819C19.9509 5.27343 19.9457 5.26531 19.9405 5.25724C19.9391 5.25519 19.9379 5.25303 19.9366 5.25103C19.9314 5.24349 19.9258 5.23635 19.92 5.22921C19.9182 5.22686 19.9165 5.22441 19.9146 5.22211C19.9075 5.21365 19.8998 5.20558 19.892 5.19775C19.8913 5.19702 19.8907 5.19623 19.8899 5.1955L14.6769 0.107436C14.676 0.106556 14.675 0.105822 14.674 0.104941C14.6662 0.097456 14.6581 0.0902153 14.6497 0.0834149C14.6469 0.0812133 14.644 0.0793542 14.6412 0.0772505C14.6343 0.0720157 14.6274 0.0667808 14.6201 0.0620352C14.6176 0.0603718 14.6149 0.059002 14.6123 0.0573875C14.6045 0.052544 14.5967 0.0477495 14.5885 0.0434932C14.5867 0.0425636 14.5848 0.0417808 14.583 0.0409002C14.5739 0.0363503 14.5647 0.0319472 14.5552 0.0280822C14.554 0.027593 14.5527 0.0272505 14.5515 0.0267613C14.5414 0.0227984 14.5311 0.0190802 14.5206 0.0159491C14.5192 0.0155577 14.5179 0.0153131 14.5165 0.0149217C14.5062 0.0119863 14.4957 0.0092955 14.4851 0.00719178C14.4819 0.00655577 14.4786 0.00631115 14.4754 0.00577299C14.4666 0.00425636 14.4577 0.00273973 14.4486 0.0018591C14.4361 0.000636008 14.4236 0 14.411 0H1.97995C0.88822 0 0 0.866928 0 1.93249V23.0675C0 24.1331 0.88822 25 1.97995 25H18.02C19.1118 25 20 24.1331 20 23.0675V5.45499C20 5.44271 19.9993 5.43048 19.9981 5.41835ZM14.787 1.25274L18.7165 5.08806H16.015C15.3379 5.08806 14.787 4.55039 14.787 3.88943V1.25274ZM18.02 24.2661H1.97995C1.30281 24.2661 0.75188 23.7285 0.75188 23.0675V1.93249C0.75188 1.27153 1.30281 0.733855 1.97995 0.733855H14.0351V3.88943C14.0351 4.95499 14.9233 5.82192 16.015 5.82192H19.2481V23.0675C19.2481 23.7285 18.6972 24.2661 18.02 24.2661Z" fill="black"/>
-                                          </svg>
-                                        </td>
-                                        <td valign="middle" class="text-center" v-else></td>
-                                        <td valign="middle">
-                                          <div class="d-flex align-items-center">
-                                            <input @keyup="updateAllValues" type="text" v-model="detail.unitPrice" class="w-100 form-control form-control-sm custom-text-danger">€
-                                          </div>
-                                        </td>
-                                        <td valign="middle" v-if="detail.type == 'MO' || detail.type == 'Labor'">
-                                        </td>
-                                        <td v-else style="min-width: 40px" valign="middle">
-                                          <div class="d-flex align-items-center">
-                                            <input @keyup="updateAllValues" type="text" v-model.number="detail.marge" class="w-100 form-control form-control-sm custom-text-danger">%
-                                          </div>                                        
-                                        </td>
-                                        <td valign="middle">{{ detail.totalPrice }}€</td>
-                                        <td valign="middle">
-                                          <select style="min-width: 40px" class="w-100 form-control form-control-sm custom-text-danger" v-model="detail.tax">
-                                            <option :value="tax.value" v-for="(tax, taxIndex) in taxes" :key="taxIndex">{{ tax.display }} %</option>
-                                          </select>                                          
-                                        </td>
-                                        <td valign="middle">
-                                          <svg class="cursor-pointer" @click="removeOuvrageDetail(zoneIndex, 2, ouvrageIndex, taskIndex, detailIndex)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                          <path d="M17 6H22V8H20V21C20 21.2652 19.8946 21.5196 19.7071 21.7071C19.5196 21.8946 19.2652 22 19 22H5C4.73478 22 4.48043 21.8946 4.29289 21.7071C4.10536 21.5196 4 21.2652 4 21V8H2V6H7V3C7 2.73478 7.10536 2.48043 7.29289 2.29289C7.48043 2.10536 7.73478 2 8 2H16C16.2652 2 16.5196 2.10536 16.7071 2.29289C16.8946 2.48043 17 2.73478 17 3V6ZM18 8H6V20H18V8ZM13.414 14L15.182 15.768L13.768 17.182L12 15.414L10.232 17.182L8.818 15.768L10.586 14L8.818 12.232L10.232 10.818L12 12.586L13.768 10.818L15.182 12.232L13.414 14ZM9 4V6H15V4H9Z" fill="black"/>
-                                          </svg>
-                                        </td>
-                                      </tr>
-                                    </tbody>
-                                  </table>
-                                </div>
-                                <div class="btns d-flex mt-4">
-                                  <div class="col-5">
-                                    <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openProductModal(zoneIndex, 2,ouvrageIndex, taskIndex)">
-                                      <span class="plus-icon me-2"></span> AJOUTER UN PRODUIT
-                                    </div>
-                                    <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openTaskModal(zoneIndex, 2, ouvrageIndex)">
-                                      <span class="plus-icon me-2"></span> AJOUTER ACTION
-                                    </div>
-                                    <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openSupplierModal(zoneIndex, 2, ouvrageIndex, taskIndex)">
-                                      <span class="plus-icon me-2"></span> COMMANDE FOURNISSEUR
-                                    </div>
-                                  </div>
-                                  <div class="col-5">
-                                    <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openLaborModal(zoneIndex, 2, ouvrageIndex, taskIndex)">
-                                      <span class="plus-icon me-2"></span> AJOUTER UN MAIN D’ OEUVRES
-                                    </div>
-                                    <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openInterimModal(zoneIndex, 2, ouvrageIndex, taskIndex)">
-                                      <span class="plus-icon me-2"></span> AJOUTER  INTERIM
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div v-if="ouvrage.tasks.length == 0" class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openTaskModal(zoneIndex, 2, ouvrageIndex)">
-                              <span class="plus-icon me-2"></span> AJOUTER ACTION
-                            </div>                                                
-                          </div>
-                        </div>
-                      </div>
+                  <div class="d-flex mt-3">
+                    <div class="col-8 title">
+                      Intervention
                     </div>
+                    <div class="col-2 border-bottom text-center border-end font-14 text-nowrap">{{ form.totalHoursForPrestation }}hr</div>
+                    <div class="col-2 border-bottom text-center font-14 text-nowrap">{{ form.totalPriceForPrestation.toFixed(2) }} €</div>
                   </div>
-                </div>
-
-                <div class="ouvrage-section prestation-ouvrages bg-white px-4 py-3 mt-2 mb-2" :id="'zone-'+zoneIndex+'-prestation-ouvrages'">
-                  <div class="ouvrage-header d-flex">
-                    <div class="col-7">
-                      <div class="col-5 d-flex align-items-center cursor-pointer toggle-btn" @click="togglePanel('zone-'+zoneIndex+'-prestation-ouvrages')">
-                        <span class="prestation-icon me-2"></span> 
-                        <input type="text" @blur="zone.prestationOuvrage.edit = false" v-if="zone.prestationOuvrage.edit" class="form-control form-control-sm" v-model="zone.prestationOuvrage.name">
-                        <span v-else class="me-4" @dblclick="zone.prestationOuvrage.edit = true">{{ zone.prestationOuvrage.name }}</span>                          
-                        <span class="arrow-icon ms-auto"></span>
-                      </div>
-                      <div class="add-btn ms-5 ps-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" 
-                      @click="openPrestationModal(zoneIndex)">
-                        <span class="plus-icon me-2"></span> AJOUTER UN OUVRAGE
-                      </div>
+                  <div class="d-flex mt-4">
+                    <div class="col-10 bold-title">
+                      Total Jours Interim
                     </div>
-                    <div class="col-5 d-flex align-items-center">
-                      <div class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center">{{ zone.prestationOuvrage.totalHour }} hr</div>
-                      <div class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center text-nowrap">{{ zone.prestationOuvrage.sumUnitPrice.toFixed(2) }} €</div>
-                      <div class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center text-nowrap">{{ zone.prestationOuvrage.totalPrice.toFixed(2) }} €</div>
-                    </div>
+                    <div class="col-2 font-14 fw-bold text-nowrap">{{form.totalHoursForInterim}} Jours</div>
                   </div>
-                  <div class="ouvrage-body ps-3 mt-3">
-                    <div class="ouvrage-list">
-                      <div class="ouvrage-list-header">
-                        <div class="d-flex">
-                          <div class="col-4"></div>
-                          <div class="col-8 d-flex">
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Qte</div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Unit ouv</div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Total hr</div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Total / Qte</div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1 fw-bold">Total</div>
-                            <div class="col-2"></div>
-                          </div>
-                        </div>
-                      </div>                      
-                      <div class="ouvrage-item" v-for="(ouvrage, ouvrageIndex) in zone.prestationOuvrage.ouvrages" :key="ouvrageIndex">
-                        <div class="d-flex ouvrage-header">
-                          <div class="col-4">
-                            <a class="ouvrage custom-option d-flex align-items-center px-0 text-black" :class="{ 'active': ouvrageIndex == (zone.prestationOuvrage.ouvrages.length - 1 )}" :data-id="'zone-' + zoneIndex +'-prestation-ouvrage-'+ouvrageIndex" href="javascript:;"
-                                @click="activeOuvrage"
-                              >
-                                <span class="option-icon me-2"><span class="option-icon-dot"></span></span> {{ ouvrage.name }}
-                              </a>
-                          </div>
-                          <div class="col-8 d-flex">
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1">
-                              <input @keyup="updateAllValues" type="text" v-model.number="ouvrage.qty" class="w-100 form-control form-control-sm custom-text-danger">
-                            </div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1">
-                              <select class="form-control form-control-sm custom-text-danger" v-model="ouvrage.unit">
-                                <option v-for="(unit, unitIndex) in units" :value="unit.value" :key="unitIndex">{{ unit.display }}</option>
-                              </select>
-                            </div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1">
-                              {{ ouvrage.totalHour }} hr
-                            </div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1">
-                              {{ (ouvrage.total / ouvrage.qty).toFixed(2) }}€
-                            </div>
-                            <div class="col-2 d-flex align-items-center justify-content-center border border-1">
-                              {{ ouvrage.total.toFixed(2) }}€
-                            </div>
-                            <div class="col-2 d-flex align-items-center justify-content-center">
-                              <svg class="cursor-pointer" @click="removeOuvrage(zoneIndex, 3, ouvrageIndex)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M17 6H22V8H20V21C20 21.2652 19.8946 21.5196 19.7071 21.7071C19.5196 21.8946 19.2652 22 19 22H5C4.73478 22 4.48043 21.8946 4.29289 21.7071C4.10536 21.5196 4 21.2652 4 21V8H2V6H7V3C7 2.73478 7.10536 2.48043 7.29289 2.29289C7.48043 2.10536 7.73478 2 8 2H16C16.2652 2 16.5196 2.10536 16.7071 2.29289C16.8946 2.48043 17 2.73478 17 3V6ZM18 8H6V20H18V8ZM13.414 14L15.182 15.768L13.768 17.182L12 15.414L10.232 17.182L8.818 15.768L10.586 14L8.818 12.232L10.232 10.818L12 12.586L13.768 10.818L15.182 12.232L13.414 14ZM9 4V6H15V4H9Z" fill="black"/>
-                              </svg>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="tab-content mb-3">
-                          <div class="tab-pane ps-3" :class="{ 'active': ouvrageIndex == 0}" :id="'zone-'+ zoneIndex +'-prestation-ouvrage-'+ouvrageIndex">
-                            <h3 class="mulish-light fw-light custom-text-danger font-14">TEXTE COMMENTAIRE TECHNIQUE</h3>
-                            <!-- ouvrage description -->
-                            <ul class="ps-3" v-if="ouvrage.textchargeaffaire !=''">
-                              <li class="mulish-regular font-10">
-                                {{ ouvrage.textchargeaffaire }}
-                              </li>
-                            </ul>
-                            <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
-                            <ul class="ps-3">
-                              <li class="mulish-regular font-10 custom-text-danger">
-                                <input  style="text-align: left !important" type="text" v-model="ouvrage.customerText" class="w-100 form-control form-control-sm custom-text-danger">
-                              </li>
-                            </ul>
-                            <!-- Ouvrage Task -->
-                            <div class="ouvrage-task" v-for="(task, taskIndex) in ouvrage.tasks" :key="taskIndex">
-                              <div class="task-header mt-3 d-flex align-items-center custom-option cursor-pointer" :class="{ 'active': taskIndex == 0}" :data-id="'zone-'+ zoneIndex +'-prestation-ouvrage-'+ouvrageIndex+'-task-'+taskIndex" @click="activeOuvrageTask">
-                                <span class="option-icon me-2"><span class="option-icon-dot"></span></span> {{ task.name }}
-                              </div>
-                              <div class="task-body ps-3" :class="{ 'show': taskIndex == 0}" :id="'zone-'+ zoneIndex +'-prestation-ouvrage-'+ouvrageIndex+'-task-'+taskIndex">
-                                <h3 class="mulish-light fw-light custom-text-danger font-14">TEXTE COMMENTAIRE TECHNIQUE</h3>
-                                <!-- task description -->
-                                <ul class="ps-3" v-if="task.textchargeaffaire != ''">
-                                  <li class="mulish-regular font-10">
-                                    {{ task.textchargeaffaire }}
-                                  </li>
-                                </ul>
-                                <h3 class="mt-3 mulish-light fw-light text-custom-success font-14">TEXTE POUR CLIENTS</h3>
-                                <ul class="ps-3">
-                                  <li class="mulish-regular font-10 custom-text-danger">
-                                    <textarea  style="text-align: left !important" v-model="task.customerText" class="w-100 form-control custom-text-danger" rows="2"></textarea>
-                                  </li>
-                                </ul>
-                                <div class="w-100 ps-3">
-                                  <table class="table w-100 details-table m-0">
-                                    <thead>
-                                      <tr>
-                                        <td></td>
-                                        <td valign="middle" class="text-center fw-bold">Qte ouvrage</td>
-                                        <td valign="middle" class="text-center fw-bold">Qte</td>
-                                        <td valign="middle" class="text-center fw-bold">Unité</td>
-                                        <td valign="middle" class="text-center fw-bold">Hr</td>
-                                        <td valign="middle" class="text-center fw-bold">Prix</td>
-                                        <td valign="middle" class="text-center fw-bold">Marge</td>
-                                        <td valign="middle" class="text-center fw-bold">Total</td>
-                                        <td valign="middle" class="text-center fw-bold">Taxe</td>
-                                        <td></td>
-                                      </tr>
-                                    </thead>                                    
-                                    <tbody>
-                                      <tr v-for="(detail, detailIndex) in task.details" :key="detailIndex">
-                                        <td valign="middle">
-                                          <div class="custom-option d-flex align-items-center">
-                                            <span 
-                                              :class="{ 'clock-icon': detail.type == 'MO' || detail.type == 'INTERIM'|| detail.type == 'Labor',  
-                                                'book-icon' : detail.type == 'PRODUIT' || detail.type == 'COMMANDE FOURNISSEUR'
-                                              }"
-                                            ></span> {{ detail.name }}
-                                          </div>
-                                        </td>
-                                       <td valign="middle" class="text-center">{{ detail.qtyOuvrage }}</td>
-                                        <td valign="middle" class="text-center">
-                                          <input v-if="detail.type != 'MO'" @keyup="updateAllValues" type="text" v-model.number="detail.qty" class="w-100 form-control form-control-sm custom-text-danger">
-                                          <span v-else>{{ detail.qty }}</span>
-                                        </td>
-                                        <td valign="middle" text="text-center">{{ detail.unit }}</td>
-                                        <td valign="middle" v-if="detail.type == 'MO' || detail.type == 'Labor'">
-                                          <div class="d-flex align-items-center">
-                                            <input @keyup="updateAllValues" type="text" v-model="detail.numberH" class="w-100 form-control form-control-sm custom-text-danger">hr
-                                          </div>
-                                        </td>                                      
-                                        <td valign="middle" class="text-center supplier" v-else-if="detail.type == 'COMMANDE FOURNISSEUR'">
-                                          <svg width="20" height="25" viewBox="0 0 20 25" fill="none" xmlns="http://www.w3.org/2000/svg" @click="openPdfModal(detail.base64)" class="cursor-pointer">
-                                            <path d="M19.9981 5.41835C19.9972 5.4093 19.9956 5.40049 19.994 5.39168C19.9935 5.38875 19.9932 5.38571 19.9926 5.38278C19.9905 5.37226 19.9877 5.36199 19.9847 5.35186C19.9843 5.35064 19.9841 5.34932 19.9837 5.34809C19.9804 5.33767 19.9766 5.3275 19.9724 5.31751C19.972 5.31649 19.9717 5.31541 19.9713 5.31438C19.9672 5.30484 19.9626 5.2956 19.9578 5.2865C19.957 5.28498 19.9563 5.28341 19.9555 5.2819C19.9509 5.27343 19.9457 5.26531 19.9405 5.25724C19.9391 5.25519 19.9379 5.25303 19.9366 5.25103C19.9314 5.24349 19.9258 5.23635 19.92 5.22921C19.9182 5.22686 19.9165 5.22441 19.9146 5.22211C19.9075 5.21365 19.8998 5.20558 19.892 5.19775C19.8913 5.19702 19.8907 5.19623 19.8899 5.1955L14.6769 0.107436C14.676 0.106556 14.675 0.105822 14.674 0.104941C14.6662 0.097456 14.6581 0.0902153 14.6497 0.0834149C14.6469 0.0812133 14.644 0.0793542 14.6412 0.0772505C14.6343 0.0720157 14.6274 0.0667808 14.6201 0.0620352C14.6176 0.0603718 14.6149 0.059002 14.6123 0.0573875C14.6045 0.052544 14.5967 0.0477495 14.5885 0.0434932C14.5867 0.0425636 14.5848 0.0417808 14.583 0.0409002C14.5739 0.0363503 14.5647 0.0319472 14.5552 0.0280822C14.554 0.027593 14.5527 0.0272505 14.5515 0.0267613C14.5414 0.0227984 14.5311 0.0190802 14.5206 0.0159491C14.5192 0.0155577 14.5179 0.0153131 14.5165 0.0149217C14.5062 0.0119863 14.4957 0.0092955 14.4851 0.00719178C14.4819 0.00655577 14.4786 0.00631115 14.4754 0.00577299C14.4666 0.00425636 14.4577 0.00273973 14.4486 0.0018591C14.4361 0.000636008 14.4236 0 14.411 0H1.97995C0.88822 0 0 0.866928 0 1.93249V23.0675C0 24.1331 0.88822 25 1.97995 25H18.02C19.1118 25 20 24.1331 20 23.0675V5.45499C20 5.44271 19.9993 5.43048 19.9981 5.41835ZM14.787 1.25274L18.7165 5.08806H16.015C15.3379 5.08806 14.787 4.55039 14.787 3.88943V1.25274ZM18.02 24.2661H1.97995C1.30281 24.2661 0.75188 23.7285 0.75188 23.0675V1.93249C0.75188 1.27153 1.30281 0.733855 1.97995 0.733855H14.0351V3.88943C14.0351 4.95499 14.9233 5.82192 16.015 5.82192H19.2481V23.0675C19.2481 23.7285 18.6972 24.2661 18.02 24.2661Z" fill="black"/>
-                                          </svg>
-                                        </td>
-                                        <td valign="middle" class="text-center" v-else></td>
-                                        <td valign="middle">
-                                          <div class="d-flex align-items-center">
-                                            <input @keyup="updateAllValues" type="text" v-model.number="detail.unitPrice" class="w-100 form-control form-control-sm custom-text-danger">€
-                                          </div>
-                                        </td>
-                                        <td valign="middle" v-if="detail.type == 'MO' || detail.type == 'Labor'">
-                                        </td>
-                                        <td v-else style="min-width: 40px" valign="middle">
-                                          <div class="d-flex align-items-center">
-                                            <input @keyup="updateAllValues" type="text" v-model.number="detail.marge" class="w-100 form-control form-control-sm custom-text-danger">%
-                                          </div>                                        
-                                        </td>
-                                        <td valign="middle">{{ detail.totalPrice }}€</td>
-                                        <td valign="middle">
-                                          <select style="min-width: 40px" class="w-100 form-control form-control-sm custom-text-danger" v-model="detail.tax">
-                                            <option :value="tax.value" v-for="(tax, taxIndex) in taxes" :key="taxIndex">{{ tax.display }} %</option>
-                                          </select>                                          
-                                        </td>
-                                        <td valign="middle">
-                                          <svg class="cursor-pointer" @click="removeOuvrageDetail(zoneIndex, 3, ouvrageIndex, taskIndex, detailIndex)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                          <path d="M17 6H22V8H20V21C20 21.2652 19.8946 21.5196 19.7071 21.7071C19.5196 21.8946 19.2652 22 19 22H5C4.73478 22 4.48043 21.8946 4.29289 21.7071C4.10536 21.5196 4 21.2652 4 21V8H2V6H7V3C7 2.73478 7.10536 2.48043 7.29289 2.29289C7.48043 2.10536 7.73478 2 8 2H16C16.2652 2 16.5196 2.10536 16.7071 2.29289C16.8946 2.48043 17 2.73478 17 3V6ZM18 8H6V20H18V8ZM13.414 14L15.182 15.768L13.768 17.182L12 15.414L10.232 17.182L8.818 15.768L10.586 14L8.818 12.232L10.232 10.818L12 12.586L13.768 10.818L15.182 12.232L13.414 14ZM9 4V6H15V4H9Z" fill="black"/>
-                                          </svg>
-                                        </td>
-                                      </tr>
-                                    </tbody>
-                                  </table>
-                                </div>
-                                <div class="btns d-flex mt-4">
-                                  <div class="col-5">
-                                    <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openProductModal(zoneIndex, 3,ouvrageIndex, taskIndex)">
-                                      <span class="plus-icon me-2"></span> AJOUTER UN PRODUIT
-                                    </div>
-                                    <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openTaskModal(zoneIndex, 3, ouvrageIndex)">
-                                      <span class="plus-icon me-2"></span> AJOUTER ACTION
-                                    </div>
-                                    <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openSupplierModal(zoneIndex, 3, ouvrageIndex, taskIndex)">
-                                      <span class="plus-icon me-2"></span> COMMANDE FOURNISSEUR
-                                    </div>
-                                  </div>
-                                  <div class="col-5">
-                                    <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openLaborModal(zoneIndex, 3, ouvrageIndex, taskIndex)">
-                                      <span class="plus-icon me-2"></span> AJOUTER UN MAIN D’ OEUVRES
-                                    </div>
-                                    <div class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openInterimModal(zoneIndex, 3, ouvrageIndex, taskIndex)">
-                                      <span class="plus-icon me-2"></span> AJOUTER  INTERIM
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div v-if="ouvrage.tasks.length == 0" class="add-btn ms-3 mt-3 d-flex align-items-center mulish-semibold font-14 custom-text-danger cursor-pointer" @click="openTaskModal(zoneIndex, 3, ouvrageIndex)">
-                              <span class="plus-icon me-2"></span> AJOUTER ACTION
-                            </div>                                                
-                          </div>
-                        </div>
-                      </div>                        
+                  <div class="d-flex mt-3">
+                    <div class="col-10 bold-title">
+                      Total M/V Fourniseurs
                     </div>
+                    <div class="col-2 font-14 fw-bold text-nowrap">€ {{ parseFloat(form.totalPriceWithoutMarge).toFixed(2) }}</div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="ms-2 right-panel">
-              <div class="section bg-white">
-                <div class="d-flex">
-                  <div class="col-9 d-flex flex-wrap">
-                    <p class="w-100 m-0 title">
-                      Arrondir les heures
-                    </p>
-                    <p class="w-100 m-0 sub-title">
-                      Les jours du Chantiers
-                    </p>
-                  </div>
-                  <div class="col-3 d-flex align-items-center">
-                    <p class="w-100 text-center font-16 mulish-extrabold d-flex align-items-center">
-                      <input type="text" class="form-control form-control-sm me-2" v-model="form.totalDays" @change="adjustHours"> jours 
-                    </p>                    
+            <div class="devis-simple w-100" v-else>
+              <div class="d-flex">
+                <div class="left-panel bg-white">
+                  <div class="d-flex px-3 py-2">
+                    <div class="col-7">
+                      <div class="d-flex w-100">
+                        <div class="customer-pic rounded-circle bg-primary">
+
+                        </div>
+                        <div class="ms-3 customer-name d-flex flex-wrap">
+                          <div class="small-title w-100">
+                            Nom du client
+                          </div>
+                          <div class="mulish-extrabold font-16 w-100">
+                            {{ newOrder.customer.raisonsociale }}
+                          </div>
+                        </div>
+                        <div class="ms-auto customer-edit d-flex align-items-center">
+                          <span class="edit-icon me-3"></span>
+                        </div>
+                      </div>
+                      <div class="d-flex">
+                        <div class="ps-5 almarai-bold font-14 text-gray fw-bold w-100">
+                          Contact
+                        </div>
+                      </div>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div class="ps-5 ms-2 mulish-extrabold font-16">
+                          {{ newOrder.customer.contact }}
+                        </div>
+                        <div>
+                          <p>Email : {{ newOrder.customer.email }}</p>
+                          <p>{{ newOrder.customer.telephone }}</p>
+                        </div>
+                      </div>
+                      <div class="ps-4">
+                        <div class="d-flex mt-4">
+                          <div class="col-5 pe-2">
+                            <p class="m-0 almarai-bold font-14 text-gray">Adresse du chantier</p>
+                            <p class="m-0 almarai-light font-14">{{ newOrder.address.address1 }} {{ newOrder.address.postCode }} {{ newOrder.address.city }}</p>
+                          </div>
+                          <div class="col-7 google-map-container" v-if="useGoogleService">
+                            <GoogleMap v-model:latitude="newOrder.address.lat" v-model:longitude="newOrder.address.lon"></GoogleMap>
+                          </div>
+                        </div>
+                        <div class="d-flex mt-4">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M7 2C5.34315 2 4 3.34315 4 5V19C4 20.6569 5.34315 22 7 22H17C18.6569 22 20 20.6569 20 19V5C20 3.34315 18.6569 2 17 2H7ZM8 9C9.10457 9 10 8.10457 10 7C10 5.89543 9.10457 5 8 5C6.89543 5 6 5.89543 6 7C6 8.10457 6.89543 9 8 9ZM18 12H6V14H18V12ZM6 16H11C11.5523 16 12 16.4477 12 17C12 17.5523 11.5523 18 11 18H6V16Z" fill="#FFB91C"/>
+                          </svg>
+                          <label for="devisNote">NOTES / INFORMATIONS / COMMENTAIRES</label>
+                        </div>
+                        <div class="d-flex mt-4">
+                          <textarea v-model="newOrder.comment" class="w-100" id="devisNote" rows="3"></textarea>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-5 ps-5 pt-4 pe-3">
+                      <div class="d-flex">
+                        <span class="ms-auto col-4 fw-bold mulish-extra-bold font-16 text-black text-center text-nowrap">
+                          {{ newOrder.totalHours }} hr
+                        </span>
+                        <span class="col-4 fw-bold mulish-extra-bold font-16 text-black text-center text-nowrap lcdtOrange">
+                          {{ newOrder.totalAmount.toLocaleString() }} €
+                        </span>
+                      </div>
+                      <div class="photos mt-3">
+                        <div class="ged-cat-header d-flex align-items-center justify-content-between mulish-semibold font-16 custom-text-danger">
+                          <div class="d-flex lcdtOrange align-items-end">
+                            <span class="camera-icon ms-2"></span> Photo
+                          </div>
+                          <div class="add-btn ms-3 d-flex align-items-center mulish-semibold font-14 lcdtOrange cursor-pointer"
+                          @click="addPhotoToDevis()">
+                            <span class="plus-icon me-2"></span> AJOUTER
+                          </div>
+                        </div>
+                        <div class="ged-cat-content mt-3 mb-3 d-flex flex-wrap">
+                          <div class="img ms-2" v-for="(photo, index) in newOrder.photos" :key="index">
+                            <div class="rounded border border-1 ged-image"
+                              :style="{ 'background-image': `url(${photo.url != '' ? photo.url : photo.base64data})`}"
+                            >
+                              <div class="w-100 h-100 image-overlayer d-flex justify-content-around align-items-center">
+                                <span class="eye-icon" @click="viewGedMedia(photo.url != '' ? photo.url : photo.base64data, photo.type)"></span>
+                                <span class="cancel-icon" @click="removeImageFromDevis(index)"></span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div class="d-flex mt-2">
-                  <div class="col-9 d-flex flex-wrap">
-                    <p class="w-100 m-0 title">
-                      Remise Euros :  
-                    </p>
-                    <p class="w-100 m-0 sub-title">
-                      A convertir en heure et a soustraire au total d’heures
-                    </p>
-                  </div>
-                  <div class="col-3 d-flex align-items-center">
-                    <p class="w-100 text-center font-16 mulish-extrabold d-flex align-items-center">
-                      <input type="text" class="form-control form-control-sm me-2" v-model="form.discount"> € 
-                    </p>
-                  </div>
+                <div class="ms-2 right-panel">
+                  <chat></chat>
                 </div>
               </div>
-              <div class="section mt-2 bg-white">
-                <div class="d-flex">
-                  <div class="d-flex flex-wrap col-8">
-                    <p class="w-100 title m-0">
-                      Synthese Chantier
-                    </p>
-                    <p class="w-100 m-0 sub-title">
-                      Apud has gentes, quarum exordiens 
-                    </p>
+              <div class=" mt-2 d-flex">
+                <div class="left-panel bg-white">
+                  <div class="product-form">
+                    <div class="product-form-header d-flex align-items-end">
+                      <div class="prduct-icon rounded-circle d-flex align-items-center justify-content-center">
+                        <svg width="28" height="30" viewBox="0 0 28 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <g clip-path="url(#clip0_4785_15632)">
+                          <path d="M8.35586 30.0001H10.5412C11.8749 30.0001 12.9917 29.3764 13.3131 28.5264H5.58398C5.90536 29.3709 7.02215 30.0001 8.35586 30.0001Z" fill="#00D6A0"/>
+                          <path d="M5.48752 12.8055V28.0291C5.48752 28.2002 5.52769 28.3713 5.58393 28.5314H13.3131C13.3693 28.3713 13.4095 28.2057 13.4095 28.0291V12.8055C16.6473 11.7733 18.897 9.5323 18.897 6.92145C18.897 4.31059 16.6072 2.03092 13.3291 1.00977V6.92145H5.55983V1.00977C2.28178 2.03092 0 4.28851 0 6.92145C0 9.55438 2.24964 11.7733 5.48752 12.8055ZM7.72913 13.2747H11.2562V26.8699C11.2562 27.1846 10.8867 27.4329 10.4367 27.4329H8.55667C8.09871 27.4329 7.73716 27.179 7.73716 26.8699V13.2747H7.72913Z" fill="#4D4E50"/>
+                          <path d="M25.3969 15.0911V4.27783L25.7263 3.60994V0.877645L24.4649 0.0441582L24.3926 0L23.1071 0.877645V3.60994L23.3963 4.25575V15.0911H24.4649H25.3969Z" fill="#4D4E50"/>
+                          <path d="M21.709 24.2923V28.3549C21.709 29.2601 22.9061 29.9997 24.3845 29.9997H24.4648C25.903 29.9666 27.0599 29.2491 27.0599 28.3549V17.4698H28V15.0908H20.7931V17.4698H21.709V24.2978V24.2923ZM25.903 27.6759H24.971V17.5747H25.903V27.6814V27.6759ZM22.8579 17.5692H23.7899V27.6759H22.8579V17.5747V17.5692Z" fill="#00D6A0"/>
+                          <path d="M8.54862 27.4391H10.4287C10.8786 27.4391 11.2482 27.1852 11.2482 26.8761V13.2754H7.72107V26.8706C7.72107 27.1852 8.09065 27.4336 8.54058 27.4336L8.54862 27.4391Z" fill="#CCCCCC"/>
+                          <path d="M23.7899 17.5752H22.8579V27.6819H23.7899V17.5752Z" fill="#4D4E50"/>
+                          <path d="M25.9031 17.5752H24.9711V27.6819H25.9031V17.5752Z" fill="#4D4E50"/>
+                          </g>
+                          <defs>
+                          <clipPath id="clip0_4785_15632">
+                          <rect width="28" height="30" fill="white"/>
+                          </clipPath>
+                          </defs>
+                        </svg>
+                      </div>
+                      <h4 class="ms-2 mb-0 fw-bold font-20">Produit & services</h4>
+                    </div>
+                    <div class="product-form-body">
+                      <div class="d-flex">
+                        <input type="text" v-model="orderDetail.name" class="form-control order-detail-description bg-white" placeholder="Description tache">
+                      </div>
+                      <div class="d-flex align-items-center mt-1">
+                        <input type="text" v-model="orderDetail.hours" class="form-control order-detail-input me-1" placeholder="00">
+                        <div class="col-1">hrs</div>
+                        <svg class="mx-2" width="14" height="12" viewBox="0 0 14 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M13.4992 0.5625L1.40698 11.0625" stroke="black" stroke-opacity="0.4" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M1.40698 0.5625L13.4992 11.0625" stroke="black" stroke-opacity="0.4" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <div class="me-1">€</div>
+                        <input type="text" v-model="orderDetail.hoursUnitPrice" class="form-control order-detail-input"  placeholder="00.00">
+                        <div class="ms-3 lcdtOrange col-3 fw-bold">{{ (parseFloat(orderDetail.hoursUnitPrice == '' ? 0 : orderDetail.hoursUnitPrice) * parseFloat(orderDetail.hours =='' ? 0 : orderDetail.hours )).toLocaleString() }} €</div>
+                        <span class="ms-3 plus-icon me-2" @click="addHourOrderDetail"></span>
+                      </div>
+                      <div class="d-flex align-items-center mt-1">
+                        <input type="text" v-model="orderDetail.qty" class="form-control order-detail-input me-1" placeholder="00">
+                        <div class="col-1">Qté</div>
+                        <svg class="mx-2" width="14" height="12" viewBox="0 0 14 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M13.4992 0.5625L1.40698 11.0625" stroke="black" stroke-opacity="0.4" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M1.40698 0.5625L13.4992 11.0625" stroke="black" stroke-opacity="0.4" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <div class="me-1">€</div>
+                        <input type="text" v-model="orderDetail.qtyUnitPrice" class="form-control order-detail-input" placeholder="00.00">
+                        <div class="ms-3 lcdtOrange col-3 fw-bold">{{ (parseFloat(orderDetail.qtyUnitPrice == '' ? 0 : orderDetail.qtyUnitPrice)*parseFloat(orderDetail.qty == '' ? 0: orderDetail.qty)).toLocaleString() }} €</div>
+                        <span class="ms-3 plus-icon me-2" @click="addQteOrderDetail"></span>
+                      </div>
+                    </div>
                   </div>
-                  <div class="col-2 d-flex align-items-center justify-content-center fw-bold mulish-extra-bold font-16 text-black  text-nowrap">
-                    {{ (form.totalHoursForInstall + form.totalHoursForSecurity + form.totalHoursForPrestation).toFixed(2) }} hr
-                  </div>
-                  <div class="col-2 d-flex align-items-center justify-content-center fw-bold mulish-extra-bold font-16 text-black  text-nowrap">
-                    {{ (form.totalPriceForInstall + form.totalPriceForSecurity + form.totalPriceForPrestation - form.discount).toFixed(2) }} €
+                  <div class="order-detail">
+                    <div class="d-flex col-7 align-items-center justify-content-between">
+                      <div class="devis-name col-9">
+                        <h4 v-if="!editDevisName" class="ms-2 mb-0 fw-bold font-20">{{ newOrder.orderName }}</h4>
+                        <input v-else type="text" v-model="newOrder.orderName" class="form-control form-control-sm bg-white"/>
+                      </div>
+                      <div class="ms-auto">
+                        <span class="edit-icon me-3" @click="editDevisName = !editDevisName"></span>
+                      </div>
+                    </div>
+                    <table class="table table-borderless mt-3">
+                      <thead>
+                        <tr>
+                          <td>DESCRIPTION</td>
+                          <td>PrixUnit</td>
+                          <td>Qté</td>
+                          <td>Hrs</td>
+                          <td>Taxe</td>
+                          <td>SUBTOTAL TTC</td>
+                          <td></td>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="(oDetail, index) in newOrder.details" :key="index">
+                          <td>{{ oDetail.name }}</td>
+                          <td>{{ oDetail.unitPrice }} €</td>
+
+                          <td v-if="oDetail.qty !=0">{{ oDetail.qty }}</td>
+                          <td v-else></td>
+
+                          <td v-if="oDetail.hours !=0">{{ oDetail.hours }} hrs</td>
+                          <td v-else></td>
+                          <td>
+                            <select style="min-width: 40px" class="w-100 form-control form-control-sm custom-text-danger" v-model="oDetail.taxId">
+                              <option :value="tax.value" v-for="(tax, taxIndex) in taxes" :key="taxIndex">{{ tax.display }} %</option>
+                            </select>
+                          </td>
+                          <td valign="middle" class="lcdtOrange">{{ oDetail.total.toLocaleString() }} €</td>
+                          <td>
+                            <svg class="cursor-pointer" @click="deleteOrderDetail(index)" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M17 6H22V8H20V21C20 21.2652 19.8946 21.5196 19.7071 21.7071C19.5196 21.8946 19.2652 22 19 22H5C4.73478 22 4.48043 21.8946 4.29289 21.7071C4.10536 21.5196 4 21.2652 4 21V8H2V6H7V3C7 2.73478 7.10536 2.48043 7.29289 2.29289C7.48043 2.10536 7.73478 2 8 2H16C16.2652 2 16.5196 2.10536 16.7071 2.29289C16.8946 2.48043 17 2.73478 17 3V6ZM18 8H6V20H18V8ZM13.414 14L15.182 15.768L13.768 17.182L12 15.414L10.232 17.182L8.818 15.768L10.586 14L8.818 12.232L10.232 10.818L12 12.586L13.768 10.818L15.182 12.232L13.414 14ZM9 4V6H15V4H9Z" fill="black"/>
+                            </svg>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td></td>
+                          <td>Réduction :</td>
+                          <td class="border-bottom"></td>
+                          <td class="border-bottom d-flex align-items-center"><input type="text" v-model="newOrder.reductionPercent" @input="calcReduceAmount" class="form-control w-25"> %</td>
+                          <td class="border-bottom"></td>
+                          <td valign="middle" class="lcdtOrange border-bottom">{{ newOrder.reductionAmount }} €</td>
+                          <td></td>
+                        </tr>
+                        <tr>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td valign="middle" class="lcdtOrange">{{ newOrder.totalHours }} hrs</td>
+                          <td valign="middle"  class="lcdtOrange">{{ newOrder.taxAmount }} €</td>
+                          <td valign="middle"  class="lcdtOrange">{{ newOrder.totalAmount }} € TTC</td>
+                          <td valign="middle"  class="font-10">{{ newOrder.totalAmount - newOrder.taxAmount }} € UT</td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
-                <div class="d-flex mt-4">
-                  <div class="col-8 title">
-                    Installation
-                  </div>
-                  <div class="col-2 border-bottom text-center border-end font-14 text-nowrap">{{ form.totalHoursForInstall }}hr</div>
-                  <div class="col-2 border-bottom text-center font-14  text-nowrap">{{ form.totalPriceForInstall.toFixed(2) }} €</div>
-                </div>
-                <div class="d-flex mt-3">
-                  <div class="col-8 title">
-                    Mise en Securite
-                  </div>
-                  <div class="col-2 border-bottom text-center border-end font-14 text-nowrap">{{ form.totalHoursForSecurity }}hr</div>
-                  <div class="col-2 border-bottom text-center font-14 text-nowrap">{{ form.totalPriceForSecurity.toFixed(2) }} €</div>
-                </div>
-                <div class="d-flex mt-3">
-                  <div class="col-8 title">
-                    Intervention
-                  </div>
-                  <div class="col-2 border-bottom text-center border-end font-14 text-nowrap">{{ form.totalHoursForPrestation }}hr</div>
-                  <div class="col-2 border-bottom text-center font-14 text-nowrap">{{ form.totalPriceForPrestation.toFixed(2) }} €</div>
-                </div>
-                <div class="d-flex mt-4">
-                  <div class="col-10 bold-title">
-                    Total Jours Interim
-                  </div>
-                  <div class="col-2 font-14 fw-bold text-nowrap">{{form.totalHoursForInterim}} Jours</div>
-                </div>
-                <div class="d-flex mt-3">
-                  <div class="col-10 bold-title">
-                    Total M/V Fourniseurs
-                  </div>
-                  <div class="col-2 font-14 fw-bold text-nowrap">€ {{ parseFloat(form.totalPriceWithoutMarge).toFixed(2) }}</div>
+                <div class="ms-2 right-panel">
+                  <attach :documents="newOrder.documents" @updateDocumentList="updateDocumentList"></attach>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <input type="file" @change="previewFile" accept="audio/*,video/*,image/*" ref="file" multiple class="d-none">
+      <input type="file" v-if="devisWithOuvrage" @change="previewFile" accept="audio/*,video/*,image/*" ref="file" multiple class="d-none">
+      <input type="file" v-else @change="previewFile" accept="image/*" ref="file" multiple class="d-none">
       <zoom-modal ref="zoomModal"></zoom-modal>
       <SecuriteModal ref="securiteModal" @selectedOuvrage="selectedOuvrage" @openEmptyOuvrageModal="openEmptyOuvrageModal"></SecuriteModal>
       <InstallationModal ref="installationModal" @selectedOuvrage="selectedOuvrage" @openEmptyOuvrageModal="openEmptyOuvrageModal"></InstallationModal>
@@ -1038,12 +1297,14 @@ import PdfModal from '../../components/miscellaneous/PdfModal';
 import GoogleMap from '../../components/miscellaneous/GoogleMap';
 import CheckBox from '../../components/miscellaneous/CheckBox';
 import SwitchBtn from '../../components/miscellaneous/SwitchBtn';
+import Chat from '../../components/Chat/Chat.vue';
+import Attach from '../../components/AttachFile/Index.vue';
 import Swal from 'sweetalert2';
-import {     
+import {
   DISPLAY_LOADER,
   HIDE_LOADER,
-  LOADER_MODULE, 
-  TOASTER_MESSAGE, 
+  LOADER_MODULE,
+  TOASTER_MESSAGE,
   TOASTER_MODULE
   } from '../../store/types/types';
 import axios from 'axios';
@@ -1068,17 +1329,20 @@ export default {
     PdfModal,
     GoogleMap,
     CheckBox,
-    SwitchBtn
+    SwitchBtn,
+    Chat,
+    Attach
   },
   setup() {
     const store = useStore();
     const router = useRouter();
     const route = useRoute();
+    const devisWithOuvrage = ref(false);
     const breadcrumbs = ref(['Choix client']);
     const tabs = ref({
           description:'Description',
           service:'Service',
-      });        
+      });
     const devisCreateStep = ref('create_devis');
     watchEffect(()=>{
       if(devisCreateStep.value == 'choose_customer'){
@@ -1109,10 +1373,10 @@ export default {
     const taskModal = ref(null);
     const gedCatId = ref(0);
     const gedCats = ref([]);
-    const describes = ref([]);    
-    const services = ref([]);    
+    const describes = ref([]);
+    const services = ref([]);
     const roofAccesses = ref([]);
-    const useGoogleService = ref(false);
+    const useGoogleService = ref(true);
     const form = ref({
       orderName: '',
       describeOn: false,
@@ -1190,10 +1454,79 @@ export default {
             sumUnitPrice: 0,
             totalPrice: 0,
             ouvrages: []
-          },          
+          },
         }
       ],
-    });    
+    });
+    const newOrder = ref({
+      orderName: '',
+      comment: '',
+      totalAmount: 0,
+      totalHours: 0,
+      taxAmount: 0,
+      customer: {
+        id: 1,
+        company: 'La boulangerie',
+        raisonsocial: 'de la plangne',
+        group: 'Lagardere',
+        contact: 'Thierry Gavois',
+        telephone: '58 58 74 58 44',
+        tax: '10%',
+        taxId: 0,
+        naf: 'Boulangerie',
+        siret: '4654654646546546',
+        contact_id: 0,
+      },
+      address: {
+        id: 1,
+        name: '',
+        address1: '',
+        address2: '',
+        postcode: '',
+        city: '',
+        addressType: '',
+        lat: 36.846691982477985,
+        lon: 10.197948495703532,
+      },
+      photos: [],
+      documents: [],
+      details: [
+      ],
+      reductionPercent: 0,
+      reductionAmount: 0,
+    })
+    const calcOrderDetails = ()=>{
+      newOrder.value.totalAmount = 0;
+      newOrder.value.totalHours = 0;
+      newOrder.value.taxAmount = 0;
+      newOrder.value.details.forEach(detail=>{
+        const tax = taxes.value.find(item=>{
+          return item.value == detail.taxId;
+        }).display;
+        if(detail.qty == ''){
+          newOrder.value.totalAmount += parseFloat(detail.hours) * parseFloat(detail.unitPrice);
+          newOrder.value.totalHours += parseFloat(detail.hours);
+          newOrder.value.taxAmount += (parseFloat(detail.hours) * parseFloat(detail.unitPrice)) * tax / 100;
+        }else{
+          newOrder.value.totalAmount += parseFloat(detail.qty) * parseFloat(detail.unitPrice);
+          newOrder.value.taxAmount += (parseFloat(detail.qty) * parseFloat(detail.unitPrice)) * tax / 100;
+        }
+      })
+      calcReduceAmount();
+    }
+    const calcReduceAmount = ()=>{
+      newOrder.value.reductionAmount = newOrder.value.totalAmount * newOrder.value.reductionPercent / 100;
+    }
+    const updateDocumentList = (lists)=>{
+      newOrder.value.documents = lists;
+    }
+    const orderDetail = ref({
+      name: '',
+      hours: '',
+      hoursUnitPrice: '',
+      qty: '',
+      qtyUnitPrice: '',
+    })
     const updateAllValues = ()=>{
       form.value.totalHoursForInstall = 0;
       form.value.totalPriceForInstall = 0;
@@ -1223,7 +1556,7 @@ export default {
                   detail.qty = parseInt(ouvrage.qty)*parseInt(detail.originalDetailQty);
                   detail.numberH = parseFloat(detail.originalNumberH)* parseInt(detail.qty);
                 }
-              }           
+              }
               if(detail.type == 'MO'){
                 if(detail.original){
                   detail.totalPrice = (parseFloat(detail.numberH == '' ? '0' : detail.numberH) * parseInt(detail.unitPrice)).toFixed(2);
@@ -1242,11 +1575,11 @@ export default {
               else{
                 detail.totalPrice = (parseInt(detail.qty) * parseFloat(detail.unitPrice) * (parseInt(detail.marge)/100 + 1)).toFixed(2);
                 detail.totalPriceWithoutMarge = (parseInt(detail.qty) * parseFloat(detail.unitPrice));
-              }     
+              }
               if(detail.type == 'INTERIM'){
                 form.value.totalHoursForInterim += parseFloat(detail.qty)
               }
-              ouvrage.total += parseFloat(detail.totalPrice);    
+              ouvrage.total += parseFloat(detail.totalPrice);
               ouvrage.totalWithoutMarge += parseFloat(detail.totalPriceWithoutMarge);
               ouvrage.totalHour += parseFloat(detail.numberH == '' ? '0' : detail.numberH);
             })
@@ -1276,7 +1609,7 @@ export default {
                   detail.qty = parseInt(ouvrage.qty)*parseInt(detail.originalDetailQty);
                   detail.numberH = parseFloat(detail.originalNumberH)* parseInt(detail.qty);
                 }
-              }           
+              }
               if(detail.type == 'MO'){
                 if(detail.original){
                   detail.totalPrice = (parseFloat(detail.numberH == '' ? '0' : detail.numberH) * parseInt(detail.unitPrice)).toFixed(2);
@@ -1295,25 +1628,25 @@ export default {
               else{
                 detail.totalPrice = (parseInt(detail.qty) * parseFloat(detail.unitPrice) * (parseInt(detail.marge)/100 + 1)).toFixed(2);
                 detail.totalPriceWithoutMarge = (parseInt(detail.qty) * parseFloat(detail.unitPrice));
-              }     
-              if(detail.type == 'INTERIM')     
+              }
+              if(detail.type == 'INTERIM')
                 form.value.totalHoursForInterim += parseFloat(detail.qty)
-              ouvrage.total += parseFloat(detail.totalPrice);    
+              ouvrage.total += parseFloat(detail.totalPrice);
               ouvrage.totalWithoutMarge += parseFloat(detail.totalPriceWithoutMarge);
               ouvrage.totalHour += parseFloat(detail.numberH == '' ? '0' : detail.numberH);
             })
           })
           zone.securityOuvrage.totalHour += ouvrage.totalHour;
-          zone.securityOuvrage.totalPrice += ouvrage.total;          
+          zone.securityOuvrage.totalPrice += ouvrage.total;
           form.value.totalPriceWithoutMarge += ouvrage.totalWithoutMarge;
         })
         form.value.totalUnitPrice += zone.securityOuvrage.sumUnitPrice;
         form.value.totalHoursForSecurity += zone.securityOuvrage.totalHour;
-        form.value.totalPriceForSecurity += zone.securityOuvrage.totalPrice;        
+        form.value.totalPriceForSecurity += zone.securityOuvrage.totalPrice;
         // prestation ouvrages
         zone.prestationOuvrage.totalHour = 0;
         zone.prestationOuvrage.totalPrice = 0;
-        zone.prestationOuvrage.sumUnitPrice = 0;                
+        zone.prestationOuvrage.sumUnitPrice = 0;
         zone.prestationOuvrage.ouvrages.forEach(ouvrage=>{
           ouvrage.total = 0;
           ouvrage.totalHour = 0;
@@ -1329,7 +1662,7 @@ export default {
                   detail.qty = parseInt(ouvrage.qty)*parseInt(detail.originalDetailQty);
                   detail.numberH = parseFloat(detail.originalNumberH)* parseInt(detail.qty);
                 }
-              }           
+              }
               if(detail.type == 'MO'){
                 if(detail.original){
                   detail.totalPrice = (parseFloat(detail.numberH == '' ? '0' : detail.numberH) * parseInt(detail.unitPrice)).toFixed(2);
@@ -1337,7 +1670,7 @@ export default {
                 }else{
                   detail.totalPrice = (parseFloat(detail.numberH == '' ? '0' : detail.numberH) * parseInt(detail.unitPrice)* parseInt(detail.qty)).toFixed(2);
                   detail.totalPriceWithoutMarge = (parseFloat(detail.numberH == '' ? '0' : detail.numberH) * parseFloat(detail.unitPrice)* parseInt(detail.qty));
-                }                
+                }
               }else if( detail.type == 'Labor' ){
                 detail.totalPrice = (parseFloat(detail.numberH == '' ? '0' : detail.numberH) * parseInt(detail.unitPrice) * parseInt(detail.qty)).toFixed(2);
                 detail.totalPriceWithoutMarge = (parseFloat(detail.numberH == '' ? '0' : detail.numberH) * parseFloat(detail.unitPrice));
@@ -1348,21 +1681,21 @@ export default {
               else{
                 detail.totalPrice = (parseInt(detail.qty) * parseFloat(detail.unitPrice) * (parseInt(detail.marge)/100 + 1)).toFixed(2);
                 detail.totalPriceWithoutMarge = (parseInt(detail.qty) * parseFloat(detail.unitPrice));
-              }     
-              if(detail.type == 'INTERIM')     
+              }
+              if(detail.type == 'INTERIM')
                 form.value.totalHoursForInterim += parseFloat(detail.qty)
-              ouvrage.total += parseFloat(detail.totalPrice);    
+              ouvrage.total += parseFloat(detail.totalPrice);
               ouvrage.totalWithoutMarge += parseFloat(detail.totalPriceWithoutMarge);
               ouvrage.totalHour += parseFloat(detail.numberH == '' ? '0' : detail.numberH);
             })
           })
           zone.prestationOuvrage.totalHour += ouvrage.totalHour;
-          zone.prestationOuvrage.totalPrice += ouvrage.total;            
-          form.value.totalPriceWithoutMarge += ouvrage.totalWithoutMarge;          
+          zone.prestationOuvrage.totalPrice += ouvrage.total;
+          form.value.totalPriceWithoutMarge += ouvrage.totalWithoutMarge;
         })
         form.value.totalUnitPrice += zone.prestationOuvrage.sumUnitPrice;
         form.value.totalHoursForPrestation += zone.prestationOuvrage.totalHour;
-        form.value.totalPriceForPrestation += zone.prestationOuvrage.totalPrice;    
+        form.value.totalPriceForPrestation += zone.prestationOuvrage.totalPrice;
         form.value.totalDays = (form.value.totalHoursForPrestation + form.value.totalHoursForSecurity +  form.value.totalHoursForInstall)/8;
       })
     };
@@ -1372,7 +1705,6 @@ export default {
       if(parseFloat(currentTotalHours) != parseFloat(previousTotalHours)){
         let MOCount = 0;
         let deltaHours = currentTotalHours - previousTotalHours;
-        console.log(deltaHours);
         // get MO Product count
         form.value.zones.forEach(zone=>{
           zone.prestationOuvrage.ouvrages.forEach(ouvrage=>{
@@ -1402,6 +1734,7 @@ export default {
     }
     onMounted(()=>{
       axios.post('/get-devis/'+route.params.id).then((res)=>{
+        devisWithOuvrage.value = res.data.devisWithOuvrage
         useGoogleService.value = res.data.useGoogleService;
         taxes.value = res.data.taxes;
         units.value = res.data.units;
@@ -1419,9 +1752,14 @@ export default {
             devisData.address.lon = parseFloat(devisData.address.lon.replace(/[a-zA-Z()]/g, ""));
         }else{
             devisData.address.lon = 2.3491914978706396;
-        }   
-        form.value = devisData;
-        updateAllValues();
+        }
+        if(devisWithOuvrage.value){
+          form.value = devisData;
+          updateAllValues();
+        }else{
+          newOrder.value = devisData;
+          calcOrderDetails();
+        }
       }).catch((error)=>{
         console.log(error);
       })
@@ -1441,20 +1779,31 @@ export default {
           type = 'm4a';
         }else{
           type = 'm4v';
-        }        
+        }
         let reader = new FileReader();
         reader.onload = (e) => {
-          form.value.zones[zoneIndex.value].gedCats[gedCatId.value][0].items.push({
-            url: '',
-            base64data: reader.result,
-            fileName: images[i].name,
-            url: reader.result,
-            id: '',
-            type: type
-          })
+          if(devisWithOuvrage.value){
+            form.value.zones[zoneIndex.value].gedCats[gedCatId.value][0].items.push({
+              url: '',
+              base64data: reader.result,
+              fileName: images[i].name,
+              type: type,
+              url: reader.result,
+              id: '',
+            })
+          }else{
+            newOrder.value.photos.push({
+              url: '',
+              base64data: reader.result,
+              fileName: images[i].name,
+              type: type,
+              url: reader.result,
+              id: '',
+            })
+          }
         };
         reader.readAsDataURL(images[i]);
-      }      
+      }
     }
     const removeImage = (zIndex, id, index)=>{
       if(form.value.orderStatus.type  != 'COMMANDE'){
@@ -1484,8 +1833,8 @@ export default {
           message: 'you can not edit COMMANDE',
           ttl: 5,
         });
-      }      
-     
+      }
+
     }
     const openInstallationModal = (zIndex)=>{
       if(form.value.orderStatus.type  != 'COMMANDE'){
@@ -1496,7 +1845,7 @@ export default {
           message: 'you can not edit COMMANDE',
           ttl: 5,
         });
-      }       
+      }
     }
     const openPrestationModal = (zIndex)=>{
       if(form.value.orderStatus.type  != 'COMMANDE'){
@@ -1507,7 +1856,7 @@ export default {
           message: 'you can not edit COMMANDE',
           ttl: 5,
         });
-      } 
+      }
     }
     const openSupplierModal = (zIndex, ouvrageType, ouvrageId, taskId)=>{
       if(form.value.orderStatus.type  != 'COMMANDE'){
@@ -1518,7 +1867,7 @@ export default {
           message: 'you can not edit COMMANDE',
           ttl: 5,
         });
-      }       
+      }
     }
     const openProductModal = (zIndex, ouvrageType, ouvrageId, taskId)=>{
       if(form.value.orderStatus.type  != 'COMMANDE'){
@@ -1529,9 +1878,9 @@ export default {
           message: 'you can not edit COMMANDE',
           ttl: 5,
         });
-      }       
+      }
     }
-    
+
     const openInterimModal = (zIndex, ouvrageType, ouvrageId, taskId)=>{
       if(form.value.orderStatus.type  != 'COMMANDE'){
         interimModal.value.openModal(zIndex, ouvrageType, ouvrageId, taskId);
@@ -1541,7 +1890,7 @@ export default {
           message: 'you can not edit COMMANDE',
           ttl: 5,
         });
-      }       
+      }
     }
 
     const openLaborModal = (zIndex, ouvrageType, ouvrageId, taskId)=>{
@@ -1553,7 +1902,7 @@ export default {
           message: 'you can not edit COMMANDE',
           ttl: 5,
         });
-      }       
+      }
     }
     const openTaskModal = (zIndex, ouvrageType, ouvrageId)=>{
       if(form.value.orderStatus.type  != 'COMMANDE'){
@@ -1564,12 +1913,12 @@ export default {
           message: 'you can not edit COMMANDE',
           ttl: 5,
         });
-      }       
+      }
     }
     const openPdfModal = (data)=>{
       pdfModal.value.openModal(data);
     }
-        
+
     const addNewCustomer = ()=>{
       router.push({
         name: "CreateCustomer"
@@ -1583,12 +1932,16 @@ export default {
     const addedNewAddress = (data)=>{
       customerAddresses.value.push(data);
     }
-    
+
     const selectedCustomer = (data)=>{
       // move on to "addess choose step"
       devisCreateStep.value = 'choose_address';
       // set customer value to devis form
-      form.value.customer = data;
+      if(devisWithOuvrage.value){
+        form.value.customer = data;
+      }else{
+        newOrder.value.customer = data;
+      }
 
       // loading customer addresses
       store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Chargement des adresses des clients..']);
@@ -1616,8 +1969,12 @@ export default {
           data.lon = parseFloat(data.lon.replace(/[a-zA-Z()]/g, ""));
       }else{
           data.lon = 2.3491914978706396;
-      }         
-      form.value.address = data;
+      }
+      if(devisWithOuvrage.value){
+        form.value.address = data;
+      }else{
+        newOrder.value.address = data;
+      }
     }
 
     const goToStep = (index)=>{
@@ -1642,7 +1999,7 @@ export default {
         if(data.type == 'prestation'){
           form.value.zones[data.zoneIndex].prestationOuvrage.ouvrages.push(res.data);
           document.querySelector('.prestation-ouvrages').classList.add('open');
-        }        
+        }
         updateAllValues();
       }).catch((error)=>{
         console.log(error);
@@ -1892,7 +2249,7 @@ export default {
           unit_id: task.unit_id,
           qty: task.qty,
           details: []
-        });        
+        });
       }
       if(task.ouvrageType == 3){
         form.value.zones[task.zoneIndex].prestationOuvrage.ouvrages[task.ouvrageId].tasks.push({
@@ -1902,7 +2259,7 @@ export default {
           unit_id: task.unit_id,
           qty: task.qty,
           details: []
-        });        
+        });
       }
       updateAllValues();
     }
@@ -1942,7 +2299,7 @@ export default {
               totalPrice: 0,
               ouvrages: []
             },
-          } 
+          }
         );
       }else{
         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
@@ -1950,7 +2307,7 @@ export default {
           message: 'you can not edit COMMANDE',
           ttl: 5,
         });
-      }       
+      }
 
     }
 
@@ -1976,17 +2333,17 @@ export default {
               'Supprimé!',
               "Louvrage a été supprimé.",
               'success'
-            )          
+            )
             updateAllValues();
           }
-        });      
+        });
       }else{
         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
           type: 'danger',
           message: 'you can not edit COMMANDE',
           ttl: 5,
         });
-      }       
+      }
     }
 
     // activate the ouvrage
@@ -2027,13 +2384,13 @@ export default {
             if(ouvrageType == 3){
               form.value.zones[zoneIndex].prestationOuvrage.ouvrages = form.value.zones[zoneIndex].prestationOuvrage.ouvrages.filter((item, index)=>{
                 return ouvrageIndex != index;
-              });            
+              });
             }
             Swal.fire(
               'Supprimé!',
               "Louvrage a été supprimé.",
               'success'
-            )          
+            )
             updateAllValues();
           }
         });
@@ -2043,7 +2400,7 @@ export default {
           message: 'you can not edit COMMANDE',
           ttl: 5,
         });
-      }       
+      }
     }
     // remove detail from task
     const removeOuvrageDetail = (zoneIndex, ouvrageType, ouvrageIndex, taskIndex, detailIndex)=>{
@@ -2056,7 +2413,7 @@ export default {
           confirmButtonColor: '#42A71E',
           // cancelButtonColor: '#E8581B',
           cancelButtonColor: 'var(--lcdtOrange)',
-          cancelButtonText: 'Annuler',        
+          cancelButtonText: 'Annuler',
           confirmButtonText: `Oui, s'il vous plaît.`
         }).then((result) => {
           if (result.isConfirmed) {
@@ -2073,45 +2430,64 @@ export default {
             if(ouvrageType == 3){
               form.value.zones[zoneIndex].prestationOuvrage.ouvrages[ouvrageIndex].tasks[taskIndex].details = form.value.zones[zoneIndex].prestationOuvrage.ouvrages[ouvrageIndex].tasks[taskIndex].details.filter((item, index)=>{
                 return detailIndex != index;
-              })            
+              })
             }
             Swal.fire(
               'Supprimé!',
               'Le détail a été supprimé.',
               'success'
-            )        
+            )
             updateAllValues();
           }
-        })        
+        })
       }else{
         store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
           type: 'danger',
           message: 'you can not edit COMMANDE',
           ttl: 5,
         });
-      }       
+      }
     }
     // update Devis
     const updateDevis = ()=>{
       store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Mettez à jour le devis....']);
-      axios.post('/update-devis/'+route.params.id, form.value).then((res)=>{
-        console.log(res.data);
-        if(res.data.success){
-          Swal.fire({
-            title: 'Success',
-            text: "DEVIS updated successfully!",
-            icon: 'success',
-          });
-          router.push({
-            name: 'DevisDetail',
-            params: { id: route.params.id }
-          });          
-        }
-      }).catch((error)=>{
-        console.log(error);
-      }).finally(()=>{
-        store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
-      })
+      if(devisWithOuvrage.value){
+        axios.post('/update-devis/'+route.params.id, form.value).then((res)=>{
+          if(res.data.success){
+            Swal.fire({
+              title: 'Success',
+              text: "DEVIS updated successfully!",
+              icon: 'success',
+            });
+            router.push({
+              name: 'DevisDetail',
+              params: { id: route.params.id }
+            });
+          }
+        }).catch((error)=>{
+          console.log(error);
+        }).finally(()=>{
+          store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+        })
+      }else{
+        axios.post('/update-devis/'+route.params.id, newOrder.value).then((res)=>{
+          if(res.data.success){
+            Swal.fire({
+              title: 'Success',
+              text: "DEVIS updated successfully!",
+              icon: 'success',
+            });
+            router.push({
+              name: 'DevisDetail',
+              params: { id: route.params.id }
+            });
+          }
+        }).catch((error)=>{
+          console.log(error);
+        }).finally(()=>{
+          store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
+        })        
+      }
     }
     // Generate PDF for DEVIS
     const PDFDevis = ()=>{
@@ -2134,8 +2510,8 @@ export default {
       if(type == 3){
         form.value.zones[zIndex].prestationOuvrage.ouvrages.push(emptyOuvrage);
         document.querySelector('.prestation-ouvrages').classList.add('open');
-      }  
-      updateAllValues();     
+      }
+      updateAllValues();
     }
     // open empty product modal
     const openEmptyProductModal = (data)=>{
@@ -2191,10 +2567,105 @@ export default {
           productId: 0,
           unit_id: 0,
         });
-      }      
+      }
       updateAllValues();
     }
+    const addPhotoToDevis = ()=>{
+      file.value.click();
+    }
+    const removeImageFromDevis = (photoIndex)=>{
+      newOrder.value.photos = newOrder.value.photos.filter((item, index)=>{
+        return photoIndex != index;
+      });
+    }
+    const addHourOrderDetail = ()=>{
+      if(orderDetail.value.name == ''){
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            type: 'danger',
+            message: 'veuillez entrer le nom.',
+            ttl: 5,
+        });
+        return;
+      }
+      if(orderDetail.value.hours == ''){
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            type: 'danger',
+            message: 'veuillez entrer l\'heure.',
+            ttl: 5,
+        });
+        return;
+      }
+      if(orderDetail.value.hoursUnitPrice == ''){
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            type: 'danger',
+            message: 'veuillez entrer le prix unitaire.',
+            ttl: 5,
+        });
+        return;
+      }
+      newOrder.value.details.push({
+        id: '',
+        name: orderDetail.value.name,
+        qty: orderDetail.value.qty,
+        taxId: 2,
+        hours: orderDetail.value.hours,
+        unitPrice: orderDetail.value.hoursUnitPrice,
+        total: parseFloat(orderDetail.value.hoursUnitPrice)*parseFloat(orderDetail.value.hours),
+      })
+      orderDetail.value.name = '';
+      orderDetail.value.hours = '';
+      orderDetail.value.hoursUnitPrice = '';
+      calcOrderDetails();
+    }
+    const addQteOrderDetail = ()=>{
+      if(orderDetail.value.name == ''){
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            type: 'danger',
+            message: 'veuillez entrer le nom.',
+            ttl: 5,
+        });
+        return;
+      }
+      if(orderDetail.value.qty == ''){
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            type: 'danger',
+            message: 'veuillez entrer le qte.',
+            ttl: 5,
+        });
+        return;
+      }
+      if(orderDetail.value.qtyUnitPrice == ''){
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            type: 'danger',
+            message: 'veuillez entrer le prix unitaire.',
+            ttl: 5,
+        });
+        return;
+      }
+      newOrder.value.details.push({
+        id: '',
+        name: orderDetail.value.name,
+        qty: orderDetail.value.qty,
+        hours: orderDetail.value.hours,
+        taxId: 2,
+        unitPrice: orderDetail.value.qtyUnitPrice,
+        total: parseFloat(orderDetail.value.qtyUnitPrice)*parseFloat(orderDetail.value.qty),
+      })
+      orderDetail.value.name = '';
+      orderDetail.value.qty = '';
+      orderDetail.value.qtyUnitPrice = '';
+      calcOrderDetails();
+    }
+    const deleteOrderDetail = (detailIndex)=>{
+      newOrder.value.details = newOrder.value.details.filter((item, index)=>{
+        return index != detailIndex;
+      })
+      calcOrderDetails();
+    }
+    const editDevisName = ref(false);
     return {
+      editDevisName,
+      devisWithOuvrage,
       route,
       useGoogleService,
       breadcrumbs,
@@ -2219,7 +2690,10 @@ export default {
       emptyOuvrageModal,
       emptyProductModal,
       pdfModal,
+      newOrder,
+      orderDetail,
       addFileToGed,
+      addPhotoToDevis,
       previewFile,
       removeImage,
       viewGedMedia,
@@ -2259,7 +2733,14 @@ export default {
       selectedEmptyOuvrage,
       openEmptyProductModal,
       selectedEmptyProduct,
-      updateAllValues
+      updateAllValues,
+      addQteOrderDetail,
+      addHourOrderDetail,
+      removeImageFromDevis,
+      deleteOrderDetail,
+      calcReduceAmount,
+      calcOrderDetails,
+      updateDocumentList
     }
   },
 }
@@ -2271,11 +2752,11 @@ export default {
   }
   /* Track */
   ::-webkit-scrollbar-track {
-    background: #E0E0E0; 
+    background: #E0E0E0;
   }
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: #47454B; 
+    background: #47454B;
     border-radius: 6px;
   }
   .page-title{
@@ -2305,8 +2786,17 @@ export default {
     font-family: "Mulish SemiBold";
     font-size: 10px;
     color: rgba(0, 24, 51, 0.22);
-    line-height: 12.55px;    
+    line-height: 12.55px;
   }
+  .breadcrumb{
+    .breadcrumb-item + .breadcrumb-item::before{
+      content: '>';
+      color: black;
+    }
+  }
+  .google-map-container{
+    height: 135px;
+  }  
   .customer-addresses{
     height: 400px;
     overflow-y: auto;
@@ -2321,7 +2811,7 @@ export default {
   }
   .btn-pdf{
     width: 190px;
-    background: rgba(255, 0, 0, 0.7);    
+    background: rgba(255, 0, 0, 0.7);
     border-radius: 10px;
     border: none;
     outline: none;
@@ -2339,7 +2829,7 @@ export default {
       padding: 0;
       &:focus{
         outline: none;
-        box-shadow: none;        
+        box-shadow: none;
       }
     }
   }
@@ -2361,7 +2851,7 @@ export default {
     &.active{
       .option-icon-dot{
         background-color: #E8581B;
-      }      
+      }
     }
     *{
       pointer-events: none;
@@ -2381,26 +2871,22 @@ export default {
         // width: 1019px;
         width: 60%;
         height: fit-content;
-        .customer-section{
-          .customer-pic{
-            width: 42px;
-            height: 42px;
-          }
+        .customer-pic{
+          width: 42px;
+          height: 42px;
         }
-        .zone-section{
-          .ged-image{
-            background-size: contain;
-            width: 55px;
-            height: 55px;
+        .ged-image{
+          background-size: contain;
+          width: 55px;
+          height: 55px;
+          .image-overlayer{
+            visibility: hidden;
+          }
+          &:hover{
             .image-overlayer{
-              visibility: hidden;
-            }
-            &:hover{
-              .image-overlayer{
-                visibility: visible;
-                background: rgba(0, 0, 0, .2);
-                transition: background ease-out .3s;
-              }
+              visibility: visible;
+              background: rgba(0, 0, 0, .2);
+              transition: background ease-out .3s;
             }
           }
         }
@@ -2436,8 +2922,70 @@ export default {
         }
       }
     }
-  }
+    .devis-simple{
+
+      .left-panel{
+        height: inherit;
+      }
+  }  
+}
 // custome radio button
+// New devis page css
+.product-form{
+    width: 632px;
+    height: 191px;
+    padding: 26px 28px;
+    background: url(../../images/devis-product-bg.png);
+    .prduct-icon{
+      width: 53px;
+      height: 53px;
+      background: #ECEAFE;
+    }
+    .product-form-body{
+      padding: 10px 55px;
+      input{
+        color: #DADADA;
+        &:focus{
+          outline: none;
+          box-shadow: none;
+        }
+        height: 30px;
+      }
+      .order-detail-input{
+        height: 21px;
+        width: 70px;
+        background: transparent;
+        color: #a09f9f;
+      }
+    }
+  }
+  .order-detail{
+    padding: 10px 80px 80px 70px;
+    input{
+      &:focus{
+        outline: none;
+        box-shadow: none;
+      }
+      height: 30px;
+    }
+    table{
+      thead{
+        td{
+          opacity: 0.3;
+          font-size: 16px;
+        }
+      }
+    }
+    select{
+      border: none;
+    }
+  }
+  .font-10{
+    font-size: 10px !important;
+  }
+
+
+//
 .preference-radio{
 /* Customize the label (the container) */
     .custom-radio {
@@ -2497,5 +3045,5 @@ export default {
             display: none;
         }
     }
-}  
+}
 </style>

@@ -1164,11 +1164,12 @@ class DevisController extends Controller
             $orderData = [
                 'lang_id'           => 1,
                 'name'              => $request->orderName,
+                'comment'           => $request->comment,
                 'affiliate_id'      => Auth::user()->affiliate->id,
                 'responsable_id'    => Auth::id(),
                 'order_state_id'    => 2,
-                'total'             => ($request->totalAmount),
-                'nbheure'           => ($request->totalHours),
+                'total'             => $request->totalAmount,
+                'nbheure'           => $request->totalHours,
                 'address_id'        => $request->address['id'],
                 'customer_id'       => $request->customer['id'],
                 'contact_id'        => $request->customer['contact_id'],
@@ -1246,8 +1247,10 @@ class DevisController extends Controller
                     'name'          => $detail['name'],
                     'unitprice'     => $detail['unitPrice'],
                     'taxe_id'       => $detail['taxId'],
-                    'qty'           => $detail['qty'],
-                    'numberh'       => $detail['hours'],
+                    'qty'           => $detail['qty'] ?? 0,
+                    'numberh'       => $detail['hours'] ?? 0,
+                    'created_at'    => Carbon::now(),
+                    'updated_at'    => Carbon::now()
                 ];
                 DB::table('order_detail')->insert($orderDetailData);
             }
@@ -1278,342 +1281,412 @@ class DevisController extends Controller
      *
      */
     public function getDevis(Order $order){
-        $zones = DB::table('order_zones')
-                    ->where('order_id', $order->id)
-                    ->where(function($query){
+        $devisWithOuvrage = DB::table('settings')->where('key', 'admin.ouvrage')->value('value') == 1 ? true : false;
+        if($devisWithOuvrage){
+            $zones = DB::table('order_zones')
+                        ->where('order_id', $order->id)
+                        ->where(function($query){
+                                $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
+                            })
+                        ->select('id', 'latitude as lat', 'longitude as lon', 'order_id', 'name', 'hauteur as height', 'moyenacces_id as roofAccess')
+                        ->get();
+            $devis = [];
+            $devis['orderStatus'] = DB::table('orders')
+                                    ->join('order_states', 'orders.order_state_id', '=', 'order_states.id')
+                                    ->where('orders.id', $order->id)
+                                    ->select('order_states.order_type as type', 'order_states.name', 'order_states.fontcolor', 'order_states.color')->first();
+            $devis['orderName'] = $order->name;
+            $devis['describeOn'] = DB::table('settings')->where('key', 'admin.Describe')->value('value') == 1 ? true : false;
+            $devis['totalHoursForInstall'] = 0;
+            $devis['totalPriceForInstall'] = 0;
+            $devis['totalHoursForSecurity'] = 0;
+            $devis['totalPriceForSecurity'] = 0;
+            $devis['totalHoursForPrestation'] = 0;
+            $devis['totalPriceForPrestation'] = 0;
+            $devis['totalHoursForInterim'] = 0;
+            $devis['totalPriceWithoutMarge'] = 0;
+            $devis['totalUnitPrice'] = 0;
+            $devis['discount'] = $order->remise;
+            $devis['customer'] = DB::table('customers')
+                                    ->join('group', 'group.id', '=', 'customers.group_id')
+                                    ->join('taxes', 'taxes.id', '=', 'customers.taxe_id')
+                                    ->join('contacts', 'contacts.customer_id', '=', 'customers.id')
+                                    ->where('customers.id', $order->customer_id)
+                                    ->select('customers.id', 'customers.company', 'customers.raisonsociale', 'group.Name as group'
+                                        ,DB::raw('CONCAT(customers.firstname, " ",customers.name) as contact'),
+                                        'customers.telephone', 'taxes.Name as tax', 'taxes.id as taxId', 'customers.naf', 'customers.siret', 'contacts.id as contact_id'
+                                    )->first();
+            $devis['address'] = DB::table('addresses')
+                                    // ->join('group', 'group.id', '=', 'customers.group_id')
+                                    ->where('id', $order->address_id)
+                                    ->select(
+                                        'id', 'address1', 'address2', 'postcode', 'city', 'address_type_id as addressType',
+                                        'latitude as lat', 'longitude as lon'
+                                    )->first();
+            foreach ($zones as $zoneIndex => $zone) {
+                // get ged details
+                $devis['zones'][$zoneIndex]['id'] = $zone->id;
+                $devis['zones'][$zoneIndex]['height'] = $zone->height;
+                $devis['zones'][$zoneIndex]['name'] = $zone->name;
+                $devis['zones'][$zoneIndex]['roofAccess'] = $zone->roofAccess;
+                $devis['zones'][$zoneIndex]['lat'] = $zone->lat;
+                $devis['zones'][$zoneIndex]['lon'] = $zone->lon;
+
+                $devis['zones'][$zoneIndex]['edit'] = false;
+                $categories = DB::table('ged_categories')->select('id', 'name')->get();
+                foreach ($categories as $item) {
+                    $ged_details = DB::table('ged_details')
+                                    ->where('order_zone_id', $zone->id)
+                                    ->where('ged_category_id', $item->id)
+                                    ->whereNotIn('type', ['txt', 'description'])
+                                    ->where('user_id', Auth::id())
+                                    ->select(
+                                        DB::raw('CONCAT(CONCAT(storage_path, "/",file), ".", type) as url'),
+                                        'human_readable_filename as fileName',
+                                        'id', 'type'
+                                    )->get();
+                    if($ged_details->count() > 0){
+                        foreach ($ged_details as $ged_detail) {
+                            $item->items[] = [
+                                'base64data'    => '',
+                                'fileName'      => $ged_detail->fileName,
+                                'url'           => getenv('APP_URL').Storage::url($ged_detail->url),
+                                'id'            => $ged_detail->id,
+                                'type'          => $ged_detail->type,
+                            ];
+                        }
+                    }else{
+                        $item->items = [];
+                    }
+                }
+                $devis['zones'][$zoneIndex]['gedCats'] = $categories->groupBy('id');
+                if($devis['describeOn'] && DB::table('order_describe')->where('order_zone_id', $zone->id)->count()){
+                    $describes = DB::table('order_describe')->join('describe', 'describe.id', '=', 'order_describe.describe_id')
+                                    ->where('order_zone_id', $zone->id)
+                                    ->join('describe_categories', 'describe_categories.id', '=', 'describe.describe_category_id')
+                                    ->select(
+                                        'describe.name', 'describe.type', 'order_describe.value as default',
+                                        'describe.order', 'describe.data', 'describe_categories.name as catName',
+                                        'describe.id', 'order_describe.id as order_describe_id'
+                                    )
+                                    ->orderBy('order')->get();
+                }else{
+                    $describes = DB::table('describe')->join('describe_categories', 'describe.describe_category_id', '=', 'describe_categories.id')
+                                ->select('describe.id', 'describe.name', 'describe.type', 'describe.default', 'describe.order', 'describe.data', 'describe_categories.name as catName')
+                                ->orderBy('order')->get();
+                }
+                foreach($describes as $describe){
+                    $describe->data = json_decode($describe->data);
+                    if($describe->type == 'Checkbox' || $describe->type == 'Switch'){
+                        $describe->default = $describe->default == 0 ? false : true;
+                    }
+                }
+                $describes = $describes->groupBy('catName');
+                $devis['zones'][$zoneIndex]['describes'] = $describes->groupBy('catName');
+
+                if($devis['describeOn'] && DB::table('order_services')->where('order_zone_id', $zone->id)->count()){
+                    $services = DB::table('order_services')->join('services', 'services.id', '=', 'order_services.service_id')
+                    ->where('order_zone_id', $zone->id)
+                    ->select(
+                        'services.name', 'services.type', 'order_services.value',
+                        'services.data', 'order_services.active', 'order_services.semti',
+                        'services.id', 'order_services.id as order_service_id', 'order_services.sstt',
+                        'order_services.client', 'order_services.loc',
+                    )
+                    ->orderBy('order')->get();
+                }else{
+                    $services = DB::table('services')->select(
+                        'services.name', 'services.type', 'services.default as value',
+                        'services.data', 'services.id',
+                    )
+                    ->orderBy('order')->get();
+                }
+                foreach($services as $service){
+                    $service->data = json_decode($service->data);
+                    if($service->type == 'Checkbox' || $service->type == 'Switch'){
+                        $service->value = $service->value == 0 ? false : true;
+                    }
+                    if(isset($service->active)){
+                        $service->active = $service->active == 0 ? false : true;
+                        $service->semti = $service->semti == 0 ? false : true;
+                        $service->sstt = $service->sstt == 0 ? false : true;
+                        $service->client = $service->client == 0 ? false : true;
+                        $service->loc = $service->loc == 0 ? false : true;
+                    }else{
+                        $service->active = false;
+                        $service->semti = false;
+                        $service->sstt = false;
+                        $service->client = false;
+                        $service->loc = false;
+                    }
+                }
+                $devis['zones'][$zoneIndex]['services'] = $services;
+                //installation ouvrages;
+
+                $orderCat = DB::table('order_cat')->where('order_zone_id', $zone->id)->where('type', 'INSTALLATION')->first();
+                $devis['zones'][$zoneIndex]['installOuvrage']['sumUnitPrice'] = 0;
+                $devis['zones'][$zoneIndex]['installOuvrage']['name'] = 'Installation';
+                $devis['zones'][$zoneIndex]['installOuvrage']['edit'] = false;
+                $devis['zones'][$zoneIndex]['installOuvrage']['totalHour'] = 0;
+                $devis['zones'][$zoneIndex]['installOuvrage']['sumUnitPrice'] = 0;
+                $devis['zones'][$zoneIndex]['installOuvrage']['totalPrice'] = 0;
+                if($orderCat){
+                    $devis['zones'][$zoneIndex]['installOuvrage']['name'] = $orderCat->name;
+                    $ouvrages = DB::table('order_ouvrages')
+                        ->where('order_id', $order->id)
+                        ->where('order_zone_id', $zone->id)
+                        ->where('order_cat_id', $orderCat->id)
+                        ->where(function($query){
                             $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
                         })
-                    ->select('id', 'latitude as lat', 'longitude as lon', 'order_id', 'name', 'hauteur as height', 'moyenacces_id as roofAccess')
-                    ->get();
-        $devis = [];
-        $devis['orderStatus'] = DB::table('orders')
-                                ->join('order_states', 'orders.order_state_id', '=', 'order_states.id')
-                                ->where('orders.id', $order->id)
-                                ->select('order_states.order_type as type', 'order_states.name', 'order_states.fontcolor', 'order_states.color')->first();
-        $devis['orderName'] = $order->name;
-        $devis['describeOn'] = DB::table('settings')->where('key', 'admin.Describe')->value('value') == 1 ? true : false;
-        $devis['totalHoursForInstall'] = 0;
-        $devis['totalPriceForInstall'] = 0;
-        $devis['totalHoursForSecurity'] = 0;
-        $devis['totalPriceForSecurity'] = 0;
-        $devis['totalHoursForPrestation'] = 0;
-        $devis['totalPriceForPrestation'] = 0;
-        $devis['totalHoursForInterim'] = 0;
-        $devis['totalPriceWithoutMarge'] = 0;
-        $devis['totalUnitPrice'] = 0;
-        $devis['discount'] = $order->remise;
-        $devis['customer'] = DB::table('customers')
-                                ->join('group', 'group.id', '=', 'customers.group_id')
-                                ->join('taxes', 'taxes.id', '=', 'customers.taxe_id')
-                                ->join('contacts', 'contacts.customer_id', '=', 'customers.id')
-                                ->where('customers.id', $order->customer_id)
-                                ->select('customers.id', 'customers.company', 'customers.raisonsociale', 'group.Name as group'
-                                    ,DB::raw('CONCAT(customers.firstname, " ",customers.name) as contact'),
-                                    'customers.telephone', 'taxes.Name as tax', 'taxes.id as taxId', 'customers.naf', 'customers.siret', 'contacts.id as contact_id'
-                                )->first();
-        $devis['address'] = DB::table('addresses')
-                                // ->join('group', 'group.id', '=', 'customers.group_id')
-                                ->where('id', $order->address_id)
-                                ->select(
-                                    'id', 'address1', 'address2', 'postcode', 'city', 'address_type_id as addressType',
-                                    'latitude as lat', 'longitude as lon'
-                                )->first();
-        foreach ($zones as $zoneIndex => $zone) {
-            // get ged details
-            $devis['zones'][$zoneIndex]['id'] = $zone->id;
-            $devis['zones'][$zoneIndex]['height'] = $zone->height;
-            $devis['zones'][$zoneIndex]['name'] = $zone->name;
-            $devis['zones'][$zoneIndex]['roofAccess'] = $zone->roofAccess;
-            $devis['zones'][$zoneIndex]['lat'] = $zone->lat;
-            $devis['zones'][$zoneIndex]['lon'] = $zone->lon;
-
-            $devis['zones'][$zoneIndex]['edit'] = false;
-            $categories = DB::table('ged_categories')->select('id', 'name')->get();
-            foreach ($categories as $item) {
-                $ged_details = DB::table('ged_details')
-                                ->where('order_zone_id', $zone->id)
-                                ->where('ged_category_id', $item->id)
-                                ->whereNotIn('type', ['txt', 'description'])
-                                ->where('user_id', Auth::id())
-                                ->select(
-                                    DB::raw('CONCAT(CONCAT(storage_path, "/",file), ".", type) as url'),
-                                    'human_readable_filename as fileName',
-                                    'id', 'type'
-                                )->get();
-                if($ged_details->count() > 0){
-                    foreach ($ged_details as $ged_detail) {
-                        $item->items[] = [
-                            'base64data'    => '',
-                            'fileName'      => $ged_detail->fileName,
-                            'url'           => getenv('APP_URL').Storage::url($ged_detail->url),
-                            'id'            => $ged_detail->id,
-                            'type'          => $ged_detail->type,
-                        ];
+                        ->where('type', 'INSTALLATION')
+                        ->select(
+                            'id', 'unit_id as unit', 'qty', 'ouvrage_prestation_id', 'ouvrage_metier_id', 'ouvrage_toit_id',
+                            'textcustomer as customerText','textchargeaffaire', 'textoperator', 'name',
+                            'type', 'qty', 'qty as qtyOuvrage', 'nbheure as totalHour', 'total'
+                        )
+                        ->get();
+                    foreach ($ouvrages as $ouvrage) {
+                        $ouvrage->avg = 0;
+                        $ouvrage->totalWithoutMarge = 0;
+                        $tasks = DB::table('order_ouvrage_task')
+                                    ->where('order_ouvrage_id', $ouvrage->id)
+                                    ->where(function($query){
+                                        $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
+                                    })
+                                    ->select(
+                                        'id', 'name', 'textcustomer as customerText', 'textchargeaffaire',
+                                        'textoperator', 'unit_id', 'qty'
+                                    )->get();
+                        foreach ($tasks as $task) {
+                            $details = DB::table('order_ouvrage_detail')
+                            ->leftJoin('units', 'units.id', '=', 'order_ouvrage_detail.unit_id')
+                            ->where('order_ouvrage_task_id', $task->id)
+                            ->where(function($query){
+                                $query->whereNull('order_ouvrage_detail.deleted_at')->orWhere('order_ouvrage_detail.deleted_at', '0000-00-00 00:00:00');
+                            })
+                            ->select(
+                                'order_ouvrage_detail.id', 'order_ouvrage_detail.numberh as numberH', 'order_ouvrage_detail.qty', 'order_ouvrage_detail.unit_id',
+                                'order_ouvrage_detail.type', 'units.code as unit', 'order_ouvrage_detail.product_id as productId', 'order_ouvrage_detail.name', 'order_ouvrage_detail.taxe_id as tax', 'order_ouvrage_detail.unitprice as unitPrice', 'order_ouvrage_detail.datesupplier',
+                                'order_ouvrage_detail.supplier_id as supplierId', 'order_ouvrage_detail.interim_societe_id as societe', 'order_ouvrage_detail.marge', 'order_ouvrage_detail.totalPrice', 'order_ouvrage_detail.qty', 'order_ouvrage_detail.qty as qtyOuvrage', 'order_ouvrage_detail.original', 'order_ouvrage_detail.original_number_h as originalNumberH',
+                                'order_ouvrage_detail.original_qty as originalDetailQty', 'order_ouvrage_detail.orderfile as base64'
+                            )->get();
+                            foreach ($details as $detail) {
+                                if($detail->type == 'COMMANDE FOURNISSEUR'){
+                                    $detail->base64 = getenv('APP_URL').Storage::url($detail->base64);
+                                }
+                                $detail->totalPriceWithoutMarge = 0;
+                                $ouvrage->totalHour += $detail->numberH;
+                                $devis['totalPriceForInstall'] += $detail->totalPrice;
+                                $devis['zones'][$zoneIndex]['installOuvrage']['totalPrice'] += $detail->totalPrice;
+                            }
+                            $task->details = $details;
+                        }
+                        $devis['zones'][$zoneIndex]['installOuvrage']['totalHour'] = $ouvrage->totalHour;
+                        $ouvrage->tasks = $tasks;
                     }
+                    $devis['zones'][$zoneIndex]['installOuvrage']['ouvrages'] = $ouvrages;
                 }else{
-                    $item->items = [];
+                    $devis['zones'][$zoneIndex]['installOuvrage']['ouvrages'] = [];
                 }
-            }
-            $devis['zones'][$zoneIndex]['gedCats'] = $categories->groupBy('id');
-            if($devis['describeOn'] && DB::table('order_describe')->where('order_zone_id', $zone->id)->count()){
-                $describes = DB::table('order_describe')->join('describe', 'describe.id', '=', 'order_describe.describe_id')
-                                ->where('order_zone_id', $zone->id)
-                                ->join('describe_categories', 'describe_categories.id', '=', 'describe.describe_category_id')
-                                ->select(
-                                    'describe.name', 'describe.type', 'order_describe.value as default',
-                                    'describe.order', 'describe.data', 'describe_categories.name as catName',
-                                    'describe.id', 'order_describe.id as order_describe_id'
-                                )
-                                ->orderBy('order')->get();
-            }else{
-                $describes = DB::table('describe')->join('describe_categories', 'describe.describe_category_id', '=', 'describe_categories.id')
-                            ->select('describe.id', 'describe.name', 'describe.type', 'describe.default', 'describe.order', 'describe.data', 'describe_categories.name as catName')
-                            ->orderBy('order')->get();
-            }
-            foreach($describes as $describe){
-                $describe->data = json_decode($describe->data);
-                if($describe->type == 'Checkbox' || $describe->type == 'Switch'){
-                    $describe->default = $describe->default == 0 ? false : true;
-                }
-            }
-            $describes = $describes->groupBy('catName');
-            $devis['zones'][$zoneIndex]['describes'] = $describes->groupBy('catName');
 
-            if($devis['describeOn'] && DB::table('order_services')->where('order_zone_id', $zone->id)->count()){
-                $services = DB::table('order_services')->join('services', 'services.id', '=', 'order_services.service_id')
-                ->where('order_zone_id', $zone->id)
-                ->select(
-                    'services.name', 'services.type', 'order_services.value',
-                    'services.data', 'order_services.active', 'order_services.semti',
-                    'services.id', 'order_services.id as order_service_id', 'order_services.sstt',
-                    'order_services.client', 'order_services.loc',
-                )
-                ->orderBy('order')->get();
-            }else{
-                $services = DB::table('services')->select(
-                    'services.name', 'services.type', 'services.default as value',
-                    'services.data', 'services.id',
-                )
-                ->orderBy('order')->get();
-            }
-            foreach($services as $service){
-                $service->data = json_decode($service->data);
-                if($service->type == 'Checkbox' || $service->type == 'Switch'){
-                    $service->value = $service->value == 0 ? false : true;
-                }
-                if(isset($service->active)){
-                    $service->active = $service->active == 0 ? false : true;
-                    $service->semti = $service->semti == 0 ? false : true;
-                    $service->sstt = $service->sstt == 0 ? false : true;
-                    $service->client = $service->client == 0 ? false : true;
-                    $service->loc = $service->loc == 0 ? false : true;
+                //securite ouvrages;
+                $orderCat = DB::table('order_cat')->where('order_zone_id', $zone->id)->where('type', 'SECURITE')->first();
+                $devis['zones'][$zoneIndex]['securityOuvrage']['sumUnitPrice'] = 0;
+                $devis['zones'][$zoneIndex]['securityOuvrage']['name'] = 'Sécurité';
+                $devis['zones'][$zoneIndex]['securityOuvrage']['edit'] = false;
+                $devis['zones'][$zoneIndex]['securityOuvrage']['totalHour'] = 0;
+                $devis['zones'][$zoneIndex]['securityOuvrage']['sumUnitPrice'] = 0;
+                $devis['zones'][$zoneIndex]['securityOuvrage']['totalPrice'] = 0;
+                if($orderCat){
+                    $devis['zones'][$zoneIndex]['securityOuvrage']['name'] = $orderCat->name;
+                    $ouvrages = DB::table('order_ouvrages')
+                        ->where('order_id', $order->id)
+                        ->where('order_zone_id', $zone->id)
+                        ->where('order_cat_id', $orderCat->id)
+                        ->where(function($query){
+                                $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
+                            })
+                        ->where('type', 'SECURITE')
+                        ->select(
+                            'id', 'unit_id as unit', 'qty', 'ouvrage_prestation_id', 'ouvrage_metier_id', 'ouvrage_toit_id',
+                            'textcustomer as customerText','textchargeaffaire', 'textoperator', 'name',
+                            'type', 'qty', 'qty as qtyOuvrage', 'nbheure as totalHour', 'total'
+                        )
+                        ->get();
+                    foreach ($ouvrages as $ouvrage) {
+                        $ouvrage->avg = 0;
+                        $ouvrage->totalWithoutMarge = 0;
+                        $tasks = DB::table('order_ouvrage_task')
+                                    ->where('order_ouvrage_id', $ouvrage->id)
+                                    ->where(function($query){
+                                $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
+                            })
+                                    ->select('id', 'name', 'textcustomer as customerText', 'textchargeaffaire', 'textoperator', 'unit_id', 'qty')->get();
+                        foreach ($tasks as $task) {
+                            $details = DB::table('order_ouvrage_detail')
+                            ->leftJoin('units', 'units.id', '=', 'order_ouvrage_detail.unit_id')
+                            ->where('order_ouvrage_task_id', $task->id)
+                            ->where(function($query){
+                                $query->whereNull('order_ouvrage_detail.deleted_at')->orWhere('order_ouvrage_detail.deleted_at', '0000-00-00 00:00:00');
+                            })
+                            ->select(
+                                'order_ouvrage_detail.id', 'order_ouvrage_detail.numberh as numberH', 'order_ouvrage_detail.qty', 'order_ouvrage_detail.unit_id',
+                                'order_ouvrage_detail.type', 'units.code as unit', 'order_ouvrage_detail.product_id as productId', 'order_ouvrage_detail.name', 'order_ouvrage_detail.taxe_id as tax', 'order_ouvrage_detail.unitprice as unitPrice', 'order_ouvrage_detail.datesupplier',
+                                'order_ouvrage_detail.supplier_id as supplierId', 'order_ouvrage_detail.interim_societe_id as societe', 'order_ouvrage_detail.marge', 'order_ouvrage_detail.totalPrice', 'order_ouvrage_detail.qty', 'order_ouvrage_detail.qty as qtyOuvrage', 'order_ouvrage_detail.original', 'order_ouvrage_detail.original_number_h as originalNumberH',
+                                'order_ouvrage_detail.original_qty as originalDetailQty', 'order_ouvrage_detail.orderfile as base64'
+                            )->get();
+                            foreach ($details as $detail) {
+                                if($detail->type == 'COMMANDE FOURNISSEUR'){
+                                    $detail->base64 = getenv('APP_URL').Storage::url($detail->base64);
+                                }
+                                $detail->totalPriceWithoutMarge = 0;
+                                $ouvrage->totalHour += $detail->numberH;
+                                $devis['totalPriceForInstall'] += $detail->totalPrice;
+                                $devis['zones'][$zoneIndex]['installOuvrage']['totalPrice'] += $detail->totalPrice;
+                            }
+                            $task->details = $details;
+                        }
+                        $devis['zones'][$zoneIndex]['securityOuvrage']['totalHour'] = $ouvrage->totalHour;
+                        $ouvrage->tasks = $tasks;
+                    }
+                    $devis['zones'][$zoneIndex]['securityOuvrage']['ouvrages'] = $ouvrages;
                 }else{
-                    $service->active = false;
-                    $service->semti = false;
-                    $service->sstt = false;
-                    $service->client = false;
-                    $service->loc = false;
+                    $devis['zones'][$zoneIndex]['securityOuvrage']['ouvrages'] = [];
                 }
-            }
-            $devis['zones'][$zoneIndex]['services'] = $services;
-            //installation ouvrages;
 
-            $orderCat = DB::table('order_cat')->where('order_zone_id', $zone->id)->where('type', 'INSTALLATION')->first();
-            $devis['zones'][$zoneIndex]['installOuvrage']['sumUnitPrice'] = 0;
-            $devis['zones'][$zoneIndex]['installOuvrage']['name'] = 'Installation';
-            $devis['zones'][$zoneIndex]['installOuvrage']['edit'] = false;
-            $devis['zones'][$zoneIndex]['installOuvrage']['totalHour'] = 0;
-            $devis['zones'][$zoneIndex]['installOuvrage']['sumUnitPrice'] = 0;
-            $devis['zones'][$zoneIndex]['installOuvrage']['totalPrice'] = 0;
-            if($orderCat){
-                $devis['zones'][$zoneIndex]['installOuvrage']['name'] = $orderCat->name;
-                $ouvrages = DB::table('order_ouvrages')
-                    ->where('order_id', $order->id)
-                    ->where('order_zone_id', $zone->id)
-                    ->where('order_cat_id', $orderCat->id)
-                    ->where(function($query){
-                        $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
-                    })
-                    ->where('type', 'INSTALLATION')
-                    ->select(
-                        'id', 'unit_id as unit', 'qty', 'ouvrage_prestation_id', 'ouvrage_metier_id', 'ouvrage_toit_id',
-                        'textcustomer as customerText','textchargeaffaire', 'textoperator', 'name',
-                        'type', 'qty', 'qty as qtyOuvrage', 'nbheure as totalHour', 'total'
-                    )
-                    ->get();
-                foreach ($ouvrages as $ouvrage) {
-                    $ouvrage->avg = 0;
-                    $ouvrage->totalWithoutMarge = 0;
-                    $tasks = DB::table('order_ouvrage_task')
+                //prestation ouvrages;
+                $orderCat = DB::table('order_cat')->where('order_zone_id', $zone->id)->where('type', 'PRESTATION')->first();
+                $devis['zones'][$zoneIndex]['prestationOuvrage']['sumUnitPrice'] = 0;
+                $devis['zones'][$zoneIndex]['prestationOuvrage']['name'] = 'PRESTATION';
+                $devis['zones'][$zoneIndex]['prestationOuvrage']['edit'] = false;
+                $devis['zones'][$zoneIndex]['prestationOuvrage']['totalHour'] = 0;
+                $devis['zones'][$zoneIndex]['prestationOuvrage']['sumUnitPrice'] = 0;
+                $devis['zones'][$zoneIndex]['prestationOuvrage']['totalPrice'] = 0;
+                if($orderCat){
+                    $devis['zones'][$zoneIndex]['prestationOuvrage']['name'] = $orderCat->name;
+                    $ouvrages = DB::table('order_ouvrages')
+                        ->where('order_id', $order->id)
+                        ->where('order_zone_id', $zone->id)
+                        ->where('order_cat_id', $orderCat->id)
+                        ->where(function($query){
+                                $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
+                            })
+                        ->where('type', 'PRESTATION')
+                        ->select(
+                            'id', 'unit_id as unit', 'qty', 'ouvrage_prestation_id', 'ouvrage_metier_id', 'ouvrage_toit_id',
+                            'textcustomer as customerText','textchargeaffaire', 'textoperator', 'name',
+                            'type', 'qty', 'qty as qtyOuvrage', 'nbheure as totalHour', 'total'
+                        )
+                        ->get();
+                    foreach ($ouvrages as $ouvrage) {
+                        $ouvrage->avg = 0;
+                        $ouvrage->totalWithoutMarge = 0;
+                        $tasks = DB::table('order_ouvrage_task')
                                 ->where('order_ouvrage_id', $ouvrage->id)
                                 ->where(function($query){
                                     $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
                                 })
-                                ->select(
-                                    'id', 'name', 'textcustomer as customerText', 'textchargeaffaire',
-                                    'textoperator', 'unit_id', 'qty'
-                                )->get();
-                    foreach ($tasks as $task) {
-                        $details = DB::table('order_ouvrage_detail')
-                        ->leftJoin('units', 'units.id', '=', 'order_ouvrage_detail.unit_id')
-                        ->where('order_ouvrage_task_id', $task->id)
-                        ->where(function($query){
-                            $query->whereNull('order_ouvrage_detail.deleted_at')->orWhere('order_ouvrage_detail.deleted_at', '0000-00-00 00:00:00');
-                        })
-                        ->select(
-                            'order_ouvrage_detail.id', 'order_ouvrage_detail.numberh as numberH', 'order_ouvrage_detail.qty', 'order_ouvrage_detail.unit_id',
-                            'order_ouvrage_detail.type', 'units.code as unit', 'order_ouvrage_detail.product_id as productId', 'order_ouvrage_detail.name', 'order_ouvrage_detail.taxe_id as tax', 'order_ouvrage_detail.unitprice as unitPrice', 'order_ouvrage_detail.datesupplier',
-                            'order_ouvrage_detail.supplier_id as supplierId', 'order_ouvrage_detail.interim_societe_id as societe', 'order_ouvrage_detail.marge', 'order_ouvrage_detail.totalPrice', 'order_ouvrage_detail.qty', 'order_ouvrage_detail.qty as qtyOuvrage', 'order_ouvrage_detail.original', 'order_ouvrage_detail.original_number_h as originalNumberH',
-                            'order_ouvrage_detail.original_qty as originalDetailQty', 'order_ouvrage_detail.orderfile as base64'
-                        )->get();
-                        foreach ($details as $detail) {
-                            if($detail->type == 'COMMANDE FOURNISSEUR'){
-                                $detail->base64 = getenv('APP_URL').Storage::url($detail->base64);
-                            }
-                            $detail->totalPriceWithoutMarge = 0;
-                            $ouvrage->totalHour += $detail->numberH;
-                            $devis['totalPriceForInstall'] += $detail->totalPrice;
-                            $devis['zones'][$zoneIndex]['installOuvrage']['totalPrice'] += $detail->totalPrice;
-                        }
-                        $task->details = $details;
-                    }
-                    $devis['zones'][$zoneIndex]['installOuvrage']['totalHour'] = $ouvrage->totalHour;
-                    $ouvrage->tasks = $tasks;
-                }
-                $devis['zones'][$zoneIndex]['installOuvrage']['ouvrages'] = $ouvrages;
-            }else{
-                $devis['zones'][$zoneIndex]['installOuvrage']['ouvrages'] = [];
-            }
-
-            //securite ouvrages;
-            $orderCat = DB::table('order_cat')->where('order_zone_id', $zone->id)->where('type', 'SECURITE')->first();
-            $devis['zones'][$zoneIndex]['securityOuvrage']['sumUnitPrice'] = 0;
-            $devis['zones'][$zoneIndex]['securityOuvrage']['name'] = 'Sécurité';
-            $devis['zones'][$zoneIndex]['securityOuvrage']['edit'] = false;
-            $devis['zones'][$zoneIndex]['securityOuvrage']['totalHour'] = 0;
-            $devis['zones'][$zoneIndex]['securityOuvrage']['sumUnitPrice'] = 0;
-            $devis['zones'][$zoneIndex]['securityOuvrage']['totalPrice'] = 0;
-            if($orderCat){
-                $devis['zones'][$zoneIndex]['securityOuvrage']['name'] = $orderCat->name;
-                $ouvrages = DB::table('order_ouvrages')
-                    ->where('order_id', $order->id)
-                    ->where('order_zone_id', $zone->id)
-                    ->where('order_cat_id', $orderCat->id)
-                    ->where(function($query){
-                            $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
-                        })
-                    ->where('type', 'SECURITE')
-                    ->select(
-                        'id', 'unit_id as unit', 'qty', 'ouvrage_prestation_id', 'ouvrage_metier_id', 'ouvrage_toit_id',
-                        'textcustomer as customerText','textchargeaffaire', 'textoperator', 'name',
-                        'type', 'qty', 'qty as qtyOuvrage', 'nbheure as totalHour', 'total'
-                    )
-                    ->get();
-                foreach ($ouvrages as $ouvrage) {
-                    $ouvrage->avg = 0;
-                    $ouvrage->totalWithoutMarge = 0;
-                    $tasks = DB::table('order_ouvrage_task')
-                                ->where('order_ouvrage_id', $ouvrage->id)
-                                ->where(function($query){
-                            $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
-                        })
                                 ->select('id', 'name', 'textcustomer as customerText', 'textchargeaffaire', 'textoperator', 'unit_id', 'qty')->get();
-                    foreach ($tasks as $task) {
-                        $details = DB::table('order_ouvrage_detail')
-                        ->leftJoin('units', 'units.id', '=', 'order_ouvrage_detail.unit_id')
-                        ->where('order_ouvrage_task_id', $task->id)
-                        ->where(function($query){
-                            $query->whereNull('order_ouvrage_detail.deleted_at')->orWhere('order_ouvrage_detail.deleted_at', '0000-00-00 00:00:00');
-                        })
-                        ->select(
-                            'order_ouvrage_detail.id', 'order_ouvrage_detail.numberh as numberH', 'order_ouvrage_detail.qty', 'order_ouvrage_detail.unit_id',
-                            'order_ouvrage_detail.type', 'units.code as unit', 'order_ouvrage_detail.product_id as productId', 'order_ouvrage_detail.name', 'order_ouvrage_detail.taxe_id as tax', 'order_ouvrage_detail.unitprice as unitPrice', 'order_ouvrage_detail.datesupplier',
-                            'order_ouvrage_detail.supplier_id as supplierId', 'order_ouvrage_detail.interim_societe_id as societe', 'order_ouvrage_detail.marge', 'order_ouvrage_detail.totalPrice', 'order_ouvrage_detail.qty', 'order_ouvrage_detail.qty as qtyOuvrage', 'order_ouvrage_detail.original', 'order_ouvrage_detail.original_number_h as originalNumberH',
-                            'order_ouvrage_detail.original_qty as originalDetailQty', 'order_ouvrage_detail.orderfile as base64'
-                        )->get();
-                        foreach ($details as $detail) {
-                            if($detail->type == 'COMMANDE FOURNISSEUR'){
-                                $detail->base64 = getenv('APP_URL').Storage::url($detail->base64);
-                            }
-                            $detail->totalPriceWithoutMarge = 0;
-                            $ouvrage->totalHour += $detail->numberH;
-                            $devis['totalPriceForInstall'] += $detail->totalPrice;
-                            $devis['zones'][$zoneIndex]['installOuvrage']['totalPrice'] += $detail->totalPrice;
-                        }
-                        $task->details = $details;
-                    }
-                    $devis['zones'][$zoneIndex]['securityOuvrage']['totalHour'] = $ouvrage->totalHour;
-                    $ouvrage->tasks = $tasks;
-                }
-                $devis['zones'][$zoneIndex]['securityOuvrage']['ouvrages'] = $ouvrages;
-            }else{
-                $devis['zones'][$zoneIndex]['securityOuvrage']['ouvrages'] = [];
-            }
-
-            //prestation ouvrages;
-            $orderCat = DB::table('order_cat')->where('order_zone_id', $zone->id)->where('type', 'PRESTATION')->first();
-            $devis['zones'][$zoneIndex]['prestationOuvrage']['sumUnitPrice'] = 0;
-            $devis['zones'][$zoneIndex]['prestationOuvrage']['name'] = 'PRESTATION';
-            $devis['zones'][$zoneIndex]['prestationOuvrage']['edit'] = false;
-            $devis['zones'][$zoneIndex]['prestationOuvrage']['totalHour'] = 0;
-            $devis['zones'][$zoneIndex]['prestationOuvrage']['sumUnitPrice'] = 0;
-            $devis['zones'][$zoneIndex]['prestationOuvrage']['totalPrice'] = 0;
-            if($orderCat){
-                $devis['zones'][$zoneIndex]['prestationOuvrage']['name'] = $orderCat->name;
-                $ouvrages = DB::table('order_ouvrages')
-                    ->where('order_id', $order->id)
-                    ->where('order_zone_id', $zone->id)
-                    ->where('order_cat_id', $orderCat->id)
-                    ->where(function($query){
-                            $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
-                        })
-                    ->where('type', 'PRESTATION')
-                    ->select(
-                        'id', 'unit_id as unit', 'qty', 'ouvrage_prestation_id', 'ouvrage_metier_id', 'ouvrage_toit_id',
-                        'textcustomer as customerText','textchargeaffaire', 'textoperator', 'name',
-                        'type', 'qty', 'qty as qtyOuvrage', 'nbheure as totalHour', 'total'
-                    )
-                    ->get();
-                foreach ($ouvrages as $ouvrage) {
-                    $ouvrage->avg = 0;
-                    $ouvrage->totalWithoutMarge = 0;
-                    $tasks = DB::table('order_ouvrage_task')
-                            ->where('order_ouvrage_id', $ouvrage->id)
+                        foreach ($tasks as $task) {
+                            $details = DB::table('order_ouvrage_detail')
+                            ->leftJoin('units', 'units.id', '=', 'order_ouvrage_detail.unit_id')
+                            ->where('order_ouvrage_task_id', $task->id)
                             ->where(function($query){
+                                $query->whereNull('order_ouvrage_detail.deleted_at')->orWhere('order_ouvrage_detail.deleted_at', '0000-00-00 00:00:00');
+                            })
+                            ->select(
+                                'order_ouvrage_detail.id', 'order_ouvrage_detail.numberh as numberH', 'order_ouvrage_detail.qty', 'order_ouvrage_detail.unit_id',
+                                'order_ouvrage_detail.type', 'units.code as unit', 'order_ouvrage_detail.product_id as productId', 'order_ouvrage_detail.name', 'order_ouvrage_detail.taxe_id as tax', 'order_ouvrage_detail.unitprice as unitPrice', 'order_ouvrage_detail.datesupplier',
+                                'order_ouvrage_detail.supplier_id as supplierId', 'order_ouvrage_detail.interim_societe_id as societe', 'order_ouvrage_detail.marge', 'order_ouvrage_detail.totalPrice', 'order_ouvrage_detail.qty', 'order_ouvrage_detail.qty as qtyOuvrage', 'order_ouvrage_detail.original', 'order_ouvrage_detail.original_number_h as originalNumberH',
+                                'order_ouvrage_detail.original_qty as originalDetailQty', 'order_ouvrage_detail.orderfile as base64'
+                            )->get();
+                            foreach ($details as $detail) {
+                                if($detail->type == 'COMMANDE FOURNISSEUR'){
+                                    $detail->base64 = getenv('APP_URL').Storage::url($detail->base64);
+                                }
+                                $detail->totalPriceWithoutMarge = 0;
+                                $ouvrage->totalHour += $detail->numberH;
+                                $devis['totalPriceForInstall'] += $detail->totalPrice;
+                                $devis['zones'][$zoneIndex]['installOuvrage']['totalPrice'] += $detail->totalPrice;
+                            }
+                            $task->details = $details;
+                        }
+                        $devis['zones'][$zoneIndex]['prestationOuvrage']['totalHour'] = $ouvrage->totalHour;
+                        $ouvrage->tasks = $tasks;
+                    }
+                    $devis['zones'][$zoneIndex]['prestationOuvrage']['ouvrages'] = $ouvrages;
+                }else{
+                    $devis['zones'][$zoneIndex]['prestationOuvrage']['ouvrages'] = [];
+                }
+            }
+        }else{
+            $zoneId = DB::table('order_zones')
+                        ->where('order_id', $order->id)
+                        ->where(function($query){
                                 $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
                             })
-                            ->select('id', 'name', 'textcustomer as customerText', 'textchargeaffaire', 'textoperator', 'unit_id', 'qty')->get();
-                    foreach ($tasks as $task) {
-                        $details = DB::table('order_ouvrage_detail')
-                        ->leftJoin('units', 'units.id', '=', 'order_ouvrage_detail.unit_id')
-                        ->where('order_ouvrage_task_id', $task->id)
-                        ->where(function($query){
-                            $query->whereNull('order_ouvrage_detail.deleted_at')->orWhere('order_ouvrage_detail.deleted_at', '0000-00-00 00:00:00');
-                        })
-                        ->select(
-                            'order_ouvrage_detail.id', 'order_ouvrage_detail.numberh as numberH', 'order_ouvrage_detail.qty', 'order_ouvrage_detail.unit_id',
-                            'order_ouvrage_detail.type', 'units.code as unit', 'order_ouvrage_detail.product_id as productId', 'order_ouvrage_detail.name', 'order_ouvrage_detail.taxe_id as tax', 'order_ouvrage_detail.unitprice as unitPrice', 'order_ouvrage_detail.datesupplier',
-                            'order_ouvrage_detail.supplier_id as supplierId', 'order_ouvrage_detail.interim_societe_id as societe', 'order_ouvrage_detail.marge', 'order_ouvrage_detail.totalPrice', 'order_ouvrage_detail.qty', 'order_ouvrage_detail.qty as qtyOuvrage', 'order_ouvrage_detail.original', 'order_ouvrage_detail.original_number_h as originalNumberH',
-                            'order_ouvrage_detail.original_qty as originalDetailQty', 'order_ouvrage_detail.orderfile as base64'
-                        )->get();
-                        foreach ($details as $detail) {
-                            if($detail->type == 'COMMANDE FOURNISSEUR'){
-                                $detail->base64 = getenv('APP_URL').Storage::url($detail->base64);
-                            }
-                            $detail->totalPriceWithoutMarge = 0;
-                            $ouvrage->totalHour += $detail->numberH;
-                            $devis['totalPriceForInstall'] += $detail->totalPrice;
-                            $devis['zones'][$zoneIndex]['installOuvrage']['totalPrice'] += $detail->totalPrice;
-                        }
-                        $task->details = $details;
-                    }
-                    $devis['zones'][$zoneIndex]['prestationOuvrage']['totalHour'] = $ouvrage->totalHour;
-                    $ouvrage->tasks = $tasks;
+                        ->value('id');
+            $devis['orderName'] = $order->name;
+            $devis['comment'] = $order->comment;
+            $devis['reductionAmount'] = $order->remise;
+            $devis['reductionPercent'] = $order->remise / $order->total;
+            $devis['totalAmount'] = $order->total;
+            $devis['totalHours'] = $order->nbheure;
+            $devis['taxAmount'] = 0;
+            $devis['customer'] = DB::table('customers')
+                                    ->join('group', 'group.id', '=', 'customers.group_id')
+                                    ->join('taxes', 'taxes.id', '=', 'customers.taxe_id')
+                                    ->join('contacts', 'contacts.customer_id', '=', 'customers.id')
+                                    ->where('customers.id', $order->customer_id)
+                                    ->select('customers.id', 'customers.company', 'customers.raisonsociale', 'group.Name as group'
+                                        ,DB::raw('CONCAT(customers.firstname, " ",customers.name) as contact'),
+                                        'customers.telephone', 'taxes.Name as tax', 'taxes.id as taxId', 'customers.naf', 'customers.siret', 'contacts.id as contact_id'
+                                    )->first();
+            $devis['address'] = DB::table('addresses')
+                                    ->where('id', $order->address_id)
+                                    ->select(
+                                        'id', 'address1', 'address2', 'postcode', 'city', 'address_type_id as addressType',
+                                        'latitude as lat', 'longitude as lon'
+                                    )->first();
+
+            $photos = DB::table('ged_details')
+                    ->where('order_zone_id', $zoneId)
+                    ->where('ged_category_id', 0)
+                    ->whereNotIn('type', ['txt', 'description'])
+                    ->where('user_id', Auth::id())
+                    ->select(
+                        DB::raw('CONCAT(CONCAT(storage_path, "/",file), ".", type) as url'),
+                        'human_readable_filename as fileName',
+                        'id', 'type'
+                    )->get();
+            if($photos->count() > 0){
+                foreach ($photos as $photo) {
+                    $photo->base64data = '';
+                    $photo->url = getenv('APP_URL').Storage::url($photo->url);
                 }
-                $devis['zones'][$zoneIndex]['prestationOuvrage']['ouvrages'] = $ouvrages;
-            }else{
-                $devis['zones'][$zoneIndex]['prestationOuvrage']['ouvrages'] = [];
             }
+            $devis['photos'] = $photos;
+            $gedId = Ged::where('user_id','=',Auth::id())
+                        ->where('order_id', $order->id)->value('id');
+            $documents = DB::table('order_documents')->where('ged_id', $gedId)->select('id', 'human_readable_filename as fileName', 'file_path as url')->get();
+            foreach($documents as $document){
+                $document->base64data  = '';
+                $document->type  = 'pdf';
+                $document->url  = getenv('APP_URL').Storage::url($document->url);;
+            }
+            $devis['documents'] = $documents;
+            $order_details = DB::table('order_detail')->where('order_id', $order->id)->select(
+                'id' ,'name', 'unitprice as unitPrice', 'qty', 'numberh as hours', 'taxe_id as taxId'
+            )->get();
+            foreach ($order_details as $detail) {
+                if($detail->qty == 0){
+                    $detail->total = $detail->unitPrice * $detail->hours;
+                }else{
+                    $detail->total = $detail->unitPrice * $detail->qty;
+                }
+            }
+            $devis['details'] = $order_details;
         }
         $categories = DB::table('ged_categories')->select('id', 'name')->get();
         foreach ($categories as $item) {
@@ -1623,6 +1696,7 @@ class DevisController extends Controller
             [
                 'devis' => $devis,
                 'useGoogleService'   => DB::table('settings')->where('key', 'admin.Google')->value('value') == 1 ? true : false,
+                'devisWithOuvrage'   => $devisWithOuvrage,
                 'gedCats'   => $categories->groupBy('id'),
                 'units'     => DB::table('units')->select('id as value', 'code as display')->get(),
                 'taxes'     => DB::table('taxes')->select('id as value', DB::raw('CEIL(taux * 100) as display'))->get(),
@@ -1635,61 +1709,597 @@ class DevisController extends Controller
      * update a devis
      */
     public function updateDevis(Request $request, $orderId){
-        $orderData = [
-            'name'              => $request->orderName,
-            'affiliate_id'      => Auth::user()->affiliate->id,
-            'responsable_id'    => Auth::id(),
-            'total'             => ($request->totalPriceForInstall + $request->totalPriceForSecurity + $request->totalPriceForPrestation),
-            'remise'            => $request->discount,
-            'address_id'        => $request->address['id'],
-            'customer_id'       => $request->customer['id'],
-            'updated_at'        => Carbon::now(),
-        ];
-
-        DB::table('orders')->where('id', $orderId)->update($orderData);
-
-        $gedId = Ged::where('user_id','=',Auth::id())
-                    ->where('customer_id', $request->customer['id'])
-                    ->where('order_id', $orderId)->value('id');
-        $availOrderZoneIds = [];
-        foreach ($request->zones as $zone) {
-            $zoneId = $zone['id'];
-            $zoneData = [
-                'order_id'      =>  $orderId,
-                'latitude'      =>  $request->address['lat'],
-                'longitude'     =>  $request->address['lon'],
-                'hauteur'       =>  $zone['height'],
-                'moyenacces_id' =>  $zone['roofAccess'],
-                'name'          =>  $zone['name'],
-                'updated_at'    =>  Carbon::now(),
+        if(DB::table('settings')->where('key', 'admin.ouvrage')->value('value') == 1){
+            $orderData = [
+                'name'              => $request->orderName,
+                'affiliate_id'      => Auth::user()->affiliate->id,
+                'responsable_id'    => Auth::id(),
+                'total'             => ($request->totalPriceForInstall + $request->totalPriceForSecurity + $request->totalPriceForPrestation),
+                'remise'            => $request->discount,
+                'address_id'        => $request->address['id'],
+                'customer_id'       => $request->customer['id'],
+                'updated_at'        => Carbon::now(),
             ];
-            if($zoneId != ''){
-                DB::table('order_zones')->where('id', $zoneId)->update($zoneData);
-            }else{
-                $zoneData = [
-                    'description'   =>  '',
-                    'created_at'    =>  Carbon::now(),
-                ];
-                $zoneId = DB::table('order_zones')->insertGetId($zoneData);
-            }
-            // adding Order Zone's id;
-            $availOrderZoneIds[] = $zoneId;
-            // save ged details
-            foreach ($zone['gedCats'] as $gedCatId=> $gedCat) {
-                foreach ($gedCat[0]['items'] as $file) {
-                    if($file['id'] == ''){
-                        $gedDetail = new GedDetail();
-                    }else{
-                        $gedDetail = GedDetail::find($file['id']);
-                    }
-                    $gedDetail->ged_id = $gedId;
-                    $gedDetail->order_zone_id = $zoneId;
-                    $gedDetail->ged_category_id = $gedCatId;
-                    $gedDetail->user_id = Auth::id();
-                    $gedDetail->save();
-                    $gedDetail = $gedDetail->fresh();//retreve fresh object with all fields
 
-                    // if( $gedDetail->file == null){//files can only be stored once to avoid duplicates;
+            DB::table('orders')->where('id', $orderId)->update($orderData);
+
+            $gedId = Ged::where('user_id','=',Auth::id())
+                        ->where('customer_id', $request->customer['id'])
+                        ->where('order_id', $orderId)->value('id');
+            $availOrderZoneIds = [];
+            foreach ($request->zones as $zone) {
+                $zoneId = $zone['id'];
+                $zoneData = [
+                    'order_id'      =>  $orderId,
+                    'latitude'      =>  $request->address['lat'],
+                    'longitude'     =>  $request->address['lon'],
+                    'hauteur'       =>  $zone['height'],
+                    'moyenacces_id' =>  $zone['roofAccess'],
+                    'name'          =>  $zone['name'],
+                    'updated_at'    =>  Carbon::now(),
+                ];
+                if($zoneId != ''){
+                    DB::table('order_zones')->where('id', $zoneId)->update($zoneData);
+                }else{
+                    $zoneData = [
+                        'description'   =>  '',
+                        'created_at'    =>  Carbon::now(),
+                    ];
+                    $zoneId = DB::table('order_zones')->insertGetId($zoneData);
+                }
+                // adding Order Zone's id;
+                $availOrderZoneIds[] = $zoneId;
+                // save ged details
+                foreach ($zone['gedCats'] as $gedCatId=> $gedCat) {
+                    foreach ($gedCat[0]['items'] as $file) {
+                        if($file['id'] == ''){
+                            $gedDetail = new GedDetail();
+                        }else{
+                            $gedDetail = GedDetail::find($file['id']);
+                        }
+                        $gedDetail->ged_id = $gedId;
+                        $gedDetail->order_zone_id = $zoneId;
+                        $gedDetail->ged_category_id = $gedCatId;
+                        $gedDetail->user_id = Auth::id();
+                        $gedDetail->save();
+                        $gedDetail = $gedDetail->fresh();//retreve fresh object with all fields
+
+                        // if( $gedDetail->file == null){//files can only be stored once to avoid duplicates;
+                        if( !empty($file['base64data']) ){
+                            $storedFile = $this->storeFile($file['base64data'], $file['fileName'], $gedDetail->id);
+                            $gedDetail->file = $storedFile->file;
+                            $gedDetail->type = $storedFile->type;
+                            $gedDetail->storage_path = $storedFile->storage_path;
+                            $gedDetail->human_readable_filename = $storedFile->human_readable_filename;
+                        }
+                        // }
+                        $gedDetail->save();
+                    }
+                }
+                // update describes
+                foreach($zone['describes'] as $zoneDescribes) {
+                    foreach ($zoneDescribes as $describe) {
+                        if(isset($describe['order_describe_id'])){
+                            DB::table('order_describe')->where('id', $describe['order_describe_id'])->update([
+                                'describe_id'=> $describe['id'],
+                                'value'=> $describe['default'],
+                                'order_zone_id'=> $zoneId,
+                                'updated_at'=> now()
+                            ]);
+                        }else{
+                            DB::table('order_describe')->insert([
+                                'order_zone_id'=> $zoneId,
+                                'describe_id'=> $describe['id'],
+                                'value'=> $describe['default'],
+                                'created_at'=> now(),
+                                'updated_at'=> now()
+                            ]);
+                        }
+                    }
+                }
+                // update services
+                foreach($zone['services'] as $service) {
+                    if(isset($service['order_service_id'])){
+                        DB::table('order_services')->where('id', $service['order_service_id'])->update([
+                            'service_id'=> $service['id'],
+                            'value'=> $service['value'],
+                            'active'=> $service['active'],
+                            'semti'=> $service['semti'],
+                            'sstt'=> $service['sstt'],
+                            'loc'=> $service['loc'],
+                            'client'=> $service['client'],
+                            'order_zone_id'=> $zoneId,
+                            'updated_at'=> now()
+                        ]);
+                    }else{
+                        DB::table('order_services')->insert([
+                            'order_zone_id'=> $zoneId,
+                            'service_id'=> $service['id'],
+                            'value'=> $service['value'],
+                            'active'=> $service['active'],
+                            'semti'=> $service['semti'],
+                            'sstt'=> $service['sstt'],
+                            'loc'=> $service['loc'],
+                            'client'=> $service['client'],
+                            'created_at'=> now(),
+                            'updated_at'=> now()
+                        ]);
+                    }
+                }
+                if( count($zone['installOuvrage']['ouvrages']) ){
+                    $orderCat = DB::table('order_cat')
+                                ->where('order_zone_id', $zoneId)
+                                ->where('type', 'INSTALLATION')
+                                ->first();
+                    $installationCat = [
+                        'name'          =>  $zone['installOuvrage']['name'],
+                        'updated_at'    =>  Carbon::now(),
+                    ];
+                    if($orderCat){
+                        $orderCatId = $orderCat->id;
+                        DB::table('order_cat')->where('id', $orderCat->id)->update($installationCat);
+                    }else{
+                        $installationCat['order_zone_id'] =  $zoneId;
+                        $installationCat['type']          =  'INSTALLATION';
+                        $installationCat['textcustomer']  =  '';
+                        $installationCat['textoperator']  =  '';
+                        $installationCat['created_at']    =  Carbon::now();
+                        $orderCatId = DB::table('order_cat')->insertGetId($installationCat);
+                    }
+                    // declare var for available installation ouvrage
+                    $availInstallOuvrages = [];
+                    foreach ($zone['installOuvrage']['ouvrages'] as $ouvrage) {
+                        $ouvrageData = [
+                            'order_id'          => $orderId,
+                            'order_zone_id'     => $zoneId,
+                            'order_cat_id'      => $orderCatId,
+                            'unit_id'           => $ouvrage['unit'],
+                            'qty'               => $ouvrage['qty'],
+                            'nbheure'           => $ouvrage['totalHour'],
+                            'total'             => $ouvrage['total'],
+                            'ouvrage_prestation_id'=> $ouvrage['ouvrage_prestation_id'],
+                            'ouvrage_toit_id'   => $ouvrage['ouvrage_toit_id'],
+                            'ouvrage_metier_id' => $ouvrage['ouvrage_metier_id'],
+                            'textcustomer'      => $ouvrage['customerText'],
+                            'textchargeaffaire' => $ouvrage['textchargeaffaire'],
+                            'textoperator'      => $ouvrage['textoperator'],
+                            'name'              => $ouvrage['name'],
+                            'updated_at'        => Carbon::now(),
+                        ];
+                        if(isset($ouvrage['id']) && $ouvrage['id'] != ''){
+                            $orderOuvrageId = $ouvrage['id'];
+                            DB::table('order_ouvrages')->where('id', $orderOuvrageId)->update($ouvrageData);
+                        }else{
+                            $ouvrageData['type']            = 'INSTALLATION';
+                            $ouvrageData['created_at']      = Carbon::now();
+                            $orderOuvrageId = DB::table('order_ouvrages')->insertGetId($ouvrageData);
+                        }
+                        // adding ouvrage's id;
+                        $availInstallOuvrages[] = $orderOuvrageId;
+                        // declare var for available ouvrage tasks
+                        $avileOuvrageTasks = [];
+                        foreach ($ouvrage['tasks'] as $taskIndex => $task) {
+                            $orderOuvrageTask = [
+                                'order_ouvrage_id'      => $orderOuvrageId,
+                                'name'                  => $task['name'],
+                                'textcustomer'          => $task['customerText'],
+                                'textchargeaffaire'     => $task['textchargeaffaire'],
+                                'textoperator'          => $task['textoperator'],
+                                'qty'                   => $task['qty'],
+                                'unit_id'               => $task['unit_id'],
+                                'updated_at'            =>  Carbon::now(),
+                            ];
+                            if(isset($task['id']) && $task['id'] != ''){
+                                $orderOuvrageTaskId = $task['id'];
+                                DB::table('order_ouvrage_task')->where('id', $task['id'])->update($orderOuvrageTask);
+                            }else{
+                                $orderOuvrageTask['created_at'] = Carbon::now();
+                                $orderOuvrageTaskId = DB::table('order_ouvrage_task')->insertGetId($orderOuvrageTask);
+                            }
+                            // adding task's id;
+                            $avileOuvrageTasks[] = $orderOuvrageTaskId;
+                            $availTaskDetails = [];
+                            foreach ($task['details'] as $detailIndex => $detail) {
+                                $detailData = [
+                                    'order_ouvrage_task_id'   => $orderOuvrageTaskId,
+                                    'product_id'        => $detail['productId'],
+                                    'type'              => $detail['type'],
+                                    'name'              => $detail['name'],
+                                    'textcustomer'      => '',
+                                    'textchargeaffaire' => '',
+                                    'textoperator'      => '',
+                                    'qty'               => $detail['qty'],
+                                    'numberh'           => $detail['numberH'],
+                                    'unitprice'         => $detail['unitPrice'],
+                                    'qtyouvrage'        => $detail['qtyOuvrage'] == '' ? 0 : $detail['qtyOuvrage'],
+                                    'qtyunitouvrage'    => 1,
+                                    'houvrage'          => 0,
+                                    'marge'             => $detail['marge'],
+                                    'totalprice'        => $detail['totalPrice'],
+                                    'taxe_id'           => $detail['tax'],
+                                    'unit_id'           => $detail['unit_id'],
+                                    'priceachat'        => $detail['unitPrice'],
+                                    'original'          => $detail['original'] ?? false,
+                                    'original_number_h' => $detail['originalNumberH'] ?? 1,
+                                    'original_qty'      => $detail['originalDetailQty'] ?? 1,
+                                    'updated_at'        => Carbon::now(),
+                                ];
+                                if($detail['type'] == 'INTERIM'){
+                                    $detailData['interim_societe_id']   = $detail['societe'];
+                                }
+                                if($detail['type'] == 'COMMANDE FOURNISSEUR'){
+                                    $detailData['supplier_id']   = $detail['supplierId'];
+                                    $detailData['datesupplier']   = $detail['datesupplier'];
+                                    if(preg_match('/^data:application\/pdf;base64,/', $detail['base64'], $type)){
+                                        $data = substr($detail['base64'], strpos($detail['base64'], ',') + 1);
+                                        $type = 'pdf';
+                                        if(!File::isDirectory(public_path('SupplierOrder/'))){
+                                            File::makeDirectory(public_path('SupplierOrder/'), 0755, true, true);
+                                        }
+                                        $data = str_replace( ' ', '+', $data );
+                                        $data = base64_decode($data);
+                                        $uuid_filename = DB::select('select UUID() AS uuid')[0]->uuid;
+                                        $orderFilePath = "/SupplierOrder/{$uuid_filename}.{$type}";
+                                        Storage::disk('public')->put($orderFilePath, $data);
+                                        $detailData['orderfile'] = $orderFilePath;
+                                    }
+                                }
+                                if(isset($detail['id']) && $detail['id'] != ''){
+                                    $detailId = $detail['id'];
+                                    DB::table('order_ouvrage_detail')->where('id', $detail['id'])->update($detailData);
+                                }else{
+                                    $detailData['created_at'] = Carbon::now();
+                                    $detailId = DB::table('order_ouvrage_detail')->insertGetId($detailData);
+                                }
+                                $availTaskDetails[] = $detailId;
+                            }
+                            // set deleted_at field for deleted details
+                            DB::table('order_ouvrage_detail')->where('order_ouvrage_task_id', $orderOuvrageTaskId)->where(function($query){
+                                $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
+                            })->whereNotIn('id', $availTaskDetails)->update(['deleted_at'=> Carbon::now()]);
+                        }
+                        // set deleted_at field for deleted tasks
+                        DB::table('order_ouvrage_task')->where('order_ouvrage_id', $orderOuvrageId)->where(function($query){
+                                $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
+                            })->whereNotIn('id', $avileOuvrageTasks)->update(['deleted_at'=> Carbon::now()]);
+                    }
+                    // set deleted_at field for deleted installation ouvrages
+                    DB::table('order_ouvrages')->where('order_id', $orderId)->where(function($query){
+                                $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
+                            })->where('order_zone_id', $zoneId)->whereNotIn('id', $availInstallOuvrages)->where('type', 'INSTALLATION')->update(['deleted_at'=> Carbon::now()]);
+                }
+                if( count($zone['securityOuvrage']['ouvrages']) ){
+                    $orderCat = DB::table('order_cat')
+                                ->where('order_zone_id', $zoneId)
+                                ->where('type', 'SECURITE')
+                                ->first();
+                    $securiteCat = [
+                        'name'          =>  $zone['securityOuvrage']['name'],
+                        'updated_at'    =>  Carbon::now(),
+                    ];
+                    if($orderCat){
+                        $orderCatId = $orderCat->id;
+                        DB::table('order_cat')->where('id', $orderCat->id)->update($securiteCat);
+                    }else{
+                        $securiteCat['order_zone_id'] =  $zoneId;
+                        $securiteCat['type']          =  'SECURITE';
+                        $securiteCat['textcustomer']  =  '';
+                        $securiteCat['textoperator']  =  '';
+                        $securiteCat['created_at']    =  Carbon::now();
+                        $orderCatId = DB::table('order_cat')->insertGetId($securiteCat);
+                    }
+                    // declare var for available installation ouvrage
+                    $availSecurityOuvrages = [];
+                    foreach ($zone['securityOuvrage']['ouvrages'] as $ouvrage) {
+                        $ouvrageData = [
+                            'order_id'          => $orderId,
+                            'order_zone_id'     => $zoneId,
+                            'order_cat_id'      => $orderCatId,
+                            'unit_id'           => $ouvrage['unit'],
+                            'qty'               => $ouvrage['qty'],
+                            'nbheure'           => $ouvrage['totalHour'],
+                            'total'             => $ouvrage['total'],
+                            'ouvrage_prestation_id'=> $ouvrage['ouvrage_prestation_id'],
+                            'ouvrage_toit_id'   => $ouvrage['ouvrage_toit_id'],
+                            'ouvrage_metier_id' => $ouvrage['ouvrage_metier_id'],
+                            'textcustomer'      => $ouvrage['customerText'],
+                            'textchargeaffaire' => $ouvrage['textchargeaffaire'],
+                            'textoperator'      => $ouvrage['textoperator'],
+                            'name'              => $ouvrage['name'],
+                            'updated_at'        => Carbon::now(),
+                        ];
+                        if(isset($ouvrage['id']) && $ouvrage['id'] != ''){
+                            $orderOuvrageId = $ouvrage['id'];
+                            DB::table('order_ouvrages')->where('id', $orderOuvrageId)->update($ouvrageData);
+                        }else{
+                            $ouvrageData['type']            = 'SECURITE';
+                            $ouvrageData['created_at']      = Carbon::now();
+                            $orderOuvrageId = DB::table('order_ouvrages')->insertGetId($ouvrageData);
+                        }
+                        // adding ouvrage's id;
+                        $availSecurityOuvrages[] = $orderOuvrageId;
+                        // declare var for available ouvrage tasks
+                        $avileOuvrageTasks = [];
+                        foreach ($ouvrage['tasks'] as $taskIndex => $task) {
+                            $orderOuvrageTask = [
+                                'order_ouvrage_id'      => $orderOuvrageId,
+                                'name'                  => $task['name'],
+                                'textcustomer'          => $task['customerText'],
+                                'textchargeaffaire'     => $task['textchargeaffaire'],
+                                'textoperator'          => $task['textoperator'],
+                                'qty'                   => $task['qty'],
+                                'unit_id'               => $task['unit_id'],
+                                'updated_at'            =>  Carbon::now(),
+                            ];
+                            if(isset($task['id']) && $task['id'] != ''){
+                                $orderOuvrageTaskId = $task['id'];
+                                DB::table('order_ouvrage_task')->where('id', $task['id'])->update($orderOuvrageTask);
+                            }else{
+                                $orderOuvrageTask['created_at'] = Carbon::now();
+                                $orderOuvrageTaskId = DB::table('order_ouvrage_task')->insertGetId($orderOuvrageTask);
+                            }
+                            // adding task's id;
+                            $avileOuvrageTasks[] = $orderOuvrageTaskId;
+                            $availTaskDetails = [];
+                            foreach ($task['details'] as $detailIndex => $detail) {
+                                $detailData = [
+                                    'order_ouvrage_task_id'   => $orderOuvrageTaskId,
+                                    'product_id'        => $detail['productId'],
+                                    'type'              => $detail['type'],
+                                    'name'              => $detail['name'],
+                                    'textcustomer'      => '',
+                                    'textchargeaffaire' => '',
+                                    'textoperator'      => '',
+                                    'qty'               => $detail['qty'],
+                                    'numberh'           => $detail['numberH'],
+                                    'unitprice'         => $detail['unitPrice'],
+                                    'qtyouvrage'        => $detail['qtyOuvrage'] == '' ? 0 : $detail['qtyOuvrage'],
+                                    'qtyunitouvrage'    => 1,
+                                    'houvrage'          => 0,
+                                    'marge'             => $detail['marge'],
+                                    'totalprice'        => $detail['totalPrice'],
+                                    'taxe_id'           => $detail['tax'],
+                                    'unit_id'           => $detail['unit_id'],
+                                    'priceachat'        => $detail['unitPrice'],
+                                    'original'          => $detail['original'] ?? false,
+                                    'original_number_h' => $detail['originalNumberH'] ?? 1,
+                                    'original_qty'      => $detail['originalDetailQty'] ?? 1,
+                                    'updated_at'        => Carbon::now(),
+                                ];
+                                if($detail['type'] == 'INTERIM'){
+                                    $detailData['interim_societe_id']   = $detail['societe'];
+                                }
+                                if($detail['type'] == 'COMMANDE FOURNISSEUR'){
+                                    $detailData['supplier_id']   = $detail['supplierId'];
+                                    $detailData['datesupplier']   = $detail['datesupplier'];
+                                    if(preg_match('/^data:application\/pdf;base64,/', $detail['base64'], $type)){
+                                        $data = substr($detail['base64'], strpos($detail['base64'], ',') + 1);
+                                        $type = 'pdf';
+                                        if(!File::isDirectory(public_path('SupplierOrder/'))){
+                                            File::makeDirectory(public_path('SupplierOrder/'), 0755, true, true);
+                                        }
+                                        $data = str_replace( ' ', '+', $data );
+                                        $data = base64_decode($data);
+                                        $uuid_filename = DB::select('select UUID() AS uuid')[0]->uuid;
+                                        $orderFilePath = "/SupplierOrder/{$uuid_filename}.{$type}";
+                                        Storage::disk('public')->put($orderFilePath, $data);
+                                        $detailData['orderfile'] = $orderFilePath;
+                                    }
+                                }
+                                if(isset($detail['id']) && $detail['id'] != ''){
+                                    $detailId = $detail['id'];
+                                    DB::table('order_ouvrage_detail')->where('id', $detail['id'])->update($detailData);
+                                }else{
+                                    $detailData['created_at'] = Carbon::now();
+                                    $detailId = DB::table('order_ouvrage_detail')->insertGetId($detailData);
+                                }
+                                $availTaskDetails[] = $detailId;
+                            }
+                            // set deleted_at field for deleted details
+                            DB::table('order_ouvrage_detail')->where('order_ouvrage_task_id', $orderOuvrageTaskId)->where(function($query){
+                                $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
+                            })->whereNotIn('id', $availTaskDetails)->update(['deleted_at'=> Carbon::now()]);
+                        }
+                        // set deleted_at field for deleted tasks
+                        DB::table('order_ouvrage_task')->where('order_ouvrage_id', $orderOuvrageId)->where(function($query){
+                                $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
+                            })->whereNotIn('id', $avileOuvrageTasks)->update(['deleted_at'=> Carbon::now()]);
+                    }
+                    // set deleted_at field for deleted security ouvrages
+                    DB::table('order_ouvrages')->where('order_id', $orderId)->where('order_zone_id', $zoneId)->where(function($query){
+                                $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
+                            })->whereNotIn('id', $availSecurityOuvrages)->where('type', 'SECURITE')->update(['deleted_at'=> Carbon::now()]);
+                }
+                if( count($zone['prestationOuvrage']['ouvrages']) ){
+
+                    $orderCat = DB::table('order_cat')
+                                ->where('order_zone_id', $zoneId)
+                                ->where('type', 'PRESTATION')
+                                ->first();
+                    $prestationCat = [
+                        'name'          =>  $zone['prestationOuvrage']['name'],
+                        'updated_at'    =>  Carbon::now(),
+                    ];
+                    if($orderCat){
+                        $orderCatId = $orderCat->id;
+                        DB::table('order_cat')->where('id', $orderCat->id)->update($prestationCat);
+                    }else{
+                        $prestationCat['order_zone_id'] =  $zoneId;
+                        $prestationCat['type']          =  'PRESTATION';
+                        $prestationCat['textcustomer']  =  '';
+                        $prestationCat['textoperator']  =  '';
+                        $prestationCat['created_at']    =  Carbon::now();
+                        $orderCatId = DB::table('order_cat')->insertGetId($prestationCat);
+                    }
+                    // declare var for available installation ouvrage
+                    $availPrestationOuvrages = [];
+                    foreach ($zone['prestationOuvrage']['ouvrages'] as $ouvrage) {
+                        $ouvrageData = [
+                            'order_id'          => $orderId,
+                            'order_zone_id'     => $zoneId,
+                            'order_cat_id'      => $orderCatId,
+                            'unit_id'           => $ouvrage['unit'],
+                            'qty'               => $ouvrage['qty'],
+                            'nbheure'           => $ouvrage['totalHour'],
+                            'total'             => $ouvrage['total'],
+                            'ouvrage_prestation_id'=> $ouvrage['ouvrage_prestation_id'],
+                            'ouvrage_toit_id'   => $ouvrage['ouvrage_toit_id'],
+                            'ouvrage_metier_id' => $ouvrage['ouvrage_metier_id'],
+                            'textcustomer'      => $ouvrage['customerText'],
+                            'textchargeaffaire' => $ouvrage['textchargeaffaire'],
+                            'textoperator'      => $ouvrage['textoperator'],
+                            'name'              => $ouvrage['name'],
+                            'updated_at'        => Carbon::now(),
+                        ];
+
+                        if(isset($ouvrage['id']) && $ouvrage['id'] != ''){
+                            $orderOuvrageId = $ouvrage['id'];
+                            DB::table('order_ouvrages')->where('id', $orderOuvrageId)->update($ouvrageData);
+                        }else{
+                            $ouvrageData['type']            = 'PRESTATION';
+                            $ouvrageData['created_at']      = Carbon::now();
+                            $orderOuvrageId = DB::table('order_ouvrages')->insertGetId($ouvrageData);
+                        }
+                        // adding ouvrage's id;
+                        $availPrestationOuvrages[] = $orderOuvrageId;
+                        // declare var for available ouvrage tasks
+                        $avileOuvrageTasks = [];
+                        foreach ($ouvrage['tasks'] as $taskIndex => $task) {
+                            $orderOuvrageTask = [
+                                'order_ouvrage_id'      => $orderOuvrageId,
+                                'name'                  => $task['name'],
+                                'textcustomer'          => $task['customerText'],
+                                'textchargeaffaire'     => $task['textchargeaffaire'],
+                                'textoperator'          => $task['textoperator'],
+                                'qty'                   => $task['qty'],
+                                'unit_id'               => $task['unit_id'],
+                                'updated_at'            =>  Carbon::now(),
+                            ];
+                            if(isset($task['id']) && $task['id'] != ''){
+                                $orderOuvrageTaskId = $task['id'];
+                                DB::table('order_ouvrage_task')->where('id', $task['id'])->update($orderOuvrageTask);
+                            }else{
+                                $orderOuvrageTask['created_at'] = Carbon::now();
+                                $orderOuvrageTaskId = DB::table('order_ouvrage_task')->insertGetId($orderOuvrageTask);
+                            }
+                            // adding task's id;
+                            $avileOuvrageTasks[] = $orderOuvrageTaskId;
+                            $availTaskDetails = [];
+                            foreach ($task['details'] as $detailIndex => $detail) {
+                                $detailData = [
+                                    'order_ouvrage_task_id'   => $orderOuvrageTaskId,
+                                    'product_id'        => $detail['productId'],
+                                    'type'              => $detail['type'],
+                                    'name'              => $detail['name'],
+                                    'textcustomer'      => '',
+                                    'textchargeaffaire' => '',
+                                    'textoperator'      => '',
+                                    'qty'               => $detail['qty'],
+                                    'numberh'           => $detail['numberH'],
+                                    'unitprice'         => $detail['unitPrice'],
+                                    'qtyouvrage'        => $detail['qtyOuvrage'] == '' ? 0 : $detail['qtyOuvrage'],
+                                    'qtyunitouvrage'    => 1,
+                                    'houvrage'          => 0,
+                                    'marge'             => $detail['marge'],
+                                    'totalprice'        => $detail['totalPrice'],
+                                    'taxe_id'           => $detail['tax'],
+                                    'unit_id'           => $detail['unit_id'],
+                                    'priceachat'        => $detail['unitPrice'],
+                                    'original'          => $detail['original'] ?? false,
+                                    'original_number_h' => $detail['originalNumberH'] ?? 1,
+                                    'original_qty'      => $detail['originalDetailQty'] ?? 1,
+                                    'updated_at'        => Carbon::now(),
+                                ];
+                                if($detail['type'] == 'INTERIM'){
+                                    $detailData['interim_societe_id']   = $detail['societe'];
+                                }
+                                if($detail['type'] == 'COMMANDE FOURNISSEUR'){
+                                    $detailData['supplier_id']   = $detail['supplierId'];
+                                    $detailData['datesupplier']   = $detail['datesupplier'];
+                                    if(preg_match('/^data:application\/pdf;base64,/', $detail['base64'], $type)){
+                                        $data = substr($detail['base64'], strpos($detail['base64'], ',') + 1);
+                                        $type = 'pdf';
+                                        if(!File::isDirectory(public_path('SupplierOrder/'))){
+                                            File::makeDirectory(public_path('SupplierOrder/'), 0755, true, true);
+                                        }
+                                        $data = str_replace( ' ', '+', $data );
+                                        $data = base64_decode($data);
+                                        $uuid_filename = DB::select('select UUID() AS uuid')[0]->uuid;
+                                        $orderFilePath = "/SupplierOrder/{$uuid_filename}.{$type}";
+                                        Storage::disk('public')->put($orderFilePath, $data);
+                                        $detailData['orderfile'] = $orderFilePath;
+                                    }
+                                }
+                                if(isset($detail['id']) && $detail['id'] != ''){
+                                    $detailId = $detail['id'];
+                                    DB::table('order_ouvrage_detail')->where('id', $detail['id'])->update($detailData);
+                                }else{
+                                    $detailData['created_at'] = Carbon::now();
+                                    $detailId = DB::table('order_ouvrage_detail')->insertGetId($detailData);
+                                }
+                                $availTaskDetails[] = $detailId;
+                            }
+                            // set deleted_at field for deleted details
+                            DB::table('order_ouvrage_detail')->where('order_ouvrage_task_id', $orderOuvrageTaskId)->where(function($query){
+                                $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
+                            })->whereNotIn('id', $availTaskDetails)->update(['deleted_at'=> Carbon::now()]);
+                        }
+                        // set deleted_at field for deleted tasks
+                        DB::table('order_ouvrage_task')->where('order_ouvrage_id', $orderOuvrageId)->where(function($query){
+                                $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
+                            })->whereNotIn('id', $avileOuvrageTasks)->update(['deleted_at'=> Carbon::now()]);
+                    }
+                    // set deleted_at field for deleted security ouvrages
+                    DB::table('order_ouvrages')->where('order_id', $orderId)->where('order_zone_id', $zoneId)->where(function($query){
+                                $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
+                            })->whereNotIn('id', $availPrestationOuvrages)->where('type', 'PRESTATION')->update(['deleted_at'=> Carbon::now()]);
+                }
+            }
+            // label deleted_at for deleted zones
+            DB::table('order_zones')->where('order_id', $orderId)->where(function($query){
+                                $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
+                            })->whereNotIn('id', $availOrderZoneIds)->update(['deleted_at'=> Carbon::now()]);
+        }else{
+            $orderData = [
+                'name'              => $request->orderName,
+                'comment'              => $request->comment,
+                'affiliate_id'      => Auth::user()->affiliate->id,
+                'responsable_id'    => Auth::id(),
+                'order_state_id'    => 2,
+                'total'             => $request->totalAmount,
+                'nbheure'           => $request->totalHours,
+                'address_id'        => $request->address['id'],
+                'customer_id'       => $request->customer['id'],
+                'contact_id'        => $request->customer['contact_id'],
+                'remise'            => $request->reductionAmount,
+                'updated_at'        => Carbon::now(),
+            ];
+            DB::table('orders')->where('id', $orderId)->update($orderData);
+            $gedId = Ged::where('user_id','=',Auth::id())
+                        ->where('customer_id', $request->customer['id'])
+                        ->where('order_id', $orderId)->value('id');
+            $zoneId = DB::table('order_zones')->where('order_id', $orderId)->value('id');
+            // save photos
+            $availableGedDetailIDs = DB::table('ged_details')
+                                    ->where('order_zone_id', $zoneId)
+                                    ->where('ged_category_id', 0)
+                                    ->whereNotIn('type', ['txt', 'description'])
+                                    ->where('user_id', Auth::id())
+                                    ->select('id')->get();
+            foreach ($request->photos as $file) {
+                if($file['id'] == ''){
+                    $gedDetail = new GedDetail();
+                }else{
+                    $gedDetail = GedDetail::find($file['id']);
+                    $availableGedDetailIDs = $availableGedDetailIDs->where('id', '!=', $file['id'])->all();
+                }
+                $gedDetail->ged_id = $gedId;
+                $gedDetail->order_zone_id = $zoneId;
+                $gedDetail->user_id = Auth::id();
+                $gedDetail->save();
+                $gedDetail = $gedDetail->fresh();//retreve fresh object with all fields
+
+                if( $gedDetail->human_readable_filename != $file['fileName']){//files can only be stored once to avoid duplicates;
                     if( !empty($file['base64data']) ){
                         $storedFile = $this->storeFile($file['base64data'], $file['fileName'], $gedDetail->id);
                         $gedDetail->file = $storedFile->file;
@@ -1697,493 +2307,63 @@ class DevisController extends Controller
                         $gedDetail->storage_path = $storedFile->storage_path;
                         $gedDetail->human_readable_filename = $storedFile->human_readable_filename;
                     }
-                    // }
-                    $gedDetail->save();
                 }
+                $gedDetail->save();
             }
-            // update describes
-            foreach($zone['describes'] as $zoneDescribes) {
-                foreach ($zoneDescribes as $describe) {
-                    if(isset($describe['order_describe_id'])){
-                        DB::table('order_describe')->where('id', $describe['order_describe_id'])->update([
-                            'describe_id'=> $describe['id'],
-                            'value'=> $describe['default'],
-                            'order_zone_id'=> $zoneId,
-                            'updated_at'=> now()
-                        ]);
-                    }else{
-                        DB::table('order_describe')->insert([
-                            'order_zone_id'=> $zoneId,
-                            'describe_id'=> $describe['id'],
-                            'value'=> $describe['default'],
-                            'created_at'=> now(),
-                            'updated_at'=> now()
-                        ]);
-                    }
-                }
-            }
-            // update services
-            foreach($zone['services'] as $service) {
-                if(isset($service['order_service_id'])){
-                    DB::table('order_services')->where('id', $service['order_service_id'])->update([
-                        'service_id'=> $service['id'],
-                        'value'=> $service['value'],
-                        'active'=> $service['active'],
-                        'semti'=> $service['semti'],
-                        'sstt'=> $service['sstt'],
-                        'loc'=> $service['loc'],
-                        'client'=> $service['client'],
-                        'order_zone_id'=> $zoneId,
-                        'updated_at'=> now()
-                    ]);
-                }else{
-                    DB::table('order_services')->insert([
-                        'order_zone_id'=> $zoneId,
-                        'service_id'=> $service['id'],
-                        'value'=> $service['value'],
-                        'active'=> $service['active'],
-                        'semti'=> $service['semti'],
-                        'sstt'=> $service['sstt'],
-                        'loc'=> $service['loc'],
-                        'client'=> $service['client'],
-                        'created_at'=> now(),
-                        'updated_at'=> now()
-                    ]);
-                }
-            }
-            if( count($zone['installOuvrage']['ouvrages']) ){
-                $orderCat = DB::table('order_cat')
-                            ->where('order_zone_id', $zoneId)
-                            ->where('type', 'INSTALLATION')
-                            ->first();
-                $installationCat = [
-                    'name'          =>  $zone['installOuvrage']['name'],
-                    'updated_at'    =>  Carbon::now(),
-                ];
-                if($orderCat){
-                    $orderCatId = $orderCat->id;
-                    DB::table('order_cat')->where('id', $orderCat->id)->update($installationCat);
-                }else{
-                    $installationCat['order_zone_id'] =  $zoneId;
-                    $installationCat['type']          =  'INSTALLATION';
-                    $installationCat['textcustomer']  =  '';
-                    $installationCat['textoperator']  =  '';
-                    $installationCat['created_at']    =  Carbon::now();
-                    $orderCatId = DB::table('order_cat')->insertGetId($installationCat);
-                }
-                // declare var for available installation ouvrage
-                $availInstallOuvrages = [];
-                foreach ($zone['installOuvrage']['ouvrages'] as $ouvrage) {
-                    $ouvrageData = [
-                        'order_id'          => $orderId,
-                        'order_zone_id'     => $zoneId,
-                        'order_cat_id'      => $orderCatId,
-                        'unit_id'           => $ouvrage['unit'],
-                        'qty'               => $ouvrage['qty'],
-                        'nbheure'           => $ouvrage['totalHour'],
-                        'total'             => $ouvrage['total'],
-                        'ouvrage_prestation_id'=> $ouvrage['ouvrage_prestation_id'],
-                        'ouvrage_toit_id'   => $ouvrage['ouvrage_toit_id'],
-                        'ouvrage_metier_id' => $ouvrage['ouvrage_metier_id'],
-                        'textcustomer'      => $ouvrage['customerText'],
-                        'textchargeaffaire' => $ouvrage['textchargeaffaire'],
-                        'textoperator'      => $ouvrage['textoperator'],
-                        'name'              => $ouvrage['name'],
-                        'updated_at'        => Carbon::now(),
+            DB::table('ged_details')->whereIn('id', $availableGedDetailIDs->pluck('id')->all())->delete();
+            // save order details
+            foreach ($request->details as $detail) {
+                if($detail['id'] != ''){
+                    $orderDetailData = [
+                        'order_id'      => $orderId,
+                        'name'          => $detail['name'],
+                        'unitprice'     => $detail['unitPrice'],
+                        'taxe_id'       => $detail['taxId'],
+                        'qty'           => $detail['qty'] ?? 0,
+                        'numberh'       => $detail['hours'] ?? 0,
+                        'updated_at'    => Carbon::now()
                     ];
-                    if(isset($ouvrage['id']) && $ouvrage['id'] != ''){
-                        $orderOuvrageId = $ouvrage['id'];
-                        DB::table('order_ouvrages')->where('id', $orderOuvrageId)->update($ouvrageData);
-                    }else{
-                        $ouvrageData['type']            = 'INSTALLATION';
-                        $ouvrageData['created_at']      = Carbon::now();
-                        $orderOuvrageId = DB::table('order_ouvrages')->insertGetId($ouvrageData);
-                    }
-                    // adding ouvrage's id;
-                    $availInstallOuvrages[] = $orderOuvrageId;
-                    // declare var for available ouvrage tasks
-                    $avileOuvrageTasks = [];
-                    foreach ($ouvrage['tasks'] as $taskIndex => $task) {
-                        $orderOuvrageTask = [
-                            'order_ouvrage_id'      => $orderOuvrageId,
-                            'name'                  => $task['name'],
-                            'textcustomer'          => $task['customerText'],
-                            'textchargeaffaire'     => $task['textchargeaffaire'],
-                            'textoperator'          => $task['textoperator'],
-                            'qty'                   => $task['qty'],
-                            'unit_id'               => $task['unit_id'],
-                            'updated_at'            =>  Carbon::now(),
-                        ];
-                        if(isset($task['id']) && $task['id'] != ''){
-                            $orderOuvrageTaskId = $task['id'];
-                            DB::table('order_ouvrage_task')->where('id', $task['id'])->update($orderOuvrageTask);
-                        }else{
-                            $orderOuvrageTask['created_at'] = Carbon::now();
-                            $orderOuvrageTaskId = DB::table('order_ouvrage_task')->insertGetId($orderOuvrageTask);
-                        }
-                        // adding task's id;
-                        $avileOuvrageTasks[] = $orderOuvrageTaskId;
-                        $availTaskDetails = [];
-                        foreach ($task['details'] as $detailIndex => $detail) {
-                            $detailData = [
-                                'order_ouvrage_task_id'   => $orderOuvrageTaskId,
-                                'product_id'        => $detail['productId'],
-                                'type'              => $detail['type'],
-                                'name'              => $detail['name'],
-                                'textcustomer'      => '',
-                                'textchargeaffaire' => '',
-                                'textoperator'      => '',
-                                'qty'               => $detail['qty'],
-                                'numberh'           => $detail['numberH'],
-                                'unitprice'         => $detail['unitPrice'],
-                                'qtyouvrage'        => $detail['qtyOuvrage'] == '' ? 0 : $detail['qtyOuvrage'],
-                                'qtyunitouvrage'    => 1,
-                                'houvrage'          => 0,
-                                'marge'             => $detail['marge'],
-                                'totalprice'        => $detail['totalPrice'],
-                                'taxe_id'           => $detail['tax'],
-                                'unit_id'           => $detail['unit_id'],
-                                'priceachat'        => $detail['unitPrice'],
-                                'original'          => $detail['original'] ?? false,
-                                'original_number_h' => $detail['originalNumberH'] ?? 1,
-                                'original_qty'      => $detail['originalDetailQty'] ?? 1,
-                                'updated_at'        => Carbon::now(),
-                            ];
-                            if($detail['type'] == 'INTERIM'){
-                                $detailData['interim_societe_id']   = $detail['societe'];
-                            }
-                            if($detail['type'] == 'COMMANDE FOURNISSEUR'){
-                                $detailData['supplier_id']   = $detail['supplierId'];
-                                $detailData['datesupplier']   = $detail['datesupplier'];
-                                if(preg_match('/^data:application\/pdf;base64,/', $detail['base64'], $type)){
-                                    $data = substr($detail['base64'], strpos($detail['base64'], ',') + 1);
-                                    $type = 'pdf';
-                                    if(!File::isDirectory(public_path('SupplierOrder/'))){
-                                        File::makeDirectory(public_path('SupplierOrder/'), 0755, true, true);
-                                    }
-                                    $data = str_replace( ' ', '+', $data );
-                                    $data = base64_decode($data);
-                                    $uuid_filename = DB::select('select UUID() AS uuid')[0]->uuid;
-                                    $orderFilePath = "/SupplierOrder/{$uuid_filename}.{$type}";
-                                    Storage::disk('public')->put($orderFilePath, $data);
-                                    $detailData['orderfile'] = $orderFilePath;
-                                }
-                            }
-                            if(isset($detail['id']) && $detail['id'] != ''){
-                                $detailId = $detail['id'];
-                                DB::table('order_ouvrage_detail')->where('id', $detail['id'])->update($detailData);
-                            }else{
-                                $detailData['created_at'] = Carbon::now();
-                                $detailId = DB::table('order_ouvrage_detail')->insertGetId($detailData);
-                            }
-                            $availTaskDetails[] = $detailId;
-                        }
-                        // set deleted_at field for deleted details
-                        DB::table('order_ouvrage_detail')->where('order_ouvrage_task_id', $orderOuvrageTaskId)->where(function($query){
-                            $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
-                        })->whereNotIn('id', $availTaskDetails)->update(['deleted_at'=> Carbon::now()]);
-                    }
-                    // set deleted_at field for deleted tasks
-                    DB::table('order_ouvrage_task')->where('order_ouvrage_id', $orderOuvrageId)->where(function($query){
-                            $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
-                        })->whereNotIn('id', $avileOuvrageTasks)->update(['deleted_at'=> Carbon::now()]);
-                }
-                // set deleted_at field for deleted installation ouvrages
-                DB::table('order_ouvrages')->where('order_id', $orderId)->where(function($query){
-                            $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
-                        })->where('order_zone_id', $zoneId)->whereNotIn('id', $availInstallOuvrages)->where('type', 'INSTALLATION')->update(['deleted_at'=> Carbon::now()]);
-            }
-            if( count($zone['securityOuvrage']['ouvrages']) ){
-                $orderCat = DB::table('order_cat')
-                            ->where('order_zone_id', $zoneId)
-                            ->where('type', 'SECURITE')
-                            ->first();
-                $securiteCat = [
-                    'name'          =>  $zone['securityOuvrage']['name'],
-                    'updated_at'    =>  Carbon::now(),
-                ];
-                if($orderCat){
-                    $orderCatId = $orderCat->id;
-                    DB::table('order_cat')->where('id', $orderCat->id)->update($securiteCat);
+                    DB::table('order_detail')->where('id', $detail->id)->update($orderDetailData);
                 }else{
-                    $securiteCat['order_zone_id'] =  $zoneId;
-                    $securiteCat['type']          =  'SECURITE';
-                    $securiteCat['textcustomer']  =  '';
-                    $securiteCat['textoperator']  =  '';
-                    $securiteCat['created_at']    =  Carbon::now();
-                    $orderCatId = DB::table('order_cat')->insertGetId($securiteCat);
-                }
-                // declare var for available installation ouvrage
-                $availSecurityOuvrages = [];
-                foreach ($zone['securityOuvrage']['ouvrages'] as $ouvrage) {
-                    $ouvrageData = [
-                        'order_id'          => $orderId,
-                        'order_zone_id'     => $zoneId,
-                        'order_cat_id'      => $orderCatId,
-                        'unit_id'           => $ouvrage['unit'],
-                        'qty'               => $ouvrage['qty'],
-                        'nbheure'           => $ouvrage['totalHour'],
-                        'total'             => $ouvrage['total'],
-                        'ouvrage_prestation_id'=> $ouvrage['ouvrage_prestation_id'],
-                        'ouvrage_toit_id'   => $ouvrage['ouvrage_toit_id'],
-                        'ouvrage_metier_id' => $ouvrage['ouvrage_metier_id'],
-                        'textcustomer'      => $ouvrage['customerText'],
-                        'textchargeaffaire' => $ouvrage['textchargeaffaire'],
-                        'textoperator'      => $ouvrage['textoperator'],
-                        'name'              => $ouvrage['name'],
-                        'updated_at'        => Carbon::now(),
+                    $orderDetailData = [
+                        'order_id'      => $orderId,
+                        'supplier_id'   => 0,
+                        'name'          => $detail['name'],
+                        'unitprice'     => $detail['unitPrice'],
+                        'taxe_id'       => $detail['taxId'],
+                        'qty'           => $detail['qty'] ?? 0,
+                        'numberh'       => $detail['hours'] ?? 0,
+                        'created_at'    => Carbon::now(),
+                        'updated_at'    => Carbon::now()
                     ];
-                    if(isset($ouvrage['id']) && $ouvrage['id'] != ''){
-                        $orderOuvrageId = $ouvrage['id'];
-                        DB::table('order_ouvrages')->where('id', $orderOuvrageId)->update($ouvrageData);
-                    }else{
-                        $ouvrageData['type']            = 'SECURITE';
-                        $ouvrageData['created_at']      = Carbon::now();
-                        $orderOuvrageId = DB::table('order_ouvrages')->insertGetId($ouvrageData);
-                    }
-                    // adding ouvrage's id;
-                    $availSecurityOuvrages[] = $orderOuvrageId;
-                    // declare var for available ouvrage tasks
-                    $avileOuvrageTasks = [];
-                    foreach ($ouvrage['tasks'] as $taskIndex => $task) {
-                        $orderOuvrageTask = [
-                            'order_ouvrage_id'      => $orderOuvrageId,
-                            'name'                  => $task['name'],
-                            'textcustomer'          => $task['customerText'],
-                            'textchargeaffaire'     => $task['textchargeaffaire'],
-                            'textoperator'          => $task['textoperator'],
-                            'qty'                   => $task['qty'],
-                            'unit_id'               => $task['unit_id'],
-                            'updated_at'            =>  Carbon::now(),
-                        ];
-                        if(isset($task['id']) && $task['id'] != ''){
-                            $orderOuvrageTaskId = $task['id'];
-                            DB::table('order_ouvrage_task')->where('id', $task['id'])->update($orderOuvrageTask);
-                        }else{
-                            $orderOuvrageTask['created_at'] = Carbon::now();
-                            $orderOuvrageTaskId = DB::table('order_ouvrage_task')->insertGetId($orderOuvrageTask);
-                        }
-                        // adding task's id;
-                        $avileOuvrageTasks[] = $orderOuvrageTaskId;
-                        $availTaskDetails = [];
-                        foreach ($task['details'] as $detailIndex => $detail) {
-                            $detailData = [
-                                'order_ouvrage_task_id'   => $orderOuvrageTaskId,
-                                'product_id'        => $detail['productId'],
-                                'type'              => $detail['type'],
-                                'name'              => $detail['name'],
-                                'textcustomer'      => '',
-                                'textchargeaffaire' => '',
-                                'textoperator'      => '',
-                                'qty'               => $detail['qty'],
-                                'numberh'           => $detail['numberH'],
-                                'unitprice'         => $detail['unitPrice'],
-                                'qtyouvrage'        => $detail['qtyOuvrage'] == '' ? 0 : $detail['qtyOuvrage'],
-                                'qtyunitouvrage'    => 1,
-                                'houvrage'          => 0,
-                                'marge'             => $detail['marge'],
-                                'totalprice'        => $detail['totalPrice'],
-                                'taxe_id'           => $detail['tax'],
-                                'unit_id'           => $detail['unit_id'],
-                                'priceachat'        => $detail['unitPrice'],
-                                'original'          => $detail['original'] ?? false,
-                                'original_number_h' => $detail['originalNumberH'] ?? 1,
-                                'original_qty'      => $detail['originalDetailQty'] ?? 1,
-                                'updated_at'        => Carbon::now(),
-                            ];
-                            if($detail['type'] == 'INTERIM'){
-                                $detailData['interim_societe_id']   = $detail['societe'];
-                            }
-                            if($detail['type'] == 'COMMANDE FOURNISSEUR'){
-                                $detailData['supplier_id']   = $detail['supplierId'];
-                                $detailData['datesupplier']   = $detail['datesupplier'];
-                                if(preg_match('/^data:application\/pdf;base64,/', $detail['base64'], $type)){
-                                    $data = substr($detail['base64'], strpos($detail['base64'], ',') + 1);
-                                    $type = 'pdf';
-                                    if(!File::isDirectory(public_path('SupplierOrder/'))){
-                                        File::makeDirectory(public_path('SupplierOrder/'), 0755, true, true);
-                                    }
-                                    $data = str_replace( ' ', '+', $data );
-                                    $data = base64_decode($data);
-                                    $uuid_filename = DB::select('select UUID() AS uuid')[0]->uuid;
-                                    $orderFilePath = "/SupplierOrder/{$uuid_filename}.{$type}";
-                                    Storage::disk('public')->put($orderFilePath, $data);
-                                    $detailData['orderfile'] = $orderFilePath;
-                                }
-                            }
-                            if(isset($detail['id']) && $detail['id'] != ''){
-                                $detailId = $detail['id'];
-                                DB::table('order_ouvrage_detail')->where('id', $detail['id'])->update($detailData);
-                            }else{
-                                $detailData['created_at'] = Carbon::now();
-                                $detailId = DB::table('order_ouvrage_detail')->insertGetId($detailData);
-                            }
-                            $availTaskDetails[] = $detailId;
-                        }
-                        // set deleted_at field for deleted details
-                        DB::table('order_ouvrage_detail')->where('order_ouvrage_task_id', $orderOuvrageTaskId)->where(function($query){
-                            $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
-                        })->whereNotIn('id', $availTaskDetails)->update(['deleted_at'=> Carbon::now()]);
-                    }
-                    // set deleted_at field for deleted tasks
-                    DB::table('order_ouvrage_task')->where('order_ouvrage_id', $orderOuvrageId)->where(function($query){
-                            $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
-                        })->whereNotIn('id', $avileOuvrageTasks)->update(['deleted_at'=> Carbon::now()]);
+                    DB::table('order_detail')->insert($orderDetailData);
                 }
-                // set deleted_at field for deleted security ouvrages
-                DB::table('order_ouvrages')->where('order_id', $orderId)->where('order_zone_id', $zoneId)->where(function($query){
-                            $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
-                        })->whereNotIn('id', $availSecurityOuvrages)->where('type', 'SECURITE')->update(['deleted_at'=> Carbon::now()]);
             }
-            if( count($zone['prestationOuvrage']['ouvrages']) ){
+            // save order documents
+            $availableDocumentsIDs = DB::table('order_documents')->where('ged_id', $gedId)->select('id')->get();
+            foreach ($request->documents as $document) {
+                if($document['id'] == ''){
+                    $pathinfo   =   pathinfo($document['fileName']);
+                    $file_extension =   $pathinfo['extension'];
+                    $uuid_filename  = DB::select('select UUID() AS uuid')[0]->uuid;
+                    $path    = 'GED/GED_' . $gedId . '/order_documents'.'/'.$uuid_filename.'.'.$file_extension;
 
-                $orderCat = DB::table('order_cat')
-                            ->where('order_zone_id', $zoneId)
-                            ->where('type', 'PRESTATION')
-                            ->first();
-                $prestationCat = [
-                    'name'          =>  $zone['prestationOuvrage']['name'],
-                    'updated_at'    =>  Carbon::now(),
-                ];
-                if($orderCat){
-                    $orderCatId = $orderCat->id;
-                    DB::table('order_cat')->where('id', $orderCat->id)->update($prestationCat);
-                }else{
-                    $prestationCat['order_zone_id'] =  $zoneId;
-                    $prestationCat['type']          =  'PRESTATION';
-                    $prestationCat['textcustomer']  =  '';
-                    $prestationCat['textoperator']  =  '';
-                    $prestationCat['created_at']    =  Carbon::now();
-                    $orderCatId = DB::table('order_cat')->insertGetId($prestationCat);
-                }
-                // declare var for available installation ouvrage
-                $availPrestationOuvrages = [];
-                foreach ($zone['prestationOuvrage']['ouvrages'] as $ouvrage) {
-                    $ouvrageData = [
-                        'order_id'          => $orderId,
-                        'order_zone_id'     => $zoneId,
-                        'order_cat_id'      => $orderCatId,
-                        'unit_id'           => $ouvrage['unit'],
-                        'qty'               => $ouvrage['qty'],
-                        'nbheure'           => $ouvrage['totalHour'],
-                        'total'             => $ouvrage['total'],
-                        'ouvrage_prestation_id'=> $ouvrage['ouvrage_prestation_id'],
-                        'ouvrage_toit_id'   => $ouvrage['ouvrage_toit_id'],
-                        'ouvrage_metier_id' => $ouvrage['ouvrage_metier_id'],
-                        'textcustomer'      => $ouvrage['customerText'],
-                        'textchargeaffaire' => $ouvrage['textchargeaffaire'],
-                        'textoperator'      => $ouvrage['textoperator'],
-                        'name'              => $ouvrage['name'],
-                        'updated_at'        => Carbon::now(),
-                    ];
+                    $data   =   explode(';', $document['base64data']);
+                    $base64_string =    explode(',', $data[1])[1];
+                    Storage::disk('local')->put('public/'.$path, base64_decode( $base64_string ));
 
-                    if(isset($ouvrage['id']) && $ouvrage['id'] != ''){
-                        $orderOuvrageId = $ouvrage['id'];
-                        DB::table('order_ouvrages')->where('id', $orderOuvrageId)->update($ouvrageData);
-                    }else{
-                        $ouvrageData['type']            = 'PRESTATION';
-                        $ouvrageData['created_at']      = Carbon::now();
-                        $orderOuvrageId = DB::table('order_ouvrages')->insertGetId($ouvrageData);
-                    }
-                    // adding ouvrage's id;
-                    $availPrestationOuvrages[] = $orderOuvrageId;
-                    // declare var for available ouvrage tasks
-                    $avileOuvrageTasks = [];
-                    foreach ($ouvrage['tasks'] as $taskIndex => $task) {
-                        $orderOuvrageTask = [
-                            'order_ouvrage_id'      => $orderOuvrageId,
-                            'name'                  => $task['name'],
-                            'textcustomer'          => $task['customerText'],
-                            'textchargeaffaire'     => $task['textchargeaffaire'],
-                            'textoperator'          => $task['textoperator'],
-                            'qty'                   => $task['qty'],
-                            'unit_id'               => $task['unit_id'],
-                            'updated_at'            =>  Carbon::now(),
-                        ];
-                        if(isset($task['id']) && $task['id'] != ''){
-                            $orderOuvrageTaskId = $task['id'];
-                            DB::table('order_ouvrage_task')->where('id', $task['id'])->update($orderOuvrageTask);
-                        }else{
-                            $orderOuvrageTask['created_at'] = Carbon::now();
-                            $orderOuvrageTaskId = DB::table('order_ouvrage_task')->insertGetId($orderOuvrageTask);
-                        }
-                        // adding task's id;
-                        $avileOuvrageTasks[] = $orderOuvrageTaskId;
-                        $availTaskDetails = [];
-                        foreach ($task['details'] as $detailIndex => $detail) {
-                            $detailData = [
-                                'order_ouvrage_task_id'   => $orderOuvrageTaskId,
-                                'product_id'        => $detail['productId'],
-                                'type'              => $detail['type'],
-                                'name'              => $detail['name'],
-                                'textcustomer'      => '',
-                                'textchargeaffaire' => '',
-                                'textoperator'      => '',
-                                'qty'               => $detail['qty'],
-                                'numberh'           => $detail['numberH'],
-                                'unitprice'         => $detail['unitPrice'],
-                                'qtyouvrage'        => $detail['qtyOuvrage'] == '' ? 0 : $detail['qtyOuvrage'],
-                                'qtyunitouvrage'    => 1,
-                                'houvrage'          => 0,
-                                'marge'             => $detail['marge'],
-                                'totalprice'        => $detail['totalPrice'],
-                                'taxe_id'           => $detail['tax'],
-                                'unit_id'           => $detail['unit_id'],
-                                'priceachat'        => $detail['unitPrice'],
-                                'original'          => $detail['original'] ?? false,
-                                'original_number_h' => $detail['originalNumberH'] ?? 1,
-                                'original_qty'      => $detail['originalDetailQty'] ?? 1,
-                                'updated_at'        => Carbon::now(),
-                            ];
-                            if($detail['type'] == 'INTERIM'){
-                                $detailData['interim_societe_id']   = $detail['societe'];
-                            }
-                            if($detail['type'] == 'COMMANDE FOURNISSEUR'){
-                                $detailData['supplier_id']   = $detail['supplierId'];
-                                $detailData['datesupplier']   = $detail['datesupplier'];
-                                if(preg_match('/^data:application\/pdf;base64,/', $detail['base64'], $type)){
-                                    $data = substr($detail['base64'], strpos($detail['base64'], ',') + 1);
-                                    $type = 'pdf';
-                                    if(!File::isDirectory(public_path('SupplierOrder/'))){
-                                        File::makeDirectory(public_path('SupplierOrder/'), 0755, true, true);
-                                    }
-                                    $data = str_replace( ' ', '+', $data );
-                                    $data = base64_decode($data);
-                                    $uuid_filename = DB::select('select UUID() AS uuid')[0]->uuid;
-                                    $orderFilePath = "/SupplierOrder/{$uuid_filename}.{$type}";
-                                    Storage::disk('public')->put($orderFilePath, $data);
-                                    $detailData['orderfile'] = $orderFilePath;
-                                }
-                            }
-                            if(isset($detail['id']) && $detail['id'] != ''){
-                                $detailId = $detail['id'];
-                                DB::table('order_ouvrage_detail')->where('id', $detail['id'])->update($detailData);
-                            }else{
-                                $detailData['created_at'] = Carbon::now();
-                                $detailId = DB::table('order_ouvrage_detail')->insertGetId($detailData);
-                            }
-                            $availTaskDetails[] = $detailId;
-                        }
-                        // set deleted_at field for deleted details
-                        DB::table('order_ouvrage_detail')->where('order_ouvrage_task_id', $orderOuvrageTaskId)->where(function($query){
-                            $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
-                        })->whereNotIn('id', $availTaskDetails)->update(['deleted_at'=> Carbon::now()]);
-                    }
-                    // set deleted_at field for deleted tasks
-                    DB::table('order_ouvrage_task')->where('order_ouvrage_id', $orderOuvrageId)->where(function($query){
-                            $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
-                        })->whereNotIn('id', $avileOuvrageTasks)->update(['deleted_at'=> Carbon::now()]);
+                    $orderDocument          =   new OrderDocument();
+                    $orderDocument->ged_id  =   $gedId;
+                    $orderDocument->human_readable_filename =   $document['fileName'];
+                    $orderDocument->name    =   $uuid_filename.'.'.$file_extension;
+                    $orderDocument->file_path   =   $path;
+                    $orderDocument->save();
+                }else{
+                    $availableDocumentsIDs = $availableDocumentsIDs->where('id', '!=', $document['id'])->all();
                 }
-                // set deleted_at field for deleted security ouvrages
-                DB::table('order_ouvrages')->where('order_id', $orderId)->where('order_zone_id', $zoneId)->where(function($query){
-                            $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
-                        })->whereNotIn('id', $availPrestationOuvrages)->where('type', 'PRESTATION')->update(['deleted_at'=> Carbon::now()]);
             }
+            DB::table('order_documents')->whereIn('id', $availableDocumentsIDs->pluck('id')->all())->delete();
         }
-        // label deleted_at for deleted zones
-        DB::table('order_zones')->where('order_id', $orderId)->where(function($query){
-                            $query->whereNull('deleted_at')->orWhere('deleted_at', '0000-00-00 00:00:00');
-                        })->whereNotIn('id', $availOrderZoneIds)->update(['deleted_at'=> Carbon::now()]);
         return response()->json(['success'=> true]);
     }
 }

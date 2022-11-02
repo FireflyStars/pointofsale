@@ -27,7 +27,7 @@
             </div>
           </div>
           <div class="choose-address-panel mt-3" v-if="devisCreateStep == 'choose_address'">
-            <div class="col-5 p-3 bg-white rounded">
+            <div class="col-5 p-3 bg-white rounded" v-if="devisWithOuvrage">
               <div class="d-flex">
                 <div class="col-6">
                   <h2 class="almarai-extrabold font-22">{{ form.customer.company }}</h2>
@@ -63,6 +63,45 @@
                 <div class="col-4">
                   <label for="" class="text-gray font-16 almarai-bold">SIRET</label>
                   <p class="font-16 almarai-bold">{{ form.customer.siret }}</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-5 p-3 bg-white rounded" v-else>
+              <div class="d-flex">
+                <div class="col-6">
+                  <h2 class="almarai-extrabold font-22">{{ newOrder.customer.company }}</h2>
+                  <p class="text-gray font-16 almarai-bold">{{ newOrder.customer.raisonsocial }}</p>
+                </div>
+                <div class="col-6 d-flex align-items-center justify-content-end">
+                  <p @click="chooseOtherCustomer" class="text-custom-success font-16 almarai-bold text-decoration-underline cursor-pointer">Autre client</p>
+                </div>
+              </div>
+              <div class="d-flex mt-3">
+                <div class="col-4">
+                  <label for="" class="text-gray font-16 almarai-bold">GROUPE</label>
+                  <p class="font-16 almarai-bold">{{ newOrder.customer.group }}</p>
+                </div>
+                <div class="col-4">
+                  <label for="" class="text-gray font-16 almarai-bold">CONTACT</label>
+                  <p class="font-16 almarai-bold">{{ newOrder.customer.contact }}</p>
+                </div>
+                <div class="col-4">
+                  <label for="" class="text-gray font-16 almarai-bold">TELEPHONE</label>
+                  <p class="font-16 almarai-bold">{{ newOrder.customer.telephone }}</p>
+                </div>
+              </div>
+              <div class="d-flex mt-3">
+                <div class="col-4">
+                  <label for="" class="text-gray font-16 almarai-bold">TVA</label>
+                  <p class="font-16 almarai-bold">{{ newOrder.customer.tax }}</p>
+                </div>
+                <div class="col-4">
+                  <label for="" class="text-gray font-16 almarai-bold">NAF</label>
+                  <p class="font-16 almarai-bold">{{ newOrder.customer.naf }}</p>
+                </div>
+                <div class="col-4">
+                  <label for="" class="text-gray font-16 almarai-bold">SIRET</label>
+                  <p class="font-16 almarai-bold">{{ newOrder.customer.siret }}</p>
                 </div>
               </div>
             </div>
@@ -1009,7 +1048,7 @@
                             Nom du client
                           </div>
                           <div class="mulish-extrabold font-16 w-100">
-                            {{ form.customer.contact }}
+                            {{ newOrder.customer.raisonsociale }}
                           </div>
                         </div>
                         <div class="ms-auto customer-edit d-flex align-items-center">
@@ -1023,21 +1062,21 @@
                       </div>
                       <div class="d-flex justify-content-between align-items-center">
                         <div class="ps-5 ms-2 mulish-extrabold font-16">
-                          Franck Gavois
+                          {{ newOrder.customer.contact }}
                         </div>
                         <div>
-                          <p>Email : admin@vpc-direct-service.com</p>
-                          <p>06 12 13 15 45</p>
+                          <p>Email : {{ newOrder.customer.email }}</p>
+                          <p>{{ newOrder.customer.telephone }}</p>
                         </div>
                       </div>
                       <div class="ps-4">
                         <div class="d-flex mt-4">
                           <div class="col-5 pe-2">
                             <p class="m-0 almarai-bold font-14 text-gray">Adresse du chantier</p>
-                            <p class="m-0 almarai-light font-14">{{ form.address.address1 }} {{ form.address.postCode }} {{ form.address.city }}</p>
+                            <p class="m-0 almarai-light font-14">{{ newOrder.address.address1 }} {{ newOrder.address.postCode }} {{ newOrder.address.city }}</p>
                           </div>
                           <div class="col-7 google-map-container" v-if="useGoogleService">
-                            <GoogleMap v-model:latitude="form.address.lat" v-model:longitude="form.address.lon"></GoogleMap>
+                            <GoogleMap v-model:latitude="newOrder.address.lat" v-model:longitude="newOrder.address.lon"></GoogleMap>
                           </div>
                         </div>
                         <div class="d-flex mt-4">
@@ -1047,7 +1086,7 @@
                           <label for="devisNote">NOTES / INFORMATIONS / COMMENTAIRES</label>
                         </div>
                         <div class="d-flex mt-4">
-                          <textarea name="" class="w-100" id="devisNote" rows="3"></textarea>
+                          <textarea class="w-100" v-model="newOrder.comment" id="devisNote" rows="3"></textarea>
                         </div>
                       </div>
                     </div>
@@ -1119,27 +1158,27 @@
                         <input type="text" v-model="orderDetail.name" class="form-control order-detail-description bg-white" placeholder="Description tache">
                       </div>
                       <div class="d-flex align-items-center mt-1">
-                        <input type="text" v-model="orderDetail.hours" class="form-control order-detail-input me-1">
-                        <div>hrs</div>
+                        <input type="text" v-model="orderDetail.hours" class="form-control order-detail-input me-1" placeholder="00">
+                        <div class="col-1">hrs</div>
                         <svg class="mx-2" width="14" height="12" viewBox="0 0 14 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M13.4992 0.5625L1.40698 11.0625" stroke="black" stroke-opacity="0.4" stroke-linecap="round" stroke-linejoin="round"/>
                           <path d="M1.40698 0.5625L13.4992 11.0625" stroke="black" stroke-opacity="0.4" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                         <div class="me-1">€</div>
-                        <input type="text" v-model="orderDetail.hoursUnitPrice" class="form-control order-detail-input">
-                        <div class="ms-3 lcdtOrange col-3 fw-bold">{{ (parseFloat(orderDetail.hoursUnitPrice) * parseFloat(orderDetail.hours)).toLocaleString() }} €</div>
+                        <input type="text" v-model="orderDetail.hoursUnitPrice" class="form-control order-detail-input"  placeholder="00.00">
+                        <div class="ms-3 lcdtOrange col-3 fw-bold">{{ (parseFloat(orderDetail.hoursUnitPrice == '' ? 0 : orderDetail.hoursUnitPrice) * parseFloat(orderDetail.hours =='' ? 0 : orderDetail.hours )).toLocaleString() }} €</div>
                         <span class="ms-3 plus-icon me-2" @click="addHourOrderDetail"></span>
                       </div>
                       <div class="d-flex align-items-center mt-1">
-                        <input type="text" v-model="orderDetail.qty" class="form-control order-detail-input me-1">
-                        <div>hrs</div>
+                        <input type="text" v-model="orderDetail.qty" class="form-control order-detail-input me-1" placeholder="00">
+                        <div class="col-1">Qté</div>
                         <svg class="mx-2" width="14" height="12" viewBox="0 0 14 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M13.4992 0.5625L1.40698 11.0625" stroke="black" stroke-opacity="0.4" stroke-linecap="round" stroke-linejoin="round"/>
                           <path d="M1.40698 0.5625L13.4992 11.0625" stroke="black" stroke-opacity="0.4" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                         <div class="me-1">€</div>
-                        <input type="text" v-model="orderDetail.qtyUnitPrice" class="form-control order-detail-input">
-                        <div class="ms-3 lcdtOrange col-3 fw-bold">{{ (parseFloat(orderDetail.qtyUnitPrice)*parseFloat(orderDetail.qty)).toLocaleString() }} €</div>
+                        <input type="text" v-model="orderDetail.qtyUnitPrice" class="form-control order-detail-input" placeholder="00.00">
+                        <div class="ms-3 lcdtOrange col-3 fw-bold">{{ (parseFloat(orderDetail.qtyUnitPrice == '' ? 0 : orderDetail.qtyUnitPrice)*parseFloat(orderDetail.qty == '' ? 0: orderDetail.qty)).toLocaleString() }} €</div>
                         <span class="ms-3 plus-icon me-2" @click="addQteOrderDetail"></span>
                       </div>
                     </div>
@@ -1262,7 +1301,9 @@ import Swal from 'sweetalert2';
 import {
   DISPLAY_LOADER,
   HIDE_LOADER,
-  LOADER_MODULE
+  LOADER_MODULE,
+  TOASTER_MODULE,
+  TOASTER_MESSAGE
   } from '../../store/types/types';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
@@ -1295,8 +1336,8 @@ export default {
     const router = useRouter();
     const devisWithOuvrage = ref(false);
     const breadcrumbs = ref(['Choix client']);
-    // const devisCreateStep = ref('choose_customer');
-    const devisCreateStep = ref('create_devis');
+    const devisCreateStep = ref('choose_customer');
+    // const devisCreateStep = ref('create_devis');
     const tabs = ref({
           description:'Description',
           service:'Service',
@@ -1413,6 +1454,7 @@ export default {
     });
     const newOrder = ref({
       orderName: 'Devis Reparation Salle de bain',
+      comment: '',
       totalAmount: 0,
       totalHours: 0,
       taxAmount: 0,
@@ -1455,7 +1497,7 @@ export default {
         const tax = taxes.value.find(item=>{
           return item.value == detail.taxId;
         }).display;
-        if(detail.qty == 0){
+        if(detail.qty == ''){
           newOrder.value.totalAmount += parseFloat(detail.hours) * parseFloat(detail.unitPrice);
           newOrder.value.totalHours += parseFloat(detail.hours);
           newOrder.value.taxAmount += (parseFloat(detail.hours) * parseFloat(detail.unitPrice)) * tax / 100;
@@ -1474,10 +1516,10 @@ export default {
     }
     const orderDetail = ref({
       name: '',
-      hours: 0,
-      hoursUnitPrice: 0,
-      qty: 0,
-      qtyUnitPrice: 0,
+      hours: '',
+      hoursUnitPrice: '',
+      qty: '',
+      qtyUnitPrice: '',
     })
     const updateAllValues = ()=>{
       form.value.totalHoursForInstall = 0;
@@ -1648,7 +1690,7 @@ export default {
         form.value.totalUnitPrice += zone.prestationOuvrage.sumUnitPrice;
         form.value.totalHoursForPrestation += zone.prestationOuvrage.totalHour;
         form.value.totalPriceForPrestation += zone.prestationOuvrage.totalPrice;
-        form.value.totalDays = (form.value.totalHoursForPrestation + form.value.totalHoursForSecurity +  form.value.totalHoursForInstall)/8
+        form.value.totalDays = (form.value.totalHoursForPrestation + form.value.totalHoursForSecurity +  form.value.totalHoursForInstall)/8;
       })
     };
     const adjustHours = ()=>{
@@ -1691,7 +1733,7 @@ export default {
         gedCats.value = res.data.gedCats;
         form.value.describeOn = res.data.describeOn;
         describes.value = res.data.describes;
-        describes.value = res.data.services;
+        services.value = res.data.services;
         taxes.value = res.data.taxes;
         units.value = res.data.units;
         roofAccesses.value = res.data.roofAccesses;
@@ -1735,6 +1777,7 @@ export default {
               url: '',
               base64data: reader.result,
               fileName: images[i].name,
+              type: type,
               url: reader.result,
               id: '',
             })
@@ -2285,7 +2328,7 @@ export default {
     const storeDevis = ()=>{
       store.dispatch(`${LOADER_MODULE}${DISPLAY_LOADER}`, [true, 'Enregistrer le Devis...']);
       if(devisWithOuvrage.value){
-        axios.post('/store-devis', newOrder.value).then((res)=>{
+        axios.post('/store-devis', form.value).then((res)=>{
           if(res.data.success){
             router.push({
               name: 'DevisDetail',
@@ -2298,7 +2341,7 @@ export default {
           store.dispatch(`${LOADER_MODULE}${HIDE_LOADER}`);
         })
       }else{
-        axios.post('/store-devis', form.value).then((res)=>{
+        axios.post('/store-devis', newOrder.value).then((res)=>{
           if(res.data.success){
             router.push({
               name: 'DevisDetail',
@@ -2402,6 +2445,30 @@ export default {
       });
     }
     const addHourOrderDetail = ()=>{
+      if(orderDetail.value.name == ''){
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            type: 'danger',
+            message: 'veuillez entrer le nom.',
+            ttl: 5,
+        });
+        return;
+      }
+      if(orderDetail.value.hours == ''){
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            type: 'danger',
+            message: 'veuillez entrer l\'heure.',
+            ttl: 5,
+        });
+        return;
+      }
+      if(orderDetail.value.hoursUnitPrice == ''){
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            type: 'danger',
+            message: 'veuillez entrer le prix unitaire.',
+            ttl: 5,
+        });
+        return;
+      }      
       newOrder.value.details.push({
         name: orderDetail.value.name,
         qty: orderDetail.value.qty,
@@ -2411,11 +2478,35 @@ export default {
         total: parseFloat(orderDetail.value.hoursUnitPrice)*parseFloat(orderDetail.value.hours),
       })
       orderDetail.value.name = '';
-      orderDetail.value.hours = 0;
-      orderDetail.value.hoursUnitPrice = 0;
+      orderDetail.value.hours = '';
+      orderDetail.value.hoursUnitPrice = '';
       calcOrderDetails();
     }
     const addQteOrderDetail = ()=>{
+      if(orderDetail.value.name == ''){
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            type: 'danger',
+            message: 'veuillez entrer le nom.',
+            ttl: 5,
+        });
+        return;
+      }
+      if(orderDetail.value.qty == ''){
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            type: 'danger',
+            message: 'veuillez entrer le qte.',
+            ttl: 5,
+        });
+        return;
+      }
+      if(orderDetail.value.qtyUnitPrice == ''){
+        store.dispatch(`${TOASTER_MODULE}${TOASTER_MESSAGE}`, {
+            type: 'danger',
+            message: 'veuillez entrer le prix unitaire.',
+            ttl: 5,
+        });
+        return;
+      }
       newOrder.value.details.push({
         name: orderDetail.value.name,
         qty: orderDetail.value.qty,
@@ -2425,8 +2516,8 @@ export default {
         total: parseFloat(orderDetail.value.qtyUnitPrice)*parseFloat(orderDetail.value.qty),
       })
       orderDetail.value.name = '';
-      orderDetail.value.qty = 0;
-      orderDetail.value.qtyUnitPrice = 0;
+      orderDetail.value.qty = '';
+      orderDetail.value.qtyUnitPrice = '';
       calcOrderDetails();
     }
     const deleteOrderDetail = (detailIndex)=>{
@@ -2642,26 +2733,22 @@ export default {
         // width: 1019px;
         width: 60%;
         height: fit-content;
-        .customer-section{
-          .customer-pic{
-            width: 42px;
-            height: 42px;
-          }
+        .customer-pic{
+          width: 42px;
+          height: 42px;
         }
-        .zone-section{
-          .ged-image{
-            background-size: contain;
-            width: 55px;
-            height: 55px;
+        .ged-image{
+          background-size: contain;
+          width: 55px;
+          height: 55px;
+          .image-overlayer{
+            visibility: hidden;
+          }
+          &:hover{
             .image-overlayer{
-              visibility: hidden;
-            }
-            &:hover{
-              .image-overlayer{
-                visibility: visible;
-                background: rgba(0, 0, 0, .2);
-                transition: background ease-out .3s;
-              }
+              visibility: visible;
+              background: rgba(0, 0, 0, .2);
+              transition: background ease-out .3s;
             }
           }
         }
@@ -2717,6 +2804,7 @@ export default {
     .product-form-body{
       padding: 10px 55px;
       input{
+        color: #DADADA;
         &:focus{
           outline: none;
           box-shadow: none;
@@ -2727,6 +2815,7 @@ export default {
         height: 21px;
         width: 70px;
         background: transparent;
+        color: #a09f9f;
       }
     }
   }
