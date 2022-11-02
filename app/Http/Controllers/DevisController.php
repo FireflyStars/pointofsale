@@ -1253,12 +1253,20 @@ class DevisController extends Controller
             }
             // save order documents
             foreach ($request->documents as $document) {
+                $pathinfo   =   pathinfo($document['fileName']);
+                $file_extension =   $pathinfo['extension'];
+                $uuid_filename  = DB::select('select UUID() AS uuid')[0]->uuid;
+                $path    = 'GED/GED_' . $gedId . '/order_documents'.'/'.$uuid_filename.'.'.$file_extension;
+
+                $data   =   explode(';', $document['base64data']);
+                $base64_string =    explode(',', $data[1])[1];
+                Storage::disk('local')->put('public/'.$path, base64_decode( $base64_string ));
+
                 $orderDocument          =   new OrderDocument();
                 $orderDocument->ged_id  =   $gedId;
-                $orderDocument->human_readable_filename =   $document->getClientOriginalName();
-                $uuid_filename = DB::select('select UUID() AS uuid')[0]->uuid;
-                $orderDocument->name    =   $uuid_filename.'.'.$document->getClientOriginalExtension();
-                $orderDocument->file_path   =   $document->storeAs( 'GED/GED_' . $gedId . '/order_documents', $orderDocument->name, 'public' );
+                $orderDocument->human_readable_filename =   $document['fileName'];
+                $orderDocument->name    =   $uuid_filename.'.'.$file_extension;
+                $orderDocument->file_path   =   $path;
                 $orderDocument->save();
             }
         }
