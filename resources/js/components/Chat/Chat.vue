@@ -21,7 +21,7 @@
             const messages = ref([]);
             const sendMessage = (message)=>{
                 messages.value.push({
-                    time: moment().format('DD MMM YYYY - HH:mm'),
+                    time: moment().locale('fr').format('DD MMM YYYY - HH:mm'),
                     content: message,
                     type: 'text',
                     dir: 1,
@@ -29,7 +29,7 @@
             }
             const sendVoiceMessage = (audioUrlObject)=>{
                 messages.value.push({
-                    time: moment().format('DD MMM YYYY - HH:mm'),
+                    time: moment().locale('fr').format('DD MMM YYYY - HH:mm'),
                     content: audioUrlObject,
                     type: 'voice',
                     dir: 1,

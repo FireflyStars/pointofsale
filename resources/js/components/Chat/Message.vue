@@ -141,9 +141,16 @@
                         </defs>
                     </svg>
                 </div>
-                <div class="voice-play" @click="playAudio(message.content)">
+                <div class="voice-play" @click="playAudio(message.content)" v-if="!pause">
                     <svg width="8" height="10" viewBox="0 0 8 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M8 5L0.5 9.33013L0.5 0.669872L8 5Z" fill="#55A99D"/>
+                    </svg>
+                </div>
+                <div class="voice-play" @click="pauseAudio" v-else>
+                    <svg version="1.1" width="15" height="15" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 122.88 122.88" style="enable-background:new 0 0 122.88 122.88" xml:space="preserve">
+                        <g>
+                            <path d="M61.44,0c16.97,0,32.33,6.88,43.44,18c11.12,11.12,18,26.48,18,43.44c0,16.97-6.88,32.33-18,43.44 c-11.12,11.12-26.48,18-43.44,18c-16.97,0-32.33-6.88-43.44-18C6.88,93.77,0,78.41,0,61.44C0,44.47,6.88,29.11,18,18 C29.11,6.88,44.47,0,61.44,0L61.44,0z M42.3,39.47h13.59v43.95l-13.59,0V39.47L42.3,39.47L42.3,39.47z M66.99,39.47h13.59v43.95 l-13.59,0V39.47L66.99,39.47L66.99,39.47z M97.42,25.46c-9.21-9.21-21.93-14.9-35.98-14.9c-14.05,0-26.78,5.7-35.98,14.9 c-9.21,9.21-14.9,21.93-14.9,35.98s5.7,26.78,14.9,35.98c9.21,9.21,21.93,14.9,35.98,14.9c14.05,0,26.78-5.7,35.98-14.9 c9.21-9.21,14.9-21.93,14.9-35.98S106.63,34.66,97.42,25.46L97.42,25.46z"/>
+                        </g>
                     </svg>
                 </div>
             </div>
@@ -151,6 +158,7 @@
     </div>
 </template>
 <script>
+import { ref } from 'vue';
 export default{
     props:{
         message:{
@@ -159,12 +167,24 @@ export default{
         },
     },
     setup(){
+        const audioElement = ref(null);
+        const pause = ref(false);
         const playAudio = (audioUrlObject)=>{
-            var audio = new Audio(audioUrlObject);
-            audio.play();
+            pause.value = ! pause.value
+            audioElement.value = new Audio(audioUrlObject);
+            audioElement.value.play();
+            audioElement.value.addEventListener('ended', function(e){
+                pause.value = ! pause.value
+            }, false);            
+        }
+        const pauseAudio = ()=>{
+            pause.value = ! pause.value
+            audioElement.value.pause();
         }
         return{
+            pause,
             playAudio,
+            pauseAudio,
         }
     }
 }
@@ -176,7 +196,7 @@ export default{
     font-weight: 300;
     font-size: 9px;
     line-height: 14px;
-    color: #4E4E4E;    
+    color: #4E4E4E;
 }
 .message-in .message-text{
     height: 40px;
@@ -216,7 +236,7 @@ export default{
 .message-in {
     -webkit-box-flex: 1;
     -ms-flex: 1;
-    flex: 1;    
+    flex: 1;
 }
 .message-in .message-voice{
     height: 55px;
@@ -228,7 +248,7 @@ export default{
     height: 55px;
     padding: 10px 13px;
     background: rgba(255, 185, 28, 0.6);
-    border-radius: 27.5px 27.5px 0px 27.5px;    
+    border-radius: 27.5px 27.5px 0px 27.5px;
 }
 .message-voice{
     display: flex;
@@ -244,5 +264,8 @@ export default{
     align-items: center;
     justify-content: center;
     cursor: pointer;
+}
+.voice-play svg{
+    transform: scale(1.5);
 }
 </style>

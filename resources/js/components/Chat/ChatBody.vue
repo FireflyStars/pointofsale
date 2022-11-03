@@ -1,6 +1,8 @@
 <template>
-    <div class="chat-body">
+    <div class="chat-body" id="chat-body">
+      <div class="message-list">
         <message v-for="(message, index) in messages" :key="index" :message="message"></message>
+      </div>
     </div>
 </template>
 <script>
@@ -39,5 +41,6 @@ export default{
     height: 332px;
     width: 100%;
     overflow-y: auto;
+    padding-bottom: 50px;
 }
 </style>
