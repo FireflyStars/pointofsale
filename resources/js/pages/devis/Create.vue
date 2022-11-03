@@ -1375,7 +1375,6 @@ export default {
     const services = ref([]);
     const roofAccesses = ref([]);
     const editDevisName = ref(false);
-    // const useGoogleService = ref(false);
     const useGoogleService = ref(true);
     const form = ref({
       orderName: '',
@@ -2734,8 +2733,8 @@ export default {
         width: 60%;
         height: fit-content;
         .customer-pic{
-          width: 42px;
-          height: 42px;
+          width: 53px;
+          height: 53px;
         }
         .ged-image{
           background-size: contain;

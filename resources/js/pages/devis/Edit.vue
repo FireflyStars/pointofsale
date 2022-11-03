@@ -2873,8 +2873,8 @@ export default {
         width: 60%;
         height: fit-content;
         .customer-pic{
-          width: 42px;
-          height: 42px;
+          width: 53px;
+          height: 53px;
         }
         .ged-image{
           background-size: contain;

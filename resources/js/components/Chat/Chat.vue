@@ -2,7 +2,7 @@
     <div class="chat-wrapper">
         <chat-header></chat-header>
         <chat-body :messages="messages"></chat-body>
-        <chat-footer></chat-footer>
+        <chat-footer @send-message="sendMessage" @send-voice-message="sendVoiceMessage"></chat-footer>
     </div>
 </template>
 <script>
@@ -10,6 +10,7 @@
     import ChatHeader from './ChatHeader.vue';
     import ChatBody from './ChatBody.vue';
     import ChatFooter from './ChatFooter.vue';
+    import moment from 'moment';
     export default {
         components:{
             ChatHeader,
@@ -17,28 +18,27 @@
             ChatFooter
         },
         setup(){
-            const messages = ref([
-                {
-                    time: '20 Aout 2019 - 19 :45',
-                    content: 'Are you still travelling?',
-                    type: 'text',
-                    dir: 0,
-                },
-                {
-                    time: '20 Aout 2019 - 19 :45',
-                    content: 'Yes, i’m at Istanbul.. ',
+            const messages = ref([]);
+            const sendMessage = (message)=>{
+                messages.value.push({
+                    time: moment().format('DD MMM YYYY - HH:mm'),
+                    content: message,
                     type: 'text',
                     dir: 1,
-                },
-                {
-                    time: '20 Aout 2019 - 19 :45',
-                    content: 'What? ',
+                });
+            }
+            const sendVoiceMessage = (audioUrlObject)=>{
+                messages.value.push({
+                    time: moment().format('DD MMM YYYY - HH:mm'),
+                    content: audioUrlObject,
                     type: 'voice',
                     dir: 1,
-                },
-            ]);
+                });
+            }
             return{
-                messages
+                messages,
+                sendMessage,
+                sendVoiceMessage
             }
         }
     }
@@ -50,5 +50,6 @@
     max-width: 356px;
     max-height: 467px;
     padding: 20px 20px 10px 20px;
+    margin: auto;
 }
 </style>

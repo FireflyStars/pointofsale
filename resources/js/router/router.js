@@ -760,13 +760,13 @@ const router = createRouter({
                 authenticated: false,
             },
         },
-        // {
-        //     path: "/chat",
-        //     name: "Chat",
-        //     component: () =>
-        //         import("../pages/Chat/Chat.vue"),
-        //     props: true,
-        // },
+        {
+            path: "/chat",
+            name: "Chat",
+            component: () =>
+                import("../components/Chat/Chat.vue"),
+            props: false,
+        },
         {
             path: '/:pathMatch(.*)',
             name: 'not-found',
