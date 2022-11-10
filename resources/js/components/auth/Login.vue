@@ -100,7 +100,11 @@ import {
                                 window.sessionStorage.setItem('auth', window.btoa(email.value));
                                 window.sessionStorage.setItem('roles', window.btoa(JSON.stringify(response.data.roles)));
                                 window.sessionStorage.setItem('profile_permissions', window.btoa(JSON.stringify(response.data.profile_permissions)));
-                          
+                                
+                                window.localStorage.setItem('name', response.data.user.name);
+                                window.localStorage.setItem('auth', window.btoa(email.value));
+                                window.localStorage.setItem('roles', window.btoa(JSON.stringify(response.data.roles)));
+                                window.localStorage.setItem('profile_permissions', window.btoa(JSON.stringify(response.data.profile_permissions)));
                                 router.replace({
                                    name:'LandingPage',
                                    query: {

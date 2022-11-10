@@ -5,6 +5,12 @@ export default (to,from,next)=>{
 
     htmltag.className='';
     htmltag.classList.add(to.name);
+    if(localStorage.getItem('auth')!=null){
+        sessionStorage.setItem('name',localStorage.getItem('name'));
+        sessionStorage.setItem('auth',localStorage.getItem('auth'));
+        sessionStorage.setItem('roles',localStorage.getItem('roles'));
+        sessionStorage.setItem('profile_permissions',localStorage.getItem('profile_permissions'));
+        }
     /*if(to.name=="Permissions"&&sessionStorage.getItem('auth')){
         if(hasRoles(['admin']))
         return next();

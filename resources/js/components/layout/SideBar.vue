@@ -195,6 +195,7 @@
             .then(function (response) {
                 if(response.data.ok==1) {
                     sessionStorage.clear();
+                       localStorage.clear();
                     // router.push({
                     //    name:'Login',
 
