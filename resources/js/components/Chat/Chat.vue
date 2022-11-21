@@ -50,6 +50,5 @@
     max-width: 356px;
     max-height: 467px;
     padding: 20px 20px 10px 20px;
-    margin: auto;
 }
 </style>

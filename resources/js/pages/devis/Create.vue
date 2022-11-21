@@ -131,7 +131,8 @@
             <div class="devis-with-ouvrages d-flex" v-if="devisWithOuvrage">
               <div class="left-panel">
                 <div class="devis-name-section p-2 bg-white">
-                  <input type="text" v-model="form.orderName" placeholder="Devis nom" class="form-control"/>
+                  <input type="text" v-model="form.orderName" placeholder="Devis nom" class="form-control col-5"/>
+                  <select-box v-model="mainOrderId" class="col-5" :options="orderList"></select-box>
                 </div>
                 <div class="customer-section px-3 py-2 d-flex bg-white">
                   <div class="col-7 d-flex">
@@ -1335,6 +1336,7 @@ export default {
     const store = useStore();
     const router = useRouter();
     const devisWithOuvrage = ref(false);
+    const orderList = ref([]);
     const breadcrumbs = ref(['Choix client']);
     const devisCreateStep = ref('choose_customer');
     // const devisCreateStep = ref('create_devis');
@@ -1453,6 +1455,7 @@ export default {
     });
     const newOrder = ref({
       orderName: 'Devis Reparation Salle de bain',
+      mainOrderId: 0,
       comment: '',
       totalAmount: 0,
       totalHours: 0,
@@ -1736,6 +1739,7 @@ export default {
         taxes.value = res.data.taxes;
         units.value = res.data.units;
         roofAccesses.value = res.data.roofAccesses;
+        orderList.value = res.data.orderList;
         form.value.zones.forEach(element => {
           element.describes = res.data.describes;
           element.services = res.data.services;
@@ -2553,6 +2557,7 @@ export default {
       pdfModal,
       newOrder,
       orderDetail,
+      orderList,
       addFileToGed,
       addPhotoToDevis,
       previewFile,

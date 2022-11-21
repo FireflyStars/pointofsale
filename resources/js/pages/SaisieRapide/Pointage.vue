@@ -143,21 +143,21 @@ export default{
         const totalByOrder = ref([]);
         watch(()=>props.date, (cur_val, pre_val)=>{
             pointage.value.datepointage = cur_val;
-            getPointages(cur_val);
+            // getPointages(cur_val);
         })
         const users = ref([]);
         const types = ref([]);
         onMounted(()=>{
             window.addEventListener('keydown', onKeyPressHandler);
-            axios.post('/get-saisie-rapide-info').then((res)=>{
-                users.value = res.data.users;
-                types.value = res.data.types;
-                pointage.value.typeId = 1;
-            }).catch((error)=>{
-                console.log(error);
-            }).finally(()=>{
+            // axios.post('/get-saisie-rapide-info').then((res)=>{
+            //     users.value = res.data.users;
+            //     types.value = res.data.types;
+            //     pointage.value.typeId = 1;
+            // }).catch((error)=>{
+            //     console.log(error);
+            // }).finally(()=>{
 
-            })
+            // })
         })
         const AddPointage = ()=>{
             var error = false;
@@ -220,6 +220,9 @@ export default{
         const onKeyPressHandler = (event)=>{
             if(event.code == 'F12' && event.altKey){
                 pointage.value = {... lastPointage.value};
+            }
+            if(event.code == 'Enter'){
+                AddPointage();
             }
         }
         onBeforeUnmount(()=>{

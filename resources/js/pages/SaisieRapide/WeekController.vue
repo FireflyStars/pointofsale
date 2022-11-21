@@ -27,9 +27,10 @@
             const getWeekDays = ()=>{
                 days.value = [];
                 weekNumber.value = endOfWeek.value.week();
+                endOfWeek.value = endOfWeek.value.subtract(6, 'd')
                 for (let index = 0; index <= 6; index++) {
                     if(index != 0){
-                        var tmpDay = endOfWeek.value.subtract(1, 'd');
+                        var tmpDay = endOfWeek.value.add(1, 'd');
                     }else{
                         var tmpDay = endOfWeek.value;
                     }
@@ -41,7 +42,6 @@
                     });
                 }
 
-                endOfWeek.value = endOfWeek.value.add(6, 'd');
             }
             getWeekDays();
             onMounted(()=>{

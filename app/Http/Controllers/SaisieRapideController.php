@@ -34,8 +34,10 @@ class SaisieRapideController extends Controller
     public function searchOrders(Request $request){
         $orders = DB::table('orders')
                     ->join('customers', 'customers.id', '=', 'orders.customer_id')
-                    ->select(  'orders.id', 'orders.name', 'customers.raisonsociale as raisonsocial')
+                    ->join('contacts', 'contacts.customer_id', '=', 'customers.id')
+                    ->select(  'orders.id', 'orders.name', 'customers.raisonsociale as raisonsocial', 'contacts.firstname', 'contacts.name as lastname')
                     ->whereNull('orders.deleted_at')
+                    ->where('orders.mainorder_id', 0)
                     ->where('customers.raisonsociale', 'like', '%'.$request->search.'%')
                     ->orWhere('orders.name', 'like', '%'.$request->search.'%')
                     ->orWhere('orders.id', 'like', '%'.$request->search.'%')->take(10)->get();
