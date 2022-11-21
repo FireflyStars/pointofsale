@@ -40,7 +40,7 @@ class SaisieRapideController extends Controller
                     ->where('orders.mainorder_id', 0)
                     ->where('customers.raisonsociale', 'like', '%'.$request->search.'%')
                     ->orWhere('orders.name', 'like', '%'.$request->search.'%')
-                    ->orWhere('orders.id', 'like', '%'.$request->search.'%')->take(10)->get();
+                    ->orWhere('orders.id', 'like', '%'.$request->search.'%')->get()->unique('id');
         return response()->json($orders);
     }
     /**

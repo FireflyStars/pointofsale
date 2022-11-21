@@ -133,7 +133,8 @@
             <div class="devis-with-ouvrages d-flex" v-if="devisWithOuvrage">
               <div class="left-panel">
                 <div class="devis-name-section p-2 bg-white">
-                  <input type="text" v-model="form.orderName" placeholder="Devis nom" class="form-control"/>
+                  <input type="text" v-model="form.orderName" placeholder="Devis nom" class="form-control col-5"/>
+                  <select-box v-model="form.mainOrderId" class="col-5" :options="orderList"></select-box>
                 </div>
                 <div class="customer-section px-3 py-2 d-flex bg-white">
                   <div class="col-7 d-flex">
@@ -1375,10 +1376,12 @@ export default {
     const gedCats = ref([]);
     const describes = ref([]);
     const services = ref([]);
+    const orderList = ref([]);
     const roofAccesses = ref([]);
     const useGoogleService = ref(true);
     const form = ref({
       orderName: '',
+      mainOrderid: 0,
       describeOn: false,
       orderStatus: {
         name: 'EN PREPA',
@@ -1460,6 +1463,7 @@ export default {
     });
     const newOrder = ref({
       orderName: '',
+      mainOrderid: 0,      
       comment: '',
       totalAmount: 0,
       totalHours: 0,
@@ -1742,6 +1746,7 @@ export default {
         gedCats.value = res.data.gedCats
         describes.value = res.data.describes
         services.value = res.data.services
+        orderList.value = res.data.orderList;
         let devisData = res.data.devis
         if(devisData.address.lat != null){
             devisData.address.lat = parseFloat(devisData.address.lat.replace(/[a-zA-Z()]/g, ""));
@@ -2693,6 +2698,7 @@ export default {
       pdfModal,
       newOrder,
       orderDetail,
+      orderList,
       addFileToGed,
       addPhotoToDevis,
       previewFile,

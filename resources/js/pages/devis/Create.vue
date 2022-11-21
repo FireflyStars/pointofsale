@@ -132,7 +132,7 @@
               <div class="left-panel">
                 <div class="devis-name-section p-2 bg-white">
                   <input type="text" v-model="form.orderName" placeholder="Devis nom" class="form-control col-5"/>
-                  <select-box v-model="mainOrderId" class="col-5" :options="orderList"></select-box>
+                  <select-box v-model="form.mainOrderId" class="col-5" :options="orderList"></select-box>
                 </div>
                 <div class="customer-section px-3 py-2 d-flex bg-white">
                   <div class="col-7 d-flex">

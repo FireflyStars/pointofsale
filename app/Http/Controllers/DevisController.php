@@ -538,7 +538,7 @@ class DevisController extends Controller
             'roofAccesses'     => DB::table('moyenacces')->select('id as value', 'name as display')->get(),
             'describes'     => $describes,
             'services'     => $services,
-            'orderList'    => DB::table('order')->where('mainorder_id', 0)->select('id as value', 'name as display')->get(),
+            'orderList'    => DB::table('orders')->where('mainorder_id', 0)->select('id as value', 'name as display')->get(),
             'describeOn'     => DB::table('settings')->where('key', 'admin.Describe')->value('value') == 1 ? true : false,
         ]);
     }
@@ -1705,7 +1705,7 @@ class DevisController extends Controller
                 'units'     => DB::table('units')->select('id as value', 'code as display')->get(),
                 'taxes'     => DB::table('taxes')->select('id as value', DB::raw('CEIL(taux * 100) as display'))->get(),
                 'roofAccesses'     => DB::table('moyenacces')->select('id as value', 'name as display')->get(),
-                'orderList'    => DB::table('order')->where('mainorder_id', 0)->select('id as value', 'name as display')->get(),
+                'orderList'    => DB::table('orders')->where('mainorder_id', 0)->select('id as value', 'name as display')->get(),
             ]
         );
     }

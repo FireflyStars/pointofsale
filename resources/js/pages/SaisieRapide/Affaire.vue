@@ -8,7 +8,7 @@
         </div>
         <div class="search-result bg-white" v-if="showSearchResult">
             <ul class="m-0 p-0">
-                <li class="item p-2" v-for="(order, index) in orderList" :class="{'active': index == selectedIndex}" :key="index" @click="selectOrder($event, order.id, index)">
+                <li class="item p-2" v-for="(order, index) in orderList" :class="{'active': order.id == selectedOrderId}" :key="index" @click="selectOrder($event, order.id, index)">
                     <div class="d-flex">
                         <div class="col-3 fw-bold">{{ order.id }}</div>
                         <div class="col-3 fw-bold text-nowrap">{{ order.name }}</div>
@@ -29,25 +29,14 @@ export default({
     setup(props,{ emit }){
         const query = ref('');
         const showSearchResult = ref(false);
-        const selectedIndex = ref(null);
+        const selectedOrderId = ref(null);
         // watch(()=>userId.value, (cur_val, pre_val)=>{
         //     emit('update:modelValue', userId.value);
         // })
         const timeout =ref('');
-        const orderList = ref([
-            {
-                id: 12456,
-                raisonsocial: 'CLIENT XXXXXXXX',
-                name: 'Batiment XXX',
-            },
-            {
-                id: 12455,
-                raisonsocial: 'CLIENT XXXXXXXX',
-                name: 'Batiment XXX',
-            },
-        ]);
+        const orderList = ref([]);
         const selectOrder = (event, orderId, index)=>{
-            selectedIndex.value = index;
+            selectedOrderId.value = orderId;
             document.querySelectorAll('.search-result ul li').forEach((item, itemIndex)=>{
                 item.classList.remove('active');
                 if(itemIndex != index){
@@ -65,7 +54,6 @@ export default({
                 axios.post('/search-saisie-order', { search: query.value }).then((res)=>{
                     orderList.value = res.data;
                     showSearchResult.value = true;
-                    selectedIndex.value = null;
                 }).catch((error)=>{
                     console.log(error);
                 })
@@ -77,7 +65,7 @@ export default({
             query,
             showSearchResult,
             orderList,
-            selectedIndex,
+            selectedOrderId,
             selectOrder,
             submit,
         }
@@ -86,6 +74,19 @@ export default({
 </script>
 
 <style scoped>
+/* width */
+::-webkit-scrollbar {
+  width: 9px;
+}
+/* Track */
+::-webkit-scrollbar-track {
+  background: #E0E0E0; 
+}
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #47454B; 
+  border-radius: 6px;
+}
 input{
     width: 100%;    
     border: none;
@@ -97,7 +98,7 @@ input:focus{
 }
 .search-result{
     position: absolute;
-    width: 150%;
+    width: 250%;
     max-height: 200px;
     overflow-y: auto;
 }
@@ -146,6 +147,10 @@ ul{
 }
 .item{
     cursor: pointer;
+}
+.item .col-3{
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 .item.active{
     border: solid 1px black;
